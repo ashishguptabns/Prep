@@ -1,0 +1,781 @@
+LRUCache - Design a data structure that follows the constraints of a Least Recently Used (LRU) cache.
+
+class LRUCache {
+
+    class DLinkedNode{
+        int key;
+        int value;
+        DLinkedNode next;
+        DLinkedNode prev;
+    }
+    
+    private int size, capacity;
+
+// 	we will keep head and tail for reference
+    private DLinkedNode head, tail;
+
+// 	for each int key, we will keep a node in the map
+    private Map<Integer, DLinkedNode> cacheMap = new HashMap<>();
+    
+    public LRUCache(int capacity) {
+        this.size = 0;
+        this.capacity = capacity;
+        
+        head = new DLinkedNode();
+        tail = new DLinkedNode();
+        
+        head.next = tail;
+        tail.prev = head;
+    }
+    
+    public int get(int key) {
+//         get the node from the map
+        DLinkedNode node = cacheMap.get(key);
+        if(node == null){
+            return -1;
+        }
+        
+//         if we find a node then we should move the node to starting of double linked list as per LRU definition
+        moveToHead(node);
+        return node.value;
+    }
+    
+    public void moveToHead(DLinkedNode node){
+
+// 	remove the node from its current place and add next to head
+        removeNode(node);
+        addNode(node);
+    }
+    
+    public void addNode(DLinkedNode node){
+
+//         always add the new node right after head
+        node.next = head.next;
+        node.prev = head;
+
+        head.next.prev = node;
+        head.next = node;
+    }
+     
+    public void removeNode(DLinkedNode node){
+        DLinkedNode prev = node.prev;
+        DLinkedNode next = node.next;
+        
+        prev.next = next;
+        next.prev = prev;
+    }
+    
+    public void put(int key, int value) {
+        DLinkedNode node = cacheMap.get(key);
+        if(node == null){
+            DLinkedNode newNode = new DLinkedNode();
+            newNode.key = key;
+            newNode.value = value;
+            
+            cacheMap.put(key, newNode);
+            addNode(newNode);
+            
+            size++;
+            
+            if(size > capacity){
+//                 remove the last node in double linked list
+                DLinkedNode tail = popTail();
+                cacheMap.remove(tail.key);
+                size--;
+            }
+        }else{
+
+// 	if node already exists then simply move next to head
+            node.value = value;
+            moveToHead(node);
+        }
+    }
+    
+    public DLinkedNode popTail(){
+//         remove the node before tail as tail and head are for reference
+        DLinkedNode nodeToRemove = tail.prev;
+        removeNode(nodeToRemove);
+        return nodeToRemove;
+    }
+}
+
+/**
+ * Your LRUCache object will be instantiated and called as such:
+ * LRUCache obj = new LRUCache(capacity);
+ * int param_1 = obj.get(key);
+ * obj.put(key,value);
+ */
+
+
+
+
+Add Two Numbers
+
+/**
+ * Definition for singly-linked list.
+ * public class ListNode {
+ *     int val;
+ *     ListNode next;
+ *     ListNode() {}
+ *     ListNode(int val) { this.val = val; }
+ *     ListNode(int val, ListNode next) { this.val = val; this.next = next; }
+ * }
+ */
+class Solution {
+    public ListNode addTwoNumbers(ListNode l1, ListNode l2) {
+        ListNode result = new ListNode(0);
+        ListNode head = result;
+        int carry = 0;
+        while(l1 != null || l2 != null || carry > 0){
+            int currSum = 0;
+            if(l1 != null){
+                currSum += l1.val;
+            }
+            if(l2 != null){
+               currSum += l2.val;
+            }
+            currSum += carry;
+
+            result.val = currSum % 10;
+            carry = currSum / 10;
+
+            if(l1 != null){
+                l1 = l1.next;
+            }
+            if(l2 != null){
+                l2 = l2.next;
+            }
+            if(l1 != null || l2 != null || carry > 0){
+                result.next = new ListNode(0);
+                result = result.next;
+            }
+        }
+        return head;
+    }
+}
+
+
+
+Odd Even Linked List - Given the head of a singly linked list, group all the nodes with odd indices together followed by the nodes with even indices, and return the reordered list.
+
+/**
+ * Example:
+ * var li = ListNode(5)
+ * var v = li.`val`
+ * Definition for singly-linked list.
+ * class ListNode(var `val`: Int) {
+ *     var next: ListNode? = null
+ * }
+ */
+class Solution {
+    fun oddEvenList(head: ListNode?): ListNode? {
+
+        var oddNode = head;
+        var evenNode = head?.next
+        var evenHead = head?.next
+
+//  example: 1 - 2 - 3 - 4 - 5
+        while(evenNode != null && evenNode.next != null){
+//  1 - 3            
+            oddNode?.next = evenNode?.next
+//  oddNode moves to 3            
+            oddNode = oddNode?.next
+//  2 - 4            
+            evenNode.next = oddNode?.next
+//  evenNode moves to 4            
+            evenNode = evenNode?.next
+        }
+
+//  evenHead is still 2
+        oddNode?.next = evenHead
+
+        return head
+    }
+}
+
+
+Reorder List - You are given the head of a singly linked-list. The list can be represented as:
+
+L0 → L1 → … → Ln - 1 → Ln
+Reorder the list to be on the following form:
+
+L0 → Ln → L1 → Ln - 1 → L2 → Ln - 2 → …
+You may not modify the values in the list's nodes. Only nodes themselves may be changed.
+
+/**
+ * Example:
+ * var li = ListNode(5)
+ * var v = li.`val`
+ * Definition for singly-linked list.
+ * class ListNode(var `val`: Int) {
+ *     var next: ListNode? = null
+ * }
+ */
+class Solution {
+    fun reorderList(head: ListNode?): Unit {
+//  find the middle of the list
+//  reverse the second list
+//  merge both the lists by alternating nodes from both
+
+        val middleNode = findMiddleNode(head)
+        val reversedListNodeHead = reverseList(middleNode!!.next)
+        middleNode.next = null
+        mergeLists(head, reversedListNodeHead)
+    }
+
+    fun findMiddleNode(node: ListNode?): ListNode?{
+        var slowNode = node
+        var doubleNode = node
+
+        while(doubleNode != null && doubleNode.next != null){
+            slowNode = slowNode!!.next
+            doubleNode = doubleNode.next.next
+        }
+
+        return slowNode
+    }
+
+    fun reverseList(node: ListNode?): ListNode?{
+        var prev: ListNode? = null
+        var curr = node
+
+        while(curr != null){
+//  store the next node            
+            val next = curr.next
+//  make prev the next node of curr            
+            curr.next = prev
+//  move prev and curr both to right
+            prev = curr
+            curr = next
+        } 
+
+//  prev is the head of the new list
+        return prev
+    }
+
+    fun mergeLists(firstListHead: ListNode?, secondListHead: ListNode?){
+
+        var firstListNode = firstListHead
+        var secondListNode = secondListHead
+
+        while(firstListNode != null && secondListNode != null){
+//  store first list' next            
+            val firstNext = firstListNode!!.next
+//  assign second list node as next to first list node            
+            firstListNode.next = secondListNode
+//  move first list node to first list node's next            
+            firstListNode = firstNext
+
+            val secondNext = secondListNode!!.next
+            secondListNode.next = firstListNode
+            secondListNode = secondNext
+        }
+    }
+}
+
+
+
+Flatten a Multilevel Doubly Linked List - Given the head of the first level of the list, flatten the list so that all the nodes appear in a single-level, doubly linked list. Let curr be a node with a child list. The nodes in the child list should appear after curr and before curr.next in the flattened list.
+
+Return the head of the flattened list. The nodes in the list must have all of their child pointers set to null.
+
+/**
+ * Definition for a Node.
+ * class Node(var `val`: Int) {
+ *     var prev: Node? = null
+ *     var next: Node? = null
+ *     var child: Node? = null
+ * }
+ */
+
+class Solution {
+    fun flatten(root: Node?): Node? {
+        if(root == null){
+            return root
+        }
+
+//  place before the root
+        val pseudoRoot = Node(0)
+        pseudoRoot.next = root
+
+        flattenDFS(pseudoRoot, root)
+
+//  cleanup the root
+        pseudoRoot.next?.prev = null
+        return pseudoRoot.next
+    }
+
+    fun flattenDFS(prev: Node, currNode: Node?): Node{
+        if(currNode == null){
+//  tail of the list being traversed so far            
+            return prev
+        }
+
+        currNode.prev = prev
+        prev.next = currNode
+
+        val tempNext = currNode.next
+
+        val tail = flattenDFS(currNode, currNode.child)
+        currNode.child = null
+
+//  join the tail to tempNext
+        return flattenDFS(tail, tempNext)
+    }
+}
+
+
+
+Linked List Cycle - Given the head of a linked list, return the node where the cycle begins. If there is no cycle, return null.
+
+/**
+ * Example:
+ * var li = ListNode(5)
+ * var v = li.`val`
+ * Definition for singly-linked list.
+ * class ListNode(var `val`: Int) {
+ *     var next: ListNode? = null
+ * }
+ */
+
+class Solution {
+    fun detectCycle(head: ListNode?): ListNode? {
+//  we will take a slow pointer and a fast pointer moving with double speed
+//  metNode is where these two pointers meet
+//  we will start two pointers; one from head another from meetPoint and where these two meet is the start of cycle
+
+        if(head == null){
+            return null
+        }
+
+        var slowNode = head
+        var fastNode = head
+
+        while(fastNode?.next != null){
+            slowNode = slowNode?.next
+            fastNode = fastNode?.next?.next
+
+            if(slowNode == fastNode){
+                break
+            }
+        }
+
+        if(fastNode?.next == null){
+//  there is no cycle            
+            return null
+        }
+
+        slowNode = head
+
+        while(slowNode != fastNode){
+            slowNode = slowNode?.next
+            fastNode = fastNode?.next
+        }
+
+        return slowNode
+    }
+}
+
+
+
+Palindrome Linked List - Given the head of a singly linked list, return true if it is a 
+palindrome or false otherwise.
+
+/**
+ * Example:
+ * var li = ListNode(5)
+ * var v = li.`val`
+ * Definition for singly-linked list.
+ * class ListNode(var `val`: Int) {
+ *     var next: ListNode? = null
+ * }
+ */
+class Solution {
+    var frontPtr: ListNode? = null
+    fun isPalindrome(head: ListNode?): Boolean {
+//  go to the end and start comparing        
+        frontPtr = head
+        return recurse(head)
+    }
+
+    fun recurse(node: ListNode?): Boolean{
+        if(node != null){
+            if(!recurse(node.next)){
+                return false
+            }
+            if(node!!.`val` != frontPtr!!.`val`){
+                return false
+            }
+            frontPtr = frontPtr!!.next
+        }
+        return true
+    }
+}
+
+
+
+Merge k Sorted Lists - You are given an array of k linked-lists lists, each linked-list is sorted in ascending order.
+
+Merge all the linked-lists into one sorted linked-list and return it.
+
+/**
+ * Definition for singly-linked list.
+ * function ListNode(val, next) {
+ *     this.val = (val===undefined ? 0 : val)
+ *     this.next = (next===undefined ? null : next)
+ * }
+ */
+/**
+ * @param {ListNode[]} lists
+ * @return {ListNode}
+ */
+const mergeKLists = (lists) => {
+
+    //  we will solve this using min heap
+    const minHeap = new MinHeap()
+
+    //  push the heads of each list in the heap
+    for (const head of lists) {
+        if (head) {
+            minHeap.push(head)
+        }
+    }
+
+    const dummy = new ListNode()
+    let currNode = dummy
+
+    while (!minHeap.isEmpty()) {
+        //  pop the node from minHeap with smallest value
+        const node = minHeap.pop()
+
+        currNode.next = node
+        currNode = currNode.next
+
+        //  move to the next node of this list
+        if (node.next) {
+            minHeap.push(node.next)
+        }
+    }
+
+    // return the head of final sorted list
+    return dummy.next
+};
+
+class MinHeap {
+    constructor() {
+        this.heap = []
+    }
+
+    push(node) {
+        this.heap.push(node)
+        this.heapifyUp()
+    }
+
+    pop() {
+        if (this.isEmpty()) {
+            return null
+        }
+
+        const root = this.heap[0]
+        const lastNode = this.heap.pop()
+
+        if (this.heap.length > 0) {
+            this.heap[0] = lastNode
+            this.heapifyDown()
+        }
+
+        return root
+    }
+
+    isEmpty() {
+        return this.heap.length === 0
+    }
+
+    heapifyUp() {
+        let index = this.heap.length - 1
+
+        while (index > 0) {
+            const parentIndex = Math.floor((index - 1) / 2)
+            if (this.heap[index].val < this.heap[parentIndex].val) {
+                this.swap(index, parentIndex)
+                index = parentIndex
+            } else {
+                break
+            }
+        }
+    }
+
+    heapifyDown() {
+        let index = 0;
+        const length = this.heap.length;
+
+        while (true) {
+            const leftChildIndex = 2 * index + 1;
+            const rightChildIndex = 2 * index + 2;
+            let smallestChildIndex = index;
+
+            if (leftChildIndex < length && this.heap[leftChildIndex].val < this.heap[smallestChildIndex].val) {
+                smallestChildIndex = leftChildIndex;
+            }
+
+            if (rightChildIndex < length && this.heap[rightChildIndex].val < this.heap[smallestChildIndex].val) {
+                smallestChildIndex = rightChildIndex;
+            }
+
+            if (smallestChildIndex !== index) {
+                this.swap(index, smallestChildIndex);
+                index = smallestChildIndex;
+            } else {
+                break;
+            }
+        }
+    }
+
+    swap(i, j) {
+        const temp = this.heap[i];
+        this.heap[i] = this.heap[j];
+        this.heap[j] = temp;
+    }
+}
+
+
+
+Insert greatest common divisors - Given the head of a linked list head, in which each node contains an integer value.
+
+Between every pair of adjacent nodes, insert a new node with a value equal to the greatest common divisor of them.
+
+/**
+ * Definition for singly-linked list.
+ * function ListNode(val, next) {
+ *     this.val = (val===undefined ? 0 : val)
+ *     this.next = (next===undefined ? null : next)
+ * }
+ */
+/**
+ * @param {ListNode} head
+ * @return {ListNode}
+ */
+const insertGreatestCommonDivisors = (head) => {
+    let currNode = head
+
+    while (currNode && currNode.next) {
+        const gcd = findGCD(currNode.val, currNode.next.val)
+
+        const gcdNode = new ListNode(gcd)
+        gcdNode.next = currNode.next
+        currNode.next = gcdNode
+
+        currNode = gcdNode.next
+    }
+
+    return head
+};
+
+const findGCD = (a, b) => {
+    while (b !== 0) {
+        const temp = b;
+        b = a % b;
+        a = temp;
+    }
+    return a;
+}
+
+
+
+Nested List Weight Sum - Given a nested list of integers, return the sum of all integers in the list weighted by their depth.
+
+Each element is either an integer, or a list -- whose elements may also be integers or other lists.
+
+const depthSum = (nestedList) => {
+    const dfs = (nestedList, depth) => {
+        let totalSum = 0;
+        
+        for (let element of nestedList) {
+	 //  check for nesting
+            if (Array.isArray(element)) {
+	//  get the sum of this list
+                totalSum += dfs(element, depth + 1);
+            } else {
+	 //  add weighted sum
+                totalSum += element * depth;
+            }
+        }
+        
+        return totalSum;
+    }
+
+    return dfs(nestedList, 1);
+}
+
+
+
+Max twin sum of a linked list - Given the head of a linked list with even length, return the maximum twin sum of the linked list.
+
+/**
+ * Definition for singly-linked list.
+ * function ListNode(val, next) {
+ *     this.val = (val===undefined ? 0 : val)
+ *     this.next = (next===undefined ? null : next)
+ * }
+ */
+/**
+ * @param {ListNode} head
+ * @return {number}
+ */
+const pairSum = (head) => {
+    let maxTwinSum = 0
+    let leftPointer = head
+    const countSum = (node) => {
+        if (!node || node.next === leftPointer) {
+            return
+        }
+        countSum(node.next)
+        const currTwinSum = leftPointer.val + node.val
+        maxTwinSum = Math.max(currTwinSum, maxTwinSum)
+        leftPointer = leftPointer.next
+    }
+    countSum(head)
+    return maxTwinSum
+};
+
+
+
+Delete node in a linked list - Head is not given
+
+/**
+ * Definition for singly-linked list.
+ * function ListNode(val) {
+ *     this.val = val;
+ *     this.next = null;
+ * }
+ */
+/**
+ * @param {ListNode} node
+ * @return {void} Do not return anything, modify node in-place instead.
+ */
+const deleteNode = (node) => {
+    if (node) {
+        node.val = node.next.val
+        node.next = node.next.next
+    }
+};
+
+
+
+Spiral matrix - You are given two integers m and n, which represent the dimensions of a matrix.
+
+You are also given the head of a linked list of integers.
+
+Generate an m x n matrix that contains the integers in the linked list presented in spiral order (clockwise), starting from the top-left of the matrix. If there are remaining empty spaces, fill them with -1.
+
+Return the generated matrix.
+
+/**
+ * Definition for singly-linked list.
+ * function ListNode(val, next) {
+ *     this.val = (val===undefined ? 0 : val)
+ *     this.next = (next===undefined ? null : next)
+ * }
+ */
+/**
+ * @param {number} m
+ * @param {number} n
+ * @param {ListNode} head
+ * @return {number[][]}
+ */
+const spiralMatrix = (m, n, head) => {
+    let currRow = 0
+    let currCol = 0
+
+    let top = 1, right = n - 1, bottom = m - 1, left = 0
+
+    let direction = 'r'
+
+    const mat = new Array(m).fill().map(() => new Array(n).fill(-1))
+
+    while (head) {
+        mat[currRow][currCol] = head.val
+
+        if (currCol === right && direction === 'r') {
+            right--
+            direction = 'd'
+        }
+        if (currRow === bottom && direction === 'd') {
+            bottom--
+            direction = 'l'
+        }
+        if (currCol === left && direction === 'l') {
+            left++
+            direction = 'u'
+        }
+        if (currRow === top && direction === 'u') {
+            top++
+            direction = 'r'
+        }
+
+        if (direction === 'r') currCol++
+        if (direction === 'd') currRow++
+        if (direction === 'l') currCol--
+        if (direction === 'u') currRow--
+
+        head = head.next
+    }
+
+    return mat
+};
+
+
+
+Merge Nodes in Between Zeros - You are given the head of a linked list, which contains a series of integers separated by 0's. The beginning and end of the linked list will have Node.val == 0.
+
+For every two consecutive 0's, merge all the nodes lying in between them into a single node whose value is the sum of all the merged nodes. The modified list should not contain any 0's.
+
+Return the head of the modified linked list.
+
+/**
+ * Definition for singly-linked list.
+ * function ListNode(val, next) {
+ *     this.val = (val===undefined ? 0 : val)
+ *     this.next = (next===undefined ? null : next)
+ * }
+ */
+/**
+ * @param {ListNode} head
+ * @return {ListNode}
+ */
+const mergeNodes = (head) => {
+
+    //  we will use two pointers approach
+
+    //  use this to keep track of the head
+    let start = head
+
+    //  this node will move
+    let currNode = head
+
+    //  this node is used to skip current nodes
+    let prev = currNode
+
+    while (currNode) {
+        if (currNode.val === 0) {
+            //  skip the 0 node
+            prev.next = currNode.next
+        } else {
+            while (currNode.next.val !== 0) {
+                //  pass the values 
+                currNode.next.val = currNode.next.val + currNode.val
+
+                //  skip the current node
+                prev.next = currNode.next
+                currNode = currNode.next
+            }
+            //  node before the 0 node
+            prev = currNode
+        }
+        currNode = currNode.next
+    }
+
+    //  first node was 0
+    return start.next
+};
+
