@@ -629,15 +629,17 @@ const pairSum = (head) => {
         if (!node || node.next === leftPointer) {
             return
         }
+        //  move the node to end first
         countSum(node.next)
         const currTwinSum = leftPointer.val + node.val
         maxTwinSum = Math.max(currTwinSum, maxTwinSum)
+
+        //  keep moving forward as the node moves backward
         leftPointer = leftPointer.next
     }
     countSum(head)
     return maxTwinSum
 };
-
 
 
 Delete node in a linked list - Head is not given
