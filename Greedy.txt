@@ -1,0 +1,678 @@
+/*
+Jump Game - You are given a 0-indexed array of integers nums of length n. You are initially positioned at nums[0].
+Each element nums[i] represents the maximum length of a forward jump from index i. In other words, if you are at nums[i], you can jump to any nums[i + j] where:
+0 <= j <= nums[i] and
+i + j < n
+Return the minimum number of jumps to reach nums[n - 1]. The test cases are generated such that you can reach nums[n - 1]
+*/
+
+class Solution {
+    public int jump(int[] nums) {
+//         this problem can be solved using greedy approach
+        int numJumps = 0;
+        int currJumpEnd = 0;
+        int farthest = 0;
+        
+//         last index is left because if the last jump reaches there or beyond then that is already calculated
+        for (int i = 0; i < nums.length - 1; i++){
+
+//	how far can we go from current index i
+            farthest = Math.max(farthest, i + nums[i]);
+
+//         when we reach the next jump point it means one jump is needed at min even though it might not be the jump point
+            if(i == currJumpEnd){
+                numJumps++;
+
+//	this means that we will not be jumping from index i but the index which has given us the farthest index 
+                currJumpEnd = farthest;
+            }
+        }
+        
+        return numJumps;
+    }
+}
+
+
+
+// Break a Palindrome
+
+class Solution {
+    fun breakPalindrome(palindrome: String): String {
+
+//      convert the string to char array
+        val palindromeCharArray = palindrome.toCharArray()
+
+        if(palindrome.length <= 1){
+//      not possible to break            
+            return ""
+        }
+
+//      travel till only half the palindrome as the other half is a mirror
+        for(i in 0..palindrome.length/2-1){
+            if(palindromeCharArray[i] != 'a'){
+                palindromeCharArray[i] = 'a'
+                return String(palindromeCharArray)
+            }
+        }        
+
+//      if we found all the 'a' characters in the palindrome
+        palindromeCharArray[palindrome.length - 1] = 'b'
+        return String(palindromeCharArray);
+    }
+}
+
+/*
+Gas Station - There are n gas stations along a circular route, where the amount of gas at the ith station is gas[i].
+You have a car with an unlimited gas tank and it costs cost[i] of gas to travel from the ith station to its next (i + 1)th station. You begin the journey with an empty tank at one of the gas stations.
+Given two integer arrays gas and cost, return the starting gas station's index if you can travel around the circuit once in the clockwise direction, otherwise return -1. If there exists a solution, it is guaranteed to be unique
+*/
+
+class Solution {
+    fun canCompleteCircuit(gas: IntArray, cost: IntArray): Int {
+
+        var startStation = 0
+        var currGasLeft = 0
+        var totalGasLeft = 0
+
+        for(currStation in 0 until gas.size){
+//      deduct the cost to reach the next station
+            currGasLeft += gas[currStation] - cost[currStation]
+
+            totalGasLeft += gas[currStation] - cost[currStation]
+
+            if(currGasLeft < 0){
+//      we can not reach the next station in this sequence; choose the next station as the starting point
+                currGasLeft = 0;
+                startStation = currStation + 1                
+            }
+        }
+
+        if(totalGasLeft < 0){
+//      we can not cover all stations from any starting point
+            return -1;            
+        }else{
+            return startStation
+        }
+    }
+}
+
+/*
+Find Original Array From Doubled Array - An integer array original is transformed into a doubled array changed by appending twice the value of every element in original, and then randomly shuffling the resulting array.
+
+Given an array changed, return original if changed is a doubled array. If changed is not a doubled array, return an empty array. The elements in original may be returned in any order.
+*/
+
+class Solution {
+    fun findOriginalArray(changed: IntArray): IntArray {
+
+        if(changed.size % 2 != 0){
+            return IntArray(0);
+        }
+
+//      sort the array and for each item maintain its count in a map. Iterate through the sorted array and for each item reduce the frequency of value and its double from the map and store this value in the array called original
+        changed.sort()
+        val map = mutableMapOf<Int, Int>()
+
+        var originalArray = IntArray(changed.size / 2)
+
+        for(item in changed){
+            map.put(item, map.getOrDefault(item, 0) as Int + 1)
+        }
+
+        var originalArrayIndex = 0
+
+        for(item in changed){
+            if(map.get(item) as Int > 0){
+                map.put(item, map.get(item) as Int - 1)
+                val twiceNum = item * 2
+                if(map.getOrDefault(twiceNum, 0) as Int > 0){
+                    map.put(twiceNum, map.get(twiceNum) as Int - 1)
+                    originalArray[originalArrayIndex++] = item
+                }else{
+                    return IntArray(0)
+                }
+            }
+        }
+
+        return originalArray
+    }
+}
+
+
+
+
+Jump Game - You are given an integer array nums. You are initially positioned at the array's first index, and each element in the array represents your maximum jump length at that position.
+
+Return true if you can reach the last index, or false otherwise.
+
+class Solution {
+    fun canJump(nums: IntArray): Boolean {
+//  we have to see whether we can reach the end or not from the starting point
+//  start from the last position 
+        var lastPos = nums.size - 1
+
+//  go backwards and change lastPos to the index where we can reach from previous index
+        for(index in nums.size - 2 downTo 0){
+            if(index + nums[index] >= lastPos){
+//  we can reach the lastPos from index
+                lastPos = index                
+            }
+        }    
+
+//  we should be able to reach 0th index
+        return lastPos == 0
+    }
+}
+
+
+
+Minimum Rounds to Complete All Tasks - You are given a 0-indexed integer array tasks, where tasks[i] represents the difficulty level of a task. In each round, you can complete either 2 or 3 tasks of the same difficulty level.
+
+Return the minimum rounds required to complete all the tasks, or -1 if it is not possible to complete all the tasks.
+
+class Solution {
+    fun minimumRounds(tasks: IntArray): Int {
+
+        var minRounds = 0
+
+//  maintain the frequencies of each task effort in a map
+        val difficultyMap = mutableMapOf<Int, Int>()
+
+        for(difficulty in tasks){
+            difficultyMap.put(difficulty, difficultyMap.getOrDefault(difficulty, 0) + 1)
+        }
+
+        for(taskFreq in difficultyMap.values){
+            if(taskFreq == 1){
+//  as per condition we can't complete this task                
+                return -1
+            }
+
+            if(taskFreq % 3 == 0){
+                minRounds += taskFreq / 3
+            }else if(taskFreq % 3 == 1){
+//  if we find 4 tasks of same difficulty then 2 + 2 can be done
+                minRounds += taskFreq / 3 + 1
+            }else{
+//  if we find 5 tasks of same difficulty then 2 + 3 can be done
+                minRounds += taskFreq / 3 + 1
+            }
+        }
+        return minRounds
+    }
+}
+
+
+
+Maximum Ice Cream Bars - At the store, there are n ice cream bars. You are given an array costs of length n, where costs[i] is the price of the ith ice cream bar in coins. The boy initially has coins coins to spend, and he wants to buy as many ice cream bars as possible. 
+
+Note: The boy can buy the ice cream bars in any order.
+
+Return the maximum number of ice cream bars the boy can buy with coins coins.
+
+You must solve the problem by counting sort.
+
+class Solution {
+    fun maxIceCream(costs: IntArray, money: Int): Int {
+//  we have to solve this using counting sort
+
+        val availableIcecreams = costs.size
+        var chosenIcecreams = 0
+
+        var maxCost = costs[0]
+//  max cost of an icecream        
+        for(cost in costs){
+            maxCost = maxOf(cost, maxCost)
+        }
+
+        val costFreq = IntArray(maxCost + 1)
+//  how many ice creams cost the same coins
+//  now we have all the icecreams sorted by their freq
+        for(cost in costs){
+            costFreq[cost]++
+        }
+
+        var moneyLeft = money
+
+        for(cost in 1 until maxCost + 1){
+//  start with low cost ice creams
+
+            if(costFreq[cost] == 0){
+//  we don't have any ice cream for this cost                
+                continue
+            }
+
+            if(moneyLeft < cost){
+//  we don't have enough money to go further                
+                break
+            }
+
+//  how many icecreams costing cost we can pick?
+//  minOf because maybe we can pick 20 but only 3 icecreams costing cost are there and vice versa
+            val numIcecreams = minOf(costFreq[cost], moneyLeft / cost)
+
+//  we spent money            
+            moneyLeft -= cost * numIcecreams
+            
+            chosenIcecreams += numIcecreams
+        }
+
+        return chosenIcecreams
+    }
+}
+
+
+
+Two City Scheduling - A company is planning to interview 2n people. Given the array costs where costs[i] = [aCosti, bCosti], the cost of flying the ith person to city a is aCosti, and the cost of flying the ith person to city b is bCosti.
+
+Return the minimum cost to fly every person to a city such that exactly n people arrive in each city.
+
+class Solution {
+    fun twoCitySchedCost(costs: Array<IntArray>): Int {
+//  ith person can go to city a for costs[i][0] and city b for costs[i][1]
+
+        costs.sortWith(compareBy {it[0] - it[1]})
+//  sort by the gain if sent to a not b        
+
+        var totalCost = 0
+        val n = costs.size / 2
+
+        for(counter in 0 until n){
+//  send the first half to a and second half to b            
+            totalCost += costs[counter][0] + costs[counter + n][1]
+        }
+
+        return totalCost
+    }
+}
+
+
+
+Increasing Triplet Subsequence - Given an integer array nums, return true if there exists a triple of indices (i, j, k) such that i < j < k and nums[i] < nums[j] < nums[k]. If no such indices exists, return false.
+
+class Solution {
+    fun increasingTriplet(nums: IntArray): Boolean {
+        var firstNum = Int.MAX_VALUE
+        var secNum = Int.MAX_VALUE
+
+        for(num in nums){
+            if(num <= firstNum){
+                firstNum = num
+            }else if(num <= secNum){
+                secNum = num
+            }else{
+                return true
+            }
+        }
+
+        return false
+    }
+}
+
+
+
+Minimum Number of Arrows to Burst Balloons - There are some spherical balloons taped onto a flat wall that represents the XY-plane. The balloons are represented as a 2D integer array points where points[i] = [xstart, xend] denotes a balloon whose horizontal diameter stretches between xstart and xend. You do not know the exact y-coordinates of the balloons.
+
+Arrows can be shot up directly vertically (in the positive y-direction) from different points along the x-axis. A balloon with xstart and xend is burst by an arrow shot at x if xstart <= x <= xend. There is no limit to the number of arrows that can be shot. A shot arrow keeps traveling up infinitely, bursting any balloons in its path.
+
+Given the array points, return the minimum number of arrows that must be shot to burst all balloons.
+
+class Solution {
+    fun findMinArrowShots(points: Array<IntArray>): Int {
+        if(points.size == 0){
+            return 0
+        }
+
+//  sort all the points by their ending x coord
+        val sortedPoints = points.sortedBy{ it[1] }
+
+//  min 1 arrow is needed
+        var numArrows = 1
+
+        var currEnd = sortedPoints[0][1]
+
+        for(point in sortedPoints){
+            val xStart = point[0]
+            val xEnd = point[1]
+
+            if(currEnd < xStart){
+//  we found a balloon whose start coord is ahead of last balloon's end coord and hence a new arrow is needed                
+                numArrows++
+                currEnd = xEnd
+            }
+        }
+
+        return numArrows
+    }
+}
+
+
+
+Best Time to Buy and Sell Stock - You are given an integer array prices where prices[i] is the price of a given stock on the ith day.
+
+On each day, you may decide to buy and/or sell the stock. You can only hold at most one share of the stock at any time. However, you can buy it then immediately sell it on the same day.
+
+Find and return the maximum profit you can achieve.
+
+class Solution {
+    fun maxProfit(prices: IntArray): Int {
+        var maxProfit = 0
+
+        for(counter in 1 until prices.size){
+            if(prices[counter] > prices[counter - 1]){
+//  because we can hold max one stock, buy at low and sell at high                
+                maxProfit += (prices[counter] - prices[counter - 1])
+            }
+        }
+
+        return maxProfit
+    }
+}
+
+
+
+Largest Number - Given a list of non-negative integers nums, arrange them such that they form the largest number and return it.
+
+Since the result may be very large, so you need to return a string instead of an integer
+
+function largestNumber(nums: number[]): string {
+
+//  we will convert all the digits to string and then sort the string array
+
+    var asStringArr: string[] = []
+    for(var index = 0; index < nums.length; index++){
+        asStringArr[index] = nums[index].toString()
+    }
+
+    asStringArr.sort((a, b) => {
+        var str1 = a + b
+        var str2 = b + a
+
+        return str2.localeCompare(str1)
+    })
+
+    if(asStringArr[0] == '0'){
+        return "0"
+    }
+
+    var largestStr = ""
+    for(var str of asStringArr){
+//  we already have the sorted order  
+        largestStr += str
+    }
+
+    return largestStr
+};
+
+
+
+Minimum Increment to Make Array Unique - You are given an integer array nums. In one move, you can pick an index i where 0 <= i < nums.length and increment nums[i] by 1.
+
+Return the minimum number of moves to make every value in nums unique.
+
+/**
+ * @param {number[]} nums
+ * @return {number}
+ */
+var minIncrementForUnique = function(nums) {
+//  we will use greedy approach
+
+//  sort the array in increasing order
+    nums.sort((a, b) => a - b)
+
+    let count = 0
+
+    for(let i = 0; i < nums.length; i++){
+        if(nums[i] <= nums[i - 1]){
+//  this less check might come because of in place changes to the items
+
+//  increment to make it unique
+            const diff = nums[i - 1] - nums[i] + 1
+            nums[i] += diff
+            count += diff
+        }
+    }
+
+    return count
+};
+
+
+
+Minimum Suffix Flips - You are given a 0-indexed binary string target of length n. You have another binary string s of length n that is initially set to all zeros. You want to make s equal to target.
+In one operation, you can pick an index i where 0 <= i < n and flip all bits in the inclusive range [i, n - 1]. Flip means changing '0' to '1' and '1' to '0'.
+Return the minimum number of operations needed to make s equal to target.
+
+/**
+ * @param {string} target
+ * @return {number}
+ */
+var minFlips = function(target) {
+    
+//  we will solve this with greedy
+
+    let flipCount = 0
+    let currChar = '0'
+
+    for(let i = 0; i < target.length; i++){
+        if(target[i] != currChar){
+//  this we are doing because we have a range to flip            
+            currChar = target[i]
+            flipCount++
+        }
+    }
+
+    return flipCount
+};
+
+
+
+Minimize product sum of two arrays 
+
+const minimizeProductSum = (arr1, arr2) => {
+  // Sort one array in ascending order
+  arr1.sort((a, b) => a - b);
+
+  // Sort the other array in descending order
+  arr2.sort((a, b) => b - a);
+
+  // Calculate the product sum
+  let productSum = 0;
+  for (let i = 0; i < arr1.length; i++) {
+    productSum += arr1[i] * arr2[i];
+  }
+
+  return productSum;
+}
+
+
+
+Dot product of two sparse vectors - Given two sparse vectors, compute their dot product.
+
+const dotProduct = (sparseVector1, sparseVector2) => {
+    let result = 0;
+
+    // Iterate over keys in the first sparse vector
+    for (let key in sparseVector1) {
+        // Check if the same key exists in the second sparse vector
+        if (sparseVector2.hasOwnProperty(key)) {
+            // Multiply corresponding values and add to the result
+            result += sparseVector1[key] * sparseVector2[key];
+        }
+    }
+
+    return result;
+}
+
+Note: If sparse vectors are given in array format then convert into a map (index, value) ignoring the indices with zero values
+
+
+
+Partitioning Into Minimum Number Of Deci-Binary Numbers - Given a string n that represents a positive decimal integer, return the minimum number of positive deci-binary numbers needed so that they sum up to n.
+
+/**
+ * @param {string} n
+ * @return {number}
+ */
+const minPartitions = (n) => {
+
+    //  Insight is that we need to find the max digit in the given string that will give us number of deci-binary numbers needed
+
+    let maxDigit = 0
+    for (const char of n) {
+        const currDigit = parseInt(char)
+        if (maxDigit < currDigit) {
+            maxDigit = currDigit
+        }
+    }
+
+    return maxDigit
+};
+
+
+
+Maximum Number of Coins You Can Get - There are 3n piles of coins of varying size, you and your friends will take piles of coins as follows:
+In each step, you will choose any 3 piles of coins (not necessarily consecutive).
+Of your choice, Alice will pick the pile with the maximum number of coins.
+You will pick the next pile with the maximum number of coins.
+Your friend Bob will pick the last pile.
+Repeat until there are no more piles of coins.
+Given an array of integers piles where piles[i] is the number of coins in the ith pile.
+
+Return the maximum number of coins that you can have.
+
+/**
+ * @param {number[]} piles
+ * @return {number}
+ */
+const maxCoins = (piles) => {
+    let ans = 0;
+
+    //  sort the piles in decreasing order
+    piles.sort((a, b) => b - a);
+
+    let numRounds = piles.length / 3;
+
+    //  in each round we can pick the 2nd largest pile
+    //  we are giving numRounds piles from bottom to the 2rd person 
+    for (let i = 1; i < piles.length - numRounds; i += 2) {
+        ans += piles[i];
+    }
+    return ans;
+};
+
+
+
+Minimize max pair sum in array - Given an array nums of even length n, pair up the elements of nums into n / 2 pairs such that:
+Each element of nums is in exactly one pair, and
+The maximum pair sum is minimized.
+Return the minimized maximum pair sum after optimally pairing up the elements.
+
+const minPairSum = (nums) => {
+    //  use greedy approach
+
+    nums = nums.sort((a, b) => a - b)
+    let maxSum = nums[0]
+
+    for (let left = 0; left < nums.length / 2; left++) {
+        const right = nums.length - left - 1
+        maxSum = Math.max(maxSum, nums[left] + nums[right])
+    }
+
+    return maxSum
+};
+
+
+
+Partition labels - You are given a string s. We want to partition the string into as many parts as possible so that each letter appears in at most one part.
+
+Note that the partition is done so that after concatenating all the parts in order, the resultant string should be s.
+
+Return a list of integers representing the size of these parts.
+
+/**
+ * @param {string} s
+ * @return {number[]}
+ */
+var partitionLabels = function (s) {
+    //  maintain the lastIndex of a char
+    const lastIndex = {}
+
+    for (let i = 0; i < s.length; i++) {
+        lastIndex[s[i]] = i
+    }
+
+    let currLast = 0
+    const res = []
+
+    //  how many characters we got in last batch
+    let lastBatchSize = 0
+
+    for (let i = 0; i < s.length; i++) {
+        currLast = Math.max(lastIndex[s[i]], currLast)
+
+        //  reached the end of curr repeat char
+        if (i === currLast) {
+            //  curr batch size
+            res.push(i + 1 - lastBatchSize)
+            lastBatchSize = i + 1
+        }
+    }
+
+    return res
+};
+
+
+
+Optimal partition of string - Given a string s, partition the string into one or more substrings such that the characters in each substring are unique. That is, no letter appears in a single substring more than once.
+
+Return the minimum number of substrings in such a partition.
+
+/**
+ * @param {string} s
+ * @return {number}
+ */
+const partitionString = (s) => {
+    let count = 1
+    let currChars = []
+    for (const char of s) {
+        if (currChars.includes(char)) {
+            count++
+            currChars = [char]
+        } else {
+            currChars.push(char)
+        }
+    }
+
+    return count
+};
+
+
+
+Find valid matrix give row sum and col sum - You are given two arrays rowSum and colSum of non-negative integers where rowSum[i] is the sum of the elements in the ith row and colSum[j] is the sum of the elements of the jth column of a 2D matrix. In other words, you do not know the elements of the matrix, but you do know the sums of each row and column.
+
+Find any matrix of non-negative integers of size rowSum.length x colSum.length that satisfies the rowSum and colSum requirements.
+
+/**
+ * @param {number[]} rowSum
+ * @param {number[]} colSum
+ * @return {number[][]}
+ */
+const restoreMatrix = (rowSum, colSum) => {
+    //  use greedy
+
+    const m = rowSum.length;
+    const n = colSum.length;
+    const matrix = Array(m).fill(0).map(_ => Array(n).fill(0));
+
+    for (let row = 0; row < m; row++) {
+        for (let col = 0; col < n; col++) {
+            const min = Math.min(rowSum[row], colSum[col]);
+
+            matrix[row][col] = min;
+            rowSum[row] -= min;
+            colSum[col] -= min;
+        }
+    }
+    return matrix;
+};
+
