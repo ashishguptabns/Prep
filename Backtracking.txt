@@ -1,0 +1,281 @@
+Generate Parentheses - Given n pairs of parentheses, write a function to generate all combinations of well-formed parentheses.
+
+fun generateParenthesis(n: Int): List<String> {
+    val result = mutableListOf<String>()
+    backtrack(result, "", 0, 0, n)
+    return result
+}
+
+fun backtrack(result: MutableList<String>, s: String, open: Int, close: Int, max: Int) {
+// 	all parentheses used
+    if (s.length == max * 2) { 
+        result.add(s)
+        return
+    }
+
+// 	add opening parenthesis if possible
+    if (open < max) { 
+        backtrack(result, "$s(", open + 1, close, max)
+    }
+
+// 	add closing parenthesis if possible
+    if (close < open) { 
+        backtrack(result, "$s)", open, close + 1, max)
+    }
+}
+
+
+
+
+Letter Combinations of a Phone Number - Given a string containing digits from 2-9 inclusive, return all possible letter combinations that the number could represent. Return the answer in any order.
+
+/**
+ * @param {string} digits
+ * @return {string[]}
+ */
+const letterCombinations = (digits) => {
+    const letterMap = {
+        '2': 'abc',
+        '3': 'def',
+        '4': 'ghi',
+        '5': 'jkl',
+        '6': 'mno',
+        '7': 'pqrs',
+        '8': 'tuv',
+        '9': 'wxyz'
+    }
+    const list = []
+
+    if (digits.length > 0) {
+        findCombinations(0, '', digits, list, letterMap)
+    }
+
+    return list
+};
+
+const findCombinations = (currCharIndex, currString, digits, list, letterMap) => {
+    if (currCharIndex == digits.length) {
+        list.push(currString)
+    } else {
+        const currDigit = digits[currCharIndex]
+        const currChars = letterMap[currDigit]
+        for (const c of currChars) {
+            findCombinations(currCharIndex + 1, currString + c, digits, list, letterMap)
+        }
+    }
+}
+
+
+
+All Paths From Source to Target - Given a directed acyclic graph (DAG) of n nodes labeled from 0 to n - 1, find all possible paths from node 0 to node n - 1 and return them in any order.
+
+The graph is given as follows: graph[i] is a list of all nodes you can visit from node i (i.e., there is a directed edge from node i to node graph[i][j]).
+
+const allPathsSourceTarget = (graph) => {
+    //  we will solve using backtracking
+    //  srcIndex = 0, targetIndex = graphsize - 1
+
+    const src = 0
+    const target = graph.length - 1
+
+    const allPaths = []
+
+    const dfs = (startNode, path, visitedMap) => {
+        path.push(startNode)
+        if (startNode === target) {
+            //  found the target
+            allPaths.push([...path])
+            return
+        }
+        //  explore all the adjacent nodes
+        for (let neighbour of graph[startNode]) {
+            if (!visitedMap[neighbour]) {
+                visitedMap[neighbour] = true
+                //  call dfs with neighbour as a new start node
+                dfs(neighbour, path, visitedMap)
+                //  unmark for the other path
+                visitedMap[neighbour] = false
+                //  remove this neighbour also
+                path.pop()
+            }
+        }
+    }
+
+    dfs(src, [], {})
+    return allPaths
+};
+
+
+
+Non-decreasing Subsequences - Given an integer array nums, return all the different possible non-decreasing subsequences of the given array with at least two elements. You may return the answer in any order.
+
+class Solution {
+    fun findSubsequences(nums: IntArray): List<List<Int>> {
+//  subsequence doesn't have to be continuous
+
+//  we will use set because we will find duplicate list while backtracking
+        val resultSet = mutableSetOf<List<Int>>()
+
+        val currIndex = 0
+        var currList = mutableListOf<Int>()
+
+        backTrack(currIndex, currList, nums, resultSet)
+
+        return resultSet.toList()
+    }
+
+    fun backTrack(currIndex: Int, currList: MutableList<Int>, 
+                    nums: IntArray, resultSet: MutableSet<List<Int>>){
+
+        if(currList.size >= 2){
+            resultSet.add(currList.toList())
+        }
+        if(currIndex >= nums.size){
+            return
+        }
+
+        if(currList.size == 0 || nums[currIndex] >= currList[currList.size - 1]){
+            currList.add(nums[currIndex])
+            backTrack(currIndex + 1, currList, nums, resultSet)
+            currList.removeAt(currList.size - 1)
+        }            
+
+//  this step we are adding because the subseq doesn't have to be continuous and we already removed the added item before creating the discontinuity
+        backTrack(currIndex + 1, currList, nums, resultSet)
+
+    }
+}
+
+
+
+Permutations - Given an array nums of distinct integers, return all the possible permutations. You can return the answer in any order.
+
+/**
+ * @param {number[]} nums
+ * @return {number[][]}
+ */
+const permute = (nums) => {
+    const res = []
+    backTrack([], nums, res)
+    return res
+};
+
+const backTrack = (currArr, nums, res) => {
+    if (nums.length === 0) {
+        res.push(currArr)
+        return
+    }
+    for (let i = 0; i < nums.length; i++) {
+        backTrack([...currArr, nums[i]], [...nums.slice(0, i), ...nums.slice(i + 1)], res)
+    }
+}
+
+
+
+Combination Sum - Given a collection of candidate numbers (candidates) and a target number (target), find all unique combinations in candidates where the candidate numbers sum to target.
+
+Each number in candidates may only be used once in the combination.
+
+Note: The solution set must not contain duplicate combinations.
+
+class Solution {
+    fun combinationSum2(candidates: IntArray, target: Int): List<List<Int>> {
+        val resultsList = mutableListOf<List<Int>>()
+        val combList = mutableListOf<Int>()
+
+        candidates.sort()
+//  now we have candidates sorted by their numbers
+
+        val currIndex = 0
+        backtrack(candidates, combList, resultsList, target, currIndex)
+
+        return resultsList.toList()
+    }
+
+    fun backtrack(candidates: IntArray, combList: MutableList<Int>, 
+            resultsList: MutableList<List<Int>>, target: Int, currIndex: Int){
+        if(target == 0){
+            resultsList.add(combList.toList())
+            return
+        }
+
+        for(counter in currIndex until candidates.size){
+            if(counter > currIndex && candidates[counter] == candidates[counter - 1]){
+//  avoid duplicates                
+                continue
+            }
+
+            val pick = candidates[counter]
+            if(target - pick < 0){
+                break
+            }
+            combList.add(pick)
+            backtrack(candidates, combList, resultsList, target - pick, counter + 1)
+            combList.removeAt(combList.size - 1)
+        }
+    }
+}
+
+
+
+Power set - Given an integer array nums of unique elements, return all possible 
+subsets (the power set).
+
+The solution set must not contain duplicate subsets. Return the solution in any order
+
+/**
+ * @param {number[]} nums
+ * @return {number[][]}
+ */
+const subsets = (nums) => {
+//  this will contain all the subsets    
+    const result = []
+
+    const backTrack = (startIndex, currSubset) => {
+//  we need all possible subsets
+        result.push([...currSubset])
+
+//  find all possible subsets going forward
+        for(let i = startIndex; i < nums.length; i++){
+
+//  all possible subsets with the current element
+            currSubset.push(nums[i])
+            backTrack(i + 1, currSubset)
+
+//  remove the current element for the next iteration of for loop            
+            currSubset.pop()
+        }
+    }
+
+    backTrack(0, [])
+
+    return result
+};
+
+
+
+Letter tile possibilities - You have n  tiles, where each tile has one letter tiles[i] printed on it.
+
+Return the number of possible non-empty sequences of letters you can make using the letters printed on those tiles.
+
+/**
+ * @param {string} tiles
+ * @return {number}
+ */
+const numTilePossibilities = (tiles) => {
+    const set = new Set()
+
+    const backTrack = (currSeq, leftTiles) => {
+        if (currSeq.length > 0) {
+            set.add(currSeq)
+        }
+        for (let i = 0; i < leftTiles.length; i++) {
+            const newSeq = currSeq + leftTiles[i]
+            const newLeftTiles = leftTiles.slice(0, i) + leftTiles.slice(i + 1)
+            backTrack(newSeq, newLeftTiles)
+        }
+    }
+    backTrack('', tiles)
+    return set.size
+};
+
