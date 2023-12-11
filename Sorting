@@ -1,0 +1,62 @@
+Sort the matrix diagonally - Given an m x n matrix mat of integers, sort each matrix diagonal in ascending order and return the resulting matrix.
+
+const diagonalSort = (mat) => {
+    const numRows = mat.length
+    const numCols = mat[0].length
+
+    for (let col = 0; col < numCols; col++) {
+        //  sort the upper half
+        sort(mat, 0, col)
+    }
+
+    for (let row = 1; row < numRows; row++) {
+        //  sort the lower half
+        sort(mat, row, 0)
+    }
+
+    return mat
+
+};
+
+const sort = (mat, row, col) => {
+    const diagonal = []
+
+    while (row < mat.length && col < mat[0].length) {
+        diagonal.push(mat[row++][col++])
+    }
+
+    diagonal.sort((a, b) => a - b)
+
+    while (row > 0 && col > 0) {
+        //  put the elements back
+        mat[--row][--col] = diagonal.pop()
+    }
+}
+
+
+
+Wiggle sort - Given an integer array nums, reorder it such that nums[0] < nums[1] > nums[2] < nums[3]....
+
+/**
+ * @param {number[]} nums
+ * @return {void} Do not return anything, modify nums in-place instead.
+ */
+const wiggleSort = (nums) => {
+    const copy = [...nums]
+    copy.sort((a, b) => a - b)
+
+    let index = copy.length - 1
+
+    for (let i = 1; i < nums.length; i += 2) {
+        //  put big numbers at odd positions
+        nums[i] = copy[index]
+        index--
+    }
+
+    for (let i = 0; i < nums.length; i += 2) {
+        //  put remaining in even positions
+        nums[i] = copy[index]
+        index--
+    }
+};
+
