@@ -1,0 +1,72 @@
+Number of Unique Categories - You are given two inputs:
+
+n: The number of elements (1 <= n <= 10^5).
+categoryHandler: An array of length n where each element represents the category of the corresponding element (1 <= categoryHandler[i] <= n).
+Additionally, you have access to a hidden function called haveSameCategory(a, b) that returns True if elements a and b belong to the same category, and False otherwise.
+
+Write a function that returns the number of unique categories in the array categoryHandler.
+
+Input: n = 6, categoryHandler = [1,1,2,2,3,3]
+Output: 3
+Explanation: There are 3 unique categories in this example. 1, 2, and 3.
+
+const countUniqueCategoriesWithUnionFind = (data) => {
+//  this map associates each category with the index of first occurrence of this category
+  const categoryIndexMap = new Map();
+
+// number of unique categories
+  let count = 0;
+
+  const unionFind = new UnionFind(data.length);
+
+  data.forEach((item, index) => {
+    if (item.category) {
+      if (!categoryIndexMap.has(item.category)) {
+//  found the first occurrence
+        categoryIndexMap.set(item.category, index);
+        count++;
+      } else {
+// perform the union operation between roots of current index and first occurrence index of this category
+        const root1 = unionFind.find(index);
+        const root2 = unionFind.find(categoryIndexMap.get(item.category));
+
+        if (root1 !== root2) {
+          unionFind.union(index, categoryIndexMap.get(item.category));
+        }
+      }
+    }
+  });
+
+  return count;
+}
+
+//  disjoint set union 
+//  to track disjoint sets and perform union and find operations
+class UnionFind {
+  constructor(size) {
+    this.parent = new Array(size);
+    for (let i = 0; i < size; i++) {
+//  each element is its own parent - individual disjoint sets
+      this.parent[i] = i;
+    }
+  }
+
+//  find the root of the set to which x element belongs
+  find(x) {
+    if (this.parent[x] !== x) {
+//  move up the ancestors
+      this.parent[x] = this.find(this.parent[x]);
+    }
+    return this.parent[x];
+  }
+
+//  unites the sets to which x and y belong by making the root of one set the parent of root of other set
+  union(x, y) {
+    const rootX = this.find(x);
+    const rootY = this.find(y);
+    if (rootX !== rootY) {
+      this.parent[rootX] = rootY;
+    }
+  }
+}
+

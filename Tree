@@ -1,0 +1,759 @@
+Lowest Common Ancestor of two nodes in a Binary Tree - Given a binary tree, find the lowest common ancestor (LCA) of two given nodes in the tree.
+
+According to the definition of LCA on Wikipedia: “The lowest common ancestor is defined between two nodes p and q as the lowest node in T that has both p and q as descendants (where we allow a node to be a descendant of itself).”
+
+const lowestCommonAncestor = (root, p, q) => {
+  if (!root || root === p || root === q) {
+    return root;
+  }
+
+//  check if any node is present in left or right subtree
+  const left = lowestCommonAncestor(root.left, p, q);
+  const right = lowestCommonAncestor(root.right, p, q);
+
+  if (left && right) {
+//  we found one node each in left and right subtree hence this is the LCA
+    return root;
+  } else {
+    return left || right;
+  }
+}
+
+
+
+Minimum Time to Collect All Apples in a Tree - Given an undirected tree consisting of n vertices numbered from 0 to n-1, which has some apples in their vertices. You spend 1 second to walk over one edge of the tree. Return the minimum time in seconds you have to spend to collect all apples in the tree, starting at vertex 0 and coming back to this vertex.
+
+The edges of the undirected tree are given in the array edges, where edges[i] = [ai, bi] means that exists an edge connecting the vertices ai and bi. Additionally, there is a boolean array hasApple, where hasApple[i] = true means that vertex i has an apple; otherwise, it does not have any apple.
+
+class Solution {
+    fun minTime(n: Int, edges: Array<IntArray>, hasApple: List<Boolean>): Int {
+        
+//  populate the adjacency list        
+        val adjList = Array<MutableList<Int>>(n){ mutableListOf() }
+        for(edge in edges){
+            adjList[edge[0]].add(edge[1])
+            adjList[edge[1]].add(edge[0])
+        }
+
+        var visitedArr = BooleanArray(n)
+
+        val currNode = 0
+        return dfs(currNode, n, adjList, hasApple, visitedArr)
+    }
+
+    fun dfs(currNode: Int, totalVertices: Int, adjList: Array<MutableList<Int>>, 
+            hasApple: List<Boolean>, visitedArr: BooleanArray): Int{
+        
+        visitedArr[currNode] = true
+        var timeTaken = 0
+
+        for(child in adjList[currNode]){
+//  found a new node                
+            if(!visitedArr[child]){
+//  time taken so far plus that of kids
+                timeTaken += dfs(child, totalVertices, adjList, hasApple, visitedArr)
+            }
+        }
+
+        return  if(currNode == 0){
+//  no time needed to travel to node 0
+                    return timeTaken
+                }
+                else if(hasApple[currNode] || timeTaken > 0){
+//  as per condition
+                    return timeTaken + 2
+                }else{
+                    0
+                }
+    }
+}
+
+
+
+Add One Row to Tree - Given the root of a binary tree and two integers val and depth, add a row of nodes with value val at the given depth depth.
+
+/**
+ * Example:
+ * var ti = TreeNode(5)
+ * var v = ti.`val`
+ * Definition for a binary tree node.
+ * class TreeNode(var `val`: Int) {
+ *     var left: TreeNode? = null
+ *     var right: TreeNode? = null
+ * }
+ */
+class Solution {
+    fun addOneRow(root: TreeNode?, `val`: Int, depth: Int): TreeNode? {
+        if(depth == 1){
+            val nodeToInsert = TreeNode(`val`)
+            nodeToInsert.left = root
+            return nodeToInsert
+        }
+
+        val currDepth = 1
+        insert(`val`, root, currDepth, depth)
+
+        return root
+    }
+
+    fun insert(`val`: Int, node: TreeNode?, currDepth: Int, depth: Int){
+        if(node == null){
+            return
+        }
+
+        if(currDepth == depth - 1){
+// start inserting to left and right            
+            val leftNode = node.left
+            node.left = TreeNode(`val`)
+            node.left.left = leftNode
+            
+            val rightNode = node.right
+            node.right = TreeNode(`val`)
+            node.right.right = rightNode
+        }else{
+            insert(`val`, node.left, currDepth + 1, depth)
+            insert(`val`, node.right, currDepth + 1, depth)
+        }
+    }
+}
+
+
+
+Inorder Successor in BST - Given a node in a binary search tree, return the in-order successor of that node in the BST. If that node has no in-order successor, return null.
+
+/**
+ * Definition for a Node.
+ * class Node(var `val`: Int) {
+ *		var left: TreeNode? = null
+ *		var right: TreeNode? = null
+ *		var parent: Node? = null
+ * }
+ */
+
+class Solution {
+    fun inorderSuccessor(givenNode: Node?): Node? {
+        var node = givenNode
+
+        if(node?.right != null){
+//  successor is lower in the right subtree            
+            node = node?.right
+            while(node?.left != null){
+                node = node?.left
+            }
+
+//  found the last non null node
+            return node
+        }
+
+//  successor is upper in the tree
+//  notice the equal check with right kid
+        while(node?.parent != null && node == node?.parent?.right){
+            node = node?.parent
+        }
+        return node?.parent
+
+    }
+}
+
+
+
+Binary Tree Maximum Path Sum - A path in a binary tree is a sequence of nodes where each pair of adjacent nodes in the sequence has an edge connecting them. A node can only appear in the sequence at most once. Note that the path does not need to pass through the root.
+
+The path sum of a path is the sum of the node's values in the path.
+
+Given the root of a binary tree, return the maximum path sum of any non-empty path.
+
+/**
+ * Example:
+ * var ti = TreeNode(5)
+ * var v = ti.`val`
+ * Definition for a binary tree node.
+ * class TreeNode(var `val`: Int) {
+ *     var left: TreeNode? = null
+ *     var right: TreeNode? = null
+ * }
+ */
+class Solution {
+    var maxSum = Int.MIN_VALUE
+    fun maxPathSum(root: TreeNode?): Int {
+        
+        countGainFromSubTree(root)
+        return maxSum
+    }
+
+    fun countGainFromSubTree(node: TreeNode?): Int{
+        if(node == null){
+            return 0
+        }
+
+//  post order traversal
+//  sum can be negative then ignore
+        val leftMax = maxOf(countGainFromSubTree(node.left), 0)
+        val rightMax = maxOf(countGainFromSubTree(node.right), 0)
+
+//  find max till this subtree; taking both the subtrees
+        maxSum = maxOf(maxSum, leftMax + rightMax + node.`val`)
+
+//  we have to take a path hence right or left subtree not both
+        return node.`val` + maxOf(leftMax, rightMax)
+    }
+}
+
+
+
+Implement Trie (Prefix Tree)
+
+class TrieNode{
+    value: string
+    kids: Map<string, TrieNode>
+    isEndOfWord: boolean
+
+    constructor(value: string){
+        this.value = value
+        this.kids = new Map()
+        this.isEndOfWord = false
+    }
+}
+
+class Trie {
+
+    root: TrieNode
+
+    constructor() {
+//  no alphabet to avoid confusion        
+        this.root = new TrieNode("_")
+    }
+
+    insert(word: string): void {
+        let currNode = this.root
+        for(let i = 0; i < word.length; i++){
+            const char = word[i]
+            if(!currNode.kids.has(char)){
+                currNode.kids.set(char, new TrieNode(char))
+            }
+            currNode = currNode.kids.get(char)
+        }
+        currNode.isEndOfWord = true
+    }
+
+    search(word: string): boolean {
+        let currNode = this.root
+        for(let i = 0; i < word.length; i++){
+            const char = word[i]
+            if(!currNode.kids.has(char)){
+                return false
+            }
+            currNode = currNode.kids.get(char)
+        }
+
+        return currNode.isEndOfWord
+    }
+
+    startsWith(prefix: string): boolean {
+        let currNode = this.root
+        for(let i = 0; i < prefix.length; i++){
+            const char = prefix[i]
+            if(!currNode.kids.has(char)){
+                return false
+            }
+            currNode = currNode.kids.get(char)
+        }
+        return true
+    }
+
+}
+
+/**
+ * Your Trie object will be instantiated and called as such:
+ * var obj = new Trie()
+ * obj.insert(word)
+ * var param_2 = obj.search(word)
+ * var param_3 = obj.startsWith(prefix)
+ */
+
+
+
+Kth Smallest Element in a BST
+
+/**
+ * Definition for a binary tree node.
+ * class TreeNode {
+ *     val: number
+ *     left: TreeNode | null
+ *     right: TreeNode | null
+ *     constructor(val?: number, left?: TreeNode | null, right?: TreeNode | null) {
+ *         this.val = (val===undefined ? 0 : val)
+ *         this.left = (left===undefined ? null : left)
+ *         this.right = (right===undefined ? null : right)
+ *     }
+ * }
+ */
+
+function kthSmallest(root: TreeNode | null, k: number): number {
+//  do an inorder traversal
+    let inorderList = inorder(root, [])
+
+    return inorderList[k - 1]
+};
+
+function inorder(node: TreeNode, list: number[]): number[]{
+    if(node == null){
+        return
+    }
+    inorder(node.left, list)
+    list.push(node.val)
+    inorder(node.right, list)
+    
+    return list
+}
+
+
+
+Binary Tree Level Order Traversal
+
+/**
+ * Definition for a binary tree node.
+ * class TreeNode {
+ *     val: number
+ *     left: TreeNode | null
+ *     right: TreeNode | null
+ *     constructor(val?: number, left?: TreeNode | null, right?: TreeNode | null) {
+ *         this.val = (val===undefined ? 0 : val)
+ *         this.left = (left===undefined ? null : left)
+ *         this.right = (right===undefined ? null : right)
+ *     }
+ * }
+ */
+
+function levelOrder(root: TreeNode | null): number[][] {
+    let levelList: number[][] = []
+    let queue: TreeNode[] = []
+
+    if(root != null){
+        queue.push(root)
+    }
+
+    let currLevel = 0
+//  used to maintain the level    
+    while(queue.length > 0){
+        let levelSize = queue.length
+        for(let i = 0; i < levelSize; i++){
+            const currNode: TreeNode = queue[queue.length - 1]
+            queue.splice(queue.length - 1, 1)
+            if(currNode.left != null){
+                queue.splice(0, 0, currNode.left)
+            }
+            if(currNode.right != null){
+                queue.splice(0, 0, currNode.right)
+            }
+
+            if(levelList[currLevel] == null){
+                levelList[currLevel] = []
+            }
+            levelList[currLevel].push(currNode.val)
+        }
+        currLevel++
+    }
+
+    return levelList
+};
+
+
+
+Construct Binary Tree from Preorder and Inorder Traversal - Given two integer arrays preorder and inorder where preorder is the preorder traversal of a binary tree and inorder is the inorder traversal of the same tree, construct and return the binary tree.
+
+/**
+ * Definition for a binary tree node.
+ * class TreeNode {
+ *     val: number
+ *     left: TreeNode | null
+ *     right: TreeNode | null
+ *     constructor(val?: number, left?: TreeNode | null, right?: TreeNode | null) {
+ *         this.val = (val===undefined ? 0 : val)
+ *         this.left = (left===undefined ? null : left)
+ *         this.right = (right===undefined ? null : right)
+ *     }
+ * }
+ */
+
+function buildTree(preorder: number[], inorder: number[]): TreeNode | null {
+
+    const n = preorder.length
+    if(n === 0){
+        return null
+    }
+
+//  preorder is root, left and right
+    const currRoot = new TreeNode(preorder[0])
+
+//  inorder is left, root and right    
+    const currRootIndexInInOrder = inorder.indexOf(preorder[0])
+
+    const preOrderForLeftSubTree = preorder.slice(1, currRootIndexInInOrder + 1)
+    const inOrderForLeftSubTree = inorder.slice(0, currRootIndexInInOrder)
+    
+    currRoot.left = buildTree(preOrderForLeftSubTree, inOrderForLeftSubTree)
+
+    const preOrderForRightSubTree = preorder.slice(currRootIndexInInOrder + 1)
+    const inOrderForRightSubTree = inorder.slice(currRootIndexInInOrder + 1)
+
+    currRoot.right = buildTree(preOrderForRightSubTree, inOrderForRightSubTree)
+
+    return currRoot
+};
+
+
+
+Inorder Successor in BST - Given the root of a binary search tree and a node p in it, return the in-order successor of that node in the BST. If the given node has no in-order successor in the tree, return null.
+
+The successor of a node p is the node with the smallest key greater than p.val.
+
+/**
+ * Definition for a binary tree node.
+ * class TreeNode {
+ *     val: number
+ *     left: TreeNode | null
+ *     right: TreeNode | null
+ *     constructor(val?: number, left?: TreeNode | null, right?: TreeNode | null) {
+ *         this.val = (val===undefined ? 0 : val)
+ *         this.left = (left===undefined ? null : left)
+ *         this.right = (right===undefined ? null : right)
+ *     }
+ * }
+ */
+
+function inorderSuccessor(root: TreeNode | null, p: TreeNode | null): TreeNode | null {
+	let currNode = root
+    let successor: TreeNode | null = null
+
+    while(currNode != null){
+        if(currNode.val > p.val){
+            successor = currNode
+//  we have to go towards left to find the successor            
+            currNode = currNode.left
+        }else{
+//  go towards the right            
+            currNode = currNode.right
+        }
+    }
+
+    return successor
+};
+
+
+
+Populating Next Right Pointers in Each Node - You are given a perfect binary tree where all leaves are on the same level, and every parent has two children. Populate each next pointer to point to its next right node. If there is no next right node, the next pointer should be set to NULL.
+
+/**
+ * Definition for Node.
+ * class Node {
+ *     val: number
+ *     left: Node | null
+ *     right: Node | null
+ *     next: Node | null
+ *     constructor(val?: number, left?: Node, right?: Node, next?: Node) {
+ *         this.val = (val===undefined ? 0 : val)
+ *         this.left = (left===undefined ? null : left)
+ *         this.right = (right===undefined ? null : right)
+ *         this.next = (next===undefined ? null : next)
+ *     }
+ * }
+ */
+
+function connect(root: Node | null): Node | null {
+    if(!root){
+        return null
+    }
+
+//  we will try to go towards the left most node and connect all the nodes in the next level
+    let leftMostNode: Node = root
+    while(leftMostNode.left !== null){
+        let currNode = leftMostNode
+        while(currNode != null){
+//  make the connect of direct kids            
+            currNode.left.next = currNode.right
+
+//  make the connect with neighbors' kids            
+            if(currNode.next != null){
+                currNode.right.next = currNode.next.left
+            }
+
+//  move to right side and repeat            
+            currNode = currNode.next
+        }
+
+//  move to new level
+        leftMostNode = leftMostNode.left
+    }
+
+    return root
+};
+
+
+
+Check Completeness of a Binary Tree - Given the root of a binary tree, determine if it is a complete binary tree.
+
+In a complete binary tree, every level, except possibly the last, is completely filled, and all nodes in the last level are as far left as possible. It can have between 1 and 2h nodes inclusive at the last level h.
+
+/**
+ * Definition for a binary tree node.
+ * class TreeNode {
+ *     val: number
+ *     left: TreeNode | null
+ *     right: TreeNode | null
+ *     constructor(val?: number, left?: TreeNode | null, right?: TreeNode | null) {
+ *         this.val = (val===undefined ? 0 : val)
+ *         this.left = (left===undefined ? null : left)
+ *         this.right = (right===undefined ? null : right)
+ *     }
+ * }
+ */
+
+function isCompleteTree(root: TreeNode | null): boolean {
+
+    if(!root){
+        return true
+    }
+
+    const bfsQueue: (TreeNode | null)[] = [root]
+    let foundNull = false
+
+    while(bfsQueue.length > 0){
+        const currNode = bfsQueue.shift()
+
+        if(currNode == null){
+            foundNull = true
+        }else{
+            if(foundNull){
+//  found a non-null node after a null node; not allowed
+                return false
+            }
+
+            bfsQueue.push(currNode.left)
+            bfsQueue.push(currNode.right)
+        }
+    }
+
+    return true
+};
+
+
+
+Find Duplicate Subtrees - Given the root of a binary tree, return all duplicate subtrees.
+For each kind of duplicate subtrees, you only need to return the root node of any one of them.
+Two trees are duplicate if they have the same structure with the same node values.
+
+/**
+ * Definition for a binary tree node.
+ * function TreeNode(val, left, right) {
+ *     this.val = (val===undefined ? 0 : val)
+ *     this.left = (left===undefined ? null : left)
+ *     this.right = (right===undefined ? null : right)
+ * }
+ */
+/**
+ * @param {TreeNode} root
+ * @return {TreeNode[]}
+ */
+var findDuplicateSubtrees = function(root) {
+    const map = new Map()
+    const result = []
+
+    dfs(root, result, map)
+
+    return result
+};
+
+function dfs(currNode, result, map){
+    if(!currNode){
+//  used to represent null node
+        return '#'
+    }
+
+//  store pre order in a string
+    const subtree = `${currNode.val},${dfs(currNode.left, result, map)},${dfs(currNode.right, result, map)}`
+    const freq = map.get(subtree) || 0
+
+    if(freq == 1){
+//  found a duplicate        
+        result.push(currNode)
+    }
+
+//  maintain the freq
+    map.set(subtree, freq + 1)
+
+//  return the string signature
+    return subtree
+}
+
+
+
+Count nodes equal to average of subtress - Given the root of a binary tree, return the number of nodes where the value of the node is equal to the average of the values in its subtree. 
+Subtree includes the root
+
+/**
+ * Definition for a binary tree node.
+ * function TreeNode(val, left, right) {
+ *     this.val = (val===undefined ? 0 : val)
+ *     this.left = (left===undefined ? null : left)
+ *     this.right = (right===undefined ? null : right)
+ * }
+ */
+/**
+ * @param {TreeNode} root
+ * @return {number}
+ */
+const averageOfSubtree = (root) => {
+    const countAvgNodes = { count: 0 }
+
+    dfs(root, countAvgNodes)
+
+    return countAvgNodes.count
+};
+
+const dfs = (node, countAvgNodes) => {
+    if (node) {
+        const leftCountSum = dfs(node.left, countAvgNodes)
+        const rightCountSum = dfs(node.right, countAvgNodes)
+
+        const subTreeSum = leftCountSum.sum + rightCountSum.sum + node.val
+        const subTreeCount = 1 + leftCountSum.count + rightCountSum.count
+
+        const avg = Math.floor(subTreeSum / subTreeCount)
+
+        if (avg === node.val) {
+            countAvgNodes.count++
+        }
+
+        //  send the count also to track
+        return { count: subTreeCount, sum: subTreeSum }
+    }
+
+    return { count: 0, sum: 0 }
+}
+
+
+
+Maximum binary tree - You are given an integer array nums with no duplicates. A maximum binary tree can be built recursively from nums using the following algorithm:
+Create a root node whose value is the maximum value in nums.
+Recursively build the left subtree on the subarray prefix to the left of the maximum value.
+Recursively build the right subtree on the subarray suffix to the right of the maximum value.
+Return the maximum binary tree built from nums.
+
+/**
+ * Definition for a binary tree node.
+ * function TreeNode(val, left, right) {
+ *     this.val = (val===undefined ? 0 : val)
+ *     this.left = (left===undefined ? null : left)
+ *     this.right = (right===undefined ? null : right)
+ * }
+ */
+/**
+ * @param {number[]} nums
+ * @return {TreeNode}
+ */
+const constructMaximumBinaryTree = (nums) => {
+    if (nums.length === 0) {
+        return null;
+    }
+
+    // Find the index of the maximum value in the array
+    const maxIndex = getMaxIndex(nums);
+
+    // Create a root node with the maximum value
+    const root = new TreeNode(nums[maxIndex]);
+
+    // Recursively build the left subtree
+    root.left = constructMaximumBinaryTree(nums.slice(0, maxIndex));
+
+    // Recursively build the right subtree
+    root.right = constructMaximumBinaryTree(nums.slice(maxIndex + 1));
+
+    return root;
+};
+
+const getMaxIndex = (nums) => {
+    let maxIndex = 0;
+    for (let i = 1; i < nums.length; i++) {
+        if (nums[i] > nums[maxIndex]) {
+            maxIndex = i;
+        }
+    }
+    return maxIndex;
+}
+
+
+
+BST from preorder - Given an array of integers preorder, which represents the preorder traversal of a BST (i.e., binary search tree), construct the tree and return its root.
+
+/**
+ * Definition for a binary tree node.
+ * function TreeNode(val, left, right) {
+ *     this.val = (val===undefined ? 0 : val)
+ *     this.left = (left===undefined ? null : left)
+ *     this.right = (right===undefined ? null : right)
+ * }
+ */
+/**
+ * @param {number[]} preorder
+ * @return {TreeNode}
+ */
+const bstFromPreorder = (preorder) => {
+    let i = 0
+    const process = (bound) => {
+        if (i === preorder.length || preorder[i] > bound) {
+            return null
+        }
+
+        const num = preorder[i]
+        const node = new TreeNode(num)
+        i++
+
+    //  curr node is the bound for left subtree
+        node.left = process(node.val)
+    //  ancestor bound is the bound for right subtree
+        node.right = process(bound)
+
+        return node
+    }
+
+    return process(Number.MAX_SAFE_INTEGER)
+};
+
+
+
+Convert a BST into a GST (greater sum tree) - Given the root of a Binary Search Tree (BST), convert it to a Greater Tree such that every key of the original BST is changed to the original key plus the sum of all keys greater than the original key in BST.
+
+/**
+ * Definition for a binary tree node.
+ * function TreeNode(val, left, right) {
+ *     this.val = (val===undefined ? 0 : val)
+ *     this.left = (left===undefined ? null : left)
+ *     this.right = (right===undefined ? null : right)
+ * }
+ */
+/**
+ * @param {TreeNode} root
+ * @return {TreeNode}
+ */
+const bstToGst = (root) => {
+    //  we will do reverse inorder traversal and maintain the sum while coming from right
+
+    let sum = 0
+
+    const reverseInorder = (node) => {
+        if(node){
+            reverseInorder(node.right)
+
+            sum += node.val
+            node.val = sum
+
+            reverseInorder(node.left)
+        }
+    }
+    reverseInorder(root)
+
+    return root
+};
+
+

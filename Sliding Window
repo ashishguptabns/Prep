@@ -1,0 +1,329 @@
+Fruit Into Baskets - You are visiting a farm that has a single row of fruit trees arranged from left to right. The trees are represented by an integer array fruits where fruits[i] is the type of fruit the ith tree produces.
+
+You want to collect as much fruit as possible. However, the owner has some strict rules that you must follow:
+
+You only have two baskets, and each basket can only hold a single type of fruit. There is no limit on the amount of fruit each basket can hold.
+Starting from any tree of your choice, you must pick exactly one fruit from every tree (including the start tree) while moving to the right. The picked fruits must fit in one of your baskets.
+Once you reach a tree with fruit that cannot fit in your baskets, you must stop.
+Given the integer array fruits, return the maximum number of fruits you can pick.
+
+class Solution {
+    fun totalFruit(fruits: IntArray): Int {
+//  we can choose max of 2 groups of fruits and can have unlimited fruits in each group
+
+        var left = 0
+        var right = 0;
+        var totalNumFruits = 0;
+
+//  we will maintain the number of fruits in each group         
+        var fruitsMap = mutableMapOf<Int, Int>()
+
+        for(right in 0 until fruits.size){
+//  increase the number of fruits in second group as we move forward            
+            fruitsMap.put(fruits[right], 
+                fruitsMap.getOrDefault(fruits[right], 0) + 1)
+            totalNumFruits++;
+
+//  check if we found a new group
+            if(fruitsMap.size > 2){
+//  we have to maintain number of fruit groups to 2
+                fruitsMap.put(fruits[left], 
+                    fruitsMap.getOrDefault(fruits[left], 0) - 1)   
+                totalNumFruits--;
+                if(fruitsMap.getOrDefault(fruits[left], 0) == 0){
+//  remove this group of fruits                    
+                    fruitsMap.remove(fruits[left])
+                }
+//  move the left index of subarray as we removed one fruit group
+                left++;
+            }            
+        }
+
+//  max length of subarray as per definition = right - left
+        
+        return totalNumFruits
+    }
+}
+
+
+
+Longest Subarray of 1's After Deleting One Element - Given a binary array nums, you should delete one element from it.
+
+Return the size of the longest non-empty subarray containing only 1's in the resulting array. Return 0 if there is no such subarray.
+
+class Solution {
+    fun longestSubarray(nums: IntArray): Int {
+//  we will keep two counters left and right for our subarray
+//  keep one zeroCounter to keep the count of 0s we found
+//  whenever zeroCounter crosses 1 we start moving the left to right and decrement zeroCounter for each movement of left
+//  we keep moving the left until we find 1s
+
+        var left = 0
+        var right = 0
+        var zeroCounter = 0
+
+        var maxLength = 0
+
+        while(right < nums.size){
+            if(nums[right] == 0){
+                zeroCounter++
+            }
+
+            while(zeroCounter > 1){
+                if(nums[left] == 0){
+// we let go of one 0                    
+                    zeroCounter--
+                }
+                left++
+            }
+
+            maxLength = maxOf(maxLength, right - left)
+
+            right++
+        }
+
+        return maxLength
+    }
+}
+
+
+
+Find All Anagrams in a String - Given two strings s and p, return an array of all the start indices of p's anagrams in s. You may return the answer in any order.
+
+class Solution {
+    fun findAnagrams(s: String, p: String): List<Int> {
+        
+//  record characters and count in the small string        
+        val targetCharArray = IntArray(26)
+        for(char in p){
+            targetCharArray[char - 'a']++
+        }
+
+        val windowArr = IntArray(26)
+        var left = 0
+        var right = 0
+
+        val resultList = mutableListOf<Int>()
+
+        while(right < s.length){
+            val currChar = s[right]
+            windowArr[currChar - 'a']++
+
+            if(right - left + 1 == p.length){
+//  could be an anagram now                
+                if(windowArr.contentEquals(targetCharArray)){
+//  found an anagram
+                    resultList.add(left) 
+//  only need the left index                                       
+                }
+
+//  need to reduce count of the left most character to move forward
+                val charToDelete = s[left]
+                windowArr[charToDelete - 'a']--
+                left++
+            }
+            right++
+        }
+        return resultList
+    }
+}
+
+
+
+Longest substring without repeating characters - Given a string s, find the length of the longest substring without repeating characters.
+
+/**
+ * @param {string} s
+ * @return {number}
+ */
+const lengthOfLongestSubstring = (s) => {
+    let maxLength = 0
+    const charIndexMap = {}
+    let subStringLeftIndex = 0
+    
+    for (j = 0; j < s.length; j++) {
+        const currChar = s[j]
+        if (charIndexMap[currChar] !== undefined) {
+            //  found a repeat character
+            subStringLeftIndex = Math.max(charIndexMap[currChar] + 1, subStringLeftIndex)
+        }
+
+        charIndexMap[currChar] = j
+
+        maxLength = Math.max(maxLength, j - subStringLeftIndex + 1)
+    }
+
+    return maxLength
+};
+
+
+
+Kth Smallest Subarray Sum - Given an integer array nums of length n and an integer k, return the kth smallest subarray sum.
+
+class Solution {
+    fun kthSmallestSubarraySum(nums: IntArray, k: Int): Int {
+        var leftPointer = Int.MAX_VALUE
+        var rightPointer = 0
+        for(num in nums){
+            leftPointer = minOf(num, leftPointer)
+            rightPointer += num
+        }
+//  our smalled sub array sum is the left pointer and max sub array sum is the right pointer
+//  kth is somewhere in between
+
+        while(leftPointer <= rightPointer){
+            val midSum = (leftPointer + rightPointer) / 2
+
+//  how many sub arrays we have before midSum
+            if(numSubArrays(nums, midSum) >= k){
+                rightPointer = midSum - 1
+            }else{
+                leftPointer = midSum + 1
+            }
+        }
+        return leftPointer
+
+    }
+
+    fun numSubArrays(nums: IntArray, targetSum: Int): Int{
+        var subArrayCount = 0
+        var currSum = 0
+        var leftPointer = 0
+
+        for(rightPointer in 0 until nums.size){
+            currSum += nums[rightPointer]
+            while(currSum > targetSum){
+//  move the leftPointer to keep currSum below
+                currSum -= nums[leftPointer]
+                leftPointer++
+            }
+//  notice we increase count for each rightPointer            
+            subArrayCount += rightPointer - leftPointer + 1
+        }
+
+        return subArrayCount
+    }
+}
+
+
+
+Count Subarrays With Fixed Bounds - You are given an integer array nums and two integers minK and maxK.
+
+A fixed-bound subarray of nums is a subarray that satisfies the following conditions:
+The minimum value in the subarray is equal to minK.
+The maximum value in the subarray is equal to maxK.
+Return the number of fixed-bound subarrays.
+
+A subarray is a contiguous part of an array.
+
+function countSubarrays(nums: number[], minK: number, maxK: number): number {
+//  we will take sliding window approach
+
+    let leftIndex = -1
+    let rightIndex = -1
+
+//  most recent index out of range    
+    let outOfRangeIndex = -1
+    let numSubArrays = 0
+
+    for(let i = 0; i < nums.length; i++){
+
+//  update out of range index        
+        if(nums[i] < minK || nums[i] > maxK){
+            outOfRangeIndex = i
+        }
+
+//  update recent positions if any
+        if(nums[i] == minK){
+            leftIndex = i
+        }
+        if(nums[i] == maxK){
+            rightIndex = i
+        }
+
+//  number of subarrays is number of elements between outOfRangeBound and smaller of two indices
+        numSubArrays += Math.max(0, Math.min(rightIndex, leftIndex) - outOfRangeIndex)
+    }
+
+    return numSubArrays
+};
+
+
+
+Number of Sub-arrays of Size K and Average Greater than or Equal to Threshold - Given an array of integers arr and two integers k and threshold, return the number of sub-arrays of size k and average greater than or equal to threshold.
+
+/**
+ * @param {number[]} arr
+ * @param {number} k
+ * @param {number} threshold
+ * @return {number}
+ */
+const numOfSubarrays = (arr, k, threshold) => {
+    let count = 0
+    let sum = 0
+
+    //  find the sum of the first k length subarray
+    for (let i = 0; i < k; i++) {
+        sum += arr[i]
+    }
+
+    //  continue for further sub arrays
+    for (let i = k; i <= arr.length; i++) {
+
+        //  avg of current subarray
+        const avg = sum / k
+
+        if (avg >= threshold) {
+            count++
+        }
+
+        //  remove the first element of this subarray
+        sum -= arr[i - k]
+        sum += arr[i]
+    }
+
+    return count
+};
+
+
+
+Find k length substrings without repeat characters - 
+
+/**
+ * @param {string} s
+ * @param {number} k
+ * @return {string[]}
+ */
+const findSubstrings =(s, k) => {
+    const result = [];
+    
+    for (let i = 0; i <= s.length - k; i++) {
+        const substring = s.substring(i, i + k);
+        
+        if (!hasRepeatCharacters(substring)) {
+            result.push(substring);
+        }
+    }
+    
+    return result;
+};
+
+/**
+ * Helper function to check if a string has repeat characters.
+ * @param {string} str
+ * @return {boolean}
+ */
+const hasRepeatCharacters = (str) => {
+    const set = new Set();
+    
+    for (let char of str) {
+        if (set.has(char)) {
+            return true; // Repeat character found
+        }
+        set.add(char);
+    }
+    
+    return false; // No repeat characters
+}
+
+

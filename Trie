@@ -1,0 +1,177 @@
+Longest Word With All Prefixes - Given an array of strings words, find the longest string in words such that every prefix of it is also in words.
+
+Input: words = ["a","banana","app","appl","ap","apple"]
+Output: "apple"
+Explanation:
+- "apple" is the longest word in words.
+- Every prefix of "apple" is also in words: ("a", "app", "appl", "ap").
+
+const longestWord = (words) => {
+  const trie = new Trie();
+
+//  we will find shorter words with same prefix first
+  words.sort(); // Sort the words lexicographically to ensure we find the longest one first
+
+  let longest = “”
+  for (const word of words) {
+//  get all characters except last one
+    const prefix = word.slice(0, -1);
+
+    if (prefix === “” || trie.search(prefix)) {
+//  prefix is already present in the trie -> word has all prefixes in the set of words
+      trie.insert(word);
+      if (word.length > longest.length) {
+        longest = word;
+      }
+    }
+  }
+
+  return longest;
+}
+
+class TrieNode {
+  constructor() {
+    this.children = new Map();
+    this.isEndOfWord = false;
+  }
+}
+
+class Trie {
+  constructor() {
+    this.root = new TrieNode();
+  }
+
+  insert(word) {
+    let node = this.root;
+    for (const char of word) {
+      if (!node.children.has(char)) {
+//  create a new node for the missing character
+        node.children.set(char, new TrieNode());
+      }
+      node = node.children.get(char);
+    }
+    node.isEndOfWord = true;
+  }
+  
+  search(prefix) {
+    let node = this.root;
+    for (const char of prefix) {
+      if (!node.children.has(char)) {
+//  prefix is not present so the word doesn’t exist
+        return false;
+      }
+      node = node.children.get(char);
+    }
+//  reached the end of given prefix; check if it is a word
+    return node.isEndOfWord;
+  }
+}
+
+
+
+Search suggestions system - You are given an array of strings products and a string searchWord.
+
+Design a system that suggests at most three product names from products after each character of searchWord is typed. Suggested products should have common prefix with searchWord. If there are more than three products with a common prefix return the three lexicographically minimums products.
+
+Return a list of lists of the suggested products after each character of searchWord is typed.
+
+/**
+ * @param {string[]} products
+ * @param {string} searchWord
+ * @return {string[][]}
+ */
+const suggestedProducts = (products, searchWord) => {
+    //  suggestions are given in lexicographical order
+    products.sort();
+
+    //  build a trie from the sorted products
+    const trie = {};
+    for (let p of products) {
+        let root = trie;
+        for (let i = 0; i < p.length; i++) {
+            if (!root[p[i]]) {
+                //  give suggestions of each character ending
+                root[p[i]] = { 'sug': [] };
+            }
+            if (root[p[i]]['sug'].length < 3) {
+                //  this whole word p is a suggestion for a prefix ending at this char
+                root[p[i]]['sug'].push(p);
+            }
+            root = root[p[i]];
+        }
+    }
+
+    let root = trie, res = [];
+    for (let i = 0; i < searchWord.length; i++) {
+        if (root) {
+            root = root[searchWord[i]];
+        }
+        //  condition is to consider each char
+        res.push(!root ? [] : root['sug']);
+    }
+
+    return res;
+};
+
+
+
+Implement Trie
+
+const Trie = function () {
+    this.root = {}
+};
+
+/** 
+ * @param {string} word
+ * @return {void}
+ */
+Trie.prototype.insert = function (word) {
+    let node = this.root
+    for (const c of word) {
+        if (!node[c]) {
+            node[c] = {}
+        }
+        node = node[c]
+    }
+    node.isWord = true
+};
+
+/** 
+ * @param {string} word
+ * @return {boolean}
+ */
+Trie.prototype.search = function (word) {
+    let node = this.root
+    for (const c of word) {
+        if (!node[c]) {
+            return false
+        }
+        node = node[c]
+    }
+    return node.isWord == true ? true : false
+};
+
+/** 
+ * @param {string} prefix
+ * @return {boolean}
+ */
+Trie.prototype.startsWith = function (prefix) {
+    let node = this.root
+    for (const c of prefix) {
+        if (!node[c]) {
+            return false
+        }
+        node = node[c]
+    }
+
+    return true
+};
+
+/** 
+ * Your Trie object will be instantiated and called as such:
+ * var obj = new Trie()
+ * obj.insert(word)
+ * var param_2 = obj.search(word)
+ * var param_3 = obj.startsWith(prefix)
+ */
+

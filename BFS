@@ -1,0 +1,427 @@
+Possible Bipartition - We want to split a group of n people (labeled from 1 to n) into two groups of any size. Each person may dislike some other people, and they should not go into the same group.
+
+Given the integer n and the array dislikes where dislikes[i] = [ai, bi] indicates that the person labeled ai does not like the person labeled bi, return true if it is possible to split everyone into two groups in this way.
+
+class Solution {
+    fun possibleBipartition(n: Int, dislikes: Array<IntArray>): Boolean {
+//  we will maintain colors of each node
+//  find an uncolored node and color it with 1
+//  find an uncolored node from parent and color it with -color[parent]
+//  find the same color kid means we can't create partition as per the definition
+
+//  create the adjacency list graph
+        val adjList = Array(n + 1){ mutableListOf<Int>() }
+        for(edge in dislikes){
+            adjList[edge[0]].add(edge[1])
+            adjList[edge[1]].add(edge[0])
+        }
+
+        val color = IntArray(n + 1)
+//  0 not colored; 1 color 1; -1 color 2
+
+        for(node in 1..n){
+//iterate through the nodes 
+
+            if(color[node] != 0){
+//  found a colored node; skip it as it is already processed
+                continue                
+            }
+
+//  we will do bfs
+            val queue = ArrayDeque<Int>()
+            color[node] = 1
+            queue.offer(node)
+
+            while(queue.isNotEmpty()){
+                val currNode = queue.poll()
+
+//  check the kids and color them
+                for(kid in adjList[currNode]){
+                    if(color[kid] == color[currNode]){
+//  condition is broken                        
+                        return false
+                    }
+                    if(color[kid] == 0){
+                        color[kid] = -color[currNode]
+//  add in the queue for bfs                        
+                        queue.offer(kid)
+                    }
+                }
+            }
+        }
+        return true
+    }
+}
+
+
+
+The Maze - There is a ball in a maze with empty spaces (represented as 0) and walls (represented as 1). The ball can go through the empty spaces by rolling up, down, left or right, but it won't stop rolling until hitting a wall. When the ball stops, it could choose the next direction.
+
+Given the m x n maze, the ball's start position and the destination, where start = [startrow, startcol] and destination = [destinationrow, destinationcol], return true if the ball can stop at the destination, otherwise return false.
+
+class Solution {
+    fun hasPath(maze: Array<IntArray>, start: IntArray, destination: IntArray): Boolean {
+//  we will take bfs approach to solve this 
+
+        val visitedArray = Array(maze.size){ BooleanArray(maze[0].size) }
+//  maintain the list of empty nodes we have visited 
+
+        val directions = arrayOf(0 to 1, 0 to -1, 1 to 0, -1 to 0)
+
+        val bfsQueue = LinkedList<IntArray>()
+        bfsQueue.add(start)
+//  start from the given point
+        visitedArray[start[0]][start[1]] = true
+
+        while(!bfsQueue.isEmpty()){
+            val currCoordinates = bfsQueue.remove()
+            if(currCoordinates[0] == destination[0] && currCoordinates[1] == destination[1]){
+//  reached the destination hence has a path
+                return true
+            }
+
+            for((dx, dy) in directions){
+//  we will go in all 4 directions from this point - empty space                
+                var nextRow = currCoordinates[0] + dx
+                var nextCol = currCoordinates[1] + dy
+
+                while(nextRow >= 0 && nextCol >= 0 
+                    && nextRow < maze.size && nextCol < maze[0].size
+                    && maze[nextRow][nextCol] == 0){
+//  keep traveling until we find a block -> cell of 1                        
+                    nextRow += dx
+                    nextCol += dy
+                }
+//  before finding the block we were at an empty cell; record it for next visit
+                if(!visitedArray[nextRow - dx][nextCol - dy]){
+                    bfsQueue.add(intArrayOf(nextRow - dx, nextCol - dy))
+                    visitedArray[nextRow - dx][nextCol - dy] = true
+                }
+            }
+        }
+
+//  we travelled in each cell and couldn't find the destination
+        return false
+    }
+}
+
+
+
+Minimum Knight Moves - In an infinite chess board with coordinates from -infinity to +infinity, you have a knight at square [0, 0].
+A knight has 8 possible moves it can make, as illustrated below. Each move is two squares in a cardinal direction, then one square in an orthogonal direction.
+Return the minimum number of steps needed to move the knight to the square [x, y]. It is guaranteed the answer exists.
+
+class Solution {
+    fun minKnightMoves(x: Int, y: Int): Int {
+//  notice the chess board is infinite
+        var minSteps = 0
+
+        val offsets = arrayOf(Pair(1, 2), Pair(-1, 2), Pair(-2, 1), Pair(-2, -1), 
+                        Pair(2, 1), Pair(2, -1), Pair(1, -2), Pair(-1, -2))
+
+//  we are using array to save time else time limit will be exceeded
+        val visitedArr = Array(607, { BooleanArray(607) })
+
+        val indicesQueue = LinkedList<Pair<Int, Int>>()
+        indicesQueue.offer(Pair(0, 0))
+
+        while(indicesQueue.isNotEmpty()){
+            val queueSize = indicesQueue.size
+
+            for(counter in 0 until queueSize){
+//  this for loop is important because we want to process the whole level before increasing minSteps                
+                val currPair = indicesQueue.poll()
+                
+                if(currPair.first == x && currPair.second == y){
+//  found the destination                
+                    return minSteps 
+                }
+                
+                for((dx, dy) in offsets){
+                    val nextX = currPair.first + dx
+                    val nextY = currPair.second + dy
+
+//  adding 302 to ensure 302, 302 is the 0, 0
+                    if(!visitedArr[nextX + 302][nextY + 302]){
+//  next level of points                        
+                        indicesQueue.offer(Pair(nextX, nextY))
+                        visitedArr[nextX + 302][nextY + 302] = true
+                    }
+                }
+            }
+
+            minSteps++
+        }
+
+        return -1
+    }
+}
+
+
+
+Alien Dictionary - There is a new alien language that uses the English alphabet. However, the order among the letters is unknown to you.
+
+You are given a list of strings words from the alien language's dictionary, where the strings in words are 
+sorted lexicographically
+ by the rules of this new language.
+
+Return a string of the unique letters in the new alien language sorted in lexicographically increasing order by the new language's rules. If there is no solution, return "". If there are multiple solutions, return any of them.
+
+class Solution {
+    fun alienOrder(words: Array<String>): String {
+        val charGraph = mutableMapOf<Char, MutableSet<Char>>()
+        val inDegree = mutableMapOf<Char, Int>()
+
+//  init the graph nodes and indegree for each node
+        for(word in words){
+            for(char in word){
+                inDegree[char] = 0
+                charGraph[char] = mutableSetOf()
+            }
+        }
+
+        for(i in 0 until words.size - 1){
+//  travel through each word            
+            val currWord = words[i]
+            val nextWord = words[i + 1]
+
+            if(currWord.startsWith(nextWord) && currWord.length > nextWord.length){
+//  as per the lexicographical condition
+                return ""
+            }
+
+            for(j in 0 until minOf(currWord.length, nextWord.length)){
+//  travel through each char in small word
+                val currWordChar = currWord[j]
+                val nextWordChar = nextWord[j]
+
+                if(currWordChar != nextWordChar){
+                    if(!charGraph[currWordChar]!!.contains(nextWordChar)){
+//  build the edge
+                        charGraph[currWordChar]!!.add(nextWordChar)
+//  set the indegree of next node
+                        inDegree[nextWordChar] = inDegree.getOrDefault(nextWordChar, 0) + 1
+                    }
+//  notice this. we are taking only one new edge per word
+                    break
+                }
+            }
+        }
+
+        val bfsQueue = LinkedList<Char>()
+        val sb = StringBuilder()
+        val seen = mutableSetOf<Char>()
+
+        for((char, degree) in inDegree){
+            if(degree == 0){
+//  start from nodes in the order of indegrees
+                bfsQueue.offer(char)
+            }
+        }
+
+        while(bfsQueue.isNotEmpty()){
+            val currChar = bfsQueue.poll()
+            sb.append(currChar)
+            seen.add(currChar)
+
+            for(nextChar in charGraph[currChar]!!){
+//  this is topological sorting
+                inDegree[nextChar] = inDegree[nextChar]!! - 1
+                if(inDegree[nextChar] == 0){
+                    bfsQueue.offer(nextChar)
+                }
+            }
+        }
+
+//  ensure that we have visited all the nodes
+        return if(seen.size == charGraph.size) sb.toString() else ""
+    }
+}
+
+
+
+Word Ladder - A transformation sequence from word beginWord to word endWord using a dictionary wordList is a sequence of words beginWord -> s1 -> s2 -> ... -> sk such that:
+Every adjacent pair of words differs by a single letter.
+Every si for 1 <= i <= k is in wordList. Note that beginWord does not need to be in wordList.
+sk == endWord
+Given two words, beginWord and endWord, and a dictionary wordList, return the number of words in the shortest transformation sequence from beginWord to endWord, or 0 if no such sequence exists.
+
+function ladderLength(beginWord: string, endWord: string, wordList: string[]): number {
+
+//  make the dictionary set from given words    
+    const dictionary = new Set(wordList)
+    if(!dictionary.has(endWord)){
+//  word is not there hence we can't reach it
+        return 0
+    }
+
+//  now that we have the end word so min steps is 1 if we can reach the end word
+    let steps = 1
+
+//  we will do the bfs    
+    const wordsQueue = [beginWord]
+//  mark the word visited    
+    const visited = new Set(wordsQueue)
+
+    while(wordsQueue.length){
+        const currLevelSize = wordsQueue.length
+        for(let i = 0; i < currLevelSize; i++){
+//  remove the first element and return            
+            const word = wordsQueue.shift()
+            if(word === endWord){
+//  found the end word                
+                return steps
+            }
+
+//  we will try to make new words for next travel
+            for(let j = 0; j < word.length; j++){
+                for(let k = 0; k < 26; k++){
+
+//  String.fromCharCode(97) gives 'a'
+                    const nextWord = word.slice(0, j) 
+                                        + String.fromCharCode(97 + k) 
+                                        + word.slice(j + 1)
+
+//  add in the queue
+                    if(dictionary.has(nextWord) && !visited.has(nextWord)){
+                        wordsQueue.push(nextWord)
+                        visited.add(nextWord)
+                    }
+                }
+            }
+        }
+        steps++
+    }
+
+//  could not reach the end word
+    return 0
+};
+
+
+
+Minimum Genetic Mutation - Given the two gene strings startGene and endGene and the gene bank bank, return the minimum number of mutations needed to mutate from startGene to endGene. If there is no such a mutation, return -1.
+
+Note that the starting point is assumed to be valid, so it might not be included in the bank.
+
+function minMutation(startGene: string, endGene: string, bank: string[]): number {
+
+    const validMutations = ['A', 'C', 'G', 'T']
+
+//  convert bank array to a set for faster lookup    
+    const bankSet = new Set(bank)
+    
+    if(!bankSet.has(endGene)){
+        return -1
+    }
+
+    const visitedGenes = new Set<String>()
+
+//  initial gene as start and 0 mutations
+    const bfsQueue: [string, number][] = [[startGene, 0]]
+
+    visitedGenes.add(startGene)
+
+    while(bfsQueue.length > 0){
+        const [currGene, mutations] = bfsQueue.shift()
+        if(currGene == endGene){
+//  found the end gene            
+            return mutations
+        }
+
+        for(let i = 0; i < currGene.length; i++){
+//  loop through the currGene as we will replace each character with valid chars            
+            for(let mutationChar of validMutations){
+//  replace                
+                if(currGene[i] == mutationChar){
+//  found the same gene character                    
+                    continue
+                }
+                const newGene = currGene.slice(0, i) + mutationChar + currGene.slice(i + 1    )
+                if(bankSet.has(newGene) && !visitedGenes.has(newGene)){
+//  found a new valid unvisited gene
+                    bfsQueue.push([newGene, mutations + 1])                    
+                    visitedGenes.add(newGene)
+                }
+            }
+        }
+    }
+
+    return -1
+};
+
+
+
+Same tree - Given the roots of two binary trees p and q, write a function to check if they are the same or not.
+
+/**
+ * Definition for a binary tree node.
+ * function TreeNode(val, left, right) {
+ *     this.val = (val===undefined ? 0 : val)
+ *     this.left = (left===undefined ? null : left)
+ *     this.right = (right===undefined ? null : right)
+ * }
+ */
+/**
+ * @param {TreeNode} p
+ * @param {TreeNode} q
+ * @return {boolean}
+ */
+var isSameTree = function (p, q) {
+    if (!p && !q) {
+        return true
+    }
+    if ((p && !q) || (!p && q) || (p.val !== q.val)) {
+        return false
+    }
+
+    return isSameTree(p.left, q.left) && isSameTree(p.right, q.right)
+};
+
+
+
+Deepest leaves sum - Given the root of a binary tree, return the sum of values of its deepest leaves.
+
+/**
+ * Definition for a binary tree node.
+ * function TreeNode(val, left, right) {
+ *     this.val = (val===undefined ? 0 : val)
+ *     this.left = (left===undefined ? null : left)
+ *     this.right = (right===undefined ? null : right)
+ * }
+ */
+/**
+ * @param {TreeNode} root
+ * @return {number}
+ */
+var deepestLeavesSum = function (root) {
+
+    // solve this using BFS
+    // keep tracking the sum and return the last level's
+
+    if (!root) {
+        return 0
+    }
+
+    const queue = [root]
+    let levelSum
+
+    while (queue.length > 0) {
+        const currLevelSize = queue.length
+        levelSum = 0
+
+        for (let i = 0; i < currLevelSize; i++) {
+            const node = queue.shift()
+            levelSum += node.val
+
+            if (node.left) {
+                queue.push(node.left)
+            }
+            if (node.right) {
+                queue.push(node.right)
+            }
+        }
+    }
+
+    return levelSum
+};
+
