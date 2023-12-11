@@ -1,0 +1,862 @@
+Longest Palindromic substring - Given a string s, return the longest Palindromic substring in s.
+
+/**
+ * @param {string} s
+ * @return {string}
+ */
+const longestPalindrome = (s) => {
+    const strLength = s.length
+    if (strLength <= 1) {
+        return s
+    }
+
+    const dpMatrix = Array.from({ length: strLength }, () => Array(strLength).fill(false))
+
+    //  all substrings of length 1 are palindrome
+    for (let i = 0; i < strLength - 1; i++) {
+        dpMatrix[i][i] = true
+    }
+
+    // to track palindrome start index
+    let startIndex = 0
+    let maxLength = 1
+
+    //  handle substrings of length 2
+    for (let i = 0; i < strLength - 1; i++) {
+        if (s[i] == s[i + 1]) {
+            dpMatrix[i][i + 1] = true
+            startIndex = i
+            maxLength = 2
+        }
+    }
+
+    //  handle substrings of length 3 or more
+    for (let currLen = 3; currLen <= strLength; currLen++) {
+        for (let i = 0; i <= strLength - currLen; i++) {
+            //  end index for substring
+            const j = i + currLen - 1
+
+            //  check if the substring is a palindrome
+            if (s[i] == s[j] && dpMatrix[i + 1][j - 1]) {
+                dpMatrix[i][j] = true
+                startIndex = i
+                maxLength = currLen
+            }
+        }
+    }
+
+    return s.substring(startIndex, startIndex + maxLength)
+};
+
+
+
+Maximum Subarray - Given an integer array nums, find the subarray with the largest sum, and return its sum.
+
+class Solution {
+    fun maxSubArray(nums: IntArray): Int {
+//         this problem can be solved using DP approach
+        
+        var currSubArray = nums[0]
+        var maxSubArray = nums[0]
+        
+        for(i in 1..nums.size - 1){
+            val num = nums[i]
+            
+//             check if the currSubArray is worth keeping. We can discard the previous subarray if its sum is less than the current index
+            currSubArray = Math.max(num, currSubArray + num)
+            
+//             if current sub array has more sum than max
+            maxSubArray = Math.max(currSubArray, maxSubArray)
+        }
+        
+        return maxSubArray
+    }
+}
+
+
+
+
+Flip String to Monotone Increasing - A binary string is monotone increasing if it consists of some number of 0's (possibly none), followed by some number of 1's (also possibly none).
+
+You are given a binary string s. You can flip s[i] changing it from 0 to 1 or from 1 to 0.
+
+Return the minimum number of flips to make s monotone increasing.
+
+class Solution {
+    fun minFlipsMonoIncr(s: String): Int {
+        var numOfOnesSoFar = 0
+        var numFlips = 0
+
+        for(i in 0 until s.length){
+            if(s[i] == '1'){
+//      this is monotone increasing, no flips required                
+                numOfOnesSoFar++;
+            }else{
+//      we might have to flip this character '0' or all the 1s we found so far                
+                numFlips = Math.min(numOfOnesSoFar, numFlips + 1)
+            }
+        }
+
+        return numFlips;
+    }
+}
+
+
+
+
+House Robber - You are a professional robber planning to rob houses along a street. Each house has a certain amount of money stashed, the only constraint stopping you from robbing each of them is that adjacent houses have security systems connected and it will automatically contact the police if two adjacent houses were broken into on the same night.
+
+Given an integer array nums representing the amount of money of each house, return the maximum amount of money you can rob tonight without alerting the police.
+
+class Solution {
+    fun rob(nums: IntArray): Int {
+//	0th index meas 0 houses hence no money
+        var money = IntArray(nums.size + 1)
+
+        if(nums.size == 0){
+            return 0
+        }else if(nums.size == 1){
+            return nums[0]
+        }
+
+//	only one house to rob
+        money[1] = nums[0]
+
+//	start from the 2nd house 
+        for(houseNum in 2 until nums.size + 1){
+
+//	choose either the money robbed till the last house or current house with prev to prev houses as per definition
+            money[houseNum] = Math.max(money[houseNum - 1], nums[houseNum - 1] + money[houseNum - 2])
+        }
+
+//	we are done robbing nums.size houses
+        return money[nums.size];
+    }
+}
+
+
+
+
+Maximum Length of Repeated Subarray - Given two integer arrays nums1 and nums2, return the maximum length of a subarray that appears in both arrays.
+
+
+class Solution {
+    fun findLength(nums1: IntArray, nums2: IntArray): Int {
+
+//	extra length to ensure we cover all the items in each array
+        var dp = Array(nums1.size + 1) { IntArray(nums2.size + 1) }
+
+        var maxLength = 0;
+
+//      for each subarray ending at i in nums1 and j in nums2, max length of common sub array will be dp[i][j] + (1 if nums1[i] == nums2[j])
+
+        for(i in 0 until nums1.size){
+            for(j in 0 until nums2.size){
+                if(nums1[i] == nums2[j]){
+                    dp[i + 1][j + 1] = 1 + dp[i][j]
+                }
+
+                maxLength = Math.max(maxLength, dp[i + 1][j + 1])
+            }
+        }         
+        return maxLength;
+    }
+}
+
+
+
+
+Minimum Time to Make Rope Colorful - Alice has n balloons arranged on a rope. You are given a 0-indexed string color where colors[i] is the color of the ith balloon.
+
+Alice wants the rope to be colorful. She does not want two consecutive balloons to be of the same color, so she asks Bob for help. Bob can remove some balloons from the rope to make it colorful. You are given a 0-indexed integer array neededTime where neededTime[i] is the time (in seconds) that Bob needs to remove the ith balloon from the rope.
+
+Return the minimum time Bob needs to make the rope colorful.
+
+
+class Solution {
+    fun minCost(colors: String, neededTime: IntArray): Int {
+
+//	total time to make it colorful
+        var totalTime = 0;
+
+//	max time for the current group of similar balloons. This is needed because in a group of similar balloons we want to keep the balloon with highest time
+        var currGroupMaxTime = 0;
+
+        for(counter in 0 until colors.length){
+//	the moment we find a different balloon, reset the currGroupMaxTime
+            if(counter > 0 && colors[counter] != colors[counter - 1]){
+                currGroupMaxTime = 0
+            }
+
+//	We are always choosing to remove the balloon with the lowest time. This works by default if we find a different balloon
+            totalTime += minOf(neededTime[counter], currGroupMaxTime)
+
+//	update the group maxima
+            currGroupMaxTime = maxOf(currGroupMaxTime, neededTime[counter])
+        }
+
+        return totalTime
+    }
+}
+
+
+
+
+Coin Change - You are given an integer array coins representing coins of different denominations and an integer amount representing a total amount of money.
+
+Return the fewest number of coins that you need to make up that amount. If that amount of money cannot be made up by any combination of the coins, return -1.
+
+You may assume that you have an infinite number of each kind of coin.
+
+class Solution {
+    fun coinChange(coins: IntArray, amount: Int): Int {
+
+//      each index ith value means num coins to make i amount        
+        var numCoinsDPArr = IntArray(amount + 1){(amount + 1)}
+
+//      0 coins to make 0 amount        
+        numCoinsDPArr[0] = 0;
+
+        for(i in 1 until amount + 1){
+            for(j in 0 until coins.size){
+//      we found a coin with less value than i means there is a chance to combine coins and make this value 'i'                
+                if(coins[j] <= i){
+//      if we choose coins[j] then we have 1 coin selected and now need num of coins to make 'i - coins[j]' value
+                    numCoinsDPArr[i] = minOf(numCoinsDPArr[i], 1 + numCoinsDPArr[i - coins[j]])
+                }
+            }
+        }
+
+        if(numCoinsDPArr[amount] == amount + 1){
+            return -1
+        }else{
+            return numCoinsDPArr[amount]
+        }
+    }
+}
+
+
+
+
+Perfect Squares - Given an integer n, return the least number of perfect square numbers that sum to n.
+
+class Solution {
+    fun numSquares(n: Int): Int {
+
+//  we will maintain a dp array where ith index tells the numbers of perfect squares needed to make i
+//  for each i; i numbers 1s are needed at max
+
+        var dp = IntArray(n + 1){i -> i}
+
+        for(number in 1 until n + 1){
+            val sqrt = Math.sqrt(number * 1.0).toInt()
+
+            for(candidate in 1 until sqrt + 1){
+
+                if(number < candidate * candidate){
+                    break
+                }
+
+//  we choose the candidate as a member hence adding 1                 
+                dp[number] = minOf(dp[number], 1 + dp[number - (candidate * candidate)])
+            }
+        }
+
+        return dp[n]
+    }
+}
+
+
+
+Palindrome Partitioning - Given a string s, partition s such that every 
+substring of the partition is a palindrome. Return all possible palindrome partitioning of s.
+
+class Solution {
+    fun partition(s: String): List<List<String>> {
+//  for each char we will backtrack towards right and record palindromes
+        val resultList = mutableListOf<List<String>>()
+        val startIndex = 0
+        val currList = mutableListOf<String>()
+        val palindromeDPArray = Array(s.length){ BooleanArray(s.length) }
+
+        backtrack(resultList, startIndex, s, currList, palindromeDPArray)
+
+        return resultList
+    }
+
+    fun backtrack(resultList: MutableList<List<String>>, startIndex: Int, 
+            givenString: String, currList: MutableList<String>, 
+            palindromeDPArray: Array<BooleanArray>){
+                
+                if(startIndex >= givenString.length){
+//  we covered the whole string
+                    resultList.add(ArrayList(currList))             
+                }
+
+                for(counter in startIndex until givenString.length){
+                    if(givenString[startIndex] == givenString[counter] && (counter - startIndex <= 2 || palindromeDPArray[startIndex + 1][counter - 1])){
+//  we found a palindrome substring; counter - startIndex <= 2 means we have 3 chars
+                        palindromeDPArray[startIndex][counter] = true
+                        currList.add(givenString.drop(startIndex).take(counter - startIndex + 1))
+                        backtrack(resultList, counter + 1, givenString, 
+                            currList, palindromeDPArray)
+//  remove the added palindrome for next iteration
+                        currList.removeAt(currList.size - 1)
+                    }
+                }
+    }
+}
+
+
+
+Longest Common Subsequence - Given two strings text1 and text2, return the length of their longest common subsequence. If there is no common subsequence, return 0.
+
+class Solution {
+    fun longestCommonSubsequence(text1: String, text2: String): Int {
+//  don't have to be contiguous 
+
+        var dpGrid = Array(text1.length + 1){ IntArray(text2.length + 1) }
+
+        for(col in text2.length - 1 downTo 0){
+            for(row in text1.length - 1 downTo 0){
+                if(text1[row] == text2[col]){
+                    dpGrid[row][col] = 1 + dpGrid[row + 1][col + 1]
+                }else{
+                    dpGrid[row][col] = maxOf(dpGrid[row + 1][col], dpGrid[row][col + 1])
+                }
+            }
+        }
+
+        return dpGrid[0][0]
+    }
+}
+
+
+
+Sum of Subarray Minimums - Given an array of integers arr, find the sum of min(b), where b ranges over every (contiguous) subarray of arr. Since the answer may be large, return the answer modulo 109 + 7.
+
+class Solution {
+    fun sumSubarrayMins(arr: IntArray): Int {
+        val subArrayMinSumsDP = IntArray(arr.size)
+//  this dp array will keep the sum of mins of subarrays ending at index i
+
+        val indicesStack = mutableListOf<Int>()
+        val MOD = 1_00_00_00_007
+
+        for(counter in 0 until arr.size){
+            while(!indicesStack.isEmpty() && arr[indicesStack.last()] >= arr[counter]){
+//  monotonic stack
+//  find the smaller item which will control the sums till its index
+                indicesStack.removeAt(indicesStack.size - 1)
+            }
+
+            if(indicesStack.size > 0){
+//  there is a prev smaller item                
+                val prevSmallIndex = indicesStack.last()
+//  we already have the sums till prev small item index and for the remaining the current item is the smallest
+                subArrayMinSumsDP[counter] =  
+                (counter - prevSmallIndex) * arr[counter] + subArrayMinSumsDP[prevSmallIndex] 
+            }else{
+//  for all the items before counter, current one is the smallest                
+                subArrayMinSumsDP[counter] = (counter + 1) * arr[counter]
+            }
+            indicesStack.add(counter)
+        }
+
+        var sumOfMins = 0L
+        for(sum in subArrayMinSumsDP){
+            sumOfMins += sum
+            sumOfMins %= MOD
+        }
+
+        return sumOfMins.toInt()
+    }
+}
+
+
+
+Maximum Product Subarray - Given an integer array nums, find a subarray that has the largest product, and return the product
+
+class Solution {
+    fun maxProduct(nums: IntArray): Int {
+        if(nums.size == 0){
+            return 0
+        }
+
+        var maxProductSoFar = nums[0]
+        var minProductSoFar = nums[0]
+        var result = maxProductSoFar
+
+        for(counter in 1 until nums.size){
+            val currNum = nums[counter]
+
+//  either we discard the prev subarray or we choose
+            val tempMax = maxOf(currNum, 
+                            maxOf(currNum * maxProductSoFar, currNum * minProductSoFar))
+
+//  because we have negative numbers; minProductSoFar can make big number later
+            minProductSoFar = minOf(currNum, 
+                            minOf(currNum * maxProductSoFar, currNum * minProductSoFar))
+
+            maxProductSoFar = tempMax
+            result = maxOf(result, maxProductSoFar)
+        }
+
+        return result
+    }
+}
+
+
+
+Unique Paths - There is a robot on an m x n grid. The robot is initially located at the top-left corner (i.e., grid[0][0]). The robot tries to move to the bottom-right corner (i.e., grid[m - 1][n - 1]). The robot can only move either down or right at any point in time.
+
+Given the two integers m and n, return the number of possible unique paths that the robot can take to reach the bottom-right corner.
+
+class Solution {
+    fun uniquePaths(m: Int, n: Int): Int {
+        val dpPathArray = Array(m) { IntArray(n) }
+
+//  there is only one way to cover all the rows in first column
+        for(row in 0 until m){
+            dpPathArray[row][0] = 1
+        }
+
+//  there is only one way to cover all the columns in first row
+        for(col in 0 until n){
+            dpPathArray[0][col] = 1
+        }
+
+        for(row in 1 until m){
+            for(col in 1 until n){
+//  for each cell there are 2 ways to come                
+                dpPathArray[row][col] = dpPathArray[row - 1][col] + dpPathArray[row][col - 1]
+            }
+        }
+
+        return dpPathArray[m - 1][n - 1]
+    }
+}
+
+
+
+Climbing Stairs - You are climbing a staircase. It takes n steps to reach the top.
+Each time you can either climb 1 or 2 steps. In how many distinct ways can you climb to the top?
+
+class Solution {
+    fun climbStairs(n: Int): Int {
+//  we will solve this using DP        
+        if(n == 1){
+            return 1
+        }
+
+        val dpArr = IntArray(n + 1)
+//  one way to climb
+        dpArr[1] = 1
+//  two ways to climb
+        dpArr[2] = 2
+
+        for(counter in 3 until n + 1){
+//  we need number of ways
+//  either we can come from 2 steps below or 1 step below
+            dpArr[counter] = dpArr[counter - 1] + dpArr[counter - 2]
+        }
+
+        return dpArr[n]
+    }
+}
+
+
+
+Decode Ways - A message containing letters from A-Z can be encoded into numbers using the following mapping:
+
+'A' -> "1"
+'B' -> "2"
+...
+'Z' -> "26"
+To decode an encoded message, all the digits must be grouped then mapped back into letters using the reverse of the mapping above (there may be multiple ways). For example, "11106" can be mapped into:
+
+"AAJF" with the grouping (1 1 10 6)
+"KJF" with the grouping (11 10 6)
+Note that the grouping (1 11 06) is invalid because "06" cannot be mapped into 'F' since "6" is different from "06".
+
+Given a string s containing only digits, return the number of ways to decode it.
+
+class Solution {
+    fun numDecodings(s: String): Int {
+        if(s[0] == '0'){
+//  there is no mapping possible
+            return 0
+        }
+
+        val dpArr = IntArray(s.length + 1)
+        dpArr[0] = 1
+
+        dpArr[1] = 1
+
+        for(charCounter in 1 until s.length){
+            if(s[charCounter] != '0'){
+//  only taking the current char
+                dpArr[charCounter + 1] = dpArr[charCounter]
+            }
+
+            val twoDigits = s.substring(charCounter - 1, charCounter + 1).toInt()
+            if(twoDigits >= 10 && twoDigits <= 26){
+//  other ways to decode if we take the last 2 chars
+                dpArr[charCounter + 1] += dpArr[charCounter - 1]
+            }
+        }
+
+        return dpArr[s.length]
+    }
+}
+
+
+
+Longest Increasing Path in a Matrix - Given an m x n integers matrix, return the length of the longest increasing path in matrix.
+
+From each cell, you can either move in four directions: left, right, up, or down. You may not move diagonally or move outside the boundary (i.e., wrap-around is not allowed).
+
+var numRows = 0, numCols = 0
+
+function longestIncreasingPath(matrix: number[][]): number {
+    if(matrix.length == 0){
+        return 0
+    }
+
+    numRows = matrix.length
+    numCols = matrix[0].length
+
+    var cache: number[][] = new Array(numRows).fill(0)
+                                                .map(() => 
+                                                    new Array(numCols).fill(0)
+                                                );
+
+    var pathAns = 0
+
+    for(var row = 0; row < numRows; row++){
+        for(var col = 0; col < numCols; col++){
+//  find the path from all the points            
+            pathAns = Math.max(pathAns, dfs(matrix, row, col, cache))
+        }
+    }
+
+    return pathAns
+};
+
+function dfs(matrix: number[][], row: number, col: number, cache: number[][]): number{
+    if(cache[row][col] != 0){
+//  we already have visited this node        
+        return cache[row][col]
+    }
+
+//  can move in these directions
+    var directions = [[-1, 0], [1, 0], [0, -1], [0, 1]]
+    for(var dir of directions){
+        var currRow = row + dir[0]
+        var currCol = col + dir[1]
+
+        if(currRow >= 0 && currCol >= 0 && currRow < numRows && currCol< numCols 
+            && matrix[currRow][currCol] > matrix[row][col]){
+//  find the longest path from this point                
+            cache[row][col] = Math.max(cache[row][col],
+                                    dfs(matrix, currRow, currCol, cache))
+        }
+    }
+
+//  include the current point as well
+    cache[row][col]++
+
+    return cache[row][col]
+}
+
+
+
+Longest Increasing Subsequence - Given an integer array nums, return the length of the longest strictly increasing subsequence
+
+function lengthOfLIS(nums: number[]): number {
+    var dpArr: number[] = Array(nums.length).fill(1)
+//  be default the min length is 1    
+    var maxLength = 1
+
+    for(var i = 0; i < nums.length; i++){
+        for(var j = 0; j < i; j++){
+//  ensure increasing subsequence
+            if(nums[i] > nums[j]){
+                dpArr[i] = Math.max(dpArr[i], 1 + dpArr[j])
+//  either the current value of prev seq with current index                
+                maxLength = Math.max(maxLength, dpArr[i])
+            }
+        }
+    }
+
+    return maxLength
+};
+
+
+
+Maximum Profit in Job Scheduling - We have n jobs, where every job is scheduled to be done from startTime[i] to endTime[i], obtaining a profit of profit[i].
+
+You're given the startTime, endTime and profit arrays, return the maximum profit you can take such that there are no two jobs in the subset with overlapping time range.
+
+If you choose a job that ends at time X you will be able to start another job that starts at time X.
+
+function jobScheduling(startTime: number[], endTime: number[], profit: number[]): number {
+//  this can be solved with dp
+
+    const jobs: [number, number, number][] = []
+
+    for(let i = 0; i < startTime.length; i++){
+        jobs.push([startTime[i], endTime[i], profit[i]])
+    }
+
+//  sort the jobs by their start times
+    jobs.sort((a, b) => a[0] - b[0])
+
+    const jobsNum = jobs.length
+    const profitDpArr: number[] = new Array(jobsNum);
+
+//  init the base case with the last job's profit
+    profitDpArr[jobsNum - 1] = jobs[jobsNum - 1][2]
+
+    for(let i = jobsNum - 2; i >= 0; i--){
+        const[start, end, profit] = jobs[i]
+        let next = i + 1
+
+        while(next < jobsNum && jobs[next][0] < end){
+//  find the next job which doesn't conflict with this one
+            next++
+        }
+
+//  either choose the combined profit of current task's profit and profits till next indexed job or continue with the profit so far
+        profitDpArr[i] = Math.max(profit + (next < jobsNum ? profitDpArr[next] : 0), 
+                                    profitDpArr[i + 1])
+    }
+
+    console.log(profitDpArr)
+    return profitDpArr[0]
+};
+
+
+
+Knight Dialer - Given an integer n, return how many distinct phone numbers of length n we can dial.
+
+You are allowed to place the knight on any numeric cell initially and then you should perform n - 1 jumps to dial a number of length n. All jumps should be valid knight jumps.
+
+/**
+ * @param {number} n
+ * @return {number}
+ */
+var knightDialer = function(n) {
+
+//  we will use dp to find the distinct phone numbers of length n 
+
+    const mod = 10 ** 9 + 7
+    const adjMap = {
+        1: [6, 8],
+        2: [7, 9],
+        3: [4, 8],
+        4: [3, 9, 0],
+        5: [],
+        6: [1, 7, 0],
+        7: [2, 6],
+        8: [1, 3],
+        9: [2, 4],
+        0: [4, 6],
+    }
+
+//  base case is length 1
+    let dpArr = new Array(10).fill(1)
+
+//  start from length 2 till n
+    for(let i = 2; i <= n; i++){
+        const newDpArr = new Array(10).fill(0)
+        for(let j = 0; j < 10; j++){
+            for(const nextDigit of adjMap[j]){
+                newDpArr[j] = (newDpArr[j] + dpArr[nextDigit]) % mod 
+            }
+        }
+
+        dpArr = newDpArr
+    }
+
+//  sum is the accumulator
+    return dpArr.reduce((sum, val) => (sum + val) % mod, 0)
+};
+
+
+
+Unique Binary Search Trees - Given an integer n, return the number of structurally unique BST's (binary search trees) which has exactly n nodes of unique values from 1 to n.
+
+/**
+ * @param {number} n
+ * @return {number}
+ */
+var numTrees = function(numNodes) {
+//  we will use DP for this
+
+//  store number of unique BSTs for each number of nodes till numNodes
+    const dpArr = new Array(numNodes + 1).fill(0)
+
+//  only 1 BST for 0 nodes
+    dpArr[0] = 1
+
+//  find unique BSTs for number of nodes till numNodes
+    for(let i = 1; i <= numNodes; i++){
+//  for each possible root node, find unique BSTs for left and right subtrees        
+        for(let j = 1; j <= i; j++){
+//  number of unique BSTs for a given root is the product of number of unique BSTs for left and right subtrees
+//  j is the root here            
+            dpArr[i] += dpArr[j - 1] * dpArr[i - j]
+        }
+    }
+
+    return dpArr[numNodes]
+};
+
+
+
+All possible full binary trees - Given an integer n, return a list of all possible full binary trees with n nodes. Each node of each tree in the answer must have Node.val == 0.
+
+const allPossibleFBT = (n) => {
+    // we will use DP to keep precomputed trees
+    const memo = {}
+
+    const createFBT = (size) => {
+        //  FBT of one node can be created
+        if (size === 1) {
+            return [new TreeNode()]
+        }
+        //  can not form FBT with even number of nodes
+        if (size % 2 == 0) {
+            return []
+        }
+        //  we have already computed the result
+        if (memo[size]) {
+            return memo[size]
+        }
+
+        const trees = []
+
+        // iterate over all possible odd numbers
+        for (let left = 1; left < size; left += 2) {
+            //  get all possible left subtress
+            const leftTrees = createFBT(left)
+            //  get all possible right subtress
+            const rightTress = createFBT(size - left - 1)
+            if (leftTrees && rightTress) {
+                //  create combination of trees
+                for (const l of leftTrees) {
+                    for (r of rightTress) {
+                        const root = new TreeNode(0, l, r)
+                        //  track the root of all trees
+                        trees.push(root)
+                    }
+                }
+            }
+        }
+
+        //  keep for future use
+        memo[size] = trees
+        return trees
+    }
+
+    return createFBT(n)
+
+};
+
+
+
+Count sorted vowel strings - Given an integer n, return the number of strings of length n that consist only of vowels (a, e, i, o, u) and are lexicographically sorted.
+
+/**
+ * @param {number} n
+ * @return {number}
+ */
+const countVowelStrings = (n) => {
+    const memo = {}
+
+    const backTrack = (index = 0, strLength = 0) => {
+        const key = index + '_' + strLength
+
+        if (memo[key]) {
+            return memo[key]
+        }
+        if (strLength === n) {
+            return 1
+        }
+
+        if (strLength > n) {
+            return 0
+        }
+
+        let count = 0
+        for (let i = index; i < 5; i++) {
+            count += backTrack(i, strLength + 1)
+        }
+
+        memo[key] = count
+
+        return count
+    }
+
+    return backTrack()
+};
+
+
+
+Count strictly increasing subarrays
+
+const countIncreasingSubarraysDP = (arr) => {
+    const n = arr.length;
+    const dp = Array(n).fill(1); // Initialize dp array with all elements set to 1
+    let count = 0;
+
+    for (let i = 1; i < n; i++) {
+        if (arr[i] > arr[i - 1]) {
+            // If the current element is greater than the previous one,
+            // update dp[i] with dp[i-1] + 1
+            dp[i] = dp[i - 1] + 1;
+        } else {
+            // If the current element is not greater than the previous one,
+            // reset dp[i] to 1
+            dp[i] = 1;
+        }
+
+        // Add the length of the increasing subarray ending at index i to the count
+        count += dp[i];
+    }
+
+    return count;
+};
+
+
+
+Count square submatrices with all 1s - Given a m * n matrix of ones and zeros, return how many square submatrices have all ones.
+
+/**
+ * @param {number[][]} matrix
+ * @return {number}
+ */
+const countSquares = (matrix) => {
+    let count = 0
+    const dp = new Array(matrix.length).fill().map(() => new Array(matrix[0].length).fill(0))
+
+    for (let i = 0; i < matrix.length; i++) {
+        for (let j = 0; j < matrix[0].length; j++) {
+            if (matrix[i][j] === 0) {
+
+            } else if (i === 0 || j === 0) {
+                dp[i][j] = 1
+                count += dp[i][j]
+            } else {
+                const side = Math.min(dp[i - 1][j], Math.min(dp[i - 1][j - 1], dp[i][j - 1]))
+                dp[i][j] = side + 1
+                count += dp[i][j]
+            }
+        }
+    }
+
+    return count
+};
+
+
