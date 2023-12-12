@@ -1,5 +1,5 @@
-Sort the matrix diagonally - Given an m x n matrix mat of integers, sort each matrix diagonal in ascending order and return the resulting matrix.
-
+/* Sort the matrix diagonally - Given an m x n matrix mat of integers, sort each matrix diagonal in ascending order and return the resulting matrix.
+ */
 const diagonalSort = (mat) => {
     const numRows = mat.length
     const numCols = mat[0].length
@@ -33,13 +33,7 @@ const sort = (mat, row, col) => {
     }
 }
 
-
-
-Wiggle sort - Given an integer array nums, reorder it such that nums[0] < nums[1] > nums[2] < nums[3]....
-
-/**
- * @param {number[]} nums
- * @return {void} Do not return anything, modify nums in-place instead.
+/* Wiggle sort - Given an integer array nums, reorder it such that nums[0] < nums[1] > nums[2] < nums[3]....
  */
 const wiggleSort = (nums) => {
     const copy = [...nums]
