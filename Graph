@@ -2,17 +2,16 @@ Smallest set of vertices to reach all nodes - Given a directed acyclic graph, wi
 
 Find the smallest set of vertices from which all nodes in the graph are reachable. It's guaranteed that a unique solution exists.
 
-/**
- * @param {number} n
- * @param {number[][]} edges
- * @return {number[]}
- */
 const findSmallestSetOfVertices = (n, edges) => {
+
+    //  nodes are numbered 0 to n - 1
+    //  by default 0 edges are incoming
     const indegree = new Array(n).fill(0)
 
-    for (const edge of edges) {
+    //  track how many edges are incoming in each node
+    for (const [from, to] of edges) {
         //  maintain count of edges to this node
-        indegree[edge[1]]++
+        indegree[to]++
     }
 
     const res = []

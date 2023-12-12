@@ -757,3 +757,38 @@ const bstToGst = (root) => {
 };
 
 
+Balance a BST - Given the root of a binary search tree, return a balanced binary search tree with the same node values. If there is more than one answer, return any of them.
+
+A binary search tree is balanced if the depth of the two subtrees of every node never differs by more than 1.
+
+const balanceBST = (root) => {
+    //  get node values in inorder
+    const nodesInOrder = toArray(root)
+
+    const toBST = (nodesInOrder) => {
+        if (nodesInOrder.length === 0) {
+            return null
+        }
+        if (nodesInOrder.length === 1) {
+            return new TreeNode(nodesInOrder[0])
+        }
+
+        // divide the array by half
+        const mid = Math.floor(nodesInOrder.length / 2)
+
+        const leftSub = toBST(nodesInOrder.slice(0, mid))
+        const rightSub = toBST(nodesInOrder.slice(mid + 1))
+
+        return new TreeNode(nodesInOrder[mid], leftSub, rightSub)
+    }
+
+    return toBST(nodesInOrder)
+};
+
+const toArray = (node) => {
+    if (node) {
+        return [...toArray(node.left), node.val, ...toArray(node.right)]
+    } else {
+        return []
+    }
+}

@@ -589,32 +589,29 @@ Note that the partition is done so that after concatenating all the parts in ord
 
 Return a list of integers representing the size of these parts.
 
-/**
- * @param {string} s
- * @return {number[]}
- */
-var partitionLabels = function (s) {
-    //  maintain the lastIndex of a char
+const partitionLabels = (s) => {
     const lastIndex = {}
 
+    //  maintain the lastIndex of a char
     for (let i = 0; i < s.length; i++) {
         lastIndex[s[i]] = i
     }
 
-    let currLast = 0
     const res = []
 
-    //  how many characters we got in last batch
-    let lastBatchSize = 0
+    //  start index of curr partition
+    let currPartitionStart = 0
+    //  end index of curr partition
+    let currPartitionEnd = 0
 
     for (let i = 0; i < s.length; i++) {
-        currLast = Math.max(lastIndex[s[i]], currLast)
+        currPartitionEnd = Math.max(lastIndex[s[i]], currPartitionEnd)
 
         //  reached the end of curr repeat char
-        if (i === currLast) {
-            //  curr batch size
-            res.push(i + 1 - lastBatchSize)
-            lastBatchSize = i + 1
+        if (i === currPartitionEnd) {
+            //  curr partition size
+            res.push(i + 1 - currPartitionStart)
+            currPartitionStart = i + 1
         }
     }
 
@@ -676,3 +673,25 @@ const restoreMatrix = (rowSum, colSum) => {
     return matrix;
 };
 
+
+Buildings With an Ocean View - Find the indices of buildings that have an unobstructed view of the ocean, assuming buildings to the right can block the view.
+
+const findBuildingsWithOceanView = (heights) => {
+  const result = [];
+  let maxRightHeight = -1;
+
+  // Iterate from right to left
+  for (let i = heights.length - 1; i >= 0; i--) {
+    const currentHeight = heights[i];
+
+    // Check if current building is taller than the maximum height seen so far
+    if (currentHeight > maxRightHeight) {
+      // Unobstructed ocean view! Add index to result
+      result.push(i);
+      maxRightHeight = currentHeight;
+    }
+  }
+
+  // Return indices of buildings with ocean view
+  return result;
+}

@@ -250,7 +250,3 @@ const minAddToMakeValid = (s) => {
 };
 
 
-
-Buildings With an Ocean View - Find the indices of buildings that have an unobstructed view of the ocean, assuming buildings to the right can block the view.
-
-
