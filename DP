@@ -764,24 +764,19 @@ const allPossibleFBT = (n) => {
 
 };
 
-
-
-Count sorted vowel strings - Given an integer n, return the number of strings of length n that consist only of vowels (a, e, i, o, u) and are lexicographically sorted.
-
-/**
- * @param {number} n
- * @return {number}
+/* Count sorted vowel strings - Given an integer n, return the number of strings of length n that consist only of vowels (a, e, i, o, u) and are lexicographically sorted.
  */
 const countVowelStrings = (n) => {
     const memo = {}
 
-    const backTrack = (index = 0, strLength = 0) => {
+    const backTrack = (index, strLength) => {
         const key = index + '_' + strLength
 
         if (memo[key]) {
             return memo[key]
         }
         if (strLength === n) {
+            //  valid vowel string 
             return 1
         }
 
@@ -799,7 +794,8 @@ const countVowelStrings = (n) => {
         return count
     }
 
-    return backTrack()
+    //  explore all possible combinations of vowels
+    return backTrack(0, 0)
 };
 
 
