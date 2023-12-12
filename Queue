@@ -132,7 +132,6 @@ class MyStack {
     };
 };
 
-
 /** 
  * Your MyStack object will be instantiated and called as such:
  * var obj = new MyStack()
@@ -142,10 +141,8 @@ class MyStack {
  * var param_4 = obj.empty()
  */
 
-
-
-Moving average from data stream - Given a stream of integers and a window size, calculate the moving average of all integers in the sliding window.
-
+/* Moving average from data stream - Given a stream of integers and a window size, calculate the moving average of all integers in the sliding window.
+ */
 class MovingAverage {
   constructor(windowSize) {
     this.windowSize = windowSize;
@@ -175,9 +172,7 @@ class MovingAverage {
   }
 }
 
-
-
-Design most recently used queue
+/* Design most recently used queue */
 
 class MRUQueue {
   constructor(capacity) {

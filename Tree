@@ -762,6 +762,14 @@ Balance a BST - Given the root of a binary search tree, return a balanced binary
 A binary search tree is balanced if the depth of the two subtrees of every node never differs by more than 1.
 
 const balanceBST = (root) => {
+    const toArray = (node) => {
+        if (node) {
+            return [...toArray(node.left), node.val, ...toArray(node.right)]
+        } else {
+            return []
+        }
+    }
+
     //  get node values in inorder
     const nodesInOrder = toArray(root)
 
@@ -785,10 +793,39 @@ const balanceBST = (root) => {
     return toBST(nodesInOrder)
 };
 
-const toArray = (node) => {
-    if (node) {
-        return [...toArray(node.left), node.val, ...toArray(node.right)]
-    } else {
-        return []
+
+Reverse odd levels of binary tree - Given the root of a perfect binary tree, reverse the node values at each odd level of the tree.
+
+const reverseOddLevels = (root) => {
+    //  do a BFS travel
+    let queue = [root]
+    let level = 0
+    while (queue.length) {
+        //  record next level to preserve order
+        const nextLevel = []
+        for (let i = 0; i < queue.length; i++) {
+            const node = queue[i]
+            if (node.left) {
+                nextLevel.push(node.left)
+            }
+            if (node.right) {
+                nextLevel.push(node.right)
+            }
+        }
+
+        if (level % 2) {
+            //  odd level; revers the current queue
+            for (let i = 0, j = queue.length - 1; i < j; i++, j--) {
+                const temp = queue[i].val
+                queue[i].val = queue[j].val
+                queue[j].val = temp
+            }
+        }
+
+        //  move to next level
+        queue = nextLevel
+        level++
     }
-}
+
+    return root
+};

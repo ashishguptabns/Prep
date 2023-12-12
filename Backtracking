@@ -146,38 +146,32 @@ class Solution {
     }
 }
 
-
-
-Permutations - Given an array nums of distinct integers, return all the possible permutations. You can return the answer in any order.
-
-/**
- * @param {number[]} nums
- * @return {number[][]}
+/* Permutations - Given an array nums of distinct integers, return all the possible permutations. You can return the answer in any order.
  */
 const permute = (nums) => {
     const res = []
-    backTrack([], nums, res)
+
+    const backTrack = (currArr, nums) => {
+        if (nums.length === 0) {
+            res.push(currArr)
+            return
+        }
+        for (let i = 0; i < nums.length; i++) {
+            //  add ith index num to currArr and remove from nums for further iteration
+            backTrack([...currArr, nums[i]], [...nums.slice(0, i), ...nums.slice(i + 1)], res)
+        }
+    }
+
+    backTrack([], nums)
     return res
 };
 
-const backTrack = (currArr, nums, res) => {
-    if (nums.length === 0) {
-        res.push(currArr)
-        return
-    }
-    for (let i = 0; i < nums.length; i++) {
-        backTrack([...currArr, nums[i]], [...nums.slice(0, i), ...nums.slice(i + 1)], res)
-    }
-}
-
-
-
-Combination Sum - Given a collection of candidate numbers (candidates) and a target number (target), find all unique combinations in candidates where the candidate numbers sum to target.
+/* Combination Sum - Given a collection of candidate numbers (candidates) and a target number (target), find all unique combinations in candidates where the candidate numbers sum to target.
 
 Each number in candidates may only be used once in the combination.
 
 Note: The solution set must not contain duplicate combinations.
-
+ */
 class Solution {
     fun combinationSum2(candidates: IntArray, target: Int): List<List<Int>> {
         val resultsList = mutableListOf<List<Int>>()

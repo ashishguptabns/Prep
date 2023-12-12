@@ -642,17 +642,10 @@ const partitionString = (s) => {
     return count
 };
 
-
-
-Find valid matrix give row sum and col sum - You are given two arrays rowSum and colSum of non-negative integers where rowSum[i] is the sum of the elements in the ith row and colSum[j] is the sum of the elements of the jth column of a 2D matrix. In other words, you do not know the elements of the matrix, but you do know the sums of each row and column.
+Find valid matrix given row sum and col sum - You are given two arrays rowSum and colSum of non-negative integers where rowSum[i] is the sum of the elements in the ith row and colSum[j] is the sum of the elements of the jth column of a 2D matrix. In other words, you do not know the elements of the matrix, but you do know the sums of each row and column.
 
 Find any matrix of non-negative integers of size rowSum.length x colSum.length that satisfies the rowSum and colSum requirements.
 
-/**
- * @param {number[]} rowSum
- * @param {number[]} colSum
- * @return {number[][]}
- */
 const restoreMatrix = (rowSum, colSum) => {
     //  use greedy
 
@@ -662,9 +655,13 @@ const restoreMatrix = (rowSum, colSum) => {
 
     for (let row = 0; row < m; row++) {
         for (let col = 0; col < n; col++) {
+
+            //  take the min of two sums
             const min = Math.min(rowSum[row], colSum[col]);
 
             matrix[row][col] = min;
+
+            //  deduct for further iterations
             rowSum[row] -= min;
             colSum[col] -= min;
         }

@@ -641,49 +641,24 @@ const pairSum = (head) => {
     return maxTwinSum
 };
 
-
-Delete node in a linked list - Head is not given
-
-/**
- * Definition for singly-linked list.
- * function ListNode(val) {
- *     this.val = val;
- *     this.next = null;
- * }
- */
-/**
- * @param {ListNode} node
- * @return {void} Do not return anything, modify node in-place instead.
+/* Delete node in a linked list - Head is not given
  */
 const deleteNode = (node) => {
     if (node) {
+        //  take the value of next node
         node.val = node.next.val
+        //  skip next node
         node.next = node.next.next
     }
 };
 
-
-
-Spiral matrix - You are given two integers m and n, which represent the dimensions of a matrix.
+/* Spiral matrix - You are given two integers m and n, which represent the dimensions of a matrix.
 
 You are also given the head of a linked list of integers.
 
 Generate an m x n matrix that contains the integers in the linked list presented in spiral order (clockwise), starting from the top-left of the matrix. If there are remaining empty spaces, fill them with -1.
 
 Return the generated matrix.
-
-/**
- * Definition for singly-linked list.
- * function ListNode(val, next) {
- *     this.val = (val===undefined ? 0 : val)
- *     this.next = (next===undefined ? null : next)
- * }
- */
-/**
- * @param {number} m
- * @param {number} n
- * @param {ListNode} head
- * @return {number[][]}
  */
 const spiralMatrix = (m, n, head) => {
     let currRow = 0
