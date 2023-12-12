@@ -624,16 +624,15 @@ Optimal partition of string - Given a string s, partition the string into one or
 
 Return the minimum number of substrings in such a partition.
 
-/**
- * @param {string} s
- * @return {number}
- */
 const partitionString = (s) => {
     let count = 1
     let currChars = []
     for (const char of s) {
         if (currChars.includes(char)) {
+            //  found a repeat char
+            //  break this substring
             count++
+            //  update for next substring
             currChars = [char]
         } else {
             currChars.push(char)
