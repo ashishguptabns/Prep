@@ -552,9 +552,25 @@ const countBattleships = (board) => {
 
     let ships = 0
 
+    const clearAdjacent = (board, row, col) => {
+        if (row < 0 || row >= board.length || col < 0 || col >= board[row].length
+            || board[row][col] === '.') {
+            return
+        }
+
+        board[row][col] = '.'
+
+        clearAdjacent(board, row + 1, col)
+        clearAdjacent(board, row - 1, col)
+        clearAdjacent(board, row, col + 1)
+        clearAdjacent(board, row, col - 1)
+    }
+
+    //  visit each cell and mark adjacent cells
     for (let row = 0; row < board.length; row++) {
         for (let col = 0; col < board[row].length; col++) {
             if (board[row][col] === 'X') {
+                //  found a ship as per def
                 ships++
                 clearAdjacent(board, row, col)
             }
@@ -563,21 +579,6 @@ const countBattleships = (board) => {
 
     return ships
 };
-
-const clearAdjacent = (board, row, col) => {
-    if (row < 0 || row >= board.length || col < 0 || col >= board[row].length
-        || board[row][col] === '.') {
-        return
-    }
-
-    board[row][col] = '.'
-
-    clearAdjacent(board, row + 1, col)
-    clearAdjacent(board, row - 1, col)
-    clearAdjacent(board, row, col + 1)
-    clearAdjacent(board, row, col - 1)
-}
-
 
 
 Find eventual safe states - There is a directed graph of n nodes with each node labeled from 0 to n - 1. The graph is represented by a 0-indexed 2D integer array graph where graph[i] is an integer array of nodes adjacent to node i, meaning there is an edge from node i to each node in graph[i].
@@ -660,6 +661,8 @@ const maxAreaOfIsland = (grid) => {
     };
 
     let maxArea = 0
+
+    //  visit each cell
     for (let r = 0; r < ROWS; r++) {
         for (let c = 0; c < COLUMNS; c++) {
             if (grid[r][c] === 1) {

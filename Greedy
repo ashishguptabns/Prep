@@ -203,66 +203,6 @@ class Solution {
 }
 
 
-
-Maximum Ice Cream Bars - At the store, there are n ice cream bars. You are given an array costs of length n, where costs[i] is the price of the ith ice cream bar in coins. The boy initially has coins coins to spend, and he wants to buy as many ice cream bars as possible. 
-
-Note: The boy can buy the ice cream bars in any order.
-
-Return the maximum number of ice cream bars the boy can buy with coins coins.
-
-You must solve the problem by counting sort.
-
-class Solution {
-    fun maxIceCream(costs: IntArray, money: Int): Int {
-//  we have to solve this using counting sort
-
-        val availableIcecreams = costs.size
-        var chosenIcecreams = 0
-
-        var maxCost = costs[0]
-//  max cost of an icecream        
-        for(cost in costs){
-            maxCost = maxOf(cost, maxCost)
-        }
-
-        val costFreq = IntArray(maxCost + 1)
-//  how many ice creams cost the same coins
-//  now we have all the icecreams sorted by their freq
-        for(cost in costs){
-            costFreq[cost]++
-        }
-
-        var moneyLeft = money
-
-        for(cost in 1 until maxCost + 1){
-//  start with low cost ice creams
-
-            if(costFreq[cost] == 0){
-//  we don't have any ice cream for this cost                
-                continue
-            }
-
-            if(moneyLeft < cost){
-//  we don't have enough money to go further                
-                break
-            }
-
-//  how many icecreams costing cost we can pick?
-//  minOf because maybe we can pick 20 but only 3 icecreams costing cost are there and vice versa
-            val numIcecreams = minOf(costFreq[cost], moneyLeft / cost)
-
-//  we spent money            
-            moneyLeft -= cost * numIcecreams
-            
-            chosenIcecreams += numIcecreams
-        }
-
-        return chosenIcecreams
-    }
-}
-
-
-
 Two City Scheduling - A company is planning to interview 2n people. Given the array costs where costs[i] = [aCosti, bCosti], the cost of flying the ith person to city a is aCosti, and the cost of flying the ith person to city b is bCosti.
 
 Return the minimum cost to fly every person to a city such that exactly n people arrive in each city.
@@ -446,16 +386,15 @@ Return the minimum number of operations needed to make s equal to target.
  * @param {string} target
  * @return {number}
  */
-var minFlips = function(target) {
-    
-//  we will solve this with greedy
+const minFlips = (target) => {
+    //  we will solve this with greedy
 
     let flipCount = 0
     let currChar = '0'
 
-    for(let i = 0; i < target.length; i++){
-        if(target[i] != currChar){
-//  this we are doing because we have a range to flip            
+    for (let i = 0; i < target.length; i++) {
+        if (target[i] != currChar) {
+            //  this we are doing because we have a range to flip            
             currChar = target[i]
             flipCount++
         }
@@ -463,7 +402,6 @@ var minFlips = function(target) {
 
     return flipCount
 };
-
 
 
 Minimize product sum of two arrays 

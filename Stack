@@ -221,13 +221,7 @@ class Solution {
     }
 }
 
-
-
-Minimum add to make parentheses valid - find the minimum number of parentheses to add to make a given string of parentheses valid
-
-/**
- * @param {string} s
- * @return {number}
+/* Minimum add to make parentheses valid - find the minimum number of parentheses to add to make a given string of parentheses valid
  */
 const minAddToMakeValid = (s) => {
     const stack = []
@@ -240,12 +234,13 @@ const minAddToMakeValid = (s) => {
                 //  found a match
                 stack.pop()
             } else {
-                //  no match, add a parenthesis
+                //  no match, add this parenthesis for calculation
                 stack.push(char)
             }
         }
     }
 
+    //  unmatched parentheses are still in stack
     return stack.length
 };
 

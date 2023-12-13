@@ -54,3 +54,41 @@ const wiggleSort = (nums) => {
     }
 };
 
+/* Maximum ice cream bars - At the store, there are n ice cream bars. You are given an array costs of length n, where costs[i] is the price of the ith ice cream bar in coins. The boy initially has coins coins to spend, and he wants to buy as many ice cream bars as possible. 
+
+Note: The boy can buy the ice cream bars in any order.
+
+Return the maximum number of ice cream bars the boy can buy with coins coins.
+
+You must solve the problem by counting sort.
+ */
+/**
+ * @param {number[]} costs
+ * @param {number} coins
+ * @return {number}
+ */
+/**
+ * @param {number[]} costs
+ * @param {number} coins
+ * @return {number}
+ */
+const maxIceCream = (costs, coins) => {
+
+    //  track frequencies of each cost entity
+    const frequencies = Array(Math.max(...costs) + 1).fill(0)
+    for (const cost of costs) {
+        frequencies[cost] += 1
+    }
+
+    let bars = 0
+    //  we are moving from low to high so count will be maximum
+    for (let cost = 1; cost <= coins && cost < frequencies.length; ++cost) {
+        //  min is required cause there might not be enough coins or enough items
+        const count = Math.min(frequencies[cost], Math.floor(coins / cost))
+
+        //  update left coins
+        coins -= cost * count
+        bars += count
+    }
+    return bars
+};

@@ -864,3 +864,59 @@ const pathInZigZagTree = (label) => {
     }
     return [...getParent(label, level), label];
 };
+
+Construct quad tree - Given a n * n matrix grid of 0's and 1's only. We want to represent grid with a Quad-Tree.
+
+Return the root of the Quad-Tree representing grid.
+
+/**
+ * // Definition for a QuadTree node.
+ * function Node(val,isLeaf,topLeft,topRight,bottomLeft,bottomRight) {
+ *    this.val = val;
+ *    this.isLeaf = isLeaf;
+ *    this.topLeft = topLeft;
+ *    this.topRight = topRight;
+ *    this.bottomLeft = bottomLeft;
+ *    this.bottomRight = bottomRight;
+ * };
+ */
+
+/**
+ * @param {number[][]} grid
+ * @return {Node}
+ */
+const construct = (grid) => {
+    //  n * n grid
+    let n = grid.length;
+
+    //  rowStart, rowEnd, colStart, colEnd
+    const quadTree = (rs, re, cs, ce) => {
+        const len = re - rs;
+        if (len === 1) {
+            //  leaf node
+            return new Node(grid[rs][cs], 1);
+        }
+        let mid = Math.floor(len / 2);
+
+        //  find children
+        let topLeft = quadTree(rs, rs + mid, cs, cs + mid);
+        let topRight = quadTree(rs, rs + mid, cs + mid, ce);
+        let bottomLeft = quadTree(rs + mid, re, cs, cs + mid);
+        let bottomRight = quadTree(rs + mid, re, cs + mid, ce);
+
+        const topLeftVal = topLeft.val
+        //  all children are leafs
+        if (topLeft.isLeaf && topRight.isLeaf && bottomLeft.isLeaf && bottomRight.isLeaf) {
+            //  all children have same values
+            if (topLeftVal === topRight.val && topLeftVal === bottomLeft.val && topLeftVal === bottomRight.val) {
+                //  leaf node
+                return new Node(topLeftVal, 1);
+            }
+        }
+
+        //  not a leaf node
+        return new Node(1, 0, topLeft, topRight, bottomLeft, bottomRight);
+    }
+    const head = quadTree(0, n, 0, n);
+    return head;
+};

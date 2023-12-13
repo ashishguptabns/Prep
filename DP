@@ -825,28 +825,31 @@ const countIncreasingSubarraysDP = (arr) => {
     return count;
 };
 
-
-
-Count square submatrices with all 1s - Given a m * n matrix of ones and zeros, return how many square submatrices have all ones.
-
-/**
- * @param {number[][]} matrix
- * @return {number}
+/* Count square submatrices with all 1s - Given a m * n matrix of ones and zeros, return how many square submatrices have all ones.
  */
 const countSquares = (matrix) => {
     let count = 0
+
+    //  dp array same as matrix
     const dp = new Array(matrix.length).fill().map(() => new Array(matrix[0].length).fill(0))
 
+    //  visit each cell of the matrix
     for (let i = 0; i < matrix.length; i++) {
         for (let j = 0; j < matrix[0].length; j++) {
             if (matrix[i][j] === 0) {
-
+                //  ignore 0s
             } else if (i === 0 || j === 0) {
+                //  only one sub matrix possible for each [i, j]
                 dp[i][j] = 1
                 count += dp[i][j]
             } else {
+                //  find the cell which has min submatrices in DP array
                 const side = Math.min(dp[i - 1][j], Math.min(dp[i - 1][j - 1], dp[i][j - 1]))
+
+                //  include this cell in the count
                 dp[i][j] = side + 1
+
+                //  count all submatrices
                 count += dp[i][j]
             }
         }
@@ -854,5 +857,3 @@ const countSquares = (matrix) => {
 
     return count
 };
-
-

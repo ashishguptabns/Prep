@@ -1,34 +1,33 @@
-Generate Parentheses - Given n pairs of parentheses, write a function to generate all combinations of well-formed parentheses.
+/* Generate Parentheses - Given n pairs of parentheses, write a function to generate all combinations of well-formed parentheses. */
 
-fun generateParenthesis(n: Int): List<String> {
-    val result = mutableListOf<String>()
-    backtrack(result, "", 0, 0, n)
-    return result
-}
+const generateParenthesis = (n) => {
+    const res = []
 
-fun backtrack(result: MutableList<String>, s: String, open: Int, close: Int, max: Int) {
-// 	all parentheses used
-    if (s.length == max * 2) { 
-        result.add(s)
-        return
+    //  l: left remaining, r: right remaining
+    const backTrack = (l, r, currStr) => {
+        if (currStr.length === 2 * n) {
+            res.push(currStr)
+            return
+        }
+
+        //  we still have left brackets to place
+        if (l < n) {
+            backTrack(l + 1, r, currStr + '(')
+        }
+        //  close the left bracket
+        if (r < l) {
+            backTrack(l, r + 1, currStr + ')')
+        }
     }
 
-// 	add opening parenthesis if possible
-    if (open < max) { 
-        backtrack(result, "$s(", open + 1, close, max)
-    }
+    backTrack(0, 0, '')
 
-// 	add closing parenthesis if possible
-    if (close < open) { 
-        backtrack(result, "$s)", open, close + 1, max)
-    }
-}
+    return res
+};
 
 
-
-
-Letter Combinations of a Phone Number - Given a string containing digits from 2-9 inclusive, return all possible letter combinations that the number could represent. Return the answer in any order.
-
+/* Letter Combinations of a Phone Number - Given a string containing digits from 2-9 inclusive, return all possible letter combinations that the number could represent. Return the answer in any order.
+ */
 /**
  * @param {string} digits
  * @return {string[]}
