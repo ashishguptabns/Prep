@@ -212,14 +212,10 @@ class Solution {
 
 
 
-Power set - Given an integer array nums of unique elements, return all possible 
+/* Power set - Given an integer array nums of unique elements, return all possible 
 subsets (the power set).
 
 The solution set must not contain duplicate subsets. Return the solution in any order
-
-/**
- * @param {number[]} nums
- * @return {number[][]}
  */
 const subsets = (nums) => {
 //  this will contain all the subsets    
@@ -246,15 +242,9 @@ const subsets = (nums) => {
     return result
 };
 
-
-
-Letter tile possibilities - You have n  tiles, where each tile has one letter tiles[i] printed on it.
+/* Letter tile possibilities - You have n  tiles, where each tile has one letter tiles[i] printed on it.
 
 Return the number of possible non-empty sequences of letters you can make using the letters printed on those tiles.
-
-/**
- * @param {string} tiles
- * @return {number}
  */
 const numTilePossibilities = (tiles) => {
     const set = new Set()

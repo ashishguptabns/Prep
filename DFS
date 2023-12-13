@@ -113,45 +113,25 @@ Maximum Difference Between Node and Ancestor - Given the root of a binary tree, 
 
 A node a is an ancestor of b if either: any child of a is equal to b or any child of a is an ancestor of b.
 
+const maxAncestorDiff = (root) => {
+    let maxDiff = 0
 
-/**
- * Example:
- * var ti = TreeNode(5)
- * var v = ti.`val`
- * Definition for a binary tree node.
- * class TreeNode(var `val`: Int) {
- *     var left: TreeNode? = null
- *     var right: TreeNode? = null
- * }
- */
-class Solution {
-    fun maxAncestorDiff(root: TreeNode?): Int {
+    const findDiff = (node, maxSoFar, minSoFar) => {
+        //  notice that max and min are coming from the ancestors
+        if (node) {
+            maxSoFar = Math.max(maxSoFar, node.val)
+            minSoFar = Math.min(minSoFar, node.val)
 
-//  keep going down from the root node and track currMax and currMin designated to each node
-//  when we touch any leaf node we already have currMax and currMin from all the nodes which could be the parent of this lead node and hence we can return (currMax - currMin)
-//  for any node max diff could be either in left or right subtree
+            maxDiff = Math.max(maxSoFar - minSoFar, maxDiff)
 
-        return traverse(root, Int.MIN_VALUE, Int.MAX_VALUE)
-    }
-
-    fun traverse(node: TreeNode?, currMax: Int, currMin: Int): Int{
-//  when we touch any leaf node we already have currMax and currMin from all the nodes which could be the parent of this lead node and hence we can return (currMax - currMin)
-        if(node == null){
-            return currMax - currMin
+            findDiff(node.left, maxSoFar, minSoFar)
+            findDiff(node.right, maxSoFar, minSoFar)
         }
+    }
+    findDiff(root, root.val, root.val)
 
-//  update the values for the next node
-        val newMax = maxOf(currMax, node.`val`)
-        val newMin = minOf(currMin, node.`val`)
-
-        val leftMax = traverse(node.left, newMax, newMin)
-        val rightMax = traverse(node.right, newMax, newMin)
-
-//  for any node max diff could be either in left or right subtree
-        return maxOf(leftMax, rightMax)
-    } 
-}
-
+    return maxDiff
+};
 
 
 Number of Nodes in the Sub-Tree With the Same Label - You are given a tree (i.e. a connected, undirected graph that has no cycles) consisting of n nodes numbered from 0 to n - 1 and exactly n - 1 edges. The root of the tree is the node 0, and each node of the tree has a label which is a lower-case character given in the string labels (i.e. The node with the number i has the label labels[i]).
@@ -517,18 +497,19 @@ Inorder traversal - Given the root of a binary tree, return the inorder traversa
 const inorderTraversal = (root) => {
     const inorderList = []
 
+    const findRecur = (node, inorderList) => {
+        if (node) {
+            findRecur(node.left, inorderList)
+            inorderList.push(node.val)
+            findRecur(node.right, inorderList)
+        }
+    }
+
     findRecur(root, inorderList)
 
     return inorderList
 };
 
-const findRecur = (node, inorderList) => {
-    if (node) {
-        findRecur(node.left, inorderList)
-        inorderList.push(node.val)
-        findRecur(node.right, inorderList)
-    }
-}
 
 
 
