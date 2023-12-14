@@ -171,44 +171,34 @@ Each number in candidates may only be used once in the combination.
 
 Note: The solution set must not contain duplicate combinations.
  */
-class Solution {
-    fun combinationSum2(candidates: IntArray, target: Int): List<List<Int>> {
-        val resultsList = mutableListOf<List<Int>>()
-        val combList = mutableListOf<Int>()
+/**
+ * @param {number[]} candidates
+ * @param {number} target
+ * @return {number[][]}
+ */
+const combinationSum = (candidates, target) => {
+    const res = []
 
-        candidates.sort()
-//  now we have candidates sorted by their numbers
-
-        val currIndex = 0
-        backtrack(candidates, combList, resultsList, target, currIndex)
-
-        return resultsList.toList()
-    }
-
-    fun backtrack(candidates: IntArray, combList: MutableList<Int>, 
-            resultsList: MutableList<List<Int>>, target: Int, currIndex: Int){
-        if(target == 0){
-            resultsList.add(combList.toList())
+    const backTrack = (currIndex, currArr, targetLeft) => {
+        if (0 === targetLeft) {
+            res.push([...currArr])
             return
         }
-
-        for(counter in currIndex until candidates.size){
-            if(counter > currIndex && candidates[counter] == candidates[counter - 1]){
-//  avoid duplicates                
-                continue
-            }
-
-            val pick = candidates[counter]
-            if(target - pick < 0){
-                break
-            }
-            combList.add(pick)
-            backtrack(candidates, combList, resultsList, target - pick, counter + 1)
-            combList.removeAt(combList.size - 1)
+        if (0 > targetLeft) {
+            return
+        }
+        for (let i = currIndex; i < candidates.length; i++) {
+            //  same item can be considered multiple times
+            currArr.push(candidates[i])
+            backTrack(i, currArr, targetLeft - candidates[i])
+            //  remove for next iteration
+            currArr.pop()
         }
     }
-}
+    backTrack(0, [], target)
 
+    return res
+};
 
 
 /* Power set - Given an integer array nums of unique elements, return all possible 

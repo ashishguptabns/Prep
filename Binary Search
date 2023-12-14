@@ -121,64 +121,61 @@ class Solution {
 }
 
 
-
-
-Capacity To Ship Packages Within D Days - A conveyor belt has packages that must be shipped from one port to another within given days.
+/* Capacity To Ship Packages Within D Days - A conveyor belt has packages that must be shipped from one port to another within given days.
 
 The ith package on the conveyor belt has a weight of weights[i]. Each day, we load the ship with packages on the conveyor belt (in the order given by weights). We may not load more weight than the maximum weight capacity of the ship.
 
 Return the least weight capacity of the ship that will result in all the packages on the conveyor belt being shipped within given days.
+ */
+/**
+ * @param {number[]} weights
+ * @param {number} days
+ * @return {number}
+ */
+const shipWithinDays = (weights, days) => {
+    //  we will use binary search in this
 
-class Solution {
-    fun shipWithinDays(weights: IntArray, days: Int): Int {
+    let minCapacity = 0
+    let maxCapacity = 0
 
-//  min capacity of the ship should be the max of all weights and the max capacity can be the sum of all weights
+    for (const weight of weights) {
+        //  max of all weights
+        minCapacity = Math.max(weight, minCapacity)
 
-        var maxLoad = 0
-        var totalLoad = 0
-        for(counter in 0 until weights.size){
-            maxLoad = maxOf(maxLoad, weights[counter])
-            totalLoad += weights[counter]
-        }
+        //  total of all weights for 1 day coverage
+        maxCapacity += weight
+    }
 
-        var leftCounter = maxLoad
-        var rightCounter = totalLoad
+    const isFeasible = (weights, capacity, days) => {
+        let currentLoad = 0
+        let daysNeeded = 1
 
-        while(leftCounter < rightCounter){
-            val midCounter = (leftCounter + rightCounter) / 2
-//  midCounter is a weight capacity of the ship
-            if(!isFeasible(weights, midCounter, days)){
-//  find more capacity                
-                leftCounter = midCounter + 1
-            }else{
-                rightCounter = midCounter
+        for (const weight of weights) {
+            currentLoad += weight
+            //  now load is more than the capacity
+            if (currentLoad > capacity) {
+                //  need another day for next load
+                daysNeeded++
+                //  prev weights were done in prev days
+                currentLoad = weight
             }
         }
 
-        return leftCounter
+        return daysNeeded <= days
     }
 
-    fun isFeasible(weights: IntArray, capacity: Int, days: Int): Boolean{
-
-        var currentLoad = 0
-        var daysNeededWithGivenCapacity = 1
-
-        for(counter in 0 until weights.size){
-            currentLoad += weights[counter]
-            if(capacity < currentLoad){
-//  can't carry this load in one day
-                daysNeededWithGivenCapacity++
-//  update the load for next day
-                currentLoad = weights[counter]  
-            }
+    while (minCapacity < maxCapacity) {
+        const mid = Math.floor((minCapacity + maxCapacity) / 2)
+        if (isFeasible(weights, mid, days)) {
+            //  solution might be on the left side
+            maxCapacity = mid
+        } else {
+            minCapacity = mid + 1
         }
-
-//  check if all the load can be carried before stipulated days
-        return daysNeededWithGivenCapacity <= days
     }
-}
 
-
+    return minCapacity
+};
 
 
 Find Peak Element - A peak element is an element that is strictly greater than its neighbors.
@@ -209,28 +206,33 @@ class Solution {
 }
 
 
-Peak Index in a Mountain Array - Given a mountain array arr, return the index i such that arr[0] < arr[1] < ... < arr[i - 1] < arr[i] > arr[i + 1] > ... > arr[arr.length - 1].
+/* Peak Index in a Mountain Array - Given a mountain array arr, return the index i such that arr[0] < arr[1] < ... < arr[i - 1] < arr[i] > arr[i + 1] > ... > arr[arr.length - 1].
 
 You must solve it in O(log(arr.length)) time complexity.
+ */
+/**
+ * @param {number[]} arr
+ * @return {number}
+ */
+const peakIndexInMountainArray = (arr) => {
+    //  cause of time constraints we have to use binary search
 
-class Solution {
-    fun peakIndexInMountainArray(arr: IntArray): Int {
-        var leftCounter = 0
-        var rightCounter = arr.size
+    let left = 0
+    let right = arr.length
 
-        while(leftCounter < rightCounter){
-            val middle = (leftCounter + rightCounter) / 2
-            if(arr[middle] < arr[middle + 1]){
-//  peak is on the right
-                leftCounter = middle + 1                
-            }else{
-                rightCounter = middle
-            }
+    while (left < right) {
+        const mid = Math.floor((left + right) / 2)
+        if (arr[mid + 1] > arr[mid]) {
+            //  peak is on the right
+            //  notice the condition of a peak
+            left = mid + 1
+        } else {
+            right = mid
         }
-
-        return leftCounter
     }
-}
+
+    return left
+};
 
 
 

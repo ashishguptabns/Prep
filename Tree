@@ -277,36 +277,33 @@ Kth Smallest Element in a BST
 
 /**
  * Definition for a binary tree node.
- * class TreeNode {
- *     val: number
- *     left: TreeNode | null
- *     right: TreeNode | null
- *     constructor(val?: number, left?: TreeNode | null, right?: TreeNode | null) {
- *         this.val = (val===undefined ? 0 : val)
- *         this.left = (left===undefined ? null : left)
- *         this.right = (right===undefined ? null : right)
- *     }
+ * function TreeNode(val, left, right) {
+ *     this.val = (val===undefined ? 0 : val)
+ *     this.left = (left===undefined ? null : left)
+ *     this.right = (right===undefined ? null : right)
  * }
  */
+/**
+ * @param {TreeNode} root
+ * @param {number} k
+ * @return {number}
+ */
+const kthSmallest = function (root, k) {
+    const inorderArr = []
 
-function kthSmallest(root: TreeNode | null, k: number): number {
-//  do an inorder traversal
-    let inorderList = inorder(root, [])
-
-    return inorderList[k - 1]
-};
-
-function inorder(node: TreeNode, list: number[]): number[]{
-    if(node == null){
-        return
+    const inorder = (root) => {
+        if(root){
+            inorder(root.left)
+            inorderArr.push(root.val)
+            inorder(root.right)
+        }
     }
-    inorder(node.left, list)
-    list.push(node.val)
-    inorder(node.right, list)
-    
-    return list
-}
 
+    inorder(root)
+
+    //  k = 1 means 0th element
+    return inorderArr[k - 1]
+};
 
 
 Binary Tree Level Order Traversal
