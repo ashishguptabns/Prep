@@ -151,14 +151,12 @@ class Solution {
     }
 }
 
-
-
-Kth largest element in an array - Given an integer array nums and an integer k, return the kth largest element in the array.
+/* Kth largest element in an array - Given an integer array nums and an integer k, return the kth largest element in the array.
 
 Note that it is the kth largest element in the sorted order, not the kth distinct element.
 
 Can you solve it without sorting?
-
+ */
 /**
  * @param {number[]} nums
  * @param {number} k
@@ -166,13 +164,17 @@ Can you solve it without sorting?
  */
 const findKthLargest = (nums, k) => {
     const minHeap = new MinHeap()
+
+    //  push all items
     for (const num of nums) {
         minHeap.push(num)
     }
 
     for (let i = 0; i < nums.length; i++) {
+        //  keep popping
         const element = minHeap.pop()
         if (nums.length - i === k) {
+            //  kth largest
             return element
         }
     }
@@ -181,12 +183,15 @@ const findKthLargest = (nums, k) => {
 };
 
 class MinHeap {
+    //  each node should be less than or equal to its children
+
     constructor() {
         this.heap = [];
     }
 
     push(val) {
         this.heap.push(val);
+        //  move up the tree
         this.heapifyUp();
     }
 
@@ -200,6 +205,7 @@ class MinHeap {
 
         if (this.heap.length > 0) {
             this.heap[0] = lastNode;
+            //  move down the tree
             this.heapifyDown();
         }
 
@@ -211,11 +217,13 @@ class MinHeap {
     }
 
     heapifyUp() {
+        //  start from end
         let index = this.heap.length - 1;
 
         while (index > 0) {
             const parentIndex = Math.floor((index - 1) / 2);
 
+            //  child should be bigger
             if (this.heap[index] < this.heap[parentIndex]) {
                 this.swap(index, parentIndex);
                 index = parentIndex;
@@ -275,10 +283,10 @@ A half-closed interval [a, b) is the interval between a and b including a and no
 
 
 
-Maximum score from removing stones - You are playing a solitaire game with three piles of stones of sizes a​​​​​​, b,​​​​​​ and c​​​​​​ respectively. Each turn you choose two different non-empty piles, take one stone from each, and add 1 point to your score. The game stops when there are fewer than two non-empty piles (meaning there are no more available moves).
+/* Maximum score from removing stones - You are playing a solitaire game with three piles of stones of sizes a​​​​​​, b,​​​​​​ and c​​​​​​ respectively. Each turn you choose two different non-empty piles, take one stone from each, and add 1 point to your score. The game stops when there are fewer than two non-empty piles (meaning there are no more available moves).
 
 Given three integers a​​​​​, b,​​​​​ and c​​​​​, return the maximum score you can get.
-
+ */
 /**
  * @param {number} a
  * @param {number} b
@@ -303,9 +311,11 @@ const maximumScore = (a, b, c) => {
         const pile2 = maxHeap.pop()
 
         if (pile1 > 1) {
+            //  take out one stone
             maxHeap.push(pile1 - 1)
         }
         if (pile2 > 1) {
+            //  take out one stone
             maxHeap.push(pile2 - 1)
         }
 
@@ -316,12 +326,16 @@ const maximumScore = (a, b, c) => {
 };
 
 class MaxHeap {
+    //  a binary tree where value of each node is greater than or equal to the values of the children
+
     constructor() {
         this.heap = []
     }
 
     push(value) {
+        //  push as the last item
         this.heap.push(value)
+        //  move up to right position
         this.heapifyUp()
     }
 
@@ -334,9 +348,11 @@ class MaxHeap {
             return null
         }
 
+        //  return the top item
         const root = this.heap[0]
-        const last = this.heap.pop()
 
+        //  put the last item to top and move down to right position
+        const last = this.heap.pop()
         if (!this.isEmpty()) {
             this.heap[0] = last
             this.heapifyDown()
@@ -346,16 +362,21 @@ class MaxHeap {
     }
 
     heapifyUp() {
+        //  start from the last item
         let currentIdx = this.heap.length - 1;
 
+        //  keep going up the tree
         while (currentIdx > 0) {
+            //  parent is at (i - 1) / 2
             const parentIdx = Math.floor((currentIdx - 1) / 2);
 
             if (this.heap[currentIdx] > this.heap[parentIdx]) {
+                //  child is bigger than parent hence swap
                 [this.heap[currentIdx], this.heap[parentIdx]] = [
                     this.heap[parentIdx],
                     this.heap[currentIdx],
                 ];
+                //  move up
                 currentIdx = parentIdx;
             } else {
                 break;
@@ -364,6 +385,7 @@ class MaxHeap {
     }
 
     heapifyDown() {
+        //  start from the top
         let currentIdx = 0;
 
         while (true) {
@@ -372,11 +394,14 @@ class MaxHeap {
             let swapIdx = null;
 
             if (leftChildIdx < this.heap.length && this.heap[leftChildIdx] > this.heap[currentIdx]) {
+                //  child is bigger than parent
                 swapIdx = leftChildIdx;
             }
 
             if (rightChildIdx < this.heap.length && this.heap[rightChildIdx] > this.heap[currentIdx]) {
+                //  child is bigger than parent
                 if (swapIdx === null || this.heap[rightChildIdx] > this.heap[swapIdx]) {
+                    //  right child can be better option than left
                     swapIdx = rightChildIdx;
                 }
             }
@@ -385,6 +410,7 @@ class MaxHeap {
                 break;
             }
 
+            //  swap and move down
             [this.heap[currentIdx], this.heap[swapIdx]] = [this.heap[swapIdx], this.heap[currentIdx]];
             currentIdx = swapIdx;
         }

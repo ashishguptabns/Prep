@@ -4,6 +4,21 @@ const diagonalSort = (mat) => {
     const numRows = mat.length
     const numCols = mat[0].length
 
+    const sort = (mat, row, col) => {
+        const diagonal = []
+    
+        while (row < mat.length && col < mat[0].length) {
+            diagonal.push(mat[row++][col++])
+        }
+    
+        diagonal.sort((a, b) => a - b)
+    
+        while (row > 0 && col > 0) {
+            //  put the elements back
+            mat[--row][--col] = diagonal.pop()
+        }
+    }
+
     for (let col = 0; col < numCols; col++) {
         //  sort the upper half
         sort(mat, 0, col)
@@ -18,20 +33,7 @@ const diagonalSort = (mat) => {
 
 };
 
-const sort = (mat, row, col) => {
-    const diagonal = []
 
-    while (row < mat.length && col < mat[0].length) {
-        diagonal.push(mat[row++][col++])
-    }
-
-    diagonal.sort((a, b) => a - b)
-
-    while (row > 0 && col > 0) {
-        //  put the elements back
-        mat[--row][--col] = diagonal.pop()
-    }
-}
 
 /* Wiggle sort - Given an integer array nums, reorder it such that nums[0] < nums[1] > nums[2] < nums[3]....
  */
@@ -91,4 +93,30 @@ const maxIceCream = (costs, coins) => {
         bars += count
     }
     return bars
+};
+
+/* Group anagrams - Given an array of strings strs, group the anagrams together. You can return the answer in any order. */
+
+/**
+ * @param {string[]} strs
+ * @return {string[][]}
+ */
+const groupAnagrams = (strs) => {
+    //  sort the strings and maintain a map
+
+    const map = new Map()
+
+    const getHash = (str) => {
+        return str.split('').sort().join('')
+    }
+    strs.forEach((str) => {
+        const key = getHash(str)
+        if (map.has(key)) {
+            map.get(key).push(str)
+        } else {
+            map.set(key, [str])
+        }
+    })
+
+    return [...map.values()]
 };

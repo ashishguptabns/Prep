@@ -1,4 +1,4 @@
-Longest Palindromic substring - Given a string s, return the longest Palindromic substring in s.
+/* Longest Palindromic substring - Given a string s, return the longest Palindromic substring in s. */
 
 /**
  * @param {string} s
@@ -236,10 +236,8 @@ class Solution {
 }
 
 
-
-
-Perfect Squares - Given an integer n, return the least number of perfect square numbers that sum to n.
-
+/* Perfect Squares - Given an integer n, return the least number of perfect square numbers that sum to n.
+ */
 class Solution {
     fun numSquares(n: Int): Int {
 
@@ -266,51 +264,46 @@ class Solution {
     }
 }
 
-
-
-Palindrome Partitioning - Given a string s, partition s such that every 
+/* Palindrome Partitioning - Given a string s, partition s such that every 
 substring of the partition is a palindrome. Return all possible palindrome partitioning of s.
+ */
+/**
+ * @param {string} s
+ * @return {string[][]}
+ */
+const partition = (s) => {
+    //  use DP
 
-class Solution {
-    fun partition(s: String): List<List<String>> {
-//  for each char we will backtrack towards right and record palindromes
-        val resultList = mutableListOf<List<String>>()
-        val startIndex = 0
-        val currList = mutableListOf<String>()
-        val palindromeDPArray = Array(s.length){ BooleanArray(s.length) }
+    const dp = Array.from({ length: s.length }, () => Array(s.length).fill(false))
 
-        backtrack(resultList, startIndex, s, currList, palindromeDPArray)
+    const res = []
 
-        return resultList
+    const dfs = (start, currList) => {
+        if (start == s.length) {
+            //  reached the end
+            res.push([...currList])
+        }
+
+        //  explore all substrings
+        for (let end = start; end < s.length; end++) {
+            //  found a palindrome
+            if (s[start] === s[end] && (end - start <= 2 || dp[start + 1][end - 1])) {
+                dp[start][end] = true
+                currList.push(s.slice(start, end + 1))
+                dfs(end + 1, currList)
+                //  remove this palindrome for further iterations
+                currList.pop()
+            }
+        }
     }
 
-    fun backtrack(resultList: MutableList<List<String>>, startIndex: Int, 
-            givenString: String, currList: MutableList<String>, 
-            palindromeDPArray: Array<BooleanArray>){
-                
-                if(startIndex >= givenString.length){
-//  we covered the whole string
-                    resultList.add(ArrayList(currList))             
-                }
+    dfs(0, [])
 
-                for(counter in startIndex until givenString.length){
-                    if(givenString[startIndex] == givenString[counter] && (counter - startIndex <= 2 || palindromeDPArray[startIndex + 1][counter - 1])){
-//  we found a palindrome substring; counter - startIndex <= 2 means we have 3 chars
-                        palindromeDPArray[startIndex][counter] = true
-                        currList.add(givenString.drop(startIndex).take(counter - startIndex + 1))
-                        backtrack(resultList, counter + 1, givenString, 
-                            currList, palindromeDPArray)
-//  remove the added palindrome for next iteration
-                        currList.removeAt(currList.size - 1)
-                    }
-                }
-    }
-}
+    return res
+};
 
-
-
-Longest Common Subsequence - Given two strings text1 and text2, return the length of their longest common subsequence. If there is no common subsequence, return 0.
-
+/* Longest Common Subsequence - Given two strings text1 and text2, return the length of their longest common subsequence. If there is no common subsequence, return 0.
+ */
 class Solution {
     fun longestCommonSubsequence(text1: String, text2: String): Int {
 //  don't have to be contiguous 

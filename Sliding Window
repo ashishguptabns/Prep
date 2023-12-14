@@ -45,51 +45,50 @@ class Solution {
     }
 }
 
-
-
-Longest Subarray of 1's After Deleting One Element - Given a binary array nums, you should delete one element from it.
+/* Longest Subarray of 1's After Deleting One Element - Given a binary array nums, you should delete one element from it.
 
 Return the size of the longest non-empty subarray containing only 1's in the resulting array. Return 0 if there is no such subarray.
+ */
+/**
+ * @param {number[]} nums
+ * @return {number}
+ */
+const longestSubarray = (nums) => {
+    //  solve this using two pointers
 
-class Solution {
-    fun longestSubarray(nums: IntArray): Int {
-//  we will keep two counters left and right for our subarray
-//  keep one zeroCounter to keep the count of 0s we found
-//  whenever zeroCounter crosses 1 we start moving the left to right and decrement zeroCounter for each movement of left
-//  we keep moving the left until we find 1s
+    let left = 0
+    let right = 0
+    let zeroCount = 0
 
-        var left = 0
-        var right = 0
-        var zeroCounter = 0
+    let maxLength = 0
 
-        var maxLength = 0
-
-        while(right < nums.size){
-            if(nums[right] == 0){
-                zeroCounter++
-            }
-
-            while(zeroCounter > 1){
-                if(nums[left] == 0){
-// we let go of one 0                    
-                    zeroCounter--
-                }
-                left++
-            }
-
-            maxLength = maxOf(maxLength, right - left)
-
-            right++
+    //  move from left to right
+    while(right < nums.length){
+        if(nums[right] == 0){
+            //  track num 0s
+            zeroCount++
         }
 
-        return maxLength
+        //  keep max one 0
+        while(zeroCount > 1){
+            if(nums[left] === 0){
+                zeroCount--
+            }
+            //  shrink the window
+            left++
+        }
+
+        //  record window size
+        maxLength = Math.max(maxLength, right - left)
+
+        right++
     }
-}
 
+    return maxLength
+};
 
-
-Find All Anagrams in a String - Given two strings s and p, return an array of all the start indices of p's anagrams in s. You may return the answer in any order.
-
+/* Find All Anagrams in a String - Given two strings s and p, return an array of all the start indices of p's anagrams in s. You may return the answer in any order.
+ */
 class Solution {
     fun findAnagrams(s: String, p: String): List<Int> {
         
@@ -327,4 +326,43 @@ const hasRepeatCharacters = (str) => {
     return false; // No repeat characters
 }
 
+/* 
+Maximize the confusion in exam - A teacher is writing a test with n true/false questions, with 'T' denoting true and 'F' denoting false. He wants to confuse the students by maximizing the number of consecutive questions with the same answer (multiple trues or multiple falses in a row).
 
+You are given a string answerKey, where answerKey[i] is the original answer to the ith question. In addition, you are given an integer k, the maximum number of times you may perform the following operation:
+
+Change the answer key for any question to 'T' or 'F' (i.e., set answerKey[i] to 'T' or 'F').
+Return the maximum number of consecutive 'T's or 'F's in the answer key after performing the operation at most k times.
+ */
+
+/**
+ * @param {string} answerKey
+ * @param {number} k
+ * @return {number}
+ */
+const maxConsecutiveAnswers = (answerKey, k) => {
+    const maxConsequtive = (char) => {
+        let left = 0, charCount = 0, max = 0
+        //  Iterating over the answer key using right pointer
+        for (let right = 0; right < answerKey.length; right++) {
+            //  currentChar is the char that should be atmost k times
+            if (answerKey[right] === char) {
+                charCount++
+            }
+
+            //  we have more than k chars 
+            //  we have to shrink the window
+            while (charCount > k) {
+                if (answerKey[left] === char) {
+                    charCount--
+                }
+                left++
+            }
+            //  Current window has atmost k chars
+            max = Math.max(max, right - left + 1)
+        }
+        return max
+    }
+
+    return Math.max(maxConsequtive('T'), maxConsequtive('F'))
+};
