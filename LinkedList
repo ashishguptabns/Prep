@@ -709,13 +709,12 @@ const spiralMatrix = (m, n, head) => {
 };
 
 
-
-Merge Nodes in Between Zeros - You are given the head of a linked list, which contains a series of integers separated by 0's. The beginning and end of the linked list will have Node.val == 0.
+/* Merge Nodes in Between Zeros - You are given the head of a linked list, which contains a series of integers separated by 0's. The beginning and end of the linked list will have Node.val == 0.
 
 For every two consecutive 0's, merge all the nodes lying in between them into a single node whose value is the sum of all the merged nodes. The modified list should not contain any 0's.
 
 Return the head of the modified linked list.
-
+ */
 /**
  * Definition for singly-linked list.
  * function ListNode(val, next) {
@@ -763,3 +762,42 @@ const mergeNodes = (head) => {
     return start.next
 };
 
+/* Swap nodes in pairs - Given a linked list, swap every two adjacent nodes and return its head. You must solve the problem without modifying the values in the list's nodes (i.e., only nodes themselves may be changed.)
+ */
+
+/**
+ * Definition for singly-linked list.
+ * function ListNode(val, next) {
+ *     this.val = (val===undefined ? 0 : val)
+ *     this.next = (next===undefined ? null : next)
+ * }
+ */
+/**
+ * @param {ListNode} head
+ * @return {ListNode}
+ */
+var swapPairs = function (head) {
+    if (head && head.next) {
+
+        //  temp node to track the head
+        const ans = new ListNode(0)
+        ans.next = head
+
+        //  moving pointer
+        let curr = ans
+        while (curr.next && curr.next.next) {
+            //  nodes to swap
+            let node1 = curr.next
+            let node2 = curr.next.next
+
+            curr.next = node2
+            node1.next = node2.next
+            node2.next = node1
+
+            //  skip one node
+            curr = curr.next.next
+        }
+        return ans.next
+    }
+    return head
+};

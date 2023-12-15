@@ -175,40 +175,38 @@ class StockSpanner {
 
 
 
-Next Greater Element - Given a circular integer array nums (i.e., the next element of nums[nums.length - 1] is nums[0]), return the next greater number for every element in nums.
+/* Next Greater Element - Given a circular integer array nums (i.e., the next element of nums[nums.length - 1] is nums[0]), return the next greater number for every element in nums.
 
 The next greater number of a number x is the first greater number to its traversing-order next in the array, which means you could search circularly to find its next greater number. If it doesn't exist, return -1 for this number.
+ */
+/**
+ * @param {number[]} nums
+ * @return {number[]}
+ */
+const nextGreaterElements = (nums) => {
+    const res = []
+    const stack = []
 
-class Solution {
-    fun nextGreaterElements(nums: IntArray): IntArray {
-        val resultArr = IntArray(nums.size)
-
-        val indexStack = Stack<Int>()
-
-        for(counter in 2 * nums.size - 1 downTo 0){
-//  traverse the array twice to counter rotation
-//  travelling from the last is mandatory
-
-            while(!indexStack.isEmpty() 
-                        && nums[indexStack.peek()] <= nums[counter % nums.size]){
-//  find the index which has greater item than the current item
-                indexStack.pop()
-            }
-
-            if(indexStack.isEmpty()){
-//  no item exists                
-                resultArr[counter % nums.size] = -1
-            }else{
-                resultArr[counter % nums.size] = nums[indexStack.peek()]
-            }
-
-//  push the item as this one could be greater for another item
-            indexStack.push(counter % nums.size)
+    //  travel twice to avoid circular effect
+    for (let i = 2 * nums.length - 1; i >= 0; i--) {
+        //  find the index which has greater item than current item
+        while (stack.length && nums[stack.at(-1)] <= nums[i % nums.length]) {
+            stack.pop()
         }
 
-        return resultArr
+        if (stack.length === 0) {
+            //  even after 2 rounds no greater item found
+            res[i % nums.length] = -1
+        } else {
+            //  top element of stack is the next greater item for current item
+            res[i % nums.length] = nums[stack.at(-1)]
+        }
+
+        stack.push(i % nums.length)
     }
-}
+
+    return res
+};
 
 /* Minimum add to make parentheses valid - find the minimum number of parentheses to add to make a given string of parentheses valid
  */

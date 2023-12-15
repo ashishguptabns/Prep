@@ -399,42 +399,44 @@ class Solution {
     }
 }
 
-
-
+/* 
 Unique Paths - There is a robot on an m x n grid. The robot is initially located at the top-left corner (i.e., grid[0][0]). The robot tries to move to the bottom-right corner (i.e., grid[m - 1][n - 1]). The robot can only move either down or right at any point in time.
 
 Given the two integers m and n, return the number of possible unique paths that the robot can take to reach the bottom-right corner.
+ */
+/**
+ * @param {number} m
+ * @param {number} n
+ * @return {number}
+ */
+const uniquePaths = (m, n) => {
+    //  solve this using DP
 
-class Solution {
-    fun uniquePaths(m: Int, n: Int): Int {
-        val dpPathArray = Array(m) { IntArray(n) }
+    const dp = Array.from({ length: m }, () => new Array(n).fill(0))
 
-//  there is only one way to cover all the rows in first column
-        for(row in 0 until m){
-            dpPathArray[row][0] = 1
-        }
-
-//  there is only one way to cover all the columns in first row
-        for(col in 0 until n){
-            dpPathArray[0][col] = 1
-        }
-
-        for(row in 1 until m){
-            for(col in 1 until n){
-//  for each cell there are 2 ways to come                
-                dpPathArray[row][col] = dpPathArray[row - 1][col] + dpPathArray[row][col - 1]
-            }
-        }
-
-        return dpPathArray[m - 1][n - 1]
+    //  only one way to cover all rows in first column
+    for (let row = 0; row < m; row++) {
+        dp[row][0] = 1
     }
-}
+    //  only one way to cover all columns in first row
+    for (let col = 0; col < n; col++) {
+        dp[0][col] = 1
+    }
 
+    //  fill the remaining cells
+    for (let row = 1; row < m; row++) {
+        for (let col = 1; col < n; col++) {
+            //  can come from top or left
+            dp[row][col] = dp[row - 1][col] + dp[row][col - 1]
+        }
+    }
 
+    return dp[m - 1][n - 1]
+};
 
-Climbing Stairs - You are climbing a staircase. It takes n steps to reach the top.
+/* Climbing Stairs - You are climbing a staircase. It takes n steps to reach the top.
 Each time you can either climb 1 or 2 steps. In how many distinct ways can you climb to the top?
-
+ */
 class Solution {
     fun climbStairs(n: Int): Int {
 //  we will solve this using DP        
