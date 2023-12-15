@@ -921,3 +921,40 @@ const construct = (grid) => {
     const head = quadTree(0, n, 0, n);
     return head;
 };
+
+BST to sorted DLL
+
+const bstToDoublyLinkedList = (root) => {
+    if (root === null) {
+        return null;
+    }
+
+    const convertBSTtoDLL = (root, prevNode) => {
+        if (root === null) {
+            return prevNode;
+        }
+
+        // Recursively convert the left subtree
+        prevNode = convertBSTtoDLL(root.left, prevNode);
+
+        // Convert current node
+        const currentNode = new DoublyLinkedListNode(root.val);
+        currentNode.prev = prevNode;
+        if (prevNode) {
+            prevNode.next = currentNode;
+        }
+
+        // Recursively convert the right subtree
+        return convertBSTtoDLL(root.right, currentNode);
+    };
+
+    // Start the in-order traversal
+    const head = convertBSTtoDLL(root, null);
+
+    // Find the head of the doubly linked list
+    while (head.prev !== null) {
+        head = head.prev;
+    }
+
+    return head;
+};
