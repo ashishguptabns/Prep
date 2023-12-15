@@ -440,3 +440,27 @@ const kthLargestNumber = (nums, k) => {
     return maxHeap.front().toString()
 };
 
+/* K closest points to origin - Given an array of points where points[i] = [xi, yi] represents a point on the X-Y plane and an integer k, return the k closest points to the origin (0, 0).
+
+The distance between two points on the X-Y plane is the Euclidean distance (i.e., √(x1 - x2)2 + (y1 - y2)2).
+
+You may return the answer in any order. The answer is guaranteed to be unique (except for the order that it is in). */
+
+/**
+ * @param {number[][]} points
+ * @param {number} k
+ * @return {number[][]}
+ */
+const kClosest = (points, k) => {
+    //  use minHeap to keep the distance from origin for each point
+
+    const minHeap = new MinPriorityQueue()
+    points.forEach(([x, y]) => minHeap.enqueue([x, y], (x ** 2 + y ** 2)))
+
+    const res = []
+    while (res.length < k) {
+        res.push(minHeap.dequeue().element)
+    }
+
+    return res
+};

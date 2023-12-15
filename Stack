@@ -115,36 +115,31 @@ class Solution {
     }
 }
 
+/* Daily Temperatures - Given an array of integers temperatures represents the daily temperatures, return an array answer such that answer[i] is the number of days you have to wait after the ith day to get a warmer temperature. If there is no future day for which this is possible, keep answer[i] == 0 instead.
+ */
+/**
+ * @param {number[]} temperatures
+ * @return {number[]}
+ */
+const dailyTemperatures = (temps) => {
+    const stack = []
+    const answer = Array(temps.length).fill(0)
 
+    for (let i = 0; i < temps.length; i++) {
+        while (stack.length && temps[stack[stack.length - 1]] < temps[i]) {
+            //  found a warmer temp
 
-Daily Temperatures - Given an array of integers temperatures represents the daily temperatures, return an array answer such that answer[i] is the number of days you have to wait after the ith day to get a warmer temperature. If there is no future day for which this is possible, keep answer[i] == 0 instead.
-
-class Solution {
-    fun dailyTemperatures(temperatures: IntArray): IntArray {
-//  we will solve this using stack
-
-        val numDays = temperatures.size
-        val answerArray = IntArray(numDays)
-
-        val indexStack = LinkedList<Int>()
-
-        for(currDayIndex in 0 until numDays){
-            val currDayTemp = temperatures[currDayIndex]
-
-            while(!indexStack.isEmpty() && temperatures[indexStack.peek()] < currDayTemp){
-//  find if there are days for which this day is warmer
-//  there could be multiple days - prev day was not warmer for the prev to prev could be the case                
-                val prevDayIndex = indexStack.removeAt(0)
-                answerArray[prevDayIndex] = currDayIndex - prevDayIndex
-            }
-            indexStack.add(0, currDayIndex)
+            //  pop all the cold temp indexes and record the days
+            const coldIndex = stack.pop()
+            answer[coldIndex] = i - coldIndex
         }
 
-        return answerArray
+        //  add this index as cold
+        stack.push(i)
     }
-}
 
-
+    return answer
+};
 
 Online Stock Span - Design an algorithm that collects daily price quotes for some stock and returns the span of that stock's price for the current day.
 

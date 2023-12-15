@@ -322,39 +322,43 @@ Binary Tree Level Order Traversal
  * }
  */
 
-function levelOrder(root: TreeNode | null): number[][] {
-    let levelList: number[][] = []
-    let queue: TreeNode[] = []
+/**
+ * Definition for a binary tree node.
+ * function TreeNode(val, left, right) {
+ *     this.val = (val===undefined ? 0 : val)
+ *     this.left = (left===undefined ? null : left)
+ *     this.right = (right===undefined ? null : right)
+ * }
+ */
+/**
+ * @param {TreeNode} root
+ * @return {number[][]}
+ */
+const levelOrder = (root) => {
 
-    if(root != null){
-        queue.push(root)
-    }
+    const res = []
 
-    let currLevel = 0
-//  used to maintain the level    
-    while(queue.length > 0){
-        let levelSize = queue.length
-        for(let i = 0; i < levelSize; i++){
-            const currNode: TreeNode = queue[queue.length - 1]
-            queue.splice(queue.length - 1, 1)
-            if(currNode.left != null){
-                queue.splice(0, 0, currNode.left)
-            }
-            if(currNode.right != null){
-                queue.splice(0, 0, currNode.right)
-            }
+    if (root) {
+        const queue = [root]
 
-            if(levelList[currLevel] == null){
-                levelList[currLevel] = []
+        while (queue.length) {
+            const levelSize = queue.length
+            const currLevelNodes = []
+            for (let i = 0; i < levelSize; i++) {
+                const currNode = queue.shift()
+                if (currNode.left) {
+                    queue.push(currNode.left)
+                }
+                if (currNode.right) {
+                    queue.push(currNode.right)
+                }
+                currLevelNodes.push(currNode.val)
             }
-            levelList[currLevel].push(currNode.val)
+            res.push([...currLevelNodes])
         }
-        currLevel++
     }
-
-    return levelList
+    return res
 };
-
 
 
 Construct Binary Tree from Preorder and Inorder Traversal - Given two integer arrays preorder and inorder where preorder is the preorder traversal of a binary tree and inorder is the inorder traversal of the same tree, construct and return the binary tree.
