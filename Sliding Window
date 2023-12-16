@@ -366,3 +366,35 @@ const maxConsecutiveAnswers = (answerKey, k) => {
 
     return Math.max(maxConsequtive('T'), maxConsequtive('F'))
 };
+
+/* Max consecutive Ones - Given a binary array nums and an integer k, return the maximum number of consecutive 1's in the array if you can flip at most k 0's.
+ */
+
+ /**
+ * @param {number[]} nums
+ * @param {number} k
+ * @return {number}
+ */
+const longestOnes = (nums, k) => {
+    //  use sliding window
+
+    let left = 0, right = 0
+
+    while (right < nums.length) {
+        if (nums[right] === 0) {
+            //  found a zero hence a flip is used
+            k--
+        }
+        if (k < 0) {
+            //  window has to be shrinked from left
+            if (nums[left] === 0) {
+                //  gained one flip
+                k++
+            }
+            left++
+        }
+        right++
+    }
+
+    return right - left
+};

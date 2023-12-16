@@ -166,39 +166,6 @@ class Solution {
 
 
 
-Minimum Time to Make Rope Colorful - Alice has n balloons arranged on a rope. You are given a 0-indexed string color where colors[i] is the color of the ith balloon.
-
-Alice wants the rope to be colorful. She does not want two consecutive balloons to be of the same color, so she asks Bob for help. Bob can remove some balloons from the rope to make it colorful. You are given a 0-indexed integer array neededTime where neededTime[i] is the time (in seconds) that Bob needs to remove the ith balloon from the rope.
-
-Return the minimum time Bob needs to make the rope colorful.
-
-
-class Solution {
-    fun minCost(colors: String, neededTime: IntArray): Int {
-
-//	total time to make it colorful
-        var totalTime = 0;
-
-//	max time for the current group of similar balloons. This is needed because in a group of similar balloons we want to keep the balloon with highest time
-        var currGroupMaxTime = 0;
-
-        for(counter in 0 until colors.length){
-//	the moment we find a different balloon, reset the currGroupMaxTime
-            if(counter > 0 && colors[counter] != colors[counter - 1]){
-                currGroupMaxTime = 0
-            }
-
-//	We are always choosing to remove the balloon with the lowest time. This works by default if we find a different balloon
-            totalTime += minOf(neededTime[counter], currGroupMaxTime)
-
-//	update the group maxima
-            currGroupMaxTime = maxOf(currGroupMaxTime, neededTime[counter])
-        }
-
-        return totalTime
-    }
-}
-
 
 
 

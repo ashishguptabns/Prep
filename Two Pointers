@@ -298,5 +298,3 @@ const pivotArray = (nums, pivot) => {
     return output
 };
 
-
-

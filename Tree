@@ -365,44 +365,39 @@ Construct Binary Tree from Preorder and Inorder Traversal - Given two integer ar
 
 /**
  * Definition for a binary tree node.
- * class TreeNode {
- *     val: number
- *     left: TreeNode | null
- *     right: TreeNode | null
- *     constructor(val?: number, left?: TreeNode | null, right?: TreeNode | null) {
- *         this.val = (val===undefined ? 0 : val)
- *         this.left = (left===undefined ? null : left)
- *         this.right = (right===undefined ? null : right)
- *     }
+ * function TreeNode(val, left, right) {
+ *     this.val = (val===undefined ? 0 : val)
+ *     this.left = (left===undefined ? null : left)
+ *     this.right = (right===undefined ? null : right)
  * }
  */
+/**
+ * @param {number[]} preorder
+ * @param {number[]} inorder
+ * @return {TreeNode}
+ */
+const buildTree = (preorder, inorder) => {
+    if (preorder.length) {
+        const currRoot = new TreeNode(preorder[0])
 
-function buildTree(preorder: number[], inorder: number[]): TreeNode | null {
+        const currRootIndexInInorder = inorder.indexOf(currRoot.val)
 
-    const n = preorder.length
-    if(n === 0){
-        return null
+        //  preorder is root, left, right
+        const preOrderForLeftTree = preorder.slice(1, currRootIndexInInorder + 1)
+        //  inorder is left, root, right
+        const inOrderForLeftTree = inorder.slice(0, currRootIndexInInorder)
+
+        currRoot.left = buildTree(preOrderForLeftTree, inOrderForLeftTree)
+
+        const preOrderForRightTree = preorder.slice(currRootIndexInInorder + 1)
+        const inOrderForRightTree = inorder.slice(currRootIndexInInorder + 1)
+
+        currRoot.right = buildTree(preOrderForRightTree, inOrderForRightTree)
+
+        return currRoot
     }
-
-//  preorder is root, left and right
-    const currRoot = new TreeNode(preorder[0])
-
-//  inorder is left, root and right    
-    const currRootIndexInInOrder = inorder.indexOf(preorder[0])
-
-    const preOrderForLeftSubTree = preorder.slice(1, currRootIndexInInOrder + 1)
-    const inOrderForLeftSubTree = inorder.slice(0, currRootIndexInInOrder)
-    
-    currRoot.left = buildTree(preOrderForLeftSubTree, inOrderForLeftSubTree)
-
-    const preOrderForRightSubTree = preorder.slice(currRootIndexInInOrder + 1)
-    const inOrderForRightSubTree = inorder.slice(currRootIndexInInOrder + 1)
-
-    currRoot.right = buildTree(preOrderForRightSubTree, inOrderForRightSubTree)
-
-    return currRoot
+    return null
 };
-
 
 
 Inorder Successor in BST - Given the root of a binary search tree and a node p in it, return the in-order successor of that node in the BST. If the given node has no in-order successor in the tree, return null.
@@ -957,4 +952,30 @@ const bstToDoublyLinkedList = (root) => {
     }
 
     return head;
+};
+
+Binary tree right side view - Given the root of a binary tree, imagine yourself standing on the right side of it, return the values of the nodes you can see ordered from top to bottom.
+
+/**
+ * Definition for a binary tree node.
+ * function TreeNode(val, left, right) {
+ *     this.val = (val===undefined ? 0 : val)
+ *     this.left = (left===undefined ? null : left)
+ *     this.right = (right===undefined ? null : right)
+ * }
+ */
+/**
+ * @param {TreeNode} root
+ * @return {number[]}
+ */
+const rightSideView = (root, ans = [], depth = 0) => {
+    if (!root) {
+        return ans
+    }
+    ans[depth] = root.val
+
+    //  keep putting values from left to right for a depth
+    rightSideView(root.left, ans, depth + 1)
+    //  right side values will always override the left ones
+    return rightSideView(root.right, ans, depth + 1)
 };

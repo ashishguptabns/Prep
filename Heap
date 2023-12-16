@@ -77,52 +77,45 @@ class Solution {
     }
 }
 
+/* Top K Frequent Elements - Given an integer array nums and an integer k, return the k most frequent elements. You may return the answer in any order. */
 
+/**
+ * @param {number[]} nums
+ * @param {number} k
+ * @return {number[]}
+ */
+const topKFrequent = (nums, k) => {
+    const map = {}
+    const res = []
+    const minHeap = new MinPriorityQueue()
 
-Top K Frequent Elements
-
-class Solution {
-    fun topKFrequent(nums: IntArray, k: Int): IntArray {
-        if(nums.size == k){
-            return nums
-        }
-
-        val numCountMap = mutableMapOf<Int, Int>()
-        for(num in nums){
-            numCountMap.put(num, numCountMap.getOrDefault(num, 0) + 1)
-        }
-
-//  keep a min heap so we can poll the least frequent element easily
-        val minHeap = PriorityQueue<Int>{ 
-                            a, b -> numCountMap[a]!!.toInt().compareTo(numCountMap[b]!!.toInt()) 
-                      }
-        
-        for((num, count) in numCountMap){
-            minHeap.add(num)
-            if(minHeap.size > k){
-                minHeap.poll()
-            }
-        }
-
-        val topKNums = IntArray(k)
-        for(counter in k - 1 downTo 0){
-//  poll gives the least frequent element
-            topKNums[counter] = minHeap.poll()
-        }
-
-        return topKNums
+    //  track frequency of each num
+    for (const n of nums) {
+        map[n] = map[n] + 1 || 1
     }
-}
 
+    for (const [key, count] of Object.entries(map)) {
+        minHeap.enqueue(key, count)
+        while (minHeap.size() > k) {
+            //  only keep k elements
+            minHeap.dequeue()
+        }
+    }
 
+    while (minHeap.size()) {
+        res.push(minHeap.dequeue().element)
+    }
 
-Remove Stones to Minimize the Total - You are given a 0-indexed integer array piles, where piles[i] represents the number of stones in the ith pile, and an integer k. You should apply the following operation exactly k times:
+    return res
+};
+
+/* Remove Stones to Minimize the Total - You are given a 0-indexed integer array piles, where piles[i] represents the number of stones in the ith pile, and an integer k. You should apply the following operation exactly k times:
 
 Choose any piles[i] and remove floor(piles[i] / 2) stones from it.
 Notice that you can apply the operation on the same pile more than once.
 
 Return the minimum possible total number of stones remaining after applying the k operations.
-
+ */
 class Solution {
     fun minStoneSum(piles: IntArray, k: Int): Int {
         val maxHeap = PriorityQueue<Int>({ a, b -> b - a })

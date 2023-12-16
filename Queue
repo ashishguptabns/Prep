@@ -74,9 +74,7 @@ class MyCircularQueue(k: Int) {
 
 }
 
-
-
-Implement stack using 2 queues - Implement a last-in-first-out (LIFO) stack using only two queues
+/* Implement stack using 2 queues - Implement a last-in-first-out (LIFO) stack using only two queues */
 
 class MyStack {
     constructor() {
