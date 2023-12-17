@@ -586,6 +586,25 @@ Return an array containing all the safe nodes of the graph. The answer should be
 const eventualSafeNodes = (graph) => {
     const ans = [];
     const map = new Map();
+    const dfs = (graph, node, map) => {
+        if (map.has(node)) {
+            return map.get(node);
+        }
+        //  this will help find circular or unsafe nodes
+        map.set(node, false);
+
+        //  check all the neighbors
+        for (let nei of graph[node]) {
+            if (!dfs(graph, nei, map)) {
+                //  this neighbor is not safe
+                return false;
+            }
+        }
+
+        //  all the neighbors are safe
+        map.set(node, true);
+        return true;
+    }
     for (let i = 0; i < graph.length; i++) {
         if (dfs(graph, i, map)) {
             ans.push(i);
@@ -593,21 +612,6 @@ const eventualSafeNodes = (graph) => {
     }
     return ans;
 };
-
-const dfs = (graph, node, map) => {
-    if (map.has(node)) {
-        return map.get(node);
-    }
-    map.set(node, false);
-    for (let nei of graph[node]) {
-        if (!dfs(graph, nei, map)) {
-            return false;
-        }
-    }
-    map.set(node, true);
-    return true;
-}
-
 
 
 Max area of island - You are given an m x n binary matrix grid. An island is a group of 1's (representing land) connected 4-directionally (horizontal or vertical.) You may assume all four edges of the grid are surrounded by water.
