@@ -73,41 +73,37 @@ class Solution {
     }
 }
 
-
-
-
-Flip String to Monotone Increasing - A binary string is monotone increasing if it consists of some number of 0's (possibly none), followed by some number of 1's (also possibly none).
+/* Flip String to Monotone Increasing - A binary string is monotone increasing if it consists of some number of 0's (possibly none), followed by some number of 1's (also possibly none).
 
 You are given a binary string s. You can flip s[i] changing it from 0 to 1 or from 1 to 0.
 
 Return the minimum number of flips to make s monotone increasing.
+ */
+/**
+ * @param {string} s
+ * @return {number}
+ */
+const minFlipsMonoIncr = (s) => {
+    let numOfOnesSoFar = 0
+    let numFlips = 0
 
-class Solution {
-    fun minFlipsMonoIncr(s: String): Int {
-        var numOfOnesSoFar = 0
-        var numFlips = 0
-
-        for(i in 0 until s.length){
-            if(s[i] == '1'){
-//      this is monotone increasing, no flips required                
-                numOfOnesSoFar++;
-            }else{
-//      we might have to flip this character '0' or all the 1s we found so far                
-                numFlips = Math.min(numOfOnesSoFar, numFlips + 1)
-            }
+    for (const c of s) {
+        if (c === '1') {
+            //  this is monotone increasing, no flips required             
+            numOfOnesSoFar++
+        } else {
+            //  we might have to flip this character '0' or all the 1s we found so far                
+            numFlips = Math.min(numOfOnesSoFar, numFlips + 1)
         }
-
-        return numFlips;
     }
-}
 
+    return numFlips
+};
 
-
-
-House Robber - You are a professional robber planning to rob houses along a street. Each house has a certain amount of money stashed, the only constraint stopping you from robbing each of them is that adjacent houses have security systems connected and it will automatically contact the police if two adjacent houses were broken into on the same night.
+/* House Robber - You are a professional robber planning to rob houses along a street. Each house has a certain amount of money stashed, the only constraint stopping you from robbing each of them is that adjacent houses have security systems connected and it will automatically contact the police if two adjacent houses were broken into on the same night.
 
 Given an integer array nums representing the amount of money of each house, return the maximum amount of money you can rob tonight without alerting the police.
-
+ */
 class Solution {
     fun rob(nums: IntArray): Int {
 //	0th index meas 0 houses hence no money
@@ -821,7 +817,7 @@ const countSquares = (matrix) => {
  * @param {number[][]} costs - Cost matrix where costs[i][j] represents the cost of painting house i with color j.
  * @return {number} - Minimum cost to paint all houses.
  */
-const minCost = function(costs) {
+const minCost = (costs) => {
     if (costs.length === 0) {
         return 0;
     }

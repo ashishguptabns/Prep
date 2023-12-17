@@ -298,3 +298,35 @@ const pivotArray = (nums, pivot) => {
     return output
 };
 
+/* 
+Two Sum Less Than K - 
+ */
+
+ /**
+ * @param {number[]} nums
+ * @param {number} k
+ * @return {number}
+ */
+const twoSumLessThanK = (nums, k) => {
+    // Sort the array in ascending order
+    nums.sort((a, b) => a - b);
+    
+    let left = 0;
+    let right = nums.length - 1;
+    let maxSum = -1;
+    
+    while (left < right) {
+        const sum = nums[left] + nums[right];
+        
+        // If the sum is less than k, update maxSum and move the left pointer to the right
+        if (sum < k) {
+            maxSum = Math.max(maxSum, sum);
+            left++;
+        } else {
+            // If the sum is greater than or equal to k, move the right pointer to the left
+            right--;
+        }
+    }
+    
+    return maxSum;
+};

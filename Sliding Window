@@ -204,9 +204,7 @@ class Solution {
     }
 }
 
-
-
-Count Subarrays With Fixed Bounds - You are given an integer array nums and two integers minK and maxK.
+/* Count Subarrays With Fixed Bounds - You are given an integer array nums and two integers minK and maxK.
 
 A fixed-bound subarray of nums is a subarray that satisfies the following conditions:
 The minimum value in the subarray is equal to minK.
@@ -214,40 +212,44 @@ The maximum value in the subarray is equal to maxK.
 Return the number of fixed-bound subarrays.
 
 A subarray is a contiguous part of an array.
+ */
+/**
+ * @param {number[]} nums
+ * @param {number} minK
+ * @param {number} maxK
+ * @return {number}
+ */
+const countSubarrays = (nums, minK, maxK) => {
+    //  we will take sliding window approach
 
-function countSubarrays(nums: number[], minK: number, maxK: number): number {
-//  we will take sliding window approach
+    let left = -1
+    let right = -1
 
-    let leftIndex = -1
-    let rightIndex = -1
-
-//  most recent index out of range    
+    //  most recent index out of range    
     let outOfRangeIndex = -1
+
     let numSubArrays = 0
 
-    for(let i = 0; i < nums.length; i++){
-
-//  update out of range index        
-        if(nums[i] < minK || nums[i] > maxK){
+    for (let i = 0; i < nums.length; i++) {
+        //  update out of range index        
+        if (nums[i] < minK || nums[i] > maxK) {
             outOfRangeIndex = i
         }
 
-//  update recent positions if any
-        if(nums[i] == minK){
-            leftIndex = i
+        //  update recent positions if any
+        if (nums[i] === minK) {
+            left = i
         }
-        if(nums[i] == maxK){
-            rightIndex = i
+        if (nums[i] === maxK) {
+            right = i
         }
 
-//  number of subarrays is number of elements between outOfRangeBound and smaller of two indices
-        numSubArrays += Math.max(0, Math.min(rightIndex, leftIndex) - outOfRangeIndex)
+        //  number of subarrays is number of elements between outOfRangeBound and smaller of two indices
+        numSubArrays += Math.max(0, Math.min(right, left) - outOfRangeIndex)
     }
 
     return numSubArrays
 };
-
-
 
 /* Number of Sub-arrays of Size K and Average Greater than or Equal to Threshold - Given an array of integers arr and two integers k and threshold, return the number of sub-arrays of size k and average greater than or equal to threshold.
  */
@@ -397,4 +399,36 @@ const longestOnes = (nums, k) => {
     }
 
     return right - left
+};
+
+/* Sequential Digits - An integer has sequential digits if and only if each digit in the number is one more than the previous digit.
+
+Return a sorted list of all the integers in the range [low, high] inclusive that have sequential digits.
+ */
+
+/**
+ * @param {number} low
+ * @param {number} high
+ * @return {number[]}
+ */
+const sequentialDigits = (low, high) => {
+    //  use sliding window
+
+    const digits = '123456789'
+    const ans = []
+
+    const minLen = low.toString().length
+    const maxLen = high.toString().length
+
+    for (let size = minLen; size <= maxLen; ++size) {
+        for (let i = 0; i + size <= digits.length; ++i) {
+            const num = parseInt(digits.substring(i, i + size))
+
+            if (num >= low && num <= high) {
+                ans.push(num)
+            }
+        }
+    }
+
+    return ans
 };

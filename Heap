@@ -116,33 +116,39 @@ Notice that you can apply the operation on the same pile more than once.
 
 Return the minimum possible total number of stones remaining after applying the k operations.
  */
-class Solution {
-    fun minStoneSum(piles: IntArray, k: Int): Int {
-        val maxHeap = PriorityQueue<Int>({ a, b -> b - a })
-//  heap is important because we want to find the pile with most stones after each operation
+ /**
+ * @param {number[]} piles
+ * @param {number} k
+ * @return {number}
+ */
+const minStoneSum = (piles, k) => {
+    //  heap is important because we want to find the pile with most stones after each operation
+    const maxHeap = new MaxPriorityQueue()
+    let sum = 0
 
-        for(stoneNum in piles){
-//  max pile of stones will be on top of heap            
-            maxHeap.add(stoneNum)
-        }
+    piles.forEach((pile) => {
+        //  max pile of stones will be on top of heap            
+        maxHeap.enqueue(pile)
 
-        for(counter in 0 until k){
-//  remove stones for k times            
-            val currPile = maxHeap.remove()
-//  remove from the highest number to optimize            
-            val removeStonesNum = currPile / 2
-//  keep the left stones back in the heap for this pile to be placed at right index
-            maxHeap.add(currPile - removeStonesNum)
-        }
+        //  track total stones
+        sum += pile
+    })
 
-        var leftStonesNum = 0
-        for(stoneNum in maxHeap){
-            leftStonesNum += stoneNum
-        }
+    for (let i = 0; i < k; i++) {
+        //  remove stones for k times            
+        const topPile = maxHeap.dequeue().element
+        //  remove from the highest number to optimize            
+        const leftPile = Math.floor(topPile / 2)
 
-        return leftStonesNum
+        //  keep reducing left stones
+        sum -= leftPile
+        
+        //  keep the left stones back in the heap for this pile to be placed at right index
+        maxHeap.enqueue(leftPile)
     }
-}
+
+    return sum
+};
 
 /* Kth largest element in an array - Given an integer array nums and an integer k, return the kth largest element in the array.
 

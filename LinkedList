@@ -154,54 +154,50 @@ class Solution {
     }
 }
 
-
-
-Odd Even Linked List - Given the head of a singly linked list, group all the nodes with odd indices together followed by the nodes with even indices, and return the reordered list.
-
+/* Odd Even Linked List - Given the head of a singly linked list, group all the nodes with odd indices together followed by the nodes with even indices, and return the reordered list.
+ */
 /**
- * Example:
- * var li = ListNode(5)
- * var v = li.`val`
  * Definition for singly-linked list.
- * class ListNode(var `val`: Int) {
- *     var next: ListNode? = null
+ * function ListNode(val, next) {
+ *     this.val = (val===undefined ? 0 : val)
+ *     this.next = (next===undefined ? null : next)
  * }
  */
-class Solution {
-    fun oddEvenList(head: ListNode?): ListNode? {
-
-        var oddNode = head;
-        var evenNode = head?.next
-        var evenHead = head?.next
-
-//  example: 1 - 2 - 3 - 4 - 5
-        while(evenNode != null && evenNode.next != null){
-//  1 - 3            
-            oddNode?.next = evenNode?.next
-//  oddNode moves to 3            
-            oddNode = oddNode?.next
-//  2 - 4            
-            evenNode.next = oddNode?.next
-//  evenNode moves to 4            
-            evenNode = evenNode?.next
-        }
-
-//  evenHead is still 2
-        oddNode?.next = evenHead
-
+/**
+ * @param {ListNode} head
+ * @return {ListNode}
+ */
+const oddEvenList = (head) => {
+    if(!head){
         return head
     }
-}
+    let oddNode = head
+    let evenNode = head.next
+    let evenHead = head.next
+
+    while (evenNode !== null && evenNode.next !== null) {
+        //  keep connecting odd ones to each other
+        oddNode.next = evenNode.next
+        oddNode = oddNode.next
+        //  keep connecting even ones to each other
+        evenNode.next = oddNode.next
+        evenNode = evenNode.next
+    }
+    //  all even nodes are on the right side now
+    oddNode.next = evenHead
+
+    return head
+};
 
 
-Reorder List - You are given the head of a singly linked-list. The list can be represented as:
+/* Reorder List - You are given the head of a singly linked-list. The list can be represented as:
 
 L0 → L1 → … → Ln - 1 → Ln
 Reorder the list to be on the following form:
 
 L0 → Ln → L1 → Ln - 1 → L2 → Ln - 2 → …
 You may not modify the values in the list's nodes. Only nodes themselves may be changed.
-
+ */
 /**
  * Example:
  * var li = ListNode(5)
