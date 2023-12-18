@@ -269,60 +269,63 @@ class Solution {
     }
 }
 
-
-
-Flatten a Multilevel Doubly Linked List - Given the head of the first level of the list, flatten the list so that all the nodes appear in a single-level, doubly linked list. Let curr be a node with a child list. The nodes in the child list should appear after curr and before curr.next in the flattened list.
+/* Flatten a Multilevel Doubly Linked List - Given the head of the first level of the list, flatten the list so that all the nodes appear in a single-level, doubly linked list. Let curr be a node with a child list. The nodes in the child list should appear after curr and before curr.next in the flattened list.
 
 Return the head of the flattened list. The nodes in the list must have all of their child pointers set to null.
-
+ */
 /**
- * Definition for a Node.
- * class Node(var `val`: Int) {
- *     var prev: Node? = null
- *     var next: Node? = null
- *     var child: Node? = null
- * }
+ * // Definition for a Node.
+ * function Node(val,prev,next,child) {
+ *    this.val = val;
+ *    this.prev = prev;
+ *    this.next = next;
+ *    this.child = child;
+ * };
  */
 
-class Solution {
-    fun flatten(root: Node?): Node? {
-        if(root == null){
-            return root
-        }
-
-//  place before the root
-        val pseudoRoot = Node(0)
-        pseudoRoot.next = root
-
-        flattenDFS(pseudoRoot, root)
-
-//  cleanup the root
-        pseudoRoot.next?.prev = null
-        return pseudoRoot.next
-    }
-
-    fun flattenDFS(prev: Node, currNode: Node?): Node{
-        if(currNode == null){
-//  tail of the list being traversed so far            
+/**
+ * @param {Node} head
+ * @return {Node}
+ */
+const flatten = (head) => {
+    const flattenDFS = (prev, curr) => {
+        if (!curr) {
+            //  prev is the tail
             return prev
         }
 
-        currNode.prev = prev
-        prev.next = currNode
+        //  establish links
+        curr.prev = prev
+        prev.next = curr
 
-        val tempNext = currNode.next
+        //  this will be needed after flattening
+        const tempNext = curr.next
 
-        val tail = flattenDFS(currNode, currNode.child)
-        currNode.child = null
+        //  find the tail of flattened children
+        const tail = flattenDFS(curr, curr.child)
 
-//  join the tail to tempNext
+        //  remove the child
+        curr.child = null
+
+        //  establish the pointers and travel further
         return flattenDFS(tail, tempNext)
     }
-}
 
+    if (!head) {
+        return head
+    }
 
+    const temp = new Node(-1)
+    temp.next = head
+    flattenDFS(temp, head)
 
-Linked List Cycle - Given the head of a linked list, return the node where the cycle begins. If there is no cycle, return null.
+    //  remove the temp pointer
+    temp.next.prev = null
+
+    return temp.next
+};
+
+/* Linked List Cycle - Given the head of a linked list, return the node where the cycle begins. If there is no cycle, return null. */
 
 /**
  * Example:

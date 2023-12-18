@@ -588,21 +588,21 @@ function jobScheduling(startTime: number[], endTime: number[], profit: number[])
     return profitDpArr[0]
 };
 
-
-
-Knight Dialer - Given an integer n, return how many distinct phone numbers of length n we can dial.
+/* Knight Dialer - Given an integer n, return how many distinct phone numbers of length n we can dial.
 
 You are allowed to place the knight on any numeric cell initially and then you should perform n - 1 jumps to dial a number of length n. All jumps should be valid knight jumps.
-
+ */
 /**
  * @param {number} n
  * @return {number}
  */
-var knightDialer = function(n) {
+const knightDialer = (n) => {
 
 //  we will use dp to find the distinct phone numbers of length n 
 
     const mod = 10 ** 9 + 7
+
+    //  map of starting position vs next positions
     const adjMap = {
         1: [6, 8],
         2: [7, 9],
@@ -617,7 +617,7 @@ var knightDialer = function(n) {
     }
 
 //  base case is length 1
-    let dpArr = new Array(10).fill(1)
+    const dpArr = new Array(10).fill(1)
 
 //  start from length 2 till n
     for(let i = 2; i <= n; i++){

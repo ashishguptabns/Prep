@@ -1,51 +1,47 @@
 Water trap - Given n non-negative integers representing an elevation map where the width of each bar is 1, compute how much water it can trap after raining.
 
-class Solution {
-    fun trap(heights: IntArray): Int {
-        
-//         this problem can be solved using two pointer approach
-//	notice that the width of each bar is 1 hence the given height can not contain water
-        
-        var trappedWater : Int = 0
-        
-        var leftIndex = 0
-        var rightIndex = heights.size - 1
-        
-        var leftMaxHeight = 0
-        var rightMaxHeight = 0
-        
-        while(leftIndex < rightIndex){
+/**
+ * @param {number[]} height
+ * @return {number}
+ */
+const trap = (heights) => {
+    let leftMaxH = 0
+    let rightMaxH = 0
+    let left = 0
+    let right = heights.length - 1
 
-//             whichever height is smaller will hold the water
-            if(heights[leftIndex] < heights[rightIndex]){
-                if(heights[leftIndex] >= leftMaxHeight){
-                    leftMaxHeight = heights[leftIndex]
-//	this bar doesn’t add to any water
-                }else{
-//                     heights[leftIndex] is a solid structure and the vacant space is water
-                    trappedWater += (leftMaxHeight - heights[leftIndex])
-                }
-                leftIndex++
-            }else{
-                if(heights[rightIndex] >= rightMaxHeight){
-                    rightMaxHeight = heights[rightIndex]
-                }else{
-                    trappedWater += (rightMaxHeight - heights[rightIndex])
-                }
-                rightIndex--
+    let res = 0
+
+    while (left <= right) {
+        //  find max height of water
+        if (leftMaxH <= rightMaxH) {
+            if (leftMaxH <= heights[left]) {
+                //  found a taller wall
+                leftMaxH = heights[left]
+            } else {
+                //  this much water can be held at this index
+                res += Math.min(leftMaxH, rightMaxH) - heights[left]
             }
+            left += 1
+        } else {
+            if (rightMaxH <= heights[right]) {
+                rightMaxH = heights[right]
+            } else {
+                res += Math.min(leftMaxH, rightMaxH) - heights[right]
+            }
+            right -= 1
         }
-        return trappedWater
     }
-}
 
+    return res
+};
 
-
-
-Container With Most Water - You are given an integer array height of length n. There are n vertical lines drawn such that the two endpoints of the ith line are (i, 0) and (i, height[i]).
+/* Container With Most Water - You are given an integer array height of length n. There are n vertical lines drawn such that the two endpoints of the ith line are (i, 0) and (i, height[i]).
 Find two lines that together with the x-axis form a container, such that the container contains the most water.
 Return the maximum amount of water a container can store.
-var maxArea = function (height) {
+ */
+ 
+ var maxArea = function (height) {
     //  solve using two pointers
 
     let left = 0

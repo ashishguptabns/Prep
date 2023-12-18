@@ -349,8 +349,6 @@ function minMutation(startGene: string, endGene: string, bank: string[]): number
     return -1
 };
 
-
-
 Same tree - Given the roots of two binary trees p and q, write a function to check if they are the same or not.
 
 /**

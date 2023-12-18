@@ -56,61 +56,56 @@ const minTime = (n, edges, hasApple) => {
     return dfs(0, -1);
 };
 
-
 /* Add One Row to Tree - Given the root of a binary tree and two integers val and depth, add a row of nodes with value val at the given depth depth.
  */
 /**
- * Example:
- * var ti = TreeNode(5)
- * var v = ti.`val`
  * Definition for a binary tree node.
- * class TreeNode(var `val`: Int) {
- *     var left: TreeNode? = null
- *     var right: TreeNode? = null
+ * function TreeNode(val, left, right) {
+ *     this.val = (val===undefined ? 0 : val)
+ *     this.left = (left===undefined ? null : left)
+ *     this.right = (right===undefined ? null : right)
  * }
  */
-class Solution {
-    fun addOneRow(root: TreeNode?, `val`: Int, depth: Int): TreeNode? {
-    if (depth == 1) {
-            val nodeToInsert = TreeNode(`val`)
-        nodeToInsert.left = root
-        return nodeToInsert
+/**
+ * @param {TreeNode} root
+ * @param {number} val
+ * @param {number} depth
+ * @return {TreeNode}
+ */
+const addOneRow = (root, val, depth) => {
+    if (!root) {
+        return root
     }
 
-        val currDepth = 1
-    insert(`val`, root, currDepth, depth)
+    if (depth === 1) {
+        return new TreeNode(val, root)
+    }
+
+    const refactor = (node, currDepth) => {
+        if (!node) {
+            return
+        }
+
+        if (currDepth === depth - 1) {
+            const { left, right } = node
+            node.left = new TreeNode(val, left)
+            node.right = new TreeNode(val, null, right)
+        }
+
+        refactor(node.left, currDepth + 1)
+        refactor(node.right, currDepth + 1)
+    }
+    refactor(root, 1)
 
     return root
-}
+};
 
-    fun insert(`val`: Int, node: TreeNode ?, currDepth: Int, depth: Int){
-    if (node == null) {
-        return
-    }
-
-    if (currDepth == depth - 1) {
-// start inserting to left and right            
-            val leftNode = node.left
-        node.left = TreeNode(`val`)
-        node.left.left = leftNode
-            
-            val rightNode = node.right
-        node.right = TreeNode(`val`)
-        node.right.right = rightNode
-    } else {
-        insert(`val`, node.left, currDepth + 1, depth)
-        insert(`val`, node.right, currDepth + 1, depth)
-    }
-}
-}
-
-
-Binary Tree Maximum Path Sum - A path in a binary tree is a sequence of nodes where each pair of adjacent nodes in the sequence has an edge connecting them.A node can only appear in the sequence at most once.Note that the path does not need to pass through the root.
+/* Binary Tree Maximum Path Sum - A path in a binary tree is a sequence of nodes where each pair of adjacent nodes in the sequence has an edge connecting them.A node can only appear in the sequence at most once.Note that the path does not need to pass through the root.
 
 The path sum of a path is the sum of the node's values in the path.
 
 Given the root of a binary tree, return the maximum path sum of any non - empty path.
-
+ */
 /**
  * Example:
  * var ti = TreeNode(5)
