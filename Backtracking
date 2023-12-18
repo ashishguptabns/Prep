@@ -66,9 +66,9 @@ const findCombinations = (currCharIndex, currString, digits, list, letterMap) =>
 
 
 
-All Paths From Source to Target - Given a directed acyclic graph (DAG) of n nodes labeled from 0 to n - 1, find all possible paths from node 0 to node n - 1 and return them in any order.
+All Paths From Source to Target - Given a directed acyclic graph(DAG) of n nodes labeled from 0 to n - 1, find all possible paths from node 0 to node n - 1 and return them in any order.
 
-The graph is given as follows: graph[i] is a list of all nodes you can visit from node i (i.e., there is a directed edge from node i to node graph[i][j]).
+The graph is given as follows: graph[i] is a list of all nodes you can visit from node i(i.e., there is a directed edge from node i to node graph[i][j]).
 
 const allPathsSourceTarget = (graph) => {
     //  we will solve using backtracking
@@ -104,46 +104,31 @@ const allPathsSourceTarget = (graph) => {
     return allPaths
 };
 
-
-
-Non-decreasing Subsequences - Given an integer array nums, return all the different possible non-decreasing subsequences of the given array with at least two elements. You may return the answer in any order.
-
-class Solution {
-    fun findSubsequences(nums: IntArray): List<List<Int>> {
-//  subsequence doesn't have to be continuous
-
-//  we will use set because we will find duplicate list while backtracking
-        val resultSet = mutableSetOf<List<Int>>()
-
-        val currIndex = 0
-        var currList = mutableListOf<Int>()
-
-        backTrack(currIndex, currList, nums, resultSet)
-
-        return resultSet.toList()
-    }
-
-    fun backTrack(currIndex: Int, currList: MutableList<Int>, 
-                    nums: IntArray, resultSet: MutableSet<List<Int>>){
-
-        if(currList.size >= 2){
-            resultSet.add(currList.toList())
+/* Non-decreasing Subsequences - Given an integer array nums, return all the different possible non-decreasing subsequences of the given array with at least two elements. You may return the answer in any order.
+ */
+/**
+ * @param {number[]} nums
+ * @return {number[][]}
+ */
+const findSubsequences = (nums) => {
+    const res = []
+    const map = {}
+    const iterate = (index, temp) => {
+        if (map[temp]) return;
+        if (temp.length >= 2) {
+            res.push(temp)
         }
-        if(currIndex >= nums.size){
-            return
+        for (let i = index; i < nums.length; i++) {
+            if (temp[temp.length - 1] > nums[i]) {
+                continue;
+            }
+            map[temp] = true;
+            iterate(i + 1, [...temp, nums[i]])
         }
-
-        if(currList.size == 0 || nums[currIndex] >= currList[currList.size - 1]){
-            currList.add(nums[currIndex])
-            backTrack(currIndex + 1, currList, nums, resultSet)
-            currList.removeAt(currList.size - 1)
-        }            
-
-//  this step we are adding because the subseq doesn't have to be continuous and we already removed the added item before creating the discontinuity
-        backTrack(currIndex + 1, currList, nums, resultSet)
-
     }
-}
+    iterate(0, [])
+    return res;
+};
 
 /* Permutations - Given an array nums of distinct integers, return all the possible permutations. You can return the answer in any order.
  */
@@ -207,21 +192,21 @@ subsets (the power set).
 The solution set must not contain duplicate subsets. Return the solution in any order
  */
 const subsets = (nums) => {
-//  this will contain all the subsets    
+    //  this will contain all the subsets    
     const result = []
 
     const backTrack = (startIndex, currSubset) => {
-//  we need all possible subsets
+        //  we need all possible subsets
         result.push([...currSubset])
 
-//  find all possible subsets going forward
-        for(let i = startIndex; i < nums.length; i++){
+        //  find all possible subsets going forward
+        for (let i = startIndex; i < nums.length; i++) {
 
-//  all possible subsets with the current element
+            //  all possible subsets with the current element
             currSubset.push(nums[i])
             backTrack(i + 1, currSubset)
 
-//  remove the current element for the next iteration of for loop            
+            //  remove the current element for the next iteration of for loop            
             currSubset.pop()
         }
     }

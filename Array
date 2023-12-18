@@ -10,27 +10,27 @@ You must write an algorithm that runs in O(n) time and without using the divisio
  * @return {number[]}
  */
 const productExceptSelf = (nums) => {
-    const size = nums.length
-    const res = new Array(size).fill(1)
+  const size = nums.length;
+  const res = new Array(size).fill(1);
 
-    let leftProduct = 1
-    let rightProduct = 1
+  let leftProduct = 1;
+  let rightProduct = 1;
 
-    for (let i = 0; i < size; i++) {
-        //  put the product of elements on the left
-        res[i] *= leftProduct
-        //  update the product
-        leftProduct *= nums[i]
-    }
+  for (let i = 0; i < size; i++) {
+    //  put the product of elements on the left
+    res[i] *= leftProduct;
+    //  update the product
+    leftProduct *= nums[i];
+  }
 
-    for (let i = size - 1; i >= 0; i--) {
-        //  put the product of elements on the right
-        res[i] *= rightProduct
-        //  update the product
-        rightProduct *= nums[i]
-    }
+  for (let i = size - 1; i >= 0; i--) {
+    //  put the product of elements on the right
+    res[i] *= rightProduct;
+    //  update the product
+    rightProduct *= nums[i];
+  }
 
-    return res
+  return res;
 };
 
 /* Minimum Time to Make Rope Colorful - Alice has n balloons arranged on a rope. You are given a 0-indexed string color where colors[i] is the color of the ith balloon.
@@ -46,22 +46,21 @@ Return the minimum time Bob needs to make the rope colorful.
  * @return {number}
  */
 const minCost = (colors, neededTime) => {
+  let time = 0;
 
-    let time = 0
-
-    //  start from 2nd balloon
-    for (let i = 1; i < colors.length; i++) {
-        //  found the consecutive same color balloons
-        if (colors[i] === colors[i - 1]) {
-            if (neededTime[i] > neededTime[i - 1]) {
-                time += neededTime[i - 1]
-            } else {
-                time += neededTime[i]
-            }
-        }
+  //  start from 2nd balloon
+  for (let i = 1; i < colors.length; i++) {
+    //  found the consecutive same color balloons
+    if (colors[i] === colors[i - 1]) {
+      if (neededTime[i] > neededTime[i - 1]) {
+        time += neededTime[i - 1];
+      } else {
+        time += neededTime[i];
+      }
     }
+  }
 
-    return time
+  return time;
 };
 
 /* 
@@ -77,19 +76,50 @@ A subarray is a contiguous non-empty sequence of elements within an array.
  * @return {number}
  */
 const subArrayRanges = (nums) => {
-    let sum = 0
-    for (let i = 0; i < nums.length; i++) {
-        //  min max for subarrays starting with i
-        let min = nums[i]
-        let max = nums[i]
-        for (let j = i + 1; j < nums.length; j++) {
-            //  min max for subarrays ending with j
-            min = Math.min(min, nums[j])
-            max = Math.max(max, nums[j])
+  let sum = 0;
+  for (let i = 0; i < nums.length; i++) {
+    //  min max for subarrays starting with i
+    let min = nums[i];
+    let max = nums[i];
+    for (let j = i + 1; j < nums.length; j++) {
+      //  min max for subarrays ending with j
+      min = Math.min(min, nums[j]);
+      max = Math.max(max, nums[j]);
 
-            sum += max - min
-        }
+      sum += max - min;
     }
+  }
 
-    return sum
+  return sum;
+};
+
+/* Minimum Swaps to Group All 1's Together 
+    - You're given a binary array data (containing just 0s and 1s).
+    - Your goal is to minimize the number of swaps needed to bring all the 1s together in any part of the array.
+*/
+
+const minSwaps = (arr) => {
+  // Count the number of 1's in the array
+  const countOnes = arr.reduce((acc, val) => acc + val, 0);
+
+  // If there are no 1's or only one 1, no swaps are needed for grouping
+  if (countOnes <= 1) {
+    return 0;
+  }
+
+  let windowSize = countOnes;
+  let onesInWindow = arr
+    .slice(0, windowSize)
+    .reduce((acc, val) => acc + val, 0);
+
+  //  these swaps are needed for the left most window
+  let minSwaps = countOnes - onesInWindow;
+
+  // Slide the window through the array and find the minimum number of swaps
+  for (let i = windowSize; i < arr.length; i++) {
+    onesInWindow = onesInWindow + arr[i] - arr[i - windowSize];
+    minSwaps = Math.min(minSwaps, countOnes - onesInWindow);
+  }
+
+  return minSwaps;
 };

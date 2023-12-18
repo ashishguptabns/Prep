@@ -635,15 +635,13 @@ var knightDialer = function(n) {
     return dpArr.reduce((sum, val) => (sum + val) % mod, 0)
 };
 
-
-
-Unique Binary Search Trees - Given an integer n, return the number of structurally unique BST's (binary search trees) which has exactly n nodes of unique values from 1 to n.
-
+/* Unique Binary Search Trees - Given an integer n, return the number of structurally unique BST's (binary search trees) which has exactly n nodes of unique values from 1 to n.
+ */
 /**
  * @param {number} n
  * @return {number}
  */
-var numTrees = function(numNodes) {
+const numTrees = (numNodes) => {
 //  we will use DP for this
 
 //  store number of unique BSTs for each number of nodes till numNodes
