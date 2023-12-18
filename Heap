@@ -138,10 +138,10 @@ const minStoneSum = (piles, k) => {
         //  remove stones for k times            
         const topPile = maxHeap.dequeue().element
         //  remove from the highest number to optimize            
-        const leftPile = Math.floor(topPile / 2)
+        const leftPile = Math.ceil(topPile / 2)
 
         //  keep reducing left stones
-        sum -= leftPile
+        sum -= topPile - leftPile
         
         //  keep the left stones back in the heap for this pile to be placed at right index
         maxHeap.enqueue(leftPile)

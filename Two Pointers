@@ -214,50 +214,41 @@ class Solution {
     }
 }
 
-
-
-Sort Colors - Given an array nums with n objects colored red, white, or blue, sort them in-place so that objects of the same color are adjacent, with the colors in the order red, white, and blue.
+/* Sort Colors - Given an array nums with n objects colored red, white, or blue, sort them in-place so that objects of the same color are adjacent, with the colors in the order red, white, and blue.
 
 We will use the integers 0, 1, and 2 to represent the color red, white, and blue, respectively.
+ */
+/**
+ * @param {number[]} nums
+ * @return {void} Do not return anything, modify nums in-place instead.
+ */
+const sortColors = (nums) => {
+    let zero = 0
+    let two = nums.length - 1
 
-class Solution {
-    fun sortColors(nums: IntArray): Unit {
-//  we will keep two pointers - zeroIndex and twoIndex
-//  we will traverse through the array and swap 0s with zeroIndex and 2s with twoIndex
-
-        var zeroIndex = 0
-        var twoIndex = nums.size - 1
-        var counter = 0
-        while(counter <= twoIndex){
-            if(nums[counter] == 0){
-                val temp = nums[zeroIndex]
-                nums[zeroIndex] = nums[counter]
-                nums[counter] = temp
-
-                zeroIndex++
-                counter++
-            }
-            else if(nums[counter] == 2){
-                val temp = nums[twoIndex]
-                nums[twoIndex] = nums[counter]
-                nums[counter] = temp
-
-                twoIndex--
-            }else{
-                counter++
-            }
+    for (let i = 0; i < nums.length; i++) {
+        while (nums[zero] === 0) {
+            zero++
+        }
+        while (nums[two] === 2) {
+            two--
+        }
+        const currNum = nums[i]
+        if (currNum === 0 && i > zero) {
+            [nums[zero], nums[i]] = [nums[i], nums[zero]]
+        }
+        if (currNum === 2 && i < two) {
+            [nums[two], nums[i]] = [nums[i], nums[two]]
         }
     }
-}
+};
 
-
-
-Partition array as per given pivot - You are given a 0-indexed integer array nums and an integer pivot. 
+/* Partition array as per given pivot - You are given a 0-indexed integer array nums and an integer pivot. 
 Every element less than pivot appears before every element greater than pivot.
 Every element equal to pivot appears in between the elements less than and greater than pivot.
 The relative order of the elements less than pivot and the elements greater than pivot is maintained.
 Return nums after the rearrangement.
-
+ */
 /**
  * @param {number[]} nums
  * @param {number} pivot
