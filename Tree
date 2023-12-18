@@ -475,12 +475,10 @@ function isCompleteTree(root: TreeNode | null): boolean {
     return true
 };
 
-
-
-Find Duplicate Subtrees - Given the root of a binary tree, return all duplicate subtrees.
+/* Find Duplicate Subtrees - Given the root of a binary tree, return all duplicate subtrees.
 For each kind of duplicate subtrees, you only need to return the root node of any one of them.
 Two trees are duplicate if they have the same structure with the same node values.
-
+ */
 /**
  * Definition for a binary tree node.
  * function TreeNode(val, left, right) {
@@ -493,42 +491,39 @@ Two trees are duplicate if they have the same structure with the same node value
  * @param {TreeNode} root
  * @return {TreeNode[]}
  */
-var findDuplicateSubtrees = function (root) {
+const findDuplicateSubtrees = (root) => {
     const map = new Map()
     const result = []
 
+    const dfs = (currNode, result, map) => {
+        if (!currNode) {
+            //  used to represent null node
+            return '#'
+        }
+
+        //  store pre order in a string
+        const subtree = `${currNode.val},${dfs(currNode.left, result, map)},${dfs(currNode.right, result, map)}`
+        const freq = map.get(subtree) || 0
+
+        if (freq == 1) {
+            //  found a duplicate        
+            result.push(currNode)
+        }
+
+        //  maintain the freq
+        map.set(subtree, freq + 1)
+
+        //  return the string signature
+        return subtree
+    }
     dfs(root, result, map)
 
     return result
 };
 
-function dfs(currNode, result, map) {
-    if (!currNode) {
-        //  used to represent null node
-        return '#'
-    }
-
-    //  store pre order in a string
-    const subtree = `${currNode.val},${dfs(currNode.left, result, map)},${dfs(currNode.right, result, map)}`
-    const freq = map.get(subtree) || 0
-
-    if (freq == 1) {
-        //  found a duplicate        
-        result.push(currNode)
-    }
-
-    //  maintain the freq
-    map.set(subtree, freq + 1)
-
-    //  return the string signature
-    return subtree
-}
-
-
-
-Count nodes equal to average of subtress - Given the root of a binary tree, return the number of nodes where the value of the node is equal to the average of the values in its subtree. 
+/* Count nodes equal to average of subtress - Given the root of a binary tree, return the number of nodes where the value of the node is equal to the average of the values in its subtree. 
 Subtree includes the root
-
+ */
 /**
  * Definition for a binary tree node.
  * function TreeNode(val, left, right) {

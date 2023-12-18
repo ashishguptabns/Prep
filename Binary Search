@@ -53,46 +53,41 @@ class Solution {
     }
 }
 
-
-
-
-Single Element in a Sorted Array - You are given a sorted array consisting of only integers where every element appears exactly twice, except for one element which appears exactly once.
+/* Single Element in a Sorted Array - You are given a sorted array consisting of only integers where every element appears exactly twice, except for one element which appears exactly once.
 Return the single element that appears only once.
 Your solution must run in O(log n) time and O(1) space.
+ */
+/**
+ * @param {number[]} nums
+ * @return {number}
+ */
+const singleNonDuplicate = (nums) => {
+    //      insight is that ideally all the even indexes starting from 0 should be equal to the following odd indexed item
+    //      when we cross an item which doesn't have a partner, all the items at odd indexes are equal to their predecessors at just before even indexes        
 
-class Solution {
-    fun singleNonDuplicate(nums: IntArray): Int {
-//      insight is that ideally all the even indexes starting from 0 should be equal to the following odd indexed item
-//      when we cross an item which doesn't have a partner, all the items at odd indexes are equal to their predecessors at just before even indexes        
+    let left = 0
+    let right = nums.length - 1
 
-        var lowIndex = 0;
-        var highIndex = nums.size - 1
-        while(lowIndex < highIndex){
-            var midIndex = lowIndex + (highIndex - lowIndex) / 2
-//      if mid index is an odd index, make it even
-            if(midIndex % 2 == 1){
-                midIndex -= 1
-            }
-
-            if(nums[midIndex] == nums[midIndex + 1]){
-//      left part of the array is following the behaviour hence no single element
-                lowIndex = midIndex + 2                
-            }else{
-//      single element is present in the left sub array
-                highIndex = midIndex                
-            }
+    while (left < right) {
+        let mid = Math.floor((left + right) / 2)
+        if (mid % 2 === 1) {
+            //  odd index
+            mid -= 1
         }
 
-//      return the lowIndex item because single item will be at an even index
-        return nums[lowIndex]
+        if (nums[mid] === nums[mid + 1]) {
+            //  left part is fine
+            left = mid + 2
+        } else {
+            right = mid
+        }
     }
-}
 
+    return nums[left]
+};
 
-
-
-Find K Closest Elements - Given a sorted integer array arr, two integers k and x, return the k closest integers to x in the array. The result should also be sorted in ascending order.
-
+/* Find K Closest Elements - Given a sorted integer array arr, two integers k and x, return the k closest integers to x in the array. The result should also be sorted in ascending order.
+ */
 class Solution {
     fun findClosestElements(arr: IntArray, k: Int, x: Int): List<Int> {
 
@@ -234,46 +229,41 @@ const peakIndexInMountainArray = (arr) => {
     return left
 };
 
-
-
-Find the Duplicate Number - Given an array of integers nums containing n + 1 integers where each integer is in the range [1, n] inclusive.
+/* Find the Duplicate Number - Given an array of integers nums containing n + 1 integers where each integer is in the range [1, n] inclusive.
 
 There is only one repeated number in nums, return this repeated number.
+ */
+/**
+ * @param {number[]} nums
+ * @return {number}
+ */
+const findDuplicate = (nums) => {
+    //  use binary search
 
-class Solution {
-    fun findDuplicate(nums: IntArray): Int {
-//  we will use binary search to find the duplicate
-//  in an array of n integers, 4th index will have 4 integers <= 4 i.e. [1,2,3,4]
-
-        var leftCounter = 0
-        var rightCounter = nums.size - 1
-        var duplicate = -1
-
-        while(leftCounter <= rightCounter){
-            val midIndex = (leftCounter + rightCounter) / 2
-
-            var numsCount = 0
-//  find how many numbers are less or equal to mid index            
-            for(num in nums){
-                if(num <= midIndex){
-                    numsCount++
-                }
-            }
-
-            if(numsCount > midIndex){
-                rightCounter = midIndex - 1
-
-//  keep updating the duplicate                
-                duplicate = midIndex
-            }else{
-//  duplicate is on the right side
-                leftCounter = midIndex + 1                
+    let left = 0
+    let right = nums.length - 1
+    let duplicate = -1
+    while (left <= right) {
+        //  it's a numbered array
+        const midNum = Math.floor((left + right) / 2)
+        let smallNumsCount = 0
+        for (const num of nums) {
+            if (num <= midNum) {
+                smallNumsCount++
             }
         }
 
-        return duplicate
+        if (smallNumsCount > midNum) {
+            //  duplicate is on the left side
+            right = midNum - 1
+            duplicate = midNum
+        } else {
+            //  duplicate is on the right side
+            left = midNum + 1
+        }
     }
-}
+    return duplicate
+};
 
 /* Koko Eating Bananas - Koko loves to eat bananas. There are n piles of bananas, the ith pile has piles[i] bananas. The guards have gone and will come back in h hours.
 

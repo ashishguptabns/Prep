@@ -324,46 +324,41 @@ class Solution {
     }
 }
 
-
-
 Most Stones Removed with Same Row or Column - On a 2D plane, we place n stones at some integer coordinate points. Each coordinate point may have at most one stone.
 A stone can be removed if it shares either the same row or the same column as another stone that has not been removed.
 Given an array stones of length n where stones[i] = [xi, yi] represents the location of the ith stone, return the largest possible number of stones that can be removed.
 
-class Solution {
-    fun removeStones(stones: Array<IntArray>): Int {
-        val visitedSet = mutableSetOf<Pair<Int, Int>>()
+/**
+ * @param {number[][]} stones
+ * @return {number}
+ */
+const removeStones = (stones) => {
+    //  use DFS
+    const visited = new Set()
+    let stoneGroups = 0
 
-        var uniqueStoneGroups = 0
-
-        for(stone in stones){
-//  we need to go through all the stones
-            val stoneCoords = Pair(stone[0], stone[1])
-            if(stoneCoords !in visitedSet){
-                uniqueStoneGroups++
-//  we tried to find all the stones for the same group
-                dfsSearch(stones, stoneCoords, visitedSet)
-            }
-        }
-
-//  uniqueStoneGroups are the stones which have been removed except one cause it can't be removed as per condition
-        return stones.size - uniqueStoneGroups
-    }
-
-    fun dfsSearch(stones: Array<IntArray>, stoneCoords: Pair<Int, Int>, 
-                    visitedSet: MutableSet<Pair<Int, Int>>){
-        visitedSet.add(stoneCoords)
-
-        for(stone in stones){
-            if(stone[0] == stoneCoords.first || stone[1] == stoneCoords.second){
-                val nextStoneCoords = Pair(stone[0], stone[1])
-                if(nextStoneCoords !in visitedSet){
-                    dfsSearch(stones, nextStoneCoords, visitedSet)
+    const traverse = (x, y) => {
+        const key = `${x}_${y}`
+        if (!visited.has(key)) {
+            visited.add(key)
+            for (const [newX, newY] of stones) {
+                if (newX === x || newY === y) {
+                    traverse(newX, newY)
                 }
             }
         }
     }
-}
+
+    for (const [x, y] of stones) {
+        const key = `${x}_${y}`
+        if (!visited.has(key)) {
+            traverse(x, y)
+            stoneGroups++
+        }
+    }
+
+    return stones.length - stoneGroups
+};
 
 
 
