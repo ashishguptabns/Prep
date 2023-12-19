@@ -471,3 +471,38 @@ const minimumRecolors = (blocks, k) => {
 
     return min
 };
+
+/* Max num of vowels in a substring of given length - Given a string s and an integer k, return the maximum number of vowel letters in any substring of s with length k.
+ */
+
+ /**
+ * @param {string} s
+ * @param {number} k
+ * @return {number}
+ */
+const maxVowels = (s, k) => {
+    let maxCount = 0, count = 0;
+    const vowel = ['a', "e", "i", "o", "u"]
+    for (let i = 0; i < s.length; i++) {
+        if (vowel.includes(s[i])) {
+            //  found a vowel
+            count++
+        }
+
+        if (i >= k && vowel.includes(s[i - k])) {
+            //  removing the vowel from start of substring
+            count--
+        }
+
+        //  max possible number
+        if (count == k) {
+            return k;
+        }
+
+        //  update max
+        if (maxCount < count) {
+            maxCount = count
+        }
+    }
+    return maxCount
+};
