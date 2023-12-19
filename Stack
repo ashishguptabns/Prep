@@ -25,64 +25,57 @@ const isValid = (s) => {
     return stack.length === 0
 };
 
-
-
-Decode String - Given an encoded string, return its decoded string.
+/* Decode String - Given an encoded string, return its decoded string.
 
 The encoding rule is: k[encoded_string], where the encoded_string inside the square brackets is being repeated exactly k times. Note that k is guaranteed to be a positive integer.
+ */
+/**
+ * @param {string} s
+ * @return {string}
+ */
+const decodeString = (s) => {
+    const stack = []
+    for (const char of s) {
+        if (char !== ']') {
+            //  keep pushing till the closing brakcet
+            stack.push(char)
+            continue
+        }
+        //  found a closing bracket
 
-class Solution {
-    fun decodeString(s: String): String {
+        let stackTop = stack.pop()
+        let currStr = ''
 
-        var currRepeatNum = 0
-        val stack = mutableListOf<String>()
-        var currString = ""
-
-        for(char in s){
-            when{
-                char.isDigit() -> {
-//  think of finding the digit 892                    
-                    currRepeatNum = currRepeatNum * 10 + (char - '0')
-                }
-                
-                char == '[' -> {
-//  new string is coming
-                    stack.add(currString)                    
-//  save the string made so far
-                    stack.add(currRepeatNum.toString())
-
-//  prepare for new string
-                    currString = ""
-                    currRepeatNum = 0
-                }
-
-                char == ']' -> {
-//  process and save the current string
-                    val numRepeat = stack.removeAt(stack.size - 1).toInt()
-                    var stringMadeSoFar = stack.removeAt(stack.size - 1)
-
-                    stringMadeSoFar += currString.repeat(numRepeat)
-                    currString = stringMadeSoFar
-                }
-
-                else -> {
-                    currString += char
-                }
-            }
+        //  find string till the last open bracket
+        while (stackTop !== '[') {
+            currStr = stackTop + currStr
+            stackTop = stack.pop()
         }
 
-        return currString
+        //  find the number
+        let num = ''
+        stackTop = stack.pop()
+        while (!Number.isNaN(Number(stackTop))) {
+            num = stackTop + num
+            stackTop = stack.pop()
+        }
+
+        //  notice we popped an extra element
+        stack.push(stackTop)
+
+        //  push for futher travel
+        stack.push(currStr.repeat(Number(num)))
     }
-}
 
+    return stack.join('')
+};
 
-
-Remove All Adjacent Duplicates in String  - You are given a string s and an integer k, a k duplicate removal consists of choosing k adjacent and equal letters from s and removing them, causing the left and the right side of the deleted substring to concatenate together.
+/* Remove All Adjacent Duplicates in String  - You are given a string s and an integer k, a k duplicate removal consists of choosing k adjacent and equal letters from s and removing them, causing the left and the right side of the deleted substring to concatenate together.
 
 We repeatedly make k duplicate removals on s until we no longer can.
 
 Return the final string after all such duplicate removals have been made. It is guaranteed that the answer is unique.
-
+ */
 class Solution {
     data class CharCountPair(val char: Char, var count: Int)
 
