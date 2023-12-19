@@ -427,48 +427,41 @@ function connect(root: Node | null): Node | null {
     return root
 };
 
-
-
-Check Completeness of a Binary Tree - Given the root of a binary tree, determine if it is a complete binary tree.
+/* Check Completeness of a Binary Tree - Given the root of a binary tree, determine if it is a complete binary tree.
 
 In a complete binary tree, every level, except possibly the last, is completely filled, and all nodes in the last level are as far left as possible.It can have between 1 and 2h nodes inclusive at the last level h.
+ */
 
 /**
  * Definition for a binary tree node.
- * class TreeNode {
- *     val: number
- *     left: TreeNode | null
- *     right: TreeNode | null
- *     constructor(val?: number, left?: TreeNode | null, right?: TreeNode | null) {
- *         this.val = (val===undefined ? 0 : val)
- *         this.left = (left===undefined ? null : left)
- *         this.right = (right===undefined ? null : right)
- *     }
+ * function TreeNode(val, left, right) {
+ *     this.val = (val===undefined ? 0 : val)
+ *     this.left = (left===undefined ? null : left)
+ *     this.right = (right===undefined ? null : right)
  * }
  */
+/**
+ * @param {TreeNode} root
+ * @return {boolean}
+ */
+const isCompleteTree = (root) => {
+    if (root) {
+        const queue = [root]
+        let foundNullNode = false
+        while (queue.length) {
+            const node = queue.shift()
 
-function isCompleteTree(root: TreeNode | null): boolean {
+            if (!node) {
+                foundNullNode = true
+            } else {
+                if (foundNullNode) {
+                    //  not allowed as per condition
+                    return false
+                }
 
-    if (!root) {
-        return true
-    }
-
-    const bfsQueue: (TreeNode | null)[] = [root]
-    let foundNull = false
-
-    while (bfsQueue.length > 0) {
-        const currNode = bfsQueue.shift()
-
-        if (currNode == null) {
-            foundNull = true
-        } else {
-            if (foundNull) {
-                //  found a non-null node after a null node; not allowed
-                return false
+                queue.push(node.left)
+                queue.push(node.right)
             }
-
-            bfsQueue.push(currNode.left)
-            bfsQueue.push(currNode.right)
         }
     }
 

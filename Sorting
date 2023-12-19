@@ -1,59 +1,56 @@
 /* Sort the matrix diagonally - Given an m x n matrix mat of integers, sort each matrix diagonal in ascending order and return the resulting matrix.
  */
 const diagonalSort = (mat) => {
-    const numRows = mat.length
-    const numCols = mat[0].length
+  const numRows = mat.length;
+  const numCols = mat[0].length;
 
-    const sort = (mat, row, col) => {
-        const diagonal = []
-    
-        while (row < mat.length && col < mat[0].length) {
-            diagonal.push(mat[row++][col++])
-        }
-    
-        diagonal.sort((a, b) => a - b)
-    
-        while (row > 0 && col > 0) {
-            //  put the elements back
-            mat[--row][--col] = diagonal.pop()
-        }
+  const sort = (mat, row, col) => {
+    const diagonal = [];
+
+    while (row < mat.length && col < mat[0].length) {
+      diagonal.push(mat[row++][col++]);
     }
 
-    for (let col = 0; col < numCols; col++) {
-        //  sort the upper half
-        sort(mat, 0, col)
+    diagonal.sort((a, b) => a - b);
+
+    while (row > 0 && col > 0) {
+      //  put the elements back
+      mat[--row][--col] = diagonal.pop();
     }
+  };
 
-    for (let row = 1; row < numRows; row++) {
-        //  sort the lower half
-        sort(mat, row, 0)
-    }
+  for (let col = 0; col < numCols; col++) {
+    //  sort the upper half
+    sort(mat, 0, col);
+  }
 
-    return mat
+  for (let row = 1; row < numRows; row++) {
+    //  sort the lower half
+    sort(mat, row, 0);
+  }
 
+  return mat;
 };
-
-
 
 /* Wiggle sort - Given an integer array nums, reorder it such that nums[0] < nums[1] > nums[2] < nums[3]....
  */
 const wiggleSort = (nums) => {
-    const copy = [...nums]
-    copy.sort((a, b) => a - b)
+  const copy = [...nums];
+  copy.sort((a, b) => a - b);
 
-    let index = copy.length - 1
+  let index = copy.length - 1;
 
-    for (let i = 1; i < nums.length; i += 2) {
-        //  put big numbers at odd positions
-        nums[i] = copy[index]
-        index--
-    }
+  for (let i = 1; i < nums.length; i += 2) {
+    //  put big numbers at odd positions
+    nums[i] = copy[index];
+    index--;
+  }
 
-    for (let i = 0; i < nums.length; i += 2) {
-        //  put remaining in even positions
-        nums[i] = copy[index]
-        index--
-    }
+  for (let i = 0; i < nums.length; i += 2) {
+    //  put remaining in even positions
+    nums[i] = copy[index];
+    index--;
+  }
 };
 
 /* Maximum ice cream bars - At the store, there are n ice cream bars. You are given an array costs of length n, where costs[i] is the price of the ith ice cream bar in coins. The boy initially has coins coins to spend, and he wants to buy as many ice cream bars as possible. 
@@ -75,24 +72,23 @@ You must solve the problem by counting sort.
  * @return {number}
  */
 const maxIceCream = (costs, coins) => {
+  //  track frequencies of each cost entity
+  const frequencies = Array(Math.max(...costs) + 1).fill(0);
+  for (const cost of costs) {
+    frequencies[cost] += 1;
+  }
 
-    //  track frequencies of each cost entity
-    const frequencies = Array(Math.max(...costs) + 1).fill(0)
-    for (const cost of costs) {
-        frequencies[cost] += 1
-    }
+  let bars = 0;
+  //  we are moving from low to high so count will be maximum
+  for (let cost = 1; cost <= coins && cost < frequencies.length; ++cost) {
+    //  min is required cause there might not be enough coins or enough items
+    const count = Math.min(frequencies[cost], Math.floor(coins / cost));
 
-    let bars = 0
-    //  we are moving from low to high so count will be maximum
-    for (let cost = 1; cost <= coins && cost < frequencies.length; ++cost) {
-        //  min is required cause there might not be enough coins or enough items
-        const count = Math.min(frequencies[cost], Math.floor(coins / cost))
-
-        //  update left coins
-        coins -= cost * count
-        bars += count
-    }
-    return bars
+    //  update left coins
+    coins -= cost * count;
+    bars += count;
+  }
+  return bars;
 };
 
 /* Group anagrams - Given an array of strings strs, group the anagrams together. You can return the answer in any order. */
@@ -102,23 +98,23 @@ const maxIceCream = (costs, coins) => {
  * @return {string[][]}
  */
 const groupAnagrams = (strs) => {
-    //  sort the strings and maintain a map
+  //  sort the strings and maintain a map
 
-    const map = new Map()
+  const map = new Map();
 
-    const getHash = (str) => {
-        return str.split('').sort().join('')
+  const getHash = (str) => {
+    return str.split("").sort().join("");
+  };
+  strs.forEach((str) => {
+    const key = getHash(str);
+    if (map.has(key)) {
+      map.get(key).push(str);
+    } else {
+      map.set(key, [str]);
     }
-    strs.forEach((str) => {
-        const key = getHash(str)
-        if (map.has(key)) {
-            map.get(key).push(str)
-        } else {
-            map.set(key, [str])
-        }
-    })
+  });
 
-    return [...map.values()]
+  return [...map.values()];
 };
 
 /* 
@@ -132,14 +128,128 @@ According to the definition of h-index on Wikipedia: The h-index is defined as t
  * @return {number}
  */
 const hIndex = (citations) => {
-    citations.sort((a, b) => a - b)
-    let res = 0
-    let n = citations.length
+  citations.sort((a, b) => a - b);
+  let res = 0;
+  let n = citations.length;
 
-    for (let i = 0; i < n; i++) {
-        //  assume ith index has 6 citations but only 3 more papers have higher citation than 6
-        res = Math.max(res, Math.min(citations[i], n - i))
+  for (let i = 0; i < n; i++) {
+    //  assume ith index has 6 citations but only 3 more papers have higher citation than 6
+    res = Math.max(res, Math.min(citations[i], n - i));
+  }
+
+  return res;
+};
+
+/* Explain merge sort */
+
+const sortArray = (nums) => {
+  //  merge sort
+
+  if (nums.length < 2) {
+    return nums;
+  }
+
+  const merge = (left, right) => {
+    const sortedArr = [];
+    while (left.length && right.length) {
+      if (left[0] <= right[0]) {
+        sortedArr.push(left.shift());
+      } else {
+        sortedArr.push(right.shift());
+      }
     }
 
-    return res
+    return [...sortedArr, ...left, ...right];
+  };
+
+  const mid = Math.floor(nums.length / 2);
+  const left = nums.slice(0, mid);
+  const right = nums.slice(mid);
+
+  return merge(sortArray(left), sortArray(right));
+};
+
+/* Selection Sort - O(n^2) */
+
+const sortArray = (nums) => {
+    //  selection sort
+
+    const n = nums.length;
+    for (let i = 0; i < n - 1; i++) {
+        let min = i;
+        //  find an index smaller than i
+        for (let j = i + 1; j < n; j++) {
+            if (nums[j] < nums[min]) {
+                min = j;
+            }
+        }
+        //  bring small item to left side
+        [nums[i], nums[min]] = [nums[min], nums[i]];
+    }
+    return nums;
+
+};
+
+/* Bubble sort */
+
+const sortArray = (nums) => {
+    //  bubble sort
+
+    for (var k = nums.length - 1; k >= 1; k--) {
+        for (var i = 0; i < k; i++) {
+            if (nums[i] > nums[i + 1]) {
+                [nums[i], nums[i + 1]] = [nums[i + 1], nums[i]]
+            }
+        }
+    }
+    return nums;
+
+};
+
+/* Insertion sort */
+
+const sortArray = (nums) => {
+    //  insertion sort
+
+    for (let i = 1; i < nums.length; i++) {
+        const value = nums[i];
+        let hole = i;
+        while (hole > 0 && nums[hole - 1] > value) {
+            nums[hole] = nums[hole - 1];
+            hole = hole - 1
+        }
+        nums[hole] = value;
+    }
+    return nums;
+
+};
+
+/* Quick sort */
+
+const sortArray = (nums) => {
+    //  quick sort
+
+    function quickSortHelper(nums, start, end) {
+        if (start >= end) {
+            return nums
+        }
+
+        const pivotValue = nums[start]
+        let smaller = start
+        for (var i = start + 1; i <= end; i++) {
+            const bigger = i
+            if (nums[bigger] < pivotValue) {
+                smaller++
+                [nums[smaller], nums[bigger]] = [nums[bigger], nums[smaller]]
+            }
+        }
+        [nums[smaller], nums[start]] = [nums[start], nums[smaller]]
+
+        quickSortHelper(nums, start, smaller - 1)
+        quickSortHelper(nums, smaller + 1, end)
+        return nums
+    }
+
+    return quickSortHelper(nums, 0, nums.length - 1)
+
 };

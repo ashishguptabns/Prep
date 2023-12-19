@@ -1,13 +1,13 @@
-LRUCache - Design a data structure that follows the constraints of a Least Recently Used (LRU) cache.
+LRUCache - Design a data structure that follows the constraints of a Least Recently Used(LRU) cache.
 
 class LRUCache {
 
-    class DLinkedNode{
+    class DLinkedNode {
         int key;
         int value;
         DLinkedNode next;
         DLinkedNode prev;
-    }
+}
     
     private int size, capacity;
 
@@ -15,88 +15,88 @@ class LRUCache {
     private DLinkedNode head, tail;
 
 // 	for each int key, we will keep a node in the map
-    private Map<Integer, DLinkedNode> cacheMap = new HashMap<>();
+    private Map < Integer, DLinkedNode > cacheMap = new HashMap <> ();
     
     public LRUCache(int capacity) {
-        this.size = 0;
-        this.capacity = capacity;
-        
-        head = new DLinkedNode();
-        tail = new DLinkedNode();
-        
-        head.next = tail;
-        tail.prev = head;
-    }
+    this.size = 0;
+    this.capacity = capacity;
+
+    head = new DLinkedNode();
+    tail = new DLinkedNode();
+
+    head.next = tail;
+    tail.prev = head;
+}
     
     public int get(int key) {
 //         get the node from the map
         DLinkedNode node = cacheMap.get(key);
-        if(node == null){
-            return -1;
-        }
-        
-//         if we find a node then we should move the node to starting of double linked list as per LRU definition
-        moveToHead(node);
-        return node.value;
+    if (node == null) {
+        return -1;
     }
+
+    //         if we find a node then we should move the node to starting of double linked list as per LRU definition
+    moveToHead(node);
+    return node.value;
+}
     
     public void moveToHead(DLinkedNode node){
 
-// 	remove the node from its current place and add next to head
-        removeNode(node);
-        addNode(node);
-    }
+    // 	remove the node from its current place and add next to head
+    removeNode(node);
+    addNode(node);
+}
     
     public void addNode(DLinkedNode node){
 
-//         always add the new node right after head
-        node.next = head.next;
-        node.prev = head;
+    //         always add the new node right after head
+    node.next = head.next;
+    node.prev = head;
 
-        head.next.prev = node;
-        head.next = node;
-    }
+    head.next.prev = node;
+    head.next = node;
+}
      
     public void removeNode(DLinkedNode node){
         DLinkedNode prev = node.prev;
         DLinkedNode next = node.next;
-        
-        prev.next = next;
-        next.prev = prev;
-    }
+
+    prev.next = next;
+    next.prev = prev;
+}
     
     public void put(int key, int value) {
         DLinkedNode node = cacheMap.get(key);
-        if(node == null){
+    if (node == null) {
             DLinkedNode newNode = new DLinkedNode();
-            newNode.key = key;
-            newNode.value = value;
-            
-            cacheMap.put(key, newNode);
-            addNode(newNode);
-            
-            size++;
-            
-            if(size > capacity){
+        newNode.key = key;
+        newNode.value = value;
+
+        cacheMap.put(key, newNode);
+        addNode(newNode);
+
+        size++;
+
+        if (size > capacity) {
 //                 remove the last node in double linked list
                 DLinkedNode tail = popTail();
-                cacheMap.remove(tail.key);
-                size--;
-            }
-        }else{
-
-// 	if node already exists then simply move next to head
-            node.value = value;
-            moveToHead(node);
+            cacheMap.remove(tail.key);
+            size--;
         }
+    } else {
+
+        // 	if node already exists then simply move next to head
+        node.value = value;
+        moveToHead(node);
     }
+}
     
     public DLinkedNode popTail(){
 //         remove the node before tail as tail and head are for reference
         DLinkedNode nodeToRemove = tail.prev;
-        removeNode(nodeToRemove);
-        return nodeToRemove;
-    }
+    removeNode(nodeToRemove);
+    return nodeToRemove;
+}
 }
 
 /**
@@ -126,26 +126,26 @@ class Solution {
         ListNode result = new ListNode(0);
         ListNode head = result;
         int carry = 0;
-        while(l1 != null || l2 != null || carry > 0){
+        while (l1 != null || l2 != null || carry > 0) {
             int currSum = 0;
-            if(l1 != null){
+            if (l1 != null) {
                 currSum += l1.val;
             }
-            if(l2 != null){
-               currSum += l2.val;
+            if (l2 != null) {
+                currSum += l2.val;
             }
             currSum += carry;
 
             result.val = currSum % 10;
             carry = currSum / 10;
 
-            if(l1 != null){
+            if (l1 != null) {
                 l1 = l1.next;
             }
-            if(l2 != null){
+            if (l2 != null) {
                 l2 = l2.next;
             }
-            if(l1 != null || l2 != null || carry > 0){
+            if (l1 != null || l2 != null || carry > 0) {
                 result.next = new ListNode(0);
                 result = result.next;
             }
@@ -168,7 +168,7 @@ class Solution {
  * @return {ListNode}
  */
 const oddEvenList = (head) => {
-    if(!head){
+    if (!head) {
         return head
     }
     let oddNode = head
@@ -207,67 +207,44 @@ You may not modify the values in the list's nodes. Only nodes themselves may be 
  *     var next: ListNode? = null
  * }
  */
-class Solution {
-    fun reorderList(head: ListNode?): Unit {
-//  find the middle of the list
-//  reverse the second list
-//  merge both the lists by alternating nodes from both
+const reorderList = (head) => {
+    // Initialize a stack to store nodes
+    const stack = [];
+    // Initialize a variable 'node' to the head of the linked list
+    let node = head;
 
-        val middleNode = findMiddleNode(head)
-        val reversedListNodeHead = reverseList(middleNode!!.next)
-        middleNode.next = null
-        mergeLists(head, reversedListNodeHead)
+    // Check if the linked list is empty
+    if (!node) {
+        return;
     }
 
-    fun findMiddleNode(node: ListNode?): ListNode?{
-        var slowNode = node
-        var doubleNode = node
+    // Traverse the linked list and push each node onto the stack
+    while (node) {
+        stack.push(node);
+        node = node.next;
+    }
 
-        while(doubleNode != null && doubleNode.next != null){
-            slowNode = slowNode!!.next
-            doubleNode = doubleNode.next.next
+    // Get the length of the stack (number of nodes in the linked list)
+    const length = stack.length;
+    // Reset 'node' to the head of the linked list
+    node = head;
+
+    // Reorder the linked list by alternating between popping and shifting nodes
+    for (let i = 0; i < length; i++) {
+        // If the current index is even, connect the current node to the node at the front of the stack
+        if (i % 2 === 0) {
+            node.next = stack.shift();
+        } else {
+            // If the current index is odd, connect the current node to the node at the end of the stack
+            node.next = stack.pop();
         }
-
-        return slowNode
+        // Move to the next node in the linked list
+        node = node.next;
     }
 
-    fun reverseList(node: ListNode?): ListNode?{
-        var prev: ListNode? = null
-        var curr = node
-
-        while(curr != null){
-//  store the next node            
-            val next = curr.next
-//  make prev the next node of curr            
-            curr.next = prev
-//  move prev and curr both to right
-            prev = curr
-            curr = next
-        } 
-
-//  prev is the head of the new list
-        return prev
-    }
-
-    fun mergeLists(firstListHead: ListNode?, secondListHead: ListNode?){
-
-        var firstListNode = firstListHead
-        var secondListNode = secondListHead
-
-        while(firstListNode != null && secondListNode != null){
-//  store first list' next            
-            val firstNext = firstListNode!!.next
-//  assign second list node as next to first list node            
-            firstListNode.next = secondListNode
-//  move first list node to first list node's next            
-            firstListNode = firstNext
-
-            val secondNext = secondListNode!!.next
-            secondListNode.next = firstListNode
-            secondListNode = secondNext
-        }
-    }
-}
+    // Set the 'next' pointer of the last node to null to terminate the reordered list
+    node.next = null;
+};
 
 /* Flatten a Multilevel Doubly Linked List - Given the head of the first level of the list, flatten the list so that all the nodes appear in a single-level, doubly linked list. Let curr be a node with a child list. The nodes in the child list should appear after curr and before curr.next in the flattened list.
 
@@ -339,40 +316,40 @@ const flatten = (head) => {
 
 class Solution {
     fun detectCycle(head: ListNode?): ListNode? {
-//  we will take a slow pointer and a fast pointer moving with double speed
-//  metNode is where these two pointers meet
-//  we will start two pointers; one from head another from meetPoint and where these two meet is the start of cycle
+    //  we will take a slow pointer and a fast pointer moving with double speed
+    //  metNode is where these two pointers meet
+    //  we will start two pointers; one from head another from meetPoint and where these two meet is the start of cycle
 
-        if(head == null){
-            return null
-        }
-
-        var slowNode = head
-        var fastNode = head
-
-        while(fastNode?.next != null){
-            slowNode = slowNode?.next
-            fastNode = fastNode?.next?.next
-
-            if(slowNode == fastNode){
-                break
-            }
-        }
-
-        if(fastNode?.next == null){
-//  there is no cycle            
-            return null
-        }
-
-        slowNode = head
-
-        while(slowNode != fastNode){
-            slowNode = slowNode?.next
-            fastNode = fastNode?.next
-        }
-
-        return slowNode
+    if (head == null) {
+        return null
     }
+
+    var slowNode = head
+    var fastNode = head
+
+    while (fastNode?.next != null) {
+        slowNode = slowNode?.next
+        fastNode = fastNode?.next?.next
+
+        if (slowNode == fastNode) {
+            break
+        }
+    }
+
+    if (fastNode?.next == null) {
+        //  there is no cycle            
+        return null
+    }
+
+    slowNode = head
+
+    while (slowNode != fastNode) {
+        slowNode = slowNode?.next
+        fastNode = fastNode?.next
+    }
+
+    return slowNode
+}
 }
 
 
@@ -390,32 +367,32 @@ palindrome or false otherwise.
  * }
  */
 class Solution {
-    var frontPtr: ListNode? = null
-    fun isPalindrome(head: ListNode?): Boolean {
-//  go to the end and start comparing        
-        frontPtr = head
-        return recurse(head)
-    }
+    var frontPtr: ListNode?= null
+    fun isPalindrome(head: ListNode ?): Boolean {
+    //  go to the end and start comparing        
+    frontPtr = head
+    return recurse(head)
+}
 
-    fun recurse(node: ListNode?): Boolean{
-        if(node != null){
-            if(!recurse(node.next)){
-                return false
-            }
-            if(node!!.`val` != frontPtr!!.`val`){
-                return false
-            }
-            frontPtr = frontPtr!!.next
+    fun recurse(node: ListNode ?): Boolean{
+    if (node != null) {
+        if (!recurse(node.next)) {
+            return false
         }
-        return true
+        if (node!!.`val` != frontPtr!!.`val`) {
+            return false
+        }
+        frontPtr = frontPtr!!.next
     }
+    return true
+}
 }
 
 
 
-Merge k Sorted Lists - You are given an array of k linked-lists lists, each linked-list is sorted in ascending order.
+Merge k Sorted Lists - You are given an array of k linked - lists lists, each linked - list is sorted in ascending order.
 
-Merge all the linked-lists into one sorted linked-list and return it.
+Merge all the linked - lists into one sorted linked - list and return it.
 
 /**
  * Definition for singly-linked list.
@@ -583,23 +560,23 @@ const findGCD = (a, b) => {
 
 Nested List Weight Sum - Given a nested list of integers, return the sum of all integers in the list weighted by their depth.
 
-Each element is either an integer, or a list -- whose elements may also be integers or other lists.
+Each element is either an integer, or a list-- whose elements may also be integers or other lists.
 
 const depthSum = (nestedList) => {
     const dfs = (nestedList, depth) => {
         let totalSum = 0;
-        
+
         for (let element of nestedList) {
-	 //  check for nesting
+            //  check for nesting
             if (Array.isArray(element)) {
-	//  get the sum of this list
+                //  get the sum of this list
                 totalSum += dfs(element, depth + 1);
             } else {
-	 //  add weighted sum
+                //  add weighted sum
                 totalSum += element * depth;
             }
         }
-        
+
         return totalSum;
     }
 

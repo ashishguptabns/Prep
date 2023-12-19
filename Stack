@@ -76,37 +76,41 @@ We repeatedly make k duplicate removals on s until we no longer can.
 
 Return the final string after all such duplicate removals have been made. It is guaranteed that the answer is unique.
  */
-class Solution {
-    data class CharCountPair(val char: Char, var count: Int)
-
-    fun removeDuplicates(s: String, k: Int): String {
-        val stack = Stack<CharCountPair>()
-
-        for(counter in 0 until s.length){
-            if(stack.isEmpty() || s[counter] != stack.peek().char){
-                stack.push(CharCountPair(s[counter], 1))
-            }else{
-                val duplicatePair = stack.peek()
-//  keep the count in case we don't delete this character
-                duplicatePair.count++
-                if(duplicatePair.count == k){
-                    stack.pop()
-                }
-            }
-        }
-
-        val strBuilder = StringBuilder()
-        while(!stack.isEmpty()){
-            val pair = stack.pop()
-            for(counter in 0 until pair.count){
-                strBuilder.append(pair.char)
-            }
-        }
-
-//  reverse because last characters are added first in the builder
-        return strBuilder.reverse().toString()
+/**
+ * @param {string} s
+ * @param {number} k
+ * @return {string}
+ */
+const removeDuplicates = (s, k) => {
+    if (s.length < k) {
+        return s
     }
-}
+
+    //  keep char and freq
+    const stack = []
+
+    for (const char of s) {
+        if (stack.length && char === stack.at(-1)[0]) {
+            //  last char is same, increase the freq
+            stack.at(-1)[1]++
+
+            //  remove as per condition
+            if (stack.at(-1)[1] === k) {
+                stack.pop()
+            }
+        } else {
+            stack.push([char, 1])
+        }
+    }
+
+    //  find leftover chars
+    let res = ''
+    for (const [char, count] of stack) {
+        res += char.repeat(count)
+    }
+
+    return res
+};
 
 /* Daily Temperatures - Given an array of integers temperatures represents the daily temperatures, return an array answer such that answer[i] is the number of days you have to wait after the ith day to get a warmer temperature. If there is no future day for which this is possible, keep answer[i] == 0 instead.
  */
