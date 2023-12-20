@@ -1,46 +1,46 @@
-Fruit Into Baskets - You are visiting a farm that has a single row of fruit trees arranged from left to right. The trees are represented by an integer array fruits where fruits[i] is the type of fruit the ith tree produces.
+Fruit Into Baskets - You are visiting a farm that has a single row of fruit trees arranged from left to right.The trees are represented by an integer array fruits where fruits[i] is the type of fruit the ith tree produces.
 
-You want to collect as much fruit as possible. However, the owner has some strict rules that you must follow:
+You want to collect as much fruit as possible.However, the owner has some strict rules that you must follow:
 
-You only have two baskets, and each basket can only hold a single type of fruit. There is no limit on the amount of fruit each basket can hold.
-Starting from any tree of your choice, you must pick exactly one fruit from every tree (including the start tree) while moving to the right. The picked fruits must fit in one of your baskets.
+You only have two baskets, and each basket can only hold a single type of fruit.There is no limit on the amount of fruit each basket can hold.
+Starting from any tree of your choice, you must pick exactly one fruit from every tree(including the start tree) while moving to the right.The picked fruits must fit in one of your baskets.
 Once you reach a tree with fruit that cannot fit in your baskets, you must stop.
 Given the integer array fruits, return the maximum number of fruits you can pick.
 
 class Solution {
     fun totalFruit(fruits: IntArray): Int {
-//  we can choose max of 2 groups of fruits and can have unlimited fruits in each group
+        //  we can choose max of 2 groups of fruits and can have unlimited fruits in each group
 
         var left = 0
         var right = 0;
         var totalNumFruits = 0;
 
-//  we will maintain the number of fruits in each group         
-        var fruitsMap = mutableMapOf<Int, Int>()
+        //  we will maintain the number of fruits in each group         
+        var fruitsMap = mutableMapOf < Int, Int> ()
 
-        for(right in 0 until fruits.size){
-//  increase the number of fruits in second group as we move forward            
-            fruitsMap.put(fruits[right], 
+        for (right in 0 until fruits.size) {
+            //  increase the number of fruits in second group as we move forward            
+            fruitsMap.put(fruits[right],
                 fruitsMap.getOrDefault(fruits[right], 0) + 1)
             totalNumFruits++;
 
-//  check if we found a new group
-            if(fruitsMap.size > 2){
-//  we have to maintain number of fruit groups to 2
-                fruitsMap.put(fruits[left], 
-                    fruitsMap.getOrDefault(fruits[left], 0) - 1)   
+            //  check if we found a new group
+            if (fruitsMap.size > 2) {
+                //  we have to maintain number of fruit groups to 2
+                fruitsMap.put(fruits[left],
+                    fruitsMap.getOrDefault(fruits[left], 0) - 1)
                 totalNumFruits--;
-                if(fruitsMap.getOrDefault(fruits[left], 0) == 0){
-//  remove this group of fruits                    
+                if (fruitsMap.getOrDefault(fruits[left], 0) == 0) {
+                    //  remove this group of fruits                    
                     fruitsMap.remove(fruits[left])
                 }
-//  move the left index of subarray as we removed one fruit group
+                //  move the left index of subarray as we removed one fruit group
                 left++;
-            }            
+            }
         }
 
-//  max length of subarray as per definition = right - left
-        
+        //  max length of subarray as per definition = right - left
+
         return totalNumFruits
     }
 }
@@ -63,15 +63,15 @@ const longestSubarray = (nums) => {
     let maxLength = 0
 
     //  move from left to right
-    while(right < nums.length){
-        if(nums[right] == 0){
+    while (right < nums.length) {
+        if (nums[right] == 0) {
             //  track num 0s
             zeroCount++
         }
 
         //  keep max one 0
-        while(zeroCount > 1){
-            if(nums[left] === 0){
+        while (zeroCount > 1) {
+            if (nums[left] === 0) {
                 zeroCount--
             }
             //  shrink the window
@@ -89,48 +89,70 @@ const longestSubarray = (nums) => {
 
 /* Find All Anagrams in a String - Given two strings s and p, return an array of all the start indices of p's anagrams in s. You may return the answer in any order.
  */
-class Solution {
-    fun findAnagrams(s: String, p: String): List<Int> {
-        
-//  record characters and count in the small string        
-        val targetCharArray = IntArray(26)
-        for(char in p){
-            targetCharArray[char - 'a']++
-        }
+/**
+ * @param {string} s
+ * @param {string} p
+ * @return {number[]}
+ */
+const findAnagrams = (s, p) => {
+    // Record characters and count in the small string
+    const targetCharArray = Array(26).fill(0);
 
-        val windowArr = IntArray(26)
-        var left = 0
-        var right = 0
-
-        val resultList = mutableListOf<Int>()
-
-        while(right < s.length){
-            val currChar = s[right]
-            windowArr[currChar - 'a']++
-
-            if(right - left + 1 == p.length){
-//  could be an anagram now                
-                if(windowArr.contentEquals(targetCharArray)){
-//  found an anagram
-                    resultList.add(left) 
-//  only need the left index                                       
-                }
-
-//  need to reduce count of the left most character to move forward
-                val charToDelete = s[left]
-                windowArr[charToDelete - 'a']--
-                left++
-            }
-            right++
-        }
-        return resultList
+    // Count the frequency of each character in the pattern 'p'
+    for (const char of p) {
+        targetCharArray[char.charCodeAt(0) - 'a'.charCodeAt(0)]++;
     }
-}
 
+    // Initialize an array to represent the sliding window's character count
+    const windowArr = Array(26).fill(0);
 
+    // Initialize pointers for the sliding window
+    let left = 0;
+    let right = 0;
 
-Longest substring without repeating characters - Given a string s, find the length of the longest substring without repeating characters.
+    // Array to store the starting indices of anagrams
+    const resultList = [];
 
+    // Helper function to check if two arrays are equal
+    const arraysAreEqual = (arr1, arr2) => {
+        for (let i = 0; i < arr1.length; i++) {
+            if (arr1[i] !== arr2[i]) {
+                return false;
+            }
+        }
+        return true;
+    };
+
+    // Iterate through the characters in the string 's'
+    while (right < s.length) {
+        // Add the current character to the sliding window
+        const currChar = s[right];
+        windowArr[currChar.charCodeAt(0) - 'a'.charCodeAt(0)]++;
+
+        // Check if the window size is equal to the length of the pattern 'p'
+        if (right - left + 1 === p.length) {
+            // Check if the current window is an anagram
+            if (arraysAreEqual(windowArr, targetCharArray)) {
+                // Found an anagram, push the starting index to the result array
+                resultList.push(left);
+            }
+
+            // Reduce the count of the leftmost character to move the window forward
+            const charToDelete = s[left];
+            windowArr[charToDelete.charCodeAt(0) - 'a'.charCodeAt(0)]--;
+            left++;
+        }
+
+        // Move the right pointer to expand the window
+        right++;
+    }
+
+    // Return the array of starting indices of anagrams
+    return resultList;
+};
+
+/* Longest substring without repeating characters - Given a string s, find the length of the longest substring without repeating characters.
+ */
 /**
  * @param {string} s
  * @return {number}
@@ -139,7 +161,7 @@ const lengthOfLongestSubstring = (s) => {
     let maxLength = 0
     const charIndexMap = {}
     let subStringLeftIndex = 0
-    
+
     for (j = 0; j < s.length; j++) {
         const currChar = s[j]
         if (charIndexMap[currChar] !== undefined) {
@@ -154,55 +176,6 @@ const lengthOfLongestSubstring = (s) => {
 
     return maxLength
 };
-
-
-
-Kth Smallest Subarray Sum - Given an integer array nums of length n and an integer k, return the kth smallest subarray sum.
-
-class Solution {
-    fun kthSmallestSubarraySum(nums: IntArray, k: Int): Int {
-        var leftPointer = Int.MAX_VALUE
-        var rightPointer = 0
-        for(num in nums){
-            leftPointer = minOf(num, leftPointer)
-            rightPointer += num
-        }
-//  our smalled sub array sum is the left pointer and max sub array sum is the right pointer
-//  kth is somewhere in between
-
-        while(leftPointer <= rightPointer){
-            val midSum = (leftPointer + rightPointer) / 2
-
-//  how many sub arrays we have before midSum
-            if(numSubArrays(nums, midSum) >= k){
-                rightPointer = midSum - 1
-            }else{
-                leftPointer = midSum + 1
-            }
-        }
-        return leftPointer
-
-    }
-
-    fun numSubArrays(nums: IntArray, targetSum: Int): Int{
-        var subArrayCount = 0
-        var currSum = 0
-        var leftPointer = 0
-
-        for(rightPointer in 0 until nums.size){
-            currSum += nums[rightPointer]
-            while(currSum > targetSum){
-//  move the leftPointer to keep currSum below
-                currSum -= nums[leftPointer]
-                leftPointer++
-            }
-//  notice we increase count for each rightPointer            
-            subArrayCount += rightPointer - leftPointer + 1
-        }
-
-        return subArrayCount
-    }
-}
 
 /* Count Subarrays With Fixed Bounds - You are given an integer array nums and two integers minK and maxK.
 
@@ -289,24 +262,24 @@ const numOfSubarrays = (arr, k, threshold) => {
 
 
 
-Find k length substrings without repeat characters - 
+Find k length substrings without repeat characters -
 
 /**
  * @param {string} s
  * @param {number} k
  * @return {string[]}
  */
-const findSubstrings =(s, k) => {
+const findSubstrings = (s, k) => {
     const result = [];
-    
+
     for (let i = 0; i <= s.length - k; i++) {
         const substring = s.substring(i, i + k);
-        
+
         if (!hasRepeatCharacters(substring)) {
             result.push(substring);
         }
     }
-    
+
     return result;
 };
 
@@ -317,14 +290,14 @@ const findSubstrings =(s, k) => {
  */
 const hasRepeatCharacters = (str) => {
     const set = new Set();
-    
+
     for (let char of str) {
         if (set.has(char)) {
             return true; // Repeat character found
         }
         set.add(char);
     }
-    
+
     return false; // No repeat characters
 }
 
@@ -372,11 +345,11 @@ const maxConsecutiveAnswers = (answerKey, k) => {
 /* Max consecutive Ones - Given a binary array nums and an integer k, return the maximum number of consecutive 1's in the array if you can flip at most k 0's.
  */
 
- /**
- * @param {number[]} nums
- * @param {number} k
- * @return {number}
- */
+/**
+* @param {number[]} nums
+* @param {number} k
+* @return {number}
+*/
 const longestOnes = (nums, k) => {
     //  use sliding window
 
@@ -475,11 +448,11 @@ const minimumRecolors = (blocks, k) => {
 /* Max num of vowels in a substring of given length - Given a string s and an integer k, return the maximum number of vowel letters in any substring of s with length k.
  */
 
- /**
- * @param {string} s
- * @param {number} k
- * @return {number}
- */
+/**
+* @param {string} s
+* @param {number} k
+* @return {number}
+*/
 const maxVowels = (s, k) => {
     let maxCount = 0, count = 0;
     const vowel = ['a', "e", "i", "o", "u"]
@@ -505,4 +478,54 @@ const maxVowels = (s, k) => {
         }
     }
     return maxCount
+};
+
+/* Longest repeating character replacement - You are given a string s and an integer k. You can choose any character of the string and change it to any other uppercase English character. You can perform this operation at most k times.
+
+Return the length of the longest substring containing the same letter you can get after performing the above operations.
+ */
+
+/**
+ * @param {string} s
+ * @param {number} k
+ * @return {number}
+ */
+const characterReplacement = (s, k) => {
+    // Initialize left and right pointers for the sliding window
+    let left = 0;
+    let right = 0;
+
+    // Initialize the maximum count of a character in the current window
+    let maxCharCount = 0;
+
+    // Create a dictionary to keep track of character frequencies in the current window
+    const visited = {};
+
+    // Iterate through the string using the sliding window
+    while (right < s.length) {
+        // Current character in the window
+        const char = s[right];
+
+        // Update the frequency of the current character in the visited dictionary
+        visited[char] = visited[char] ? visited[char] + 1 : 1;
+
+        // Update the maximum count of a character in the current window
+        if (visited[char] > maxCharCount) {
+            maxCharCount = visited[char];
+        }
+
+        // Check if the length of the window - maximum character count is greater than 'k'
+        //  we need to have a single char in the window
+        if (right - left + 1 - maxCharCount > k) {
+            // Move the left pointer to shrink the window
+            visited[s[left]]--;  // Reduce the frequency of the character at the left end
+            left++;
+        }
+
+        // Expand the window to the right
+        right++;
+    }
+
+    // The length of the longest substring with at most 'k' replacements
+    return right - left;
 };

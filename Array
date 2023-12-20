@@ -123,3 +123,29 @@ const minSwaps = (arr) => {
 
   return minSwaps;
 };
+
+/* Maximum Subarray - Given an integer array nums, find the subarray with the largest sum, and return its sum.
+ */
+/**
+ * @param {number[]} nums
+ * @return {number}
+ */
+const maxSubArray = (nums) => {
+    // Initialize a variable max to negative infinity to ensure it gets updated in the loop
+    let max = -Infinity;
+    // Initialize a variable currSubSum to 0 to keep track of the current subarray sum
+    let currSubSum = 0;
+
+    // Iterate through each element (num) in the input array (nums)
+    for (const num of nums) {
+        // Add the current element to the current subarray sum
+        currSubSum += num;
+        // Update the maximum subarray sum (max) by taking the maximum of the current subarray sum and the existing max
+        max = Math.max(max, currSubSum);
+        // If the current subarray sum becomes negative, reset it to 0, as we want to find the maximum subarray sum
+        currSubSum = Math.max(currSubSum, 0);
+    }
+
+    // Return the maximum subarray sum found during the iteration
+    return max;
+};

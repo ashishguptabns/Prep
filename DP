@@ -48,31 +48,6 @@ const longestPalindrome = (s) => {
     return s.substring(startIndex, startIndex + maxLength)
 };
 
-
-
-Maximum Subarray - Given an integer array nums, find the subarray with the largest sum, and return its sum.
-
-class Solution {
-    fun maxSubArray(nums: IntArray): Int {
-//         this problem can be solved using DP approach
-        
-        var currSubArray = nums[0]
-        var maxSubArray = nums[0]
-        
-        for(i in 1..nums.size - 1){
-            val num = nums[i]
-            
-//             check if the currSubArray is worth keeping. We can discard the previous subarray if its sum is less than the current index
-            currSubArray = Math.max(num, currSubArray + num)
-            
-//             if current sub array has more sum than max
-            maxSubArray = Math.max(currSubArray, maxSubArray)
-        }
-        
-        return maxSubArray
-    }
-}
-
 /* Flip String to Monotone Increasing - A binary string is monotone increasing if it consists of some number of 0's (possibly none), followed by some number of 1's (also possibly none).
 
 You are given a binary string s. You can flip s[i] changing it from 0 to 1 or from 1 to 0.
@@ -130,34 +105,38 @@ class Solution {
     }
 }
 
+/* Maximum Length of Repeated Subarray - Given two integer arrays nums1 and nums2, return the maximum length of a subarray that appears in both arrays.
+ */
+/**
+ * @param {number[]} nums1
+ * @param {number[]} nums2
+ * @return {number}
+ */
+const findLength = (nums1, nums2) => {
+    // Create a 2D array (dp) to store the lengths of common subarrays
+    // dp[i][j] represents the length of the common subarray ending at nums1[i-1] and nums2[j-1]
+    const dp = Array(nums1.length + 1).fill().map(() => Array(nums2.length + 1).fill(0));
 
+    // Variable to keep track of the maximum length of common subarray
+    let maxLen = 0;
 
-
-Maximum Length of Repeated Subarray - Given two integer arrays nums1 and nums2, return the maximum length of a subarray that appears in both arrays.
-
-
-class Solution {
-    fun findLength(nums1: IntArray, nums2: IntArray): Int {
-
-//	extra length to ensure we cover all the items in each array
-        var dp = Array(nums1.size + 1) { IntArray(nums2.size + 1) }
-
-        var maxLength = 0;
-
-//      for each subarray ending at i in nums1 and j in nums2, max length of common sub array will be dp[i][j] + (1 if nums1[i] == nums2[j])
-
-        for(i in 0 until nums1.size){
-            for(j in 0 until nums2.size){
-                if(nums1[i] == nums2[j]){
-                    dp[i + 1][j + 1] = 1 + dp[i][j]
-                }
-
-                maxLength = Math.max(maxLength, dp[i + 1][j + 1])
+    // Iterate through each element in nums1
+    for (let i = 0; i < nums1.length; i++) {
+        // Iterate through each element in nums2
+        for (let j = 0; j < nums2.length; j++) {
+            // If the current elements in both arrays are equal
+            if (nums1[i] === nums2[j]) {
+                // Update the length of the common subarray
+                dp[i + 1][j + 1] = dp[i][j] + 1;
+                // Update the maximum length if needed
+                maxLen = Math.max(maxLen, dp[i + 1][j + 1]);
             }
-        }         
-        return maxLength;
+        }
     }
-}
+
+    // Return the maximum length of the common subarray
+    return maxLen;
+};
 
 /* Coin Change - You are given an integer array coins representing coins of different denominations and an integer amount representing a total amount of money.
 
@@ -192,34 +171,31 @@ class Solution {
     }
 }
 
-
 /* Perfect Squares - Given an integer n, return the least number of perfect square numbers that sum to n.
  */
-class Solution {
-    fun numSquares(n: Int): Int {
+/**
+ * @param {number} n
+ * @return {number}
+ */
+const numSquares = (n) => {
+    // Create an array to store the minimum number of perfect squares needed for each number up to 'n'
+    const dp = Array(n + 1).fill(Infinity);
 
-//  we will maintain a dp array where ith index tells the numbers of perfect squares needed to make i
-//  for each i; i numbers 1s are needed at max
+    // The number of perfect squares needed to get 0 is 0.
+    dp[0] = 0;
 
-        var dp = IntArray(n + 1){i -> i}
-
-        for(number in 1 until n + 1){
-            val sqrt = Math.sqrt(number * 1.0).toInt()
-
-            for(candidate in 1 until sqrt + 1){
-
-                if(number < candidate * candidate){
-                    break
-                }
-
-//  we choose the candidate as a member hence adding 1                 
-                dp[number] = minOf(dp[number], 1 + dp[number - (candidate * candidate)])
-            }
+    // Iterate through each number up to 'n'
+    for (let num = 1; num <= n; num++) {
+        // Try all perfect squares less than or equal to the current number
+        for (let k = 1; k ** 2 <= num; k++) {
+            // Update the minimum number of perfect squares needed for the current number
+            dp[num] = Math.min(dp[num], dp[num - (k ** 2)] + 1);
         }
-
-        return dp[n]
     }
-}
+
+    // The final result is the minimum number of perfect squares needed for the given 'n'
+    return dp[n];
+};
 
 /* Palindrome Partitioning - Given a string s, partition s such that every 
 substring of the partition is a palindrome. Return all possible palindrome partitioning of s.
@@ -463,64 +439,62 @@ class Solution {
     }
 }
 
-
-
-Longest Increasing Path in a Matrix - Given an m x n integers matrix, return the length of the longest increasing path in matrix.
+/* Longest Increasing Path in a Matrix - Given an m x n integers matrix, return the length of the longest increasing path in matrix.
 
 From each cell, you can either move in four directions: left, right, up, or down. You may not move diagonally or move outside the boundary (i.e., wrap-around is not allowed).
+ */
+/**
+ * @param {number[][]} matrix
+ * @return {number}
+ */
+const longestIncreasingPath = (matrix) => {
+    // Memoization table to store calculated results
+    let dp = {};
 
-var numRows = 0, numCols = 0
+    // Recursive function to find the length of the increasing path
+    function solve(i, j, val) {
+        // Base cases: out of bounds or not an increasing path
+        if (i < 0 || j < 0) {
+            return 0;
+        }
+        if (i >= matrix.length || j >= matrix[0].length) {
+            return 0;
+        }
+        if (matrix[i][j] <= val) {
+            return 0;
+        }
 
-function longestIncreasingPath(matrix: number[][]): number {
-    if(matrix.length == 0){
-        return 0
+        // Check if the result for the current position is already memoized
+        if (dp[`${i}-${j}`] != undefined) {
+            return dp[`${i}-${j}`];
+        }
+
+        // Explore all possible directions and find the length of the increasing path
+        let down = solve(i + 1, j, matrix[i][j]) + 1;
+        let up = solve(i - 1, j, matrix[i][j]) + 1;
+        let right = solve(i, j + 1, matrix[i][j]) + 1;
+        let left = solve(i, j - 1, matrix[i][j]) + 1;
+
+        // Save the maximum length for the current position
+        dp[`${i}-${j}`] = Math.max(down, up, right, left);
+
+        return dp[`${i}-${j}`];
     }
 
-    numRows = matrix.length
-    numCols = matrix[0].length
-
-    var cache: number[][] = new Array(numRows).fill(0)
-                                                .map(() => 
-                                                    new Array(numCols).fill(0)
-                                                );
-
-    var pathAns = 0
-
-    for(var row = 0; row < numRows; row++){
-        for(var col = 0; col < numCols; col++){
-//  find the path from all the points            
-            pathAns = Math.max(pathAns, dfs(matrix, row, col, cache))
+    // Iterate through each element in the matrix to find the maximum increasing path
+    let max = 0;
+    for (let i = 0; i < matrix.length; i++) {
+        for (let j = 0; j < matrix[0].length; j++) {
+            // Skip if the result for the current position is already calculated
+            if (dp[`${i}-${j}`] != undefined) continue;
+            // Update the maximum length by considering the increasing path starting from the current position
+            max = Math.max(max, solve(i, j, -1));
         }
     }
 
-    return pathAns
+    // Return the length of the longest increasing path
+    return max;
 };
-
-function dfs(matrix: number[][], row: number, col: number, cache: number[][]): number{
-    if(cache[row][col] != 0){
-//  we already have visited this node        
-        return cache[row][col]
-    }
-
-//  can move in these directions
-    var directions = [[-1, 0], [1, 0], [0, -1], [0, 1]]
-    for(var dir of directions){
-        var currRow = row + dir[0]
-        var currCol = col + dir[1]
-
-        if(currRow >= 0 && currCol >= 0 && currRow < numRows && currCol< numCols 
-            && matrix[currRow][currCol] > matrix[row][col]){
-//  find the longest path from this point                
-            cache[row][col] = Math.max(cache[row][col],
-                                    dfs(matrix, currRow, currCol, cache))
-        }
-    }
-
-//  include the current point as well
-    cache[row][col]++
-
-    return cache[row][col]
-}
 
 /* Longest Increasing Subsequence - Given an integer array nums, return the length of the longest strictly increasing subsequence
  */

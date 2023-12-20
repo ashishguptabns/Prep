@@ -342,17 +342,15 @@ function largestNumber(nums: number[]): string {
     return largestStr
 };
 
-
-
-Minimum Increment to Make Array Unique - You are given an integer array nums. In one move, you can pick an index i where 0 <= i < nums.length and increment nums[i] by 1.
+/* Minimum Increment to Make Array Unique - You are given an integer array nums. In one move, you can pick an index i where 0 <= i < nums.length and increment nums[i] by 1.
 
 Return the minimum number of moves to make every value in nums unique.
-
+ */
 /**
  * @param {number[]} nums
  * @return {number}
  */
-var minIncrementForUnique = function(nums) {
+const minIncrementForUnique = (nums) => {
 //  we will use greedy approach
 
 //  sort the array in increasing order
@@ -362,12 +360,12 @@ var minIncrementForUnique = function(nums) {
 
     for(let i = 0; i < nums.length; i++){
         if(nums[i] <= nums[i - 1]){
-//  this less check might come because of in place changes to the items
-
-//  increment to make it unique
-            const diff = nums[i - 1] - nums[i] + 1
-            nums[i] += diff
-            count += diff
+            //  this less check might come because of in place changes to the items
+            //  increment to make it unique
+            const diff = nums[i - 1] - nums[i]
+            nums[i] += diff + 1
+            //  as per definition
+            count += diff + 1
         }
     }
 
@@ -652,4 +650,28 @@ const maxChunksToSorted = (arr) => {
     });
 
     return count;
+};
+
+/* Break a palindrome - Given a palindromic string of lowercase English letters palindrome, replace exactly one character with any lowercase English letter so that the resulting string is not a palindrome and that it is the lexicographically smallest one possible.
+
+Return the resulting string. If there is no way to replace a character to make it not a palindrome, return an empty string.
+ */
+
+/**
+ * @param {string} palindrome
+ * @return {string}
+ */
+const breakPalindrome = (palindrome) => {
+    const len = palindrome.length;
+    if (len === 1) {
+        return '';
+    }
+
+    for (let i = 0; i < Math.floor(len / 2); i++) {
+        if (palindrome[i] !== 'a') {
+            return palindrome.substring(0, i) + 'a' + palindrome.substring(i + 1)
+        }
+    }
+    //  we have all a chars
+    return palindrome.substring(0, len - 1) + 'b';
 };

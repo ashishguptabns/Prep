@@ -1,57 +1,58 @@
-Possible Bipartition - We want to split a group of n people (labeled from 1 to n) into two groups of any size. Each person may dislike some other people, and they should not go into the same group.
+/* Possible Bipartition - We want to split a group of n people (labeled from 1 to n) into two groups of any size. Each person may dislike some other people, and they should not go into the same group.
 
 Given the integer n and the array dislikes where dislikes[i] = [ai, bi] indicates that the person labeled ai does not like the person labeled bi, return true if it is possible to split everyone into two groups in this way.
+ */
+/**
+ * @param {number} n
+ * @param {number[][]} dislikes
+ * @return {boolean}
+ */
+const possibleBipartition = (n, dislikes) => {
+    // Create the adjacency list graph
+    const adjList = new Array(n + 1).fill(null).map(() => []);
+    for (const edge of dislikes) {
+        // Add edges to the adjacency list
+        adjList[edge[0]].push(edge[1]);
+        adjList[edge[1]].push(edge[0]);
+    }
 
-class Solution {
-    fun possibleBipartition(n: Int, dislikes: Array<IntArray>): Boolean {
-//  we will maintain colors of each node
-//  find an uncolored node and color it with 1
-//  find an uncolored node from parent and color it with -color[parent]
-//  find the same color kid means we can't create partition as per the definition
+    // Initialize an array to store the color of each node
+    const color = new Array(n + 1).fill(0);
+    // 0: not colored, 1: color 1, -1: color 2
 
-//  create the adjacency list graph
-        val adjList = Array(n + 1){ mutableListOf<Int>() }
-        for(edge in dislikes){
-            adjList[edge[0]].add(edge[1])
-            adjList[edge[1]].add(edge[0])
+    for (let node = 1; node <= n; node++) {
+        // Iterate through the nodes
+
+        if (color[node] !== 0) {
+            // Found a colored node; skip it as it is already processed
+            continue;
         }
 
-        val color = IntArray(n + 1)
-//  0 not colored; 1 color 1; -1 color 2
+        // We will do BFS from this node
+        const queue = [node];
+        color[node] = 1;
 
-        for(node in 1..n){
-//iterate through the nodes 
+        while (queue.length) {
+            const currNode = queue.shift();
 
-            if(color[node] != 0){
-//  found a colored node; skip it as it is already processed
-                continue                
-            }
-
-//  we will do bfs
-            val queue = ArrayDeque<Int>()
-            color[node] = 1
-            queue.offer(node)
-
-            while(queue.isNotEmpty()){
-                val currNode = queue.poll()
-
-//  check the kids and color them
-                for(kid in adjList[currNode]){
-                    if(color[kid] == color[currNode]){
-//  condition is broken                        
-                        return false
-                    }
-                    if(color[kid] == 0){
-                        color[kid] = -color[currNode]
-//  add in the queue for bfs                        
-                        queue.offer(kid)
-                    }
+            // Check the neighbors and color them
+            for (const neighbor of adjList[currNode]) {
+                if (color[neighbor] === color[currNode]) {
+                    // Condition is broken - the same color is found in neighbors
+                    return false;
+                }
+                if (color[neighbor] === 0) {
+                    // Color the neighbor with the opposite color
+                    color[neighbor] = -color[currNode];
+                    // Add in the queue for BFS
+                    queue.push(neighbor);
                 }
             }
         }
-        return true
     }
-}
+    // All nodes are colored without conflicts, so the graph can be bipartitioned
+    return true;
+};
 
 /* The Maze - There is a ball in a maze with empty spaces (represented as 0) and walls (represented as 1). The ball can go through the empty spaces by rolling up, down, left or right, but it won't stop rolling until hitting a wall. When the ball stops, it could choose the next direction.
 
@@ -300,60 +301,77 @@ function ladderLength(beginWord: string, endWord: string, wordList: string[]): n
     return 0
 };
 
-
-
-Minimum Genetic Mutation - Given the two gene strings startGene and endGene and the gene bank bank, return the minimum number of mutations needed to mutate from startGene to endGene. If there is no such a mutation, return -1.
+/* Minimum Genetic Mutation - Given the two gene strings startGene and endGene and the gene bank bank, return the minimum number of mutations needed to mutate from startGene to endGene. If there is no such a mutation, return -1.
 
 Note that the starting point is assumed to be valid, so it might not be included in the bank.
+ */
+/**
+ * @param {string} startGene
+ * @param {string} endGene
+ * @param {string[]} bank
+ * @return {number}
+ */
+const minMutation = (startGene, endGene, bank) => {
+    // Define the valid mutations that can occur
+    const validMutations = ['A', 'C', 'G', 'T'];
 
-function minMutation(startGene: string, endGene: string, bank: string[]): number {
+    // Convert the bank array to a set for faster lookup
+    const bankSet = new Set(bank);
 
-    const validMutations = ['A', 'C', 'G', 'T']
-
-//  convert bank array to a set for faster lookup    
-    const bankSet = new Set(bank)
-    
-    if(!bankSet.has(endGene)){
-        return -1
+    // Check if the end gene is not in the bank, return -1 as it's not possible
+    if (!bankSet.has(endGene)) {
+        return -1;
     }
 
-    const visitedGenes = new Set<String>()
+    // Set to keep track of visited genes
+    const visitedGenes = new Set();
 
-//  initial gene as start and 0 mutations
-    const bfsQueue: [string, number][] = [[startGene, 0]]
+    // Queue for BFS, each element is [gene, mutations]
+    const bfsQueue = [[startGene, 0]];
 
-    visitedGenes.add(startGene)
+    // Mark the start gene as visited
+    visitedGenes.add(startGene);
 
-    while(bfsQueue.length > 0){
-        const [currGene, mutations] = bfsQueue.shift()
-        if(currGene == endGene){
-//  found the end gene            
-            return mutations
+    // BFS loop
+    while (bfsQueue.length > 0) {
+        // Dequeue the current gene and its mutations
+        const [currGene, mutations] = bfsQueue.shift();
+
+        // Check if the current gene is the end gene
+        if (currGene === endGene) {
+            // Found the end gene, return the number of mutations
+            return mutations;
         }
 
-        for(let i = 0; i < currGene.length; i++){
-//  loop through the currGene as we will replace each character with valid chars            
-            for(let mutationChar of validMutations){
-//  replace                
-                if(currGene[i] == mutationChar){
-//  found the same gene character                    
-                    continue
+        // Loop through each character in the current gene
+        for (let i = 0; i < currGene.length; i++) {
+            // Loop through each valid mutation
+            for (let mutationChar of validMutations) {
+                // Skip if the current character is the same as the mutation character
+                if (currGene[i] === mutationChar) {
+                    continue;
                 }
-                const newGene = currGene.slice(0, i) + mutationChar + currGene.slice(i + 1    )
-                if(bankSet.has(newGene) && !visitedGenes.has(newGene)){
-//  found a new valid unvisited gene
-                    bfsQueue.push([newGene, mutations + 1])                    
-                    visitedGenes.add(newGene)
+
+                // Create a new gene with the mutation
+                const newGene = currGene.slice(0, i) + mutationChar + currGene.slice(i + 1);
+
+                // Check if the new gene is in the bank and has not been visited
+                if (bankSet.has(newGene) && !visitedGenes.has(newGene)) {
+                    // Found a new valid unvisited gene, enqueue it with mutations + 1
+                    bfsQueue.push([newGene, mutations + 1]);
+                    // Mark the new gene as visited
+                    visitedGenes.add(newGene);
                 }
             }
         }
     }
 
-    return -1
+    // If the end gene is not reachable, return -1
+    return -1;
 };
 
-Same tree - Given the roots of two binary trees p and q, write a function to check if they are the same or not.
-
+/* Same tree - Given the roots of two binary trees p and q, write a function to check if they are the same or not.
+ */
 /**
  * Definition for a binary tree node.
  * function TreeNode(val, left, right) {
@@ -367,7 +385,7 @@ Same tree - Given the roots of two binary trees p and q, write a function to che
  * @param {TreeNode} q
  * @return {boolean}
  */
-var isSameTree = function (p, q) {
+const isSameTree = (p, q) => {
     if (!p && !q) {
         return true
     }
