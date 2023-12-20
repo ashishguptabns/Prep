@@ -1,5 +1,5 @@
-Number of islands - Given an m x n 2D binary grid grid which represents a map of '1's (land) and '0's (water), return the number of islands. An island is surrounded by water and is formed by connecting adjacent lands horizontally or vertically. You may assume all four edges of the grid are all surrounded by water.
-
+/* Number of islands - Given an m x n 2D binary grid grid which represents a map of '1's (land) and '0's (water), return the number of islands. An island is surrounded by water and is formed by connecting adjacent lands horizontally or vertically. You may assume all four edges of the grid are all surrounded by water.
+ */
 /**
  * @param {character[][]} grid
  * @return {number}
@@ -46,12 +46,12 @@ const numIslands = (grid) => {
     return ans
 };
 
-Maximum Product of Splitted Binary Tree - Given the root of a binary tree, split the binary tree into two subtrees by removing one edge such that the product of the sums of the subtrees is maximized.
+/* Maximum Product of Splitted Binary Tree - Given the root of a binary tree, split the binary tree into two subtrees by removing one edge such that the product of the sums of the subtrees is maximized.
 
 Return the maximum product of the sums of the two subtrees. Since the answer may be too large, return it modulo 109 + 7.
 
 Note that you need to maximize the answer before taking the mod and not after taking it.
-
+ */
 /**
  * Example:
  * var ti = TreeNode(5)
@@ -67,32 +67,32 @@ class Solution {
     
     fun maxProduct(root: TreeNode?): Int {
 
-//  first we need to find the total sum of the tree
-//  the at any node we need to find the sum of subtree with this node as the root
-//  keep maintaining the maxProduct found so far
+        //  first we need to find the total sum of the tree
+        //  the at any node we need to find the sum of subtree with this node as the root
+        //  keep maintaining the maxProduct found so far
 
         var sumOfGivenTree = 0
         var maxProduct = 0L
         
-        fun sumTree(node: TreeNode?): Int{
-            if(node == null){
+        fun sumTree(node: TreeNode ?): Int{
+            if (node == null) {
                 return 0
             }
 
             return sumTree(node.left) + sumTree(node.right) + node.`val`
         }
 
-        fun dfs(node: TreeNode?): Long{
-            if(node == null){
+        fun dfs(node: TreeNode ?): Long{
+            if (node == null) {
                 return 0L
             }
 
-            val currTreeSum = dfs(node.left) + dfs(node.right) + node.`val` 
+            val currTreeSum = dfs(node.left) + dfs(node.right) + node.`val`
 
 //  if we break the edge at this node then product will be as given below
             val productAtCurrNode = currTreeSum * (sumOfGivenTree - currTreeSum)
 
-            maxProduct = maxOf(maxProduct, productAtCurrNode) 
+            maxProduct = maxOf(maxProduct, productAtCurrNode)
 
             return currTreeSum
         }
@@ -104,12 +104,10 @@ class Solution {
     }
 }
 
-
-
-Maximum Difference Between Node and Ancestor - Given the root of a binary tree, find the maximum value v for which there exist different nodes a and b where v = |a.val - b.val| and a is an ancestor of b.
+/* Maximum Difference Between Node and Ancestor - Given the root of a binary tree, find the maximum value v for which there exist different nodes a and b where v = |a.val - b.val| and a is an ancestor of b.
 
 A node a is an ancestor of b if either: any child of a is equal to b or any child of a is an ancestor of b.
-
+ */
 const maxAncestorDiff = (root) => {
     let maxDiff = 0
 
@@ -130,77 +128,74 @@ const maxAncestorDiff = (root) => {
     return maxDiff
 };
 
-
-Number of Nodes in the Sub-Tree With the Same Label - You are given a tree (i.e. a connected, undirected graph that has no cycles) consisting of n nodes numbered from 0 to n - 1 and exactly n - 1 edges. The root of the tree is the node 0, and each node of the tree has a label which is a lower-case character given in the string labels (i.e. The node with the number i has the label labels[i]).
+/* Number of Nodes in the Sub-Tree With the Same Label - You are given a tree (i.e. a connected, undirected graph that has no cycles) consisting of n nodes numbered from 0 to n - 1 and exactly n - 1 edges. The root of the tree is the node 0, and each node of the tree has a label which is a lower-case character given in the string labels (i.e. The node with the number i has the label labels[i]).
 
 The edges array is given on the form edges[i] = [ai, bi], which means there is an edge between nodes ai and bi in the tree.
 
 Return an array of size n where ans[i] is the number of nodes in the subtree of the ith node which have the same label as node i.
+ */
+/**
+ * @param {number} n
+ * @param {number[][]} edges
+ * @param {string} labels
+ * @return {number[]}
+ */
+const countSubTrees = (n, edges, labels) => {
+    // Create an adjacency list to represent the undirected graph
+    const adjList = Array.from(Array(n), () => new Array())
 
-class Solution {
-    fun countSubTrees(numNodes: Int, edges: Array<IntArray>, labels: String): IntArray {
-//  we have to count the number of nodes with the same label as the parent for all subtrees
-
-//  starting node is 0 and parent is NA or -1 
-        val node = 0
-        val parent = -1
-
-        val adjList = Array(numNodes){ mutableListOf<Int>() }
-//  for each node we will maintain what all nodes this node is connected to
-        for(edge in edges){
-            adjList[edge[0]].add(edge[1])
-            adjList[edge[1]].add(edge[0])
-        }
-
-//  for each node i the number of child nodes with the same label
-        var resultArr = IntArray(numNodes)
-
-        dfs(node, parent, adjList, labels, resultArr)
-
-        return resultArr
+    // Create the undirected graph
+    for (const [from, to] of edges) {
+        adjList[from].push(to)
+        adjList[to].push(from)
     }
 
-    fun dfs(node: Int, parent: Int, adjList: Array<MutableList<Int>>, 
-                labels: String, resultArr: IntArray): IntArray{
-        val allCharsCountArray = IntArray(26)
-        val currNodeLabelInNum = labels[node] - 'a'
+    // Initialize an array to store the result for each node
+    const ans = Array(n).fill(0)
 
-//  we will traverse the subtree and keep the count of all the labels we find
-//  start the count with parent's label
-        allCharsCountArray[currNodeLabelInNum]++
+    // Initialize an array to count the occurrences of each character in the subtree
+    const count = Array(26).fill(0)
 
-//  traverse the subtree - all childs
-        for(child in adjList[node]){
-            if(child == parent){
-//  already counted
+    // Depth-first search (DFS) function to traverse the tree
+    const dfs = (node, parent, pcount) => {
+        // Initialize an array to count the occurrences of each character in the current subtree
+        const count = Array(26).fill(0)
+
+        // Traverse each neighbor of the current node
+        for (const neighbour of adjList[node]) {
+            // Skip the parent node to avoid revisiting it
+            if (neighbour === parent) {
                 continue
             }
-            
-            val childSubtreeLabelsCount = dfs(child, node, adjList, labels, resultArr)
-            
-            for(counter in 0..25){
-//  we found the labels in child subtree and add those numbers in the current node's numbers                
-                allCharsCountArray[counter] += childSubtreeLabelsCount[counter]
-            }
+
+            // Recursively call DFS for the current neighbor
+            dfs(neighbour, node, count)
         }
 
-//  record the numbers - notice this is coming from bottom to top hence the highest number found so far
-        resultArr[node] = allCharsCountArray[currNodeLabelInNum]
+        // Increment the count for the character at the current node
+        count[labels.charCodeAt(node) - 97]++
+        ans[node] = count[labels.charCodeAt(node) - 97]
 
-//  return the array to parent
-        return allCharsCountArray
+        // Update the parent count array with the counts from the current subtree
+        for (let i = 0; i < 26; i++) {
+            pcount[i] += count[i]
+        }
     }
-}
 
+    // Start DFS from the root node (node 0) with a dummy parent (-1) and initial count array
+    dfs(0, -1, count)
 
+    // Return the result array
+    return ans
+};
 
-Validate Binary Search Tree - Given the root of a binary tree, determine if it is a valid binary search tree (BST).
+/* Validate Binary Search Tree - Given the root of a binary tree, determine if it is a valid binary search tree (BST).
 
 A valid BST is defined as follows:
 The left subtree of a node contains only nodes with keys less than the node's key.
 The right subtree of a node contains only nodes with keys greater than the node's key.
 Both the left and right subtrees must also be binary search trees.
-
+ */
 /**
  * Example:
  * var ti = TreeNode(5)
@@ -212,53 +207,53 @@ Both the left and right subtrees must also be binary search trees.
  * }
  */
 class Solution {
-    var prevValue: Int? = null
+    var prevValue: Int?= null
 
-    fun isValidBST(root: TreeNode?): Boolean {
-//  we will do inorder traversal of the tree 
+    fun isValidBST(root: TreeNode ?): Boolean {
+    //  we will do inorder traversal of the tree 
 
-        return dfs(root)
+    return dfs(root)
+}
+
+    fun dfs(currNode: TreeNode ?): Boolean{
+    if (currNode == null) {
+        //  empty tree is a valid BST            
+        return true
     }
 
-    fun dfs(currNode: TreeNode?): Boolean{
-        if(currNode == null){
-//  empty tree is a valid BST            
-            return true
-        }
-
-        if(!dfs(currNode.left)){
-            return false
-        }
-
-        if(prevValue != null && currNode.`val` <= prevValue as Int){
-//  equal member will be on the right of a node in BST
-            return false
-        }
-
-        prevValue = currNode.`val`
-
-        return dfs(currNode.right)
+    if (!dfs(currNode.left)) {
+        return false
     }
+
+    if (prevValue != null && currNode.`val` <= prevValue as Int) {
+        //  equal member will be on the right of a node in BST
+        return false
+    }
+
+    prevValue = currNode.`val`
+
+    return dfs(currNode.right)
+}
 }
 
 
 
 Course Schedule - There are a total of numCourses courses you have to take, labeled from 0 to numCourses - 1. You are given an array prerequisites where prerequisites[i] = [ai, bi] indicates that you must take course bi first if you want to take course ai.
 
-For example, the pair [0, 1], indicates that to take course 0 you have to first take course 1.
-Return true if you can finish all courses. Otherwise, return false.
+For example, the pair[0, 1], indicates that to take course 0 you have to first take course 1.
+Return true if you can finish all courses.Otherwise, return false.
 
 class Solution {
     fun canFinish(numCourses: Int, prerequisites: Array<IntArray>): Boolean {
         
-        val courseDict = mutableMapOf<Int, MutableList<Int>>()
-//  to store course and list of next courses        
+        val courseDict = mutableMapOf < Int, MutableList < Int >> ()
+        //  to store course and list of next courses        
 
-        for(courses in prerequisites){
-            if(courseDict.containsKey(courses[1])){
+        for (courses in prerequisites) {
+            if (courseDict.containsKey(courses[1])) {
                 courseDict.get(courses[1])?.add(courses[0])
-            }else{
-                val nextCourses = mutableListOf<Int>()
+            } else {
+                val nextCourses = mutableListOf < Int > ()
                 nextCourses.add(courses[0])
                 courseDict.put(courses[1], nextCourses)
             }
@@ -269,9 +264,9 @@ class Solution {
 
         val pathArray = BooleanArray(numCourses)
 
-        for(currCourse in 0 until numCourses){
-//  browse through all courses and see if there is a cycle meaning the course can't be done            
-            if(isCyclic(currCourse, courseDict, checkedArray, pathArray)){
+        for (currCourse in 0 until numCourses) {
+            //  browse through all courses and see if there is a cycle meaning the course can't be done            
+            if (isCyclic(currCourse, courseDict, checkedArray, pathArray)) {
                 return false
             }
         }
@@ -279,49 +274,49 @@ class Solution {
         return true
     }
 
-    fun isCyclic(currCourse: Int, courseDict: MutableMap<Int, MutableList<Int>>, 
-                    checkedArray: BooleanArray, pathArray: BooleanArray): Boolean{
-        if(checkedArray[currCourse]){
-//  all courses can be done for this course; no cycle would be formed
+    fun isCyclic(currCourse: Int, courseDict: MutableMap<Int, MutableList<Int>>,
+        checkedArray: BooleanArray, pathArray: BooleanArray): Boolean {
+        if (checkedArray[currCourse]) {
+            //  all courses can be done for this course; no cycle would be formed
             return false
         }
 
-        if(pathArray[currCourse]){
-//  found a prev visited node -> cycle
+        if (pathArray[currCourse]) {
+            //  found a prev visited node -> cycle
             return true
         }
 
-        if(!courseDict.containsKey(currCourse)){
-//  no loop as no following courses          
+        if (!courseDict.containsKey(currCourse)) {
+            //  no loop as no following courses          
             return false
         }
 
         pathArray[currCourse] = true
-//  mark this one as visited
+        //  mark this one as visited
 
         var isCyclic = false
-        if(courseDict.get(currCourse) != null){
+        if (courseDict.get(currCourse) != null) {
             val coursesList = courseDict.get(currCourse) as List<Int>
-            for(course in coursesList){
-//  visit all the kids                
+            for (course in coursesList) {
+                //  visit all the kids                
                 isCyclic = isCyclic(course, courseDict, checkedArray, pathArray)
-                if(isCyclic){
+                if (isCyclic) {
                     return true
                 }
             }
         }
 
         pathArray[currCourse] = false
-//  undo for next course
+        //  undo for next course
 
         checkedArray[currCourse] = true
-//  we have visited all the kids and there is no cycle        
+        //  we have visited all the kids and there is no cycle        
 
         return isCyclic
     }
 }
 
-Most Stones Removed with Same Row or Column - On a 2D plane, we place n stones at some integer coordinate points. Each coordinate point may have at most one stone.
+Most Stones Removed with Same Row or Column - On a 2D plane, we place n stones at some integer coordinate points.Each coordinate point may have at most one stone.
 A stone can be removed if it shares either the same row or the same column as another stone that has not been removed.
 Given an array stones of length n where stones[i] = [xi, yi] represents the location of the ith stone, return the largest possible number of stones that can be removed.
 
@@ -361,11 +356,11 @@ const removeStones = (stones) => {
 
 Find Closest Node to Given Two Nodes - You are given a directed graph of n nodes numbered from 0 to n - 1, where each node has at most one outgoing edge.
 
-The graph is represented with a given 0-indexed array edges of size n, indicating that there is a directed edge from node i to node edges[i]. If there is no outgoing edge from i, then edges[i] == -1.
+The graph is represented with a given 0 - indexed array edges of size n, indicating that there is a directed edge from node i to node edges[i].If there is no outgoing edge from i, then edges[i] == -1.
 
 You are also given two integers node1 and node2.
 
-Return the index of the node that can be reached from both node1 and node2, such that the maximum between the distance from node1 to that node, and from node2 to that node is minimized. If there are multiple answers, return the node with the smallest index, and if no possible answer exists, return -1.
+Return the index of the node that can be reached from both node1 and node2, such that the maximum between the distance from node1 to that node, and from node2 to that node is minimized.If there are multiple answers, return the node with the smallest index, and if no possible answer exists, return -1.
 
 Note that edges may contain cycles.
 
@@ -375,20 +370,20 @@ class Solution {
         val numEdges = edges.size
 
 //  store shortest distances of all the reachable nodes from both given nodes
-        val distOneArray = IntArray(numEdges){Int.MAX_VALUE}
+        val distOneArray = IntArray(numEdges){ Int.MAX_VALUE }
         distOneArray[node1] = 0
-        val distTwoArray = IntArray(numEdges){Int.MAX_VALUE}
+        val distTwoArray = IntArray(numEdges){ Int.MAX_VALUE }
         distTwoArray[node2] = 0
 
-//  fill the distances of all nodes from given two nodes
-        fillDistances(node1, edges, distOneArray, BooleanArray(numEdges){false})
-        fillDistances(node2, edges, distTwoArray, BooleanArray(numEdges){false})
+        //  fill the distances of all nodes from given two nodes
+        fillDistances(node1, edges, distOneArray, BooleanArray(numEdges){ false})
+        fillDistances(node2, edges, distTwoArray, BooleanArray(numEdges){ false})
 
         var minDistNode = -1
         var minDistanceTillNow = Int.MAX_VALUE
-        for(currNode in 0 until numEdges){
-            if(minDistanceTillNow > maxOf(distOneArray[currNode], distTwoArray[currNode])){
-//  record the node which is closer to both                
+        for (currNode in 0 until numEdges) {
+            if (minDistanceTillNow > maxOf(distOneArray[currNode], distTwoArray[currNode])) {
+                //  record the node which is closer to both                
                 minDistNode = currNode
                 minDistanceTillNow = maxOf(distOneArray[currNode], distTwoArray[currNode])
             }
@@ -397,12 +392,12 @@ class Solution {
         return minDistNode
     }
 
-    fun fillDistances(currNode: Int, edges: IntArray, distArray: IntArray, 
-                        visitArray: BooleanArray){
+    fun fillDistances(currNode: Int, edges: IntArray, distArray: IntArray,
+        visitArray: BooleanArray) {
         visitArray[currNode] = true
         val neighbor = edges[currNode]
-        if(neighbor != -1 && !visitArray[neighbor]){
-//  see if the neighbor is not visited
+        if (neighbor != -1 && !visitArray[neighbor]) {
+            //  see if the neighbor is not visited
             distArray[neighbor] = 1 + distArray[currNode]
             fillDistances(neighbor, edges, distArray, visitArray)
         }
@@ -497,7 +492,7 @@ const inorderTraversal = (root) => {
 
 
 
-Sum of nodes with even valued grandparent - Given the root of a binary tree, return the sum of values of nodes with an even-valued grandparent. If there are no nodes with an even-valued grandparent, return 0.
+Sum of nodes with even valued grandparent - Given the root of a binary tree, return the sum of values of nodes with an even - valued grandparent.If there are no nodes with an even - valued grandparent, return 0.
 
 const sumEvenGrandparent = (root) => {
 
@@ -524,7 +519,7 @@ const sumEvenGrandparent = (root) => {
 
 Battleships in a board - Given an m x n matrix board where each cell is a battleship 'X' or empty '.', return the number of the battleships on board.
 
-Battleships can only be placed horizontally or vertically on board. In other words, they can only be made of the shape 1 x k (1 row, k columns) or k x 1 (k rows, 1 column), where k can be of any size. At least one horizontal or vertical cell separates between two battleships (i.e., there are no adjacent battleships).
+Battleships can only be placed horizontally or vertically on board.In other words, they can only be made of the shape 1 x k(1 row, k columns) or k x 1(k rows, 1 column), where k can be of any size.At least one horizontal or vertical cell separates between two battleships(i.e., there are no adjacent battleships).
 
 /**
  * @param {character[][]} board
@@ -565,11 +560,11 @@ const countBattleships = (board) => {
 };
 
 
-Find eventual safe states - There is a directed graph of n nodes with each node labeled from 0 to n - 1. The graph is represented by a 0-indexed 2D integer array graph where graph[i] is an integer array of nodes adjacent to node i, meaning there is an edge from node i to each node in graph[i].
+Find eventual safe states - There is a directed graph of n nodes with each node labeled from 0 to n - 1. The graph is represented by a 0 - indexed 2D integer array graph where graph[i] is an integer array of nodes adjacent to node i, meaning there is an edge from node i to each node in graph[i].
 
-A node is a terminal node if there are no outgoing edges. A node is a safe node if every possible path starting from that node leads to a terminal node (or another safe node).
+A node is a terminal node if there are no outgoing edges.A node is a safe node if every possible path starting from that node leads to a terminal node(or another safe node).
 
-Return an array containing all the safe nodes of the graph. The answer should be sorted in ascending order.
+Return an array containing all the safe nodes of the graph.The answer should be sorted in ascending order.
 
 /**
  * @param {number[][]} graph
@@ -605,13 +600,12 @@ const eventualSafeNodes = (graph) => {
     return ans;
 };
 
-
-Max area of island - You are given an m x n binary matrix grid. An island is a group of 1's (representing land) connected 4-directionally (horizontal or vertical.) You may assume all four edges of the grid are surrounded by water.
+/* Max area of island - You are given an m x n binary matrix grid. An island is a group of 1's (representing land) connected 4-directionally (horizontal or vertical.) You may assume all four edges of the grid are surrounded by water.
 
 The area of an island is the number of cells with a value 1 in the island.
 
 Return the maximum area of an island in grid. If there is no island, return 0.
-
+ */
 /**
  * @param {number[][]} grid
  * @return {number}
@@ -661,3 +655,68 @@ const maxAreaOfIsland = (grid) => {
     return maxArea
 };
 
+/* Rotting oranges - You are given an m x n grid where each cell can have one of three values:
+
+- 0 representing an empty cell,
+- 1 representing a fresh orange, or
+- 2 representing a rotten orange.
+
+Every minute, any fresh orange that is 4-directionally adjacent to a rotten orange becomes rotten.
+
+Return the minimum number of minutes that must elapse until no cell has a fresh orange. If this is impossible, return -1.
+ */
+
+/**
+ * @param {number[][]} grid
+ * @return {number}
+ */
+const orangesRotting = (grid) => {
+    // Get the number of rows and columns in the grid
+    const ROWS = grid.length
+    const COLS = grid[0].length
+
+    // Depth First Search (DFS) function to explore adjacent cells
+    const dfs = (r, c, grid, mins) => {
+        // Base cases to stop recursion
+        if (r < 0 || r >= ROWS || c < 0 || c >= COLS
+            || grid[r][c] === 0 || (grid[r][c] > 1 && grid[r][c] < mins)) {
+            return
+        }
+
+        // Mark the cell with the current time (minutes)
+        grid[r][c] = mins
+
+        // Explore adjacent cells in four directions
+        dfs(r + 1, c, grid, mins + 1)
+        dfs(r - 1, c, grid, mins + 1)
+        dfs(r, c + 1, grid, mins + 1)
+        dfs(r, c - 1, grid, mins + 1)
+    }
+
+    // Starting time for rotten oranges
+    let mins = 2
+
+    // Iterate over the grid to find initially rotten oranges and start DFS
+    for (let r = 0; r < ROWS; r++) {
+        for (let c = 0; c < COLS; c++) {
+            if (grid[r][c] === 2) {
+                dfs(r, c, grid, mins)
+            }
+        }
+    }
+
+    // Check if there are any fresh oranges left or find the maximum time for all cells
+    for (let r = 0; r < ROWS; r++) {
+        for (let c = 0; c < COLS; c++) {
+            if (grid[r][c] === 1) {
+                // If there are fresh oranges left, return -1 (impossible to rot all oranges)
+                return -1
+            }
+            // Update the maximum time encountered so far
+            mins = Math.max(mins, grid[r][c])
+        }
+    }
+
+    // Return the time taken to rot all oranges (subtract 2 to get the actual time)
+    return mins - 2
+};

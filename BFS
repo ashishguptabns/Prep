@@ -394,7 +394,7 @@ Deepest leaves sum - Given the root of a binary tree, return the sum of values o
  * @param {TreeNode} root
  * @return {number}
  */
-var deepestLeavesSum = function (root) {
+const deepestLeavesSum = (root) => {
 
     // solve this using BFS
     // keep tracking the sum and return the last level's
@@ -426,3 +426,69 @@ var deepestLeavesSum = function (root) {
     return levelSum
 };
 
+/* Shortest Path to Get Food */
+
+// Function to find the minimum steps required to reach food ('#') from the person's starting position ('*') on a 2D grid.
+const getFood = grid => {
+    // Get the number of rows and columns in the grid
+    const rows = grid.length;
+    const cols = grid[0].length;
+    
+    // Find the starting position of the person marked with '*'
+    let startX, startY;
+    for (let i = 0; i < rows; i++) {
+        for (let j = 0; j < cols; j++) {
+            if (grid[i][j] === '*') {
+                startX = i;
+                startY = j;
+                break;
+            }
+        }
+    }
+
+    // Define the possible directions to move (up, down, left, right)
+    const directions = [[-1, 0], [1, 0], [0, -1], [0, 1]];
+    
+    // Create a set to keep track of visited cells to avoid revisiting them
+    const visited = new Set();
+
+    // Function to check if a given position is valid (within the grid boundaries)
+    const isValid = (x, y) => x >= 0 && x < rows && y >= 0 && y < cols;
+
+    // Breadth-first search algorithm to find the minimum steps to reach food
+    const bfs = () => {
+        // Initialize the queue with the starting position and the number of steps taken
+        const queue = [[startX, startY, 0]];
+
+        while (queue.length > 0) {
+            // Dequeue the current position and steps taken
+            const [x, y, steps] = queue.shift();
+
+            // Check if food is found at the current position
+            if (grid[x][y] === '#') {
+                return steps; // Return the number of steps taken when food is found
+            }
+
+            // Explore neighbors in all possible directions
+            for (const [dx, dy] of directions) {
+                const newX = x + dx;
+                const newY = y + dy;
+
+                // Check if the new position is valid and has not been visited before
+                if (isValid(newX, newY) && grid[newX][newY] !== 'X' && !visited.has(`${newX}-${newY}`)) {
+                    visited.add(`${newX}-${newY}`); // Mark the new position as visited
+                    queue.push([newX, newY, steps + 1]); // Enqueue the new position with updated steps
+                }
+            }
+        }
+
+        // Return -1 if no food is found (should not happen if the grid is well-formed)
+        return -1;
+    };
+
+    // Start BFS to find the minimum steps
+    const result = bfs();
+
+    // Return the result, which is either the minimum steps or -1 if no food is found
+    return result;
+};

@@ -522,71 +522,88 @@ function dfs(matrix: number[][], row: number, col: number, cache: number[][]): n
     return cache[row][col]
 }
 
+/* Longest Increasing Subsequence - Given an integer array nums, return the length of the longest strictly increasing subsequence
+ */
+/**
+ * @param {number[]} nums
+ * @return {number}
+ */
+const lengthOfLIS = (nums) => {
+    // Initialize an array dp to store the length of LIS ending at each index
+    const dp = Array(nums.length).fill(1);
 
+    // Initialize a variable to store the maximum length of LIS
+    let maxLength = 1;
 
-Longest Increasing Subsequence - Given an integer array nums, return the length of the longest strictly increasing subsequence
+    // Loop through each element in the array starting from index 1
+    for (let i = 1; i < nums.length; i++) {
+        // Nested loop to compare the current element with previous elements
+        for (let j = 0; j < i; j++) {
+            // Check if the current element is greater than the previous element
+            if (nums[i] > nums[j]) {
+                // Update the length of LIS ending at the current index
+                dp[i] = Math.max(dp[i], dp[j] + 1);
 
-function lengthOfLIS(nums: number[]): number {
-    var dpArr: number[] = Array(nums.length).fill(1)
-//  be default the min length is 1    
-    var maxLength = 1
-
-    for(var i = 0; i < nums.length; i++){
-        for(var j = 0; j < i; j++){
-//  ensure increasing subsequence
-            if(nums[i] > nums[j]){
-                dpArr[i] = Math.max(dpArr[i], 1 + dpArr[j])
-//  either the current value of prev seq with current index                
-                maxLength = Math.max(maxLength, dpArr[i])
+                // Update the maximum length of LIS if needed
+                maxLength = Math.max(maxLength, dp[i]);
             }
         }
     }
 
-    return maxLength
+    // Return the overall maximum length of LIS
+    return maxLength;
 };
 
-
-
-Maximum Profit in Job Scheduling - We have n jobs, where every job is scheduled to be done from startTime[i] to endTime[i], obtaining a profit of profit[i].
+/* Maximum Profit in Job Scheduling - We have n jobs, where every job is scheduled to be done from startTime[i] to endTime[i], obtaining a profit of profit[i].
 
 You're given the startTime, endTime and profit arrays, return the maximum profit you can take such that there are no two jobs in the subset with overlapping time range.
 
 If you choose a job that ends at time X you will be able to start another job that starts at time X.
-
-function jobScheduling(startTime: number[], endTime: number[], profit: number[]): number {
-//  this can be solved with dp
-
-    const jobs: [number, number, number][] = []
-
-    for(let i = 0; i < startTime.length; i++){
+ */
+/**
+ * @param {number[]} startTime
+ * @param {number[]} endTime
+ * @param {number[]} profit
+ * @return {number}
+ */
+const jobScheduling = (startTime, endTime, profit) => {
+    // Create an array to store the jobs as [start time, end time, profit]
+    const jobs = []
+    for (let i = 0; i < startTime.length; i++) {
         jobs.push([startTime[i], endTime[i], profit[i]])
     }
 
-//  sort the jobs by their start times
+    // Sort the jobs array based on start times in ascending order
     jobs.sort((a, b) => a[0] - b[0])
 
-    const jobsNum = jobs.length
-    const profitDpArr: number[] = new Array(jobsNum);
+    // Get the total number of jobs
+    const numJobs = jobs.length
 
-//  init the base case with the last job's profit
-    profitDpArr[jobsNum - 1] = jobs[jobsNum - 1][2]
+    // Create an array to store the maximum profit for each job
+    const profitArr = Array(numJobs)
 
-    for(let i = jobsNum - 2; i >= 0; i--){
-        const[start, end, profit] = jobs[i]
+    // Base case: Set the profit for the last job in the profitArr array
+    profitArr[numJobs - 1] = jobs.at(-1)[2]
+
+    // Iterate through the jobs array in reverse order to fill the profitArr array
+    for (let i = numJobs - 2; i >= 0; i--) {
+        const [start, end, profit] = jobs[i]
         let next = i + 1
 
-        while(next < jobsNum && jobs[next][0] < end){
-//  find the next job which doesn't conflict with this one
+        // Find the next job whose start time is greater than or equal to the current job's end time
+        while (next < numJobs && jobs[next][0] < end) {
             next++
         }
 
-//  either choose the combined profit of current task's profit and profits till next indexed job or continue with the profit so far
-        profitDpArr[i] = Math.max(profit + (next < jobsNum ? profitDpArr[next] : 0), 
-                                    profitDpArr[i + 1])
+        // Calculate the maximum profit for the current job by considering two cases:
+        // 1. Include the current job and add its profit to the profit of the next compatible job
+        // 2. Exclude the current job and consider the profit of the next job
+        profitArr[i] = Math.max(profit + (next < numJobs ? profitArr[next] : 0),
+            profitArr[i + 1])
     }
 
-    console.log(profitDpArr)
-    return profitDpArr[0]
+    // Return the maximum profit for scheduling jobs
+    return profitArr[0]
 };
 
 /* Knight Dialer - Given an integer n, return how many distinct phone numbers of length n we can dial.

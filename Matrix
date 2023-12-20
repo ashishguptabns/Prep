@@ -39,3 +39,95 @@ const rotate = (matrix) => {
         row++;
     }
 };
+
+/* Set matrix zeroes - Given an m x n integer matrix matrix, if an element is 0, set its entire row and column to 0's.
+ */
+/**
+ * @param {number[][]} matrix
+ * @return {void} Do not return anything, modify matrix in-place instead.
+ */
+const setZeroes = (matrix) => {
+    const ROWS = matrix.length
+    const COLS = matrix[0].length
+
+    const row = []
+    const col = []
+
+    for (let r = 0; r < ROWS; r++) {
+        for (let c = 0; c < COLS; c++) {
+            if (matrix[r][c] === 0) {
+                row.push(r)
+                col.push(c)
+            }
+        }
+    }
+
+    for (let r = 0; r < row.length; r++) {
+        for (let c = 0; c < COLS; c++) {
+            matrix[row[r]][c] = 0
+        }
+    }
+
+    for (let r = 0; r < ROWS; r++) {
+        for (let c = 0; c < col.length; c++) {
+            matrix[r][col[c]] = 0
+        }
+    }
+};
+
+/* Game of life - The board is made up of an m x n grid of cells, where each cell has an initial state: live (represented by a 1) or dead (represented by a 0). Each cell interacts with its eight neighbors (horizontal, vertical, diagonal) using the following four rules (taken from the above Wikipedia article):
+
+Any live cell with fewer than two live neighbors dies as if caused by under-population.
+Any live cell with two or three live neighbors lives on to the next generation.
+Any live cell with more than three live neighbors dies, as if by over-population.
+Any dead cell with exactly three live neighbors becomes a live cell, as if by reproduction.
+The next state is created by applying the above rules simultaneously to every cell in the current state, where births and deaths occur simultaneously. Given the current state of the m x n grid board, return the next state.
+ */
+/**
+ * @param {number[][]} board
+ * @return {void} Do not return anything, modify board in-place instead.
+ */
+const gameOfLife = (board) => {
+    // Define the eight possible directions to check for neighbors
+    const dirs = [[0, 1], [1, 0], [-1, 0], [0, -1], [1, 1], [1, -1], [-1, -1], [-1, 1]];
+
+    // Iterate through each cell in the board
+    for (let r = 0; r < board.length; r++) {
+        for (let c = 0; c < board[0].length; c++) {
+            let neighbours = 0;
+
+            // Check each neighbor around the current cell
+            for (const [x, y] of dirs) {
+                // Get the value of the neighboring cell (considering boundaries)
+                const cell = board[r + x] ? board[r + x][c + y] : 0;
+
+                // Count live cells (1) and dying cells (3) as neighbors
+                if (cell === 1 || cell == 3) {
+                    neighbours++;
+                }
+            }
+
+            // Rules for live and dead cells based on the number of neighbors
+            if (board[r][c] === 0 || board[r][c] === 3) {
+                // If a dead cell has exactly 3 live neighbors, mark it as a newborn cell
+                if (neighbours === 3) {
+                    board[r][c] = -1;
+                }
+            } else {
+                // If a live cell has fewer than 2 or more than 3 live neighbors, mark it as dying
+                if (neighbours < 2 || neighbours > 3) {
+                    board[r][c] = 3;
+                }
+            }
+        }
+    }
+
+    // Convert the marked cells to their final state
+    for (var i = 0; i < board.length; i++) {
+        for (var j = 0; j < board[0].length; j++) {
+            // Change newborn cells (-1) to live cells (1) and dying cells (3) to dead cells (0)
+            if (board[i][j] == 3) board[i][j] = 0;
+            if (board[i][j] == -1) board[i][j] = 1;
+        }
+    }
+};
