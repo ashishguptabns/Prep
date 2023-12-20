@@ -305,58 +305,55 @@ const flatten = (head) => {
 /* Linked List Cycle - Given the head of a linked list, return the node where the cycle begins. If there is no cycle, return null. */
 
 /**
- * Example:
- * var li = ListNode(5)
- * var v = li.`val`
  * Definition for singly-linked list.
- * class ListNode(var `val`: Int) {
- *     var next: ListNode? = null
+ * function ListNode(val) {
+ *     this.val = val;
+ *     this.next = null;
  * }
  */
 
-class Solution {
-    fun detectCycle(head: ListNode?): ListNode? {
+/**
+ * @param {ListNode} head
+ * @return {ListNode}
+ */
+const detectCycle = (head) => {
     //  we will take a slow pointer and a fast pointer moving with double speed
     //  metNode is where these two pointers meet
     //  we will start two pointers; one from head another from meetPoint and where these two meet is the start of cycle
 
-    if (head == null) {
-        return null
+    if (!head) {
+        return head
     }
 
-    var slowNode = head
-    var fastNode = head
+    let slowNode = head
+    let fastNode = head
 
-    while (fastNode?.next != null) {
-        slowNode = slowNode?.next
-        fastNode = fastNode?.next?.next
+    while (fastNode?.next) {
+        slowNode = slowNode.next
+        fastNode = fastNode.next.next
 
-        if (slowNode == fastNode) {
+        if (slowNode === fastNode) {
             break
         }
     }
 
-    if (fastNode?.next == null) {
-        //  there is no cycle            
+    if (!fastNode?.next) {
+        //  no cycle
         return null
     }
 
     slowNode = head
-
     while (slowNode != fastNode) {
-        slowNode = slowNode?.next
-        fastNode = fastNode?.next
+        slowNode = slowNode.next
+        fastNode = fastNode.next
     }
 
     return slowNode
-}
-}
+};
 
-
-
-Palindrome Linked List - Given the head of a singly linked list, return true if it is a 
+/* Palindrome Linked List - Given the head of a singly linked list, return true if it is a 
 palindrome or false otherwise.
-
+ */
 /**
  * Example:
  * var li = ListNode(5)

@@ -236,90 +236,73 @@ class Solution {
 }
 }
 
-
-
-Course Schedule - There are a total of numCourses courses you have to take, labeled from 0 to numCourses - 1. You are given an array prerequisites where prerequisites[i] = [ai, bi] indicates that you must take course bi first if you want to take course ai.
+/* Course Schedule - There are a total of numCourses courses you have to take, labeled from 0 to numCourses - 1. You are given an array prerequisites where prerequisites[i] = [ai, bi] indicates that you must take course bi first if you want to take course ai.
 
 For example, the pair[0, 1], indicates that to take course 0 you have to first take course 1.
 Return true if you can finish all courses.Otherwise, return false.
+ */
+/**
+ * @param {number} numCourses
+ * @param {number[][]} prerequisites
+ * @return {number[]}
+ */
+// Function to find the order of courses
+const findOrder = (numCourses, prerequisites) => {
+    // Array to store the in-degrees of each course
+    const inDegrees = Array(numCourses).fill(0);
 
-class Solution {
-    fun canFinish(numCourses: Int, prerequisites: Array<IntArray>): Boolean {
-        
-        val courseDict = mutableMapOf < Int, MutableList < Int >> ()
-        //  to store course and list of next courses        
-
-        for (courses in prerequisites) {
-            if (courseDict.containsKey(courses[1])) {
-                courseDict.get(courses[1])?.add(courses[0])
-            } else {
-                val nextCourses = mutableListOf < Int > ()
-                nextCourses.add(courses[0])
-                courseDict.put(courses[1], nextCourses)
-            }
-        }
-
-        val checkedArray = BooleanArray(numCourses)
-//  maintain whether we can do courses for each course 
-
-        val pathArray = BooleanArray(numCourses)
-
-        for (currCourse in 0 until numCourses) {
-            //  browse through all courses and see if there is a cycle meaning the course can't be done            
-            if (isCyclic(currCourse, courseDict, checkedArray, pathArray)) {
-                return false
-            }
-        }
-
-        return true
+    // Count the in-degrees for each course based on prerequisites
+    for (const [v, u] of prerequisites) {
+        //  can come to v from course u
+        inDegrees[v]++;
     }
 
-    fun isCyclic(currCourse: Int, courseDict: MutableMap<Int, MutableList<Int>>,
-        checkedArray: BooleanArray, pathArray: BooleanArray): Boolean {
-        if (checkedArray[currCourse]) {
-            //  all courses can be done for this course; no cycle would be formed
-            return false
+    // Queue to store courses with in-degree 0 (can be taken first)
+    const q = [];
+
+    // Add courses with in-degree 0 to the queue
+    for (let i = 0; i < inDegrees.length; i++) {
+        const degree = inDegrees[i];
+        if (degree === 0) {
+            q.push(i);
         }
+    }
 
-        if (pathArray[currCourse]) {
-            //  found a prev visited node -> cycle
-            return true
-        }
+    // Array to store the final result (order of courses)
+    const res = [];
 
-        if (!courseDict.containsKey(currCourse)) {
-            //  no loop as no following courses          
-            return false
-        }
+    // Process courses in topological order
+    while (q.length) {
+        // Take a course with in-degree 0 from the queue
+        const u0 = q.shift();
 
-        pathArray[currCourse] = true
-        //  mark this one as visited
+        // Decrement the total number of courses remaining
+        numCourses--;
 
-        var isCyclic = false
-        if (courseDict.get(currCourse) != null) {
-            val coursesList = courseDict.get(currCourse) as List<Int>
-            for (course in coursesList) {
-                //  visit all the kids                
-                isCyclic = isCyclic(course, courseDict, checkedArray, pathArray)
-                if (isCyclic) {
-                    return true
+        // Add the course to the result
+        res.push(u0);
+
+        // Update in-degrees for courses dependent on the current course
+        for (const [v, u] of prerequisites) {
+            if (u === u0) {
+                inDegrees[v]--;
+
+                // If the in-degree becomes 0, add the course to the queue
+                if (inDegrees[v] === 0) {
+                    q.push(v);
                 }
             }
         }
-
-        pathArray[currCourse] = false
-        //  undo for next course
-
-        checkedArray[currCourse] = true
-        //  we have visited all the kids and there is no cycle        
-
-        return isCyclic
     }
-}
 
-Most Stones Removed with Same Row or Column - On a 2D plane, we place n stones at some integer coordinate points.Each coordinate point may have at most one stone.
+    // If all courses can be taken, return the result; otherwise, return an empty array
+    return numCourses === 0 ? res : [];
+};
+
+/* Most Stones Removed with Same Row or Column - On a 2D plane, we place n stones at some integer coordinate points.Each coordinate point may have at most one stone.
 A stone can be removed if it shares either the same row or the same column as another stone that has not been removed.
 Given an array stones of length n where stones[i] = [xi, yi] represents the location of the ith stone, return the largest possible number of stones that can be removed.
-
+ */
 /**
  * @param {number[][]} stones
  * @return {number}
@@ -352,9 +335,7 @@ const removeStones = (stones) => {
     return stones.length - stoneGroups
 };
 
-
-
-Find Closest Node to Given Two Nodes - You are given a directed graph of n nodes numbered from 0 to n - 1, where each node has at most one outgoing edge.
+/* Find Closest Node to Given Two Nodes - You are given a directed graph of n nodes numbered from 0 to n - 1, where each node has at most one outgoing edge.
 
 The graph is represented with a given 0 - indexed array edges of size n, indicating that there is a directed edge from node i to node edges[i].If there is no outgoing edge from i, then edges[i] == -1.
 
@@ -363,7 +344,7 @@ You are also given two integers node1 and node2.
 Return the index of the node that can be reached from both node1 and node2, such that the maximum between the distance from node1 to that node, and from node2 to that node is minimized.If there are multiple answers, return the node with the smallest index, and if no possible answer exists, return -1.
 
 Note that edges may contain cycles.
-
+ */
 class Solution {
 
     fun closestMeetingNode(edges: IntArray, node1: Int, node2: Int): Int {
@@ -404,10 +385,8 @@ class Solution {
     }
 }
 
-
-
-All Nodes Distance K in Binary Tree - Given the root of a binary tree, the value of a target node target, and an integer k, return an array of the values of all nodes that have a distance k from the target node.
-
+/* All Nodes Distance K in Binary Tree - Given the root of a binary tree, the value of a target node target, and an integer k, return an array of the values of all nodes that have a distance k from the target node.
+ */
 /**
  * Definition for a binary tree node.
  * function TreeNode(val) {
@@ -470,24 +449,6 @@ const distanceK = (root, target, k) => {
 };
 
 
-
-Inorder traversal - Given the root of a binary tree, return the inorder traversal of its nodes' values.
-
-const inorderTraversal = (root) => {
-    const inorderList = []
-
-    const findRecur = (node, inorderList) => {
-        if (node) {
-            findRecur(node.left, inorderList)
-            inorderList.push(node.val)
-            findRecur(node.right, inorderList)
-        }
-    }
-
-    findRecur(root, inorderList)
-
-    return inorderList
-};
 
 
 

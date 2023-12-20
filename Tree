@@ -954,3 +954,21 @@ const zigzagLevelOrder = (root) => {
 
     return res
 };
+
+/* Inorder traversal - Given the root of a binary tree, return the inorder traversal of its nodes' values.
+ */
+const inorderTraversal = (root) => {
+    const inorderList = []
+
+    const findRecur = (node, inorderList) => {
+        if (node) {
+            findRecur(node.left, inorderList)
+            inorderList.push(node.val)
+            findRecur(node.right, inorderList)
+        }
+    }
+
+    findRecur(root, inorderList)
+
+    return inorderList
+};
