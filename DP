@@ -153,32 +153,32 @@ Return the fewest number of coins that you need to make up that amount. If that 
 
 You may assume that you have an infinite number of each kind of coin.
  */
-class Solution {
-    fun coinChange(coins: IntArray, amount: Int): Int {
+/**
+ * @param {number[]} coins
+ * @param {number} amount
+ * @return {number}
+ */
+const coinChange = (coins, amount) => {
+    // Initialize an array dp to store the minimum number of coins needed for each amount
+    const dp = Array(amount + 1).fill(amount + 1);
 
-//      each index ith value means num coins to make i amount        
-        var numCoinsDPArr = IntArray(amount + 1){(amount + 1)}
+    // Base case: 0 coins needed to make amount 0
+    dp[0] = 0;
 
-//      0 coins to make 0 amount        
-        numCoinsDPArr[0] = 0;
-
-        for(i in 1 until amount + 1){
-            for(j in 0 until coins.size){
-//      we found a coin with less value than i means there is a chance to combine coins and make this value 'i'                
-                if(coins[j] <= i){
-//      if we choose coins[j] then we have 1 coin selected and now need num of coins to make 'i - coins[j]' value
-                    numCoinsDPArr[i] = minOf(numCoinsDPArr[i], 1 + numCoinsDPArr[i - coins[j]])
-                }
-            }
-        }
-
-        if(numCoinsDPArr[amount] == amount + 1){
-            return -1
-        }else{
-            return numCoinsDPArr[amount]
+    // Iterate through each coin
+    for (const coin of coins) {
+        // Update dp array for each amount from coin to the target amount
+        for (let i = coin; i <= amount; i++) {
+            // Update the minimum number of coins needed for the current amount
+            // by either keeping the existing value or using the current coin
+            dp[i] = Math.min(dp[i], 1 + dp[i - coin]);
         }
     }
-}
+
+    // If dp[amount] is still greater than the initial amount + 1, it means no valid combination exists
+    // Return -1 in this case, otherwise return the minimum number of coins needed for the target amount
+    return dp[amount] === amount + 1 ? -1 : dp[amount];
+};
 
 /* Perfect Squares - Given an integer n, return the least number of perfect square numbers that sum to n.
  */

@@ -1,49 +1,46 @@
-Fruit Into Baskets - You are visiting a farm that has a single row of fruit trees arranged from left to right.The trees are represented by an integer array fruits where fruits[i] is the type of fruit the ith tree produces.
+/* Fruit Into Baskets - You are visiting a farm that has a single row of fruit trees arranged from left to right.The trees are represented by an integer array fruits where fruits[i] is the type of fruit the ith tree produces.
 
 You want to collect as much fruit as possible.However, the owner has some strict rules that you must follow:
 
 You only have two baskets, and each basket can only hold a single type of fruit.There is no limit on the amount of fruit each basket can hold.
 Starting from any tree of your choice, you must pick exactly one fruit from every tree(including the start tree) while moving to the right.The picked fruits must fit in one of your baskets.
 Once you reach a tree with fruit that cannot fit in your baskets, you must stop.
-Given the integer array fruits, return the maximum number of fruits you can pick.
+Given the integer array fruits, return the maximum number of fruits you can pick. 
+*/
 
-class Solution {
-    fun totalFruit(fruits: IntArray): Int {
-        //  we can choose max of 2 groups of fruits and can have unlimited fruits in each group
+/**
+ * @param {number[]} fruits
+ * @return {number}
+ */
+const totalFruit = (fruits) => {
+    //  we can choose max of 2 groups of fruits and can have unlimited fruits in each group
 
-        var left = 0
-        var right = 0;
-        var totalNumFruits = 0;
+    let left = 0
+    let right = 0
+    let totalNum = 0
 
-        //  we will maintain the number of fruits in each group         
-        var fruitsMap = mutableMapOf < Int, Int> ()
+    const map = {}
 
-        for (right in 0 until fruits.size) {
-            //  increase the number of fruits in second group as we move forward            
-            fruitsMap.put(fruits[right],
-                fruitsMap.getOrDefault(fruits[right], 0) + 1)
-            totalNumFruits++;
+    while (right < fruits.length) {
+        map[fruits[right]] = (map[fruits[right]] || 0) + 1
 
-            //  check if we found a new group
-            if (fruitsMap.size > 2) {
-                //  we have to maintain number of fruit groups to 2
-                fruitsMap.put(fruits[left],
-                    fruitsMap.getOrDefault(fruits[left], 0) - 1)
-                totalNumFruits--;
-                if (fruitsMap.getOrDefault(fruits[left], 0) == 0) {
-                    //  remove this group of fruits                    
-                    fruitsMap.remove(fruits[left])
-                }
-                //  move the left index of subarray as we removed one fruit group
-                left++;
+        totalNum++
+
+        if (Object.keys(map).length > 2) {
+            //  found a new group of fruit
+
+            map[fruits[left]] = map[fruits[left]] - 1
+            totalNum--
+            if (map[fruits[left]] === 0) {
+                delete map[fruits[left]]
             }
+            left++
         }
-
-        //  max length of subarray as per definition = right - left
-
-        return totalNumFruits
+        right++
     }
-}
+
+    return totalNum
+};
 
 /* Longest Subarray of 1's After Deleting One Element - Given a binary array nums, you should delete one element from it.
 
@@ -619,4 +616,51 @@ const maxSlidingWindow = (nums, k) => {
 
     // Return the result array containing maximum elements in each sliding window
     return res;
+};
+
+/* Maximum Length of Subarray With Positive Product - Given an array of integers nums, find the maximum length of a subarray where the product of all its elements is positive.
+
+A subarray of an array is a consecutive sequence of zero or more values taken out of that array.
+
+Return the maximum length of a subarray with positive product.
+*/
+
+/**
+ * @param {number[]} nums
+ * @return {number}
+ */
+const getMaxLen = (nums) => {
+    // Initialize variables to keep track of the result and counts of positive and negative numbers
+    let result = positive = negative = 0;
+
+    // Iterate through each element in the input array
+    for (const num of nums) {
+        // Check if the current element is zero
+        if (num === 0) {
+            // subarray is broken
+            // Reset positive and negative counts if the current element is zero
+            positive = negative = 0;
+        }
+        // Check if the current element is positive
+        else if (num > 0) {
+            // Increment the positive count
+            positive += 1;
+
+            // If negative count is non-zero, increment it as well
+            negative && (negative += 1);
+        }
+        // Check if the current element is negative
+        else {
+            // Swap positive and negative counts, and update negative count
+            const current = positive;
+            positive = negative ? negative + 1 : 0;
+            negative = current + 1;
+        }
+
+        // Update the result with the maximum positive count
+        result = Math.max(result, positive);
+    }
+
+    // Return the maximum length of subarrays with a product of positive integers
+    return result;
 };

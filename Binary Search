@@ -567,3 +567,54 @@ const maxLength = (ribbons, k) => {
     // The result is right since we want to maximize the ribbon length
     return right;
 };
+
+/* Find First and Last Position of Element in Sorted Array - Given an array of integers nums sorted in non-decreasing order, find the starting and ending position of a given target value.
+
+If target is not found in the array, return [-1, -1].
+
+You must write an algorithm with O(log n) runtime complexity.
+*/
+
+/**
+ * @param {number[]} nums
+ * @param {number} target
+ * @return {number[]}
+ */
+const searchRange = (nums, target) => {
+    let start = -1
+    let end = -1
+
+    let left = 0
+    let right = nums.length - 1
+
+    //  search for start index
+    while (left <= right) {
+        let mid = Math.floor((left + right) / 2)
+        if (nums[mid] === target) {
+            start = mid
+            right = mid - 1
+        } else if (nums[mid] < target) {
+            left = mid + 1
+        } else {
+            right = mid - 1
+        }
+    }
+
+    left = 0
+    right = nums.length - 1
+
+    //  search for end index
+    while (left <= right) {
+        let mid = Math.floor((left + right) / 2)
+        if (nums[mid] === target) {
+            end = mid
+            left = mid + 1
+        } else if (nums[mid] < target) {
+            left = mid + 1
+        } else {
+            right = mid - 1
+        }
+    }
+
+    return [start, end]
+};
