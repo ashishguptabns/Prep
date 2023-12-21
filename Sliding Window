@@ -529,3 +529,47 @@ const characterReplacement = (s, k) => {
     // The length of the longest substring with at most 'k' replacements
     return right - left;
 };
+
+/* Longest Continuous Subarray With Absolute Diff Less Than or Equal to Limit - Given an array of integers nums and an integer limit, return the size of the longest non-empty subarray such that the absolute difference between any two elements of this subarray is less than or equal to limit.
+*/
+
+/**
+ * @param {number[]} nums
+ * @param {number} limit
+ * @return {number}
+ */
+const longestCSubarray = (nums, limit) => {
+    // Initialize an empty queue to store elements of the current subarray.
+    const queue = [];
+
+    // Initialize pointers and variables to track the current subarray.
+    let left = -1;  // `left` represents the left boundary of the current subarray.
+    let max = min = nums[0];  // `max` and `min` represent the maximum and minimum values in the current subarray.
+
+    // Loop through each element in the input array.
+    for (const num of nums) {
+        // Update the maximum and minimum values in the current subarray.
+        max = Math.max(max, num);
+        min = Math.min(min, num);
+
+        // Add the current element to the queue.
+        queue.push(num);
+
+        // Check if the difference between max and min is within the limit.
+        if (max - min <= limit) {
+            // If within limit, continue with the next element.
+            continue;
+        }
+
+        // If the difference exceeds the limit, remove elements from the left of the subarray.
+        const cut = queue.shift();  // Remove the leftmost element.
+        left += 1;  // Move the left boundary to the right.
+
+        // Update max and min if the removed element was equal to the current max or min.
+        max === cut && (max = Math.max(...queue));
+        min === cut && (min = Math.min(...queue));
+    }
+
+    // Return the length of the longest contiguous subarray.
+    return nums.length - left - 1;
+};

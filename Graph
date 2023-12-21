@@ -142,3 +142,65 @@ const getAncestors = (n, edges) => {
     return ancestors;
 };
 
+/* Course Schedule - There are a total of numCourses courses you have to take, labeled from 0 to numCourses - 1. You are given an array prerequisites where prerequisites[i] = [ai, bi] indicates that you must take course bi first if you want to take course ai.
+
+For example, the pair[0, 1], indicates that to take course 0 you have to first take course 1.
+Return true if you can finish all courses.Otherwise, return false.
+ */
+/**
+ * @param {number} numCourses
+ * @param {number[][]} prerequisites
+ * @return {number[]}
+ */
+// Function to find the order of courses
+const findOrder = (numCourses, prerequisites) => {
+    // Array to store the in-degrees of each course
+    const inDegrees = Array(numCourses).fill(0);
+
+    // Count the in-degrees for each course based on prerequisites
+    for (const [v, u] of prerequisites) {
+        //  can come to v from course u
+        inDegrees[v]++;
+    }
+
+    // Queue to store courses with in-degree 0 (can be taken first)
+    const q = [];
+
+    // Add courses with in-degree 0 to the queue
+    for (let i = 0; i < inDegrees.length; i++) {
+        const degree = inDegrees[i];
+        if (degree === 0) {
+            q.push(i);
+        }
+    }
+
+    // Array to store the final result (order of courses)
+    const res = [];
+
+    // Process courses in topological order
+    while (q.length) {
+        // Take a course with in-degree 0 from the queue
+        const u0 = q.shift();
+
+        // Decrement the total number of courses remaining
+        numCourses--;
+
+        // Add the course to the result
+        res.push(u0);
+
+        // Update in-degrees for courses dependent on the current course
+        for (const [v, u] of prerequisites) {
+            if (u === u0) {
+                inDegrees[v]--;
+
+                // If the in-degree becomes 0, add the course to the queue
+                if (inDegrees[v] === 0) {
+                    q.push(v);
+                }
+            }
+        }
+    }
+
+    // If all courses can be taken, return the result; otherwise, return an empty array
+    return numCourses === 0 ? res : [];
+};

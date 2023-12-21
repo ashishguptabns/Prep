@@ -161,3 +161,46 @@ const searchMatrix = (matrix, target) => {
     }
     return false
 };
+
+/* Spiral matrix - Given an m x n matrix, return all elements of the matrix in spiral order.
+ */
+
+/**
+ * @param {number[][]} matrix
+ * @return {number[]}
+ */
+const spiralOrder = (matrix) => {
+    let res = []
+    let left = 0
+    let right = matrix[0].length
+    let top = 0
+    let bottom = matrix.length
+
+    while (left < right && top < bottom) {
+        for (let c = left; c < right; c++) {
+            res.push(matrix[top][c])
+        }
+        top++
+
+        for (let r = top; r < bottom; r++) {
+            res.push(matrix[r][right - 1])
+        }
+        right--
+
+        if (!(left < right && top < bottom)) {
+            break
+        }
+
+        for (let c = right - 1; c >= left; c--) {
+            res.push(matrix[bottom - 1][c])
+        }
+        bottom--
+
+        for (let r = bottom - 1; r >= top; r--) {
+            res.push(matrix[r][left])
+        }
+        left++
+    }
+
+    return res
+};

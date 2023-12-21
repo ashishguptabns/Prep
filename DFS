@@ -52,57 +52,62 @@ Return the maximum product of the sums of the two subtrees. Since the answer may
 
 Note that you need to maximize the answer before taking the mod and not after taking it.
  */
+
 /**
- * Example:
- * var ti = TreeNode(5)
- * var v = ti.`val`
  * Definition for a binary tree node.
- * class TreeNode(var `val`: Int) {
- *     var left: TreeNode? = null
- *     var right: TreeNode? = null
+ * function TreeNode(val, left, right) {
+ *     this.val = (val===undefined ? 0 : val)
+ *     this.left = (left===undefined ? null : left)
+ *     this.right = (right===undefined ? null : right)
  * }
  */
+/**
+ * @param {TreeNode} root
+ * @return {number}
+ */
+const maxProduct = (root) => {
+    // Initialize an array to store the sums of nodes in different subtrees.
+    let res = [];
 
-class Solution {
-    
-    fun maxProduct(root: TreeNode?): Int {
+    // Define a constant for modulo operation.
+    const MOD = 10 ** 9 + 7;
 
-        //  first we need to find the total sum of the tree
-        //  the at any node we need to find the sum of subtree with this node as the root
-        //  keep maintaining the maxProduct found so far
-
-        var sumOfGivenTree = 0
-        var maxProduct = 0L
-        
-        fun sumTree(node: TreeNode ?): Int{
-            if (node == null) {
-                return 0
-            }
-
-            return sumTree(node.left) + sumTree(node.right) + node.`val`
+    // Define a recursive function to perform depth-first search (DFS) on the tree.
+    const dfs = (node) => {
+        if (!node) {
+            return 0; // Return 0 for null nodes.
         }
 
-        fun dfs(node: TreeNode ?): Long{
-            if (node == null) {
-                return 0L
-            }
-
-            val currTreeSum = dfs(node.left) + dfs(node.right) + node.`val`
-
-//  if we break the edge at this node then product will be as given below
-            val productAtCurrNode = currTreeSum * (sumOfGivenTree - currTreeSum)
-
-            maxProduct = maxOf(maxProduct, productAtCurrNode)
-
-            return currTreeSum
+        if (!node.left && !node.right) {
+            return node.val; // Return the value for leaf nodes.
         }
 
-        sumOfGivenTree = sumTree(root)
-        dfs(root)
+        // Recursively calculate the sums of left and right subtrees.
+        const leftSum = dfs(node.left);
+        const rightSum = dfs(node.right);
 
-        return (maxProduct % 1000000007).toInt()
+        // Add the sums to the result array.
+        res.push(leftSum, rightSum);
+
+        // Return the sum of the current subtree.
+        return leftSum + node.val + rightSum;
+    };
+
+    // Calculate the total sum of the tree using DFS.
+    const totalSum = dfs(root);
+
+    // Initialize a variable to store the maximum product.
+    let max = 0;
+
+    // Iterate through the sums in the result array and calculate the product.
+    for (const sum of res) {
+        const curr = sum * (totalSum - sum);
+        max = Math.max(max, curr); // Update the maximum product.
     }
-}
+
+    // Return the maximum product modulo MOD.
+    return max % MOD;
+};
 
 /* Maximum Difference Between Node and Ancestor - Given the root of a binary tree, find the maximum value v for which there exist different nodes a and b where v = |a.val - b.val| and a is an ancestor of b.
 
@@ -235,69 +240,6 @@ class Solution {
     return dfs(currNode.right)
 }
 }
-
-/* Course Schedule - There are a total of numCourses courses you have to take, labeled from 0 to numCourses - 1. You are given an array prerequisites where prerequisites[i] = [ai, bi] indicates that you must take course bi first if you want to take course ai.
-
-For example, the pair[0, 1], indicates that to take course 0 you have to first take course 1.
-Return true if you can finish all courses.Otherwise, return false.
- */
-/**
- * @param {number} numCourses
- * @param {number[][]} prerequisites
- * @return {number[]}
- */
-// Function to find the order of courses
-const findOrder = (numCourses, prerequisites) => {
-    // Array to store the in-degrees of each course
-    const inDegrees = Array(numCourses).fill(0);
-
-    // Count the in-degrees for each course based on prerequisites
-    for (const [v, u] of prerequisites) {
-        //  can come to v from course u
-        inDegrees[v]++;
-    }
-
-    // Queue to store courses with in-degree 0 (can be taken first)
-    const q = [];
-
-    // Add courses with in-degree 0 to the queue
-    for (let i = 0; i < inDegrees.length; i++) {
-        const degree = inDegrees[i];
-        if (degree === 0) {
-            q.push(i);
-        }
-    }
-
-    // Array to store the final result (order of courses)
-    const res = [];
-
-    // Process courses in topological order
-    while (q.length) {
-        // Take a course with in-degree 0 from the queue
-        const u0 = q.shift();
-
-        // Decrement the total number of courses remaining
-        numCourses--;
-
-        // Add the course to the result
-        res.push(u0);
-
-        // Update in-degrees for courses dependent on the current course
-        for (const [v, u] of prerequisites) {
-            if (u === u0) {
-                inDegrees[v]--;
-
-                // If the in-degree becomes 0, add the course to the queue
-                if (inDegrees[v] === 0) {
-                    q.push(v);
-                }
-            }
-        }
-    }
-
-    // If all courses can be taken, return the result; otherwise, return an empty array
-    return numCourses === 0 ? res : [];
-};
 
 /* Most Stones Removed with Same Row or Column - On a 2D plane, we place n stones at some integer coordinate points.Each coordinate point may have at most one stone.
 A stone can be removed if it shares either the same row or the same column as another stone that has not been removed.

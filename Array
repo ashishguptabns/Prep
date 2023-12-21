@@ -131,21 +131,61 @@ const minSwaps = (arr) => {
  * @return {number}
  */
 const maxSubArray = (nums) => {
-    // Initialize a variable max to negative infinity to ensure it gets updated in the loop
-    let max = -Infinity;
-    // Initialize a variable currSubSum to 0 to keep track of the current subarray sum
-    let currSubSum = 0;
+  // Initialize a variable max to negative infinity to ensure it gets updated in the loop
+  let max = -Infinity;
+  // Initialize a variable currSubSum to 0 to keep track of the current subarray sum
+  let currSubSum = 0;
 
-    // Iterate through each element (num) in the input array (nums)
-    for (const num of nums) {
-        // Add the current element to the current subarray sum
-        currSubSum += num;
-        // Update the maximum subarray sum (max) by taking the maximum of the current subarray sum and the existing max
-        max = Math.max(max, currSubSum);
-        // If the current subarray sum becomes negative, reset it to 0, as we want to find the maximum subarray sum
-        currSubSum = Math.max(currSubSum, 0);
+  // Iterate through each element (num) in the input array (nums)
+  for (const num of nums) {
+    // Add the current element to the current subarray sum
+    currSubSum += num;
+    // Update the maximum subarray sum (max) by taking the maximum of the current subarray sum and the existing max
+    max = Math.max(max, currSubSum);
+    // If the current subarray sum becomes negative, reset it to 0, as we want to find the maximum subarray sum
+    currSubSum = Math.max(currSubSum, 0);
+  }
+
+  // Return the maximum subarray sum found during the iteration
+  return max;
+};
+
+/* Longest consecutive sequence - Given an unsorted array of integers nums, return the length of the longest consecutive elements sequence.
+
+You must write an algorithm that runs in O(n) time.
+ */
+
+/**
+ * @param {number[]} nums
+ * @return {number}
+ */
+const longestConsecutive = (nums) => {
+  // Create a set to efficiently check the presence of elements.
+  const set = new Set(nums);
+
+  // Initialize a variable to store the maximum length.
+  let max = 0;
+
+  // Iterate through each element in the array.
+  for (const num of nums) {
+    // If the next consecutive element is present in the set, skip to the next iteration.
+    if (set.has(num + 1)) {
+      continue;
     }
 
-    // Return the maximum subarray sum found during the iteration
-    return max;
+    // If the next consecutive element is not present, start counting the consecutive elements backward.
+    let counter = 1;
+    let curr = num;
+
+    // Continue counting consecutive elements backward.
+    while (set.has(--curr)) {
+      counter++;
+    }
+
+    // Update the maximum length.
+    max = Math.max(max, counter);
+  }
+
+  // Return the maximum length of consecutive subsequence.
+  return max;
 };

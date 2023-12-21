@@ -273,46 +273,47 @@ Koko likes to eat slowly but still wants to finish eating all the bananas before
 
 Return the minimum integer k such that she can eat all the bananas within h hours.
  */
-class Solution {
-    fun minEatingSpeed(piles: IntArray, h: Int): Int {
-        
-        var minSpeed = 1
-        var maxSpeed = 1
-        for(numBananas in piles){
-            maxSpeed = maxOf(maxSpeed, numBananas)
-//  going above maxSpeed doesn't make sense because in any hour only one pile can be eaten            
-        }
+/**
+ * @param {number[]} piles
+ * @param {number} h
+ * @return {number}
+ */
+const minEatingSpeed = (piles, h) => {
 
-        while(minSpeed < maxSpeed){
-            val midSpeed = (minSpeed + maxSpeed) / 2
-            var hoursSpent = 0
+    //  per hour speeds
+    let minSpeed = 1
+    let maxSpeed = 1
 
-            for(numBananas in piles){
-                hoursSpent += Math.ceil(numBananas * 1.0 / midSpeed).toInt()
-//  1.5 hours means 2 hours                
-            }
-
-            if(hoursSpent <= h){
-//  we are too fast                
-                maxSpeed = midSpeed
-            }else{
-//  too slow                
-                minSpeed = midSpeed + 1
-            }
-        }
-
-        return maxSpeed
+    for (const num of piles) {
+        //  max one pile is allowed in an hour
+        maxSpeed = Math.max(num, maxSpeed)
     }
-}
 
+    while (minSpeed < maxSpeed) {
+        const mid = Math.floor((minSpeed + maxSpeed) / 2)
+        let hoursNeeded = 0
+        for (const num of piles) {
+            //  take the max of hours
+            hoursNeeded += Math.ceil(num / mid)
+        }
 
+        if (hoursNeeded > h) {
+            //  increase the speed
+            minSpeed = mid + 1
+        } else {
+            maxSpeed = mid
+        }
+    }
 
-Minimum Time to Complete Trips - You are given an array time where time[i] denotes the time taken by the ith bus to complete one trip.
+    return minSpeed
+};
+
+/* Minimum Time to Complete Trips - You are given an array time where time[i] denotes the time taken by the ith bus to complete one trip.
 
 Each bus can make multiple trips successively; that is, the next trip can start immediately after completing the current trip. Also, each bus operates independently; that is, the trips of one bus do not influence the trips of any other bus.
 
 You are also given an integer totalTrips, which denotes the number of trips all buses should make in total. Return the minimum time required for all buses to complete at least totalTrips trips.
-
+ */
 class Solution {
     fun minimumTime(times: IntArray, totalTrips: Int): Long {
         var maxTime = 0L
@@ -540,3 +541,48 @@ const kthSmallestSubarraySum = (nums, k) => {
   // The final low value is the Kth smallest subarray sum
   return low;
 }
+
+/* Cutting Ribbons 
+- You're given an array ribbons where ribbons[i] represents the length of the i-th ribbon.
+- You're also given an integer k.
+- You can cut ribbons into smaller segments of positive integer lengths, or leave them intact.
+- Your goal is to obtain k ribbons of all the same positive integer length.
+- You can discard excess ribbon material.
+Return the maximum possible positive integer length of those k ribbons, or 0 if it's not achievable.
+ */
+ /**
+ * @param {number[]} ribbons - Array of ribbon lengths
+ * @param {number} k - Target number of segments
+ * @return {number} - Maximum valid ribbon length
+ */
+const maxLength = (ribbons, k) => {
+    // Function to check if it's possible to cut ribbons into segments with a given length
+    const canCut = (length) => {
+        let count = 0;
+        for (const ribbon of ribbons) {
+            // Count how many segments can be obtained from each ribbon with the given length
+            count += Math.floor(ribbon / length);
+        }
+        // Check if the total count of segments is greater than or equal to the target (k)
+        return count >= k;
+    };
+
+    // Binary search to find the maximum valid ribbon length
+    let left = 1; // The minimum possible ribbon length
+    let right = Math.max(...ribbons); // The maximum possible ribbon length
+
+    while (left <= right) {
+        const mid = Math.floor((left + right) / 2); // Calculate the middle length
+
+        if (canCut(mid)) {
+            // If it's possible to cut the ribbons with the current length, search in the right half
+            left = mid + 1;
+        } else {
+            // If it's not possible to cut the ribbons with the current length, search in the left half
+            right = mid - 1;
+        }
+    }
+
+    // The result is right since we want to maximize the ribbon length
+    return right;
+};
