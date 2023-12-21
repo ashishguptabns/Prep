@@ -253,3 +253,47 @@ const sortArray = (nums) => {
     return quickSortHelper(nums, 0, nums.length - 1)
 
 };
+
+/* Merge intervals - Given an array of intervals where intervals[i] = [starti, endi], merge all overlapping intervals, and return an array of the non-overlapping intervals that cover all the intervals in the input.
+*/
+
+/**
+ * @param {number[][]} intervals
+ * @return {number[][]}
+ */
+const merge = (intervals) => {
+  // Check if the input array is empty or undefined
+  if (!intervals || !intervals.length) {
+      return [];
+  }
+
+  // Array to store the merged intervals
+  let merged = [];
+
+  // Sort intervals based on the start value
+  intervals.sort((a, b) => a[0] - b[0]);
+
+  // Initialize variables to track the last merged interval's start and end
+  let [lastStart, lastEnd] = intervals[0];
+
+  // Iterate through each interval in the sorted array
+  for (const [start, end] of intervals) {
+      // Check if the current interval overlaps with the last merged interval
+      if (start <= lastEnd) {
+          // Merge overlapping intervals by updating lastEnd
+          lastEnd = Math.max(end, lastEnd);
+      } else {
+          // Add the merged interval to the result array
+          merged.push([lastStart, lastEnd]);
+          // Update lastStart and lastEnd for the new interval
+          lastStart = start;
+          lastEnd = end;
+      }
+  }
+
+  // Add the last merged interval to the result array
+  merged.push([lastStart, lastEnd]);
+
+  // Return the array of merged intervals
+  return merged;
+};

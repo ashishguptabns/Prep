@@ -845,3 +845,39 @@ const minCost = (costs) => {
     // The result is the minimum cost among the last row of the dp matrix
     return Math.min(...dp[n - 1]);
 };
+
+/* Word break - Given a string s and a dictionary of strings wordDict, return true if s can be segmented into a space-separated sequence of one or more dictionary words.
+
+Note that the same word in the dictionary may be reused multiple times in the segmentation.
+ */
+
+/**
+ * @param {string} s
+ * @param {string[]} wordDict
+ * @return {boolean}
+ */
+const wordBreak = (s, wordDict) => {
+    // Length of the input string
+    const n = s.length;
+    // dp[i] is true if the substring s[0...i-1] can be segmented into words from the dictionary
+    const dp = new Array(n + 1).fill(false);
+    // An empty string is considered segmented by default
+    dp[0] = true;
+
+    // Iterate through the characters of the string
+    for (let i = 1; i <= n; i++) {
+        // Iterate through words in the dictionary
+        for (const word of wordDict) {
+            // Check if the current substring can be formed by appending the current word
+            if (i - word.length >= 0 && dp[i - word.length]
+                && s.substring(i - word.length, i) === word) {
+                dp[i] = true;
+                // Break out of the inner loop since we found a valid word
+                break;
+            }
+        }
+    }
+
+    // The final value of dp[n] indicates whether the entire string can be segmented
+    return dp[n];
+};

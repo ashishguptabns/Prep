@@ -287,45 +287,63 @@ Return the index of the node that can be reached from both node1 and node2, such
 
 Note that edges may contain cycles.
  */
-class Solution {
+/**
+ * @param {number[]} edges
+ * @param {number} node1
+ * @param {number} node2
+ * @return {number}
+ */
+// This function finds the closest meeting node between two nodes in a graph represented by edges.
+// It takes the graph edges, and two nodes (node1 and node2) as parameters.
+const closestMeetingNode = (edges, node1, node2) => {
+    // Initialize two maps to store the distances from node1 and node2 to each node in the graph.
+    const map1 = {};
+    const map2 = {};
 
-    fun closestMeetingNode(edges: IntArray, node1: Int, node2: Int): Int {
-        val numEdges = edges.size
+    // Initialize a counter to keep track of the distance from the starting node (node1 or node2).
+    let count = 0;
 
-//  store shortest distances of all the reachable nodes from both given nodes
-        val distOneArray = IntArray(numEdges){ Int.MAX_VALUE }
-        distOneArray[node1] = 0
-        val distTwoArray = IntArray(numEdges){ Int.MAX_VALUE }
-        distTwoArray[node2] = 0
-
-        //  fill the distances of all nodes from given two nodes
-        fillDistances(node1, edges, distOneArray, BooleanArray(numEdges){ false})
-        fillDistances(node2, edges, distTwoArray, BooleanArray(numEdges){ false})
-
-        var minDistNode = -1
-        var minDistanceTillNow = Int.MAX_VALUE
-        for (currNode in 0 until numEdges) {
-            if (minDistanceTillNow > maxOf(distOneArray[currNode], distTwoArray[currNode])) {
-                //  record the node which is closer to both                
-                minDistNode = currNode
-                minDistanceTillNow = maxOf(distOneArray[currNode], distTwoArray[currNode])
-            }
-        }
-
-        return minDistNode
+    // Populate map1 with distances from node1 to each node in the graph.
+    while (map1[node1] == undefined && node1 != -1) {
+        map1[node1] = count;
+        count++;
+        node1 = edges[node1];
     }
 
-    fun fillDistances(currNode: Int, edges: IntArray, distArray: IntArray,
-        visitArray: BooleanArray) {
-        visitArray[currNode] = true
-        val neighbor = edges[currNode]
-        if (neighbor != -1 && !visitArray[neighbor]) {
-            //  see if the neighbor is not visited
-            distArray[neighbor] = 1 + distArray[currNode]
-            fillDistances(neighbor, edges, distArray, visitArray)
+    // Reset the counter for map2.
+    count = 0;
+
+    // Populate map2 with distances from node2 to each node in the graph.
+    while (map2[node2] == undefined && node2 != -1) {
+        map2[node2] = count;
+        count++;
+        node2 = edges[node2];
+    }
+
+    // Initialize variables to find the maximum of the minimum distances between node1 and node2.
+    let max = Infinity;
+    let res = -1;
+
+    // Iterate through each node in the graph.
+    for (let i = 0; i < edges.length; i++) {
+        // If either map1 or map2 doesn't have information about the distance to the current node, skip to the next iteration.
+        if (map1[i] == undefined || map2[i] == undefined) {
+            continue;
+        }
+
+        // Calculate the maximum of the distances from node1 and node2 to the current node.
+        let localMax = Math.max(map1[i], map2[i]);
+
+        // Update the result if the current node provides a smaller maximum distance.
+        if (localMax < max) {
+            max = localMax;
+            res = i;
         }
     }
-}
+
+    // Return the node that minimizes the maximum distance from both node1 and node2.
+    return res;
+};
 
 /* All Nodes Distance K in Binary Tree - Given the root of a binary tree, the value of a target node target, and an integer k, return an array of the values of all nodes that have a distance k from the target node.
  */

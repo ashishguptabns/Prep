@@ -88,33 +88,43 @@ const singleNonDuplicate = (nums) => {
 
 /* Find K Closest Elements - Given a sorted integer array arr, two integers k and x, return the k closest integers to x in the array. The result should also be sorted in ascending order.
  */
-class Solution {
-    fun findClosestElements(arr: IntArray, k: Int, x: Int): List<Int> {
+/**
+ * @param {number[]} arr
+ * @param {number} k
+ * @param {number} x
+ * @return {number[]}
+ */
+const findClosestElements = (arr, k, x) => {
+    // Initialize left and right pointers for binary search
+    let left = 0;
+    let right = arr.length - k;
 
-//  we are given a sorted array and we can have max k integers which are closer to x. If we can find an index n whose value is closer to x but not of [n + k] then n is the starting index for finding k integers
+    // Perform binary search
+    while (left < right) {
+        // Calculate mid index
+        const mid = Math.floor((right + left) / 2);
 
-        var left = 0
-        var right = arr.size - k
-
-        while(left < right){
-            val mid = left + (right - left) / 2
-            if(x - arr[mid] > arr[mid + k] - x){
-//  x is closer to arr[mid + k] hence search in right subarray
-                left = mid + 1
-            }else{
-                right = mid
-            }
+        // Check if x is closer to arr[mid + k]
+        if (x - arr[mid] > arr[mid + k] - x) {
+            // x is closer to arr[mid + k], search in the right subarray
+            left = mid + 1;
+        } else {
+            // x is closer to arr[mid], search in the left subarray
+            right = mid;
         }
-
-        val resultList = mutableListOf<Int>()
-        for(counter in left until left + k){
-            resultList.add(arr[counter])
-        }
-
-        return resultList
     }
-}
 
+    // Create a list to store the result
+    const resultList = [];
+
+    // Add k elements starting from the left index to the result list
+    for (let counter = left; counter < left + k; counter++) {
+        resultList.push(arr[counter]);
+    }
+
+    // Return the result list
+    return resultList;
+};
 
 /* Capacity To Ship Packages Within D Days - A conveyor belt has packages that must be shipped from one port to another within given days.
 
@@ -171,35 +181,6 @@ const shipWithinDays = (weights, days) => {
 
     return minCapacity
 };
-
-
-Find Peak Element - A peak element is an element that is strictly greater than its neighbors.
-
-Given a 0-indexed integer array nums, find a peak element, and return its index. If the array contains multiple peaks, return the index to any of the peaks.
-
-You may imagine that nums[-1] = nums[n] = -∞. In other words, an element is always considered to be strictly greater than a neighbor that is outside the array.
-
-You must write an algorithm that runs in O(log n) time.
-
-class Solution {
-    fun findPeakElement(nums: IntArray): Int {
-        var leftCounter = 0
-        var rightCounter = nums.size - 1
-
-        while(leftCounter < rightCounter){
-            val mid = (leftCounter + rightCounter) / 2
-            if(nums[mid] > nums[mid + 1]){
-//  there is a peak before mid
-                rightCounter = mid
-            }else{
-                leftCounter = mid + 1
-            }
-        }
-
-        return leftCounter
-    }
-}
-
 
 /* Peak Index in a Mountain Array - Given a mountain array arr, return the index i such that arr[0] < arr[1] < ... < arr[i - 1] < arr[i] > arr[i + 1] > ... > arr[arr.length - 1].
 

@@ -970,3 +970,60 @@ const inorderTraversal = (root) => {
 
     return inorderList
 };
+
+/* Boundary of binary tree */
+
+const printBoundary = (root) => {
+    const printRightBoundary = (node) => {
+        if (node) {
+            // Ignore leaf nodes in the right boundary
+
+            if (node.right) {
+                printRightBoundary(node.right);
+                console.log(node.value);
+            } else if (node.left) {
+                printRightBoundary(node.left);
+                console.log(node.value);
+            }
+        }
+    }
+
+    const printLeaves = (node) => {
+        if (node) {
+            printLeaves(node.left);
+
+            if (!node.left && !node.right) {
+                console.log(node.value); // Leaf node
+            }
+
+            printLeaves(node.right);
+        }
+    }
+    const printLeftBoundary = (node) => {
+        if (node) {
+            if (node.left) {
+                console.log(node.value);
+                printLeftBoundary(node.left);
+            } else if (node.right) {
+                console.log(node.value);
+                printLeftBoundary(node.right);
+            }
+            // Ignore leaf nodes in the left boundary
+        }
+    }
+
+    if (root !== null) {
+        // start with root
+        console.log(root.value);
+
+        // Print the left boundary (excluding the leaf)
+        printLeftBoundary(root.left);
+
+        // Print the leaves
+        printLeaves(root.left);
+        printLeaves(root.right);
+
+        // Print the right boundary (excluding the leaf)
+        printRightBoundary(root.right);
+    }
+}

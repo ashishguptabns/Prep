@@ -67,34 +67,42 @@ You have a car with an unlimited gas tank and it costs cost[i] of gas to travel 
 Given two integer arrays gas and cost, return the starting gas station's index if you can travel around the circuit once in the clockwise direction, otherwise return -1. If there exists a solution, it is guaranteed to be unique
 */
 
-class Solution {
-    fun canCompleteCircuit(gas: IntArray, cost: IntArray): Int {
+/**
+ * @param {number[]} gas
+ * @param {number[]} cost
+ * @return {number}
+ */
+const canCompleteCircuit = (gases, costs) => {
+    // Initialize variables
+    let startStation = 0;      // Starting gas station index
+    let currGasLeft = 0;       // Current gas left in the tank while traversing
+    let totalGasLeft = 0;      // Total gas left after completing the circuit
 
-        var startStation = 0
-        var currGasLeft = 0
-        var totalGasLeft = 0
+    // Iterate through the gas stations
+    for (let i = 0; i < gases.length; i++) {
+        const gas = gases[i];
+        const cost = costs[i];
 
-        for(currStation in 0 until gas.size){
-//      deduct the cost to reach the next station
-            currGasLeft += gas[currStation] - cost[currStation]
+        // Update current gas left and total gas left
+        currGasLeft += gas - cost;
+        totalGasLeft += gas - cost;
 
-            totalGasLeft += gas[currStation] - cost[currStation]
-
-            if(currGasLeft < 0){
-//      we can not reach the next station in this sequence; choose the next station as the starting point
-                currGasLeft = 0;
-                startStation = currStation + 1                
-            }
-        }
-
-        if(totalGasLeft < 0){
-//      we can not cover all stations from any starting point
-            return -1;            
-        }else{
-            return startStation
+        // If current gas left becomes negative, update the start station
+        if (currGasLeft < 0) {
+            currGasLeft = 0;        // Reset current gas left
+            startStation = i + 1;   // Update the start station to the next station
         }
     }
-}
+
+    // Check if it's possible to complete the circuit
+    if (totalGasLeft < 0) {
+        // If total gas left is negative, it means there is no solution
+        return -1;
+    } else {
+        // If total gas left is non-negative, return the starting gas station index
+        return startStation;
+    }
+};
 
 /*
 Find Original Array From Doubled Array - An integer array original is transformed into a doubled array changed by appending twice the value of every element in original, and then randomly shuffling the resulting array.

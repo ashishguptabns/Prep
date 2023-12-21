@@ -154,6 +154,10 @@ Return true if you can finish all courses.Otherwise, return false.
  */
 // Function to find the order of courses
 const findOrder = (numCourses, prerequisites) => {
+    if(!prerequisites.length){
+        return true
+    }
+    
     // Array to store the in-degrees of each course
     const inDegrees = Array(numCourses).fill(0);
 

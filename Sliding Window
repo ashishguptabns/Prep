@@ -573,3 +573,50 @@ const longestCSubarray = (nums, limit) => {
     // Return the length of the longest contiguous subarray.
     return nums.length - left - 1;
 };
+
+/* Sliding window maximum - You are given an array of integers nums, there is a sliding window of size k which is moving from the very left of the array to the very right. You can only see the k numbers in the window. Each time the sliding window moves right by one position.
+
+Return the max sliding window.
+ */
+
+/**
+ * @param {number[]} nums
+ * @param {number} k
+ * @return {number[]}
+ */
+const maxSlidingWindow = (nums, k) => {
+    // Result array to store the maximum elements in each sliding window
+    const res = [];
+    // Variables to represent the left and right pointers of the sliding window
+    let left = 0;
+    let right = 0;
+    // Deque to store indices of elements in the array
+    const q = [];
+
+    // Iterate through the array elements using the sliding window approach
+    while (right < nums.length) {
+        // Remove elements from the back of the deque that are less than the current element
+        while (q.length > 0 && nums[right] > nums[q.at(-1)]) {
+            q.pop();
+        }
+        // Add the current index to the deque
+        q.push(right);
+
+        // Remove the front element of the deque if it's outside the current sliding window
+        if (left > q[0]) {
+            q.shift();
+        }
+
+        // If the window has reached the size of 'k' or more, add the maximum element to the result array
+        if (right + 1 >= k) {
+            res.push(nums[q[0]]);
+            // Move the left pointer to the next position within the window
+            left++;
+        }
+        // Move the right pointer to the next element in the array
+        right++;
+    }
+
+    // Return the result array containing maximum elements in each sliding window
+    return res;
+};

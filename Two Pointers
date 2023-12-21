@@ -169,46 +169,47 @@ class Solution {
     }
 }
 
-
-
-3Sum Closest - Given an integer array nums of length n and an integer target, find three integers in nums such that the sum is closest to target.
+/* 3Sum Closest - Given an integer array nums of length n and an integer target, find three integers in nums such that the sum is closest to target.
 Return the sum of the three integers.
+ */
+/**
+ * @param {number[]} nums
+ * @param {number} target
+ * @return {number}
+ */
+const threeSumClosest = (nums, target) => {
+    let diff = Infinity
+    const size = nums.length
 
-class Solution {
-    fun threeSumClosest(nums: IntArray, target: Int): Int {
-        var diff = Int.MAX_VALUE
-        val arrSize = nums.size
+    nums.sort((a, b) => a - b)
 
-        Arrays.sort(nums)
+    let first = 0
+    while (first <= size - 3 && diff !== 0) {
+        //  we want closest not exact
 
-        var first = 0
-        while(first <= arrSize - 3 && diff != 0){
-//  we want the closest not the exact one
+        let sec = first + 1
+        let third = size - 1
 
-            var sec = first + 1
-            var third = arrSize - 1
-
-            while(sec < third){
-                val sum = nums[first] + nums[sec] + nums[third]
-                if(Math.abs(target - sum) < Math.abs(diff)){
-//  found a closer one
-                    diff = target - sum                    
-                }
-                if(sum < target){
-//  move the second pointer
-                    sec++                    
-                }
-                else{
-                    third--
-                }
+        while (sec < third) {
+            const sum = nums[first] + nums[sec] + nums[third]
+            if (Math.abs(target - sum) < Math.abs(diff)) {
+                //  found a closer one
+                diff = target - sum
             }
-            first++
+            if (sum < target) {
+                //  move second pointer
+                sec++
+            } else {
+                third--
+            }
         }
 
-//  closest sum
-        return target - diff
+        first++
     }
-}
+
+    //  closest sum
+    return target - diff
+};
 
 /* Sort Colors - Given an array nums with n objects colored red, white, or blue, sort them in-place so that objects of the same color are adjacent, with the colors in the order red, white, and blue.
 
