@@ -20,63 +20,6 @@ fun minMeetingRooms(intervals: Array<IntArray>): Int {
     return heap.size
 }
 
-
-
-Heap sort
-
-class Solution {
-    fun sortArray(nums: IntArray): IntArray {
-        heapSort(nums)
-
-        return nums
-    }
-
-    fun heapSort(numsArray: IntArray){
-//  start from the middle and heapify each subtree with ith node as root. here we are ignoring the leaf nodes
-        for(nodeIndex in numsArray.size / 2 - 1 downTo 0){
-            heapify(numsArray, numsArray.size, nodeIndex)
-        }
-
-        for(counter in numsArray.size - 1 downTo 1){
-//  place the last element on the top by swapping violating the heap rule            
-            val temp = numsArray[counter]
-            numsArray[counter] = numsArray[0]
-            numsArray[0] = temp
-
-//  heapify the root node as it might have violated the rule. this will place the new root node at the right place
-            heapify(numsArray, counter, 0)            
-        }
-    }
-
-    fun heapify(numsArray: IntArray, heapSize: Int, nodeIndex: Int){
-//  in a heap parent node is always larger than the child node 
-
-        var largestNodeIndex = nodeIndex
-        val leftChildIndex = nodeIndex * 2 + 1
-        val rightChildIndex = nodeIndex * 2 + 2
-
-        if(leftChildIndex < heapSize
-            && numsArray[leftChildIndex] > numsArray[largestNodeIndex]){
-                largestNodeIndex = leftChildIndex
-        }
-        if(rightChildIndex < heapSize
-            && numsArray[rightChildIndex] > numsArray[largestNodeIndex]){
-                largestNodeIndex = rightChildIndex
-        }
-//   now we have the index of largest child
-
-        if(largestNodeIndex != nodeIndex){
-//  largest node is at the wrong position and hence the kids too
-            val temp = numsArray[nodeIndex]  
-            numsArray[nodeIndex] = numsArray[largestNodeIndex]  
-            numsArray[largestNodeIndex] = temp       
-
-//  heapify the kids also
-            heapify(numsArray, heapSize, largestNodeIndex)
-        }
-    }
-}
-
 /* Top K Frequent Elements - Given an integer array nums and an integer k, return the k most frequent elements. You may return the answer in any order. */
 
 /**

@@ -67,12 +67,10 @@ Return the maximum amount of water a container can store.
     return maxArea
 };
 
-
-
-3Sum - Given an integer array nums, return all the triplets [nums[i], nums[j], nums[k]] such that i != j, i != k, and j != k, and nums[i] + nums[j] + nums[k] == 0.
+/* 3Sum - Given an integer array nums, return all the triplets [nums[i], nums[j], nums[k]] such that i != j, i != k, and j != k, and nums[i] + nums[j] + nums[k] == 0.
 
 Notice that the solution set must not contain duplicate triplets.
-
+ */
 class Solution {
     fun threeSum(nums: IntArray): List<List<Int>> {
 //  we need 3 pointers 
@@ -123,9 +121,8 @@ class Solution {
     }
 }
 
-
-Next Permutation - The next permutation of an array of integers is the next lexicographically greater permutation of its integer. 
-
+/* Next Permutation - The next permutation of an array of integers is the next lexicographically greater permutation of its integer. 
+ */
 class Solution {
     fun nextPermutation(nums: IntArray): Unit {
 //  consider 1, 5, 8, 4, 7, 6, 5, 3, 1

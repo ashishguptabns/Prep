@@ -403,9 +403,7 @@ class Solution {
     }
 }
 
-
-
-Decode Ways - A message containing letters from A-Z can be encoded into numbers using the following mapping:
+/* Decode Ways - A message containing letters from A-Z can be encoded into numbers using the following mapping:
 
 'A' -> "1"
 'B' -> "2"
@@ -418,7 +416,7 @@ To decode an encoded message, all the digits must be grouped then mapped back in
 Note that the grouping (1 11 06) is invalid because "06" cannot be mapped into 'F' since "6" is different from "06".
 
 Given a string s containing only digits, return the number of ways to decode it.
-
+ */
 class Solution {
     fun numDecodings(s: String): Int {
         if(s[0] == '0'){

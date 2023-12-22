@@ -32,35 +32,6 @@ class Solution {
     }
 }
 
-
-
-// Break a Palindrome
-
-class Solution {
-    fun breakPalindrome(palindrome: String): String {
-
-//      convert the string to char array
-        val palindromeCharArray = palindrome.toCharArray()
-
-        if(palindrome.length <= 1){
-//      not possible to break            
-            return ""
-        }
-
-//      travel till only half the palindrome as the other half is a mirror
-        for(i in 0..palindrome.length/2-1){
-            if(palindromeCharArray[i] != 'a'){
-                palindromeCharArray[i] = 'a'
-                return String(palindromeCharArray)
-            }
-        }        
-
-//      if we found all the 'a' characters in the palindrome
-        palindromeCharArray[palindrome.length - 1] = 'b'
-        return String(palindromeCharArray);
-    }
-}
-
 /*
 Gas Station - There are n gas stations along a circular route, where the amount of gas at the ith station is gas[i].
 You have a car with an unlimited gas tank and it costs cost[i] of gas to travel from the ith station to its next (i + 1)th station. You begin the journey with an empty tank at one of the gas stations.
@@ -238,9 +209,8 @@ const twoCitySchedCost = (costs) => {
     return minCost
 };
 
-
-Increasing Triplet Subsequence - Given an integer array nums, return true if there exists a triple of indices (i, j, k) such that i < j < k and nums[i] < nums[j] < nums[k]. If no such indices exists, return false.
-
+/* Increasing Triplet Subsequence - Given an integer array nums, return true if there exists a triple of indices (i, j, k) such that i < j < k and nums[i] < nums[j] < nums[k]. If no such indices exists, return false.
+ */
 class Solution {
     fun increasingTriplet(nums: IntArray): Boolean {
         var firstNum = Int.MAX_VALUE

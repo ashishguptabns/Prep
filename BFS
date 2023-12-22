@@ -109,12 +109,10 @@ const hasPath = (maze, start, destination) => {
     return dfs(startRow, startCol);
 };
 
-
-
-Minimum Knight Moves - In an infinite chess board with coordinates from -infinity to +infinity, you have a knight at square [0, 0].
+/* Minimum Knight Moves - In an infinite chess board with coordinates from -infinity to +infinity, you have a knight at square [0, 0].
 A knight has 8 possible moves it can make, as illustrated below. Each move is two squares in a cardinal direction, then one square in an orthogonal direction.
 Return the minimum number of steps needed to move the knight to the square [x, y]. It is guaranteed the answer exists.
-
+ */
 class Solution {
     fun minKnightMoves(x: Int, y: Int): Int {
 //  notice the chess board is infinite
@@ -161,16 +159,14 @@ class Solution {
     }
 }
 
-
-
-Alien Dictionary - There is a new alien language that uses the English alphabet. However, the order among the letters is unknown to you.
+/* Alien Dictionary - There is a new alien language that uses the English alphabet. However, the order among the letters is unknown to you.
 
 You are given a list of strings words from the alien language's dictionary, where the strings in words are 
 sorted lexicographically
  by the rules of this new language.
 
 Return a string of the unique letters in the new alien language sorted in lexicographically increasing order by the new language's rules. If there is no solution, return "". If there are multiple solutions, return any of them.
-
+ */
 class Solution {
     fun alienOrder(words: Array<String>): String {
         val charGraph = mutableMapOf<Char, MutableSet<Char>>()
