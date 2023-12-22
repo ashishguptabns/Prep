@@ -202,44 +202,28 @@ The right subtree of a node contains only nodes with keys greater than the node'
 Both the left and right subtrees must also be binary search trees.
  */
 /**
- * Example:
- * var ti = TreeNode(5)
- * var v = ti.`val`
  * Definition for a binary tree node.
- * class TreeNode(var `val`: Int) {
- *     var left: TreeNode? = null
- *     var right: TreeNode? = null
+ * function TreeNode(val, left, right) {
+ *     this.val = (val===undefined ? 0 : val)
+ *     this.left = (left===undefined ? null : left)
+ *     this.right = (right===undefined ? null : right)
  * }
  */
-class Solution {
-    var prevValue: Int?= null
-
-    fun isValidBST(root: TreeNode ?): Boolean {
-    //  we will do inorder traversal of the tree 
-
-    return dfs(root)
-}
-
-    fun dfs(currNode: TreeNode ?): Boolean{
-    if (currNode == null) {
-        //  empty tree is a valid BST            
+/**
+ * @param {TreeNode} root
+ * @return {boolean}
+ */
+const isValidBST = (root, min = -Infinity, max = Infinity) => {
+    if (!root) {
         return true
     }
 
-    if (!dfs(currNode.left)) {
+    if (root.val <= min || root.val >= max) {
         return false
     }
 
-    if (prevValue != null && currNode.`val` <= prevValue as Int) {
-        //  equal member will be on the right of a node in BST
-        return false
-    }
-
-    prevValue = currNode.`val`
-
-    return dfs(currNode.right)
-}
-}
+    return isValidBST(root.left, min, root.val) && isValidBST(root.right, root.val, max)
+};
 
 /* Most Stones Removed with Same Row or Column - On a 2D plane, we place n stones at some integer coordinate points.Each coordinate point may have at most one stone.
 A stone can be removed if it shares either the same row or the same column as another stone that has not been removed.

@@ -1,57 +1,22 @@
 /* Longest Common Prefix - Write a function to find the longest common prefix string amongst an array of strings.
 If there is no common prefix, return an empty string ""
  */
-class Solution {
-    fun longestCommonPrefix(strs: Array<String>): String {
-        
-//         this problem can be solved using binary search approach. prefix means first few characters
-        
-        var LCP = ""
-        
-        if(strs.size > 0){
-            var lengthOfMinStr = strs[0].length
-            for(str in strs){
-                if(str.length < lengthOfMinStr){
-                    lengthOfMinStr = str.length
-                }
-            }
-            
-            if(lengthOfMinStr > 0){
-                var lowIndex = 1
-//              common prefix can't be longer than shortest string's length
-                var highIndex = lengthOfMinStr
-
-                
-                while(lowIndex <= highIndex){
-                    var middleIndex = (highIndex + lowIndex) / 2
-                    if(isCommonPrefix(strs, middleIndex)){
-//                     if we found the prefix on the left side then it means that there's more on the right side which can increase the length of LCP
-                        lowIndex = middleIndex + 1
-                    }else{
-                        highIndex = middleIndex - 1
-                    }
-                }
-
-//              middle index is the length of found common prefix
-                LCP = strs[0].substring(0, (highIndex + lowIndex) / 2)
-                
-            }
+/**
+ * @param {string[]} strs
+ * @return {string}
+ */
+const longestCommonPrefix = (strs) => {
+    let lcp = ''
+    for (let i = 0; i < strs[0].length; i++) {
+        if (strs.every(str => str[i] === strs[0][i])) {
+            lcp += strs[0][i]
+        } else {
+            break
         }
-        
-        return LCP
     }
-    
-    fun isCommonPrefix(strs : Array<String>, strLen : Int) : Boolean{
-        val prefix = strs[0].substring(0, strLen)
-        for(str in strs){
-            if(!str.startsWith(prefix)){
-                return false
-            }
-        }
-        
-        return true
-    }
-}
+
+    return lcp
+};
 
 /* Single Element in a Sorted Array - You are given a sorted array consisting of only integers where every element appears exactly twice, except for one element which appears exactly once.
 Return the single element that appears only once.
@@ -295,40 +260,58 @@ Each bus can make multiple trips successively; that is, the next trip can start 
 
 You are also given an integer totalTrips, which denotes the number of trips all buses should make in total. Return the minimum time required for all buses to complete at least totalTrips trips.
  */
-class Solution {
-    fun minimumTime(times: IntArray, totalTrips: Int): Long {
-        var maxTime = 0L
-        for(time in times){
-            maxTime = maxOf(maxTime, time.toLong())
-        }
+/**
+ * @param {number[]} time
+ * @param {number} totalTrips
+ * @return {number}
+ */
+const minimumTime = (time, totalTrips) => {
+    // Initialize 'min' with a very large value.
+    let min = 10 ** 9
 
-        var leftPointer = 1L
-        var rightPointer = (maxTime * totalTrips).toLong()
-//  max time to complete all trips
+    // Find the minimum value in the 'time' array.
+    for (const t of time) {
+        min = Math.min(min, t)
+    }
 
-        while(leftPointer < rightPointer){
-            val midPointer = (leftPointer + rightPointer) / 2
+    // Initialize binary search range.
+    let left = 1
+    let right = min * totalTrips
 
-            if(timeEnough(times, midPointer, totalTrips)){
-                rightPointer = midPointer
-            }else{
-                leftPointer = midPointer + 1
+    // Helper function to check if it's possible to complete 'totalTrips' within a given time.
+    const canComplete = (possibleTime) => {
+        let numTrips = 0
+
+        // Count the number of trips that can be made within 'possibleTime' for each bus.
+        for (const busTime of time) {
+            numTrips += Math.floor(possibleTime / busTime)
+            if (numTrips >= totalTrips) {
+                return true
             }
         }
 
-        return leftPointer.toLong()
+        return false
     }
 
-    fun timeEnough(times: IntArray, givenTime: Long, totalTrips: Int): Boolean{
-        var actualTrips = 0L
-        for(time in times){
-//  how many trips can we do with given time            
-            actualTrips += givenTime / time
+    // Binary search loop to find the minimum possible time.
+    while (left < right) {
+        // Calculate the middle point of the current search range.
+        let mid = Math.floor((left + right) / 2)
+
+        // Check if it's possible to complete all trips within 'mid' time.
+        const isPossible = canComplete(mid)
+
+        // Update the search range based on the result.
+        if (isPossible) {
+            right = mid
+        } else {
+            left = mid + 1
         }
-
-        return actualTrips >= totalTrips
     }
-}
+
+    // Return the minimum time required to complete all trips.
+    return left
+};
 
 /* Kth Smallest Element in a Sorted Matrix - Given an n x n matrix where each of the rows and columns is sorted in ascending order, return the kth smallest element in the matrix.
 

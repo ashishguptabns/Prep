@@ -189,3 +189,38 @@ const longestConsecutive = (nums) => {
   // Return the maximum length of consecutive subsequence.
   return max;
 };
+
+/* Maximum Product Subarray - Given an integer array nums, find a subarray that has the largest product, and return the product
+ */
+/**
+ * @param {number[]} nums
+ * @return {number}
+ */
+const maxProduct = (nums) => {
+  if (!nums.length) {
+      return 0
+  }
+
+  let maxProductSoFar = nums[0]
+  let minProductSoFar = nums[0]
+
+  let result = maxProductSoFar
+
+  for (let i = 1; i < nums.length; i++) {
+      const curr = nums[i]
+
+      //  either we discard the prev subarray or we choose
+      const tempMax = Math.max(curr,
+          Math.max(curr * maxProductSoFar, curr * minProductSoFar))
+
+      //  because we have negative numbers; minProductSoFar can make big number later
+      minProductSoFar = Math.min(curr,
+          Math.min(curr * maxProductSoFar, curr * minProductSoFar))
+
+      maxProductSoFar = tempMax
+
+      result = Math.max(result, maxProductSoFar)
+  }
+
+  return result
+};

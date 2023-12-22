@@ -271,77 +271,6 @@ const longestCommonSubsequence = (text1, text2) => {
     return dp[0][0];
 };
 
-/* Sum of Subarray Minimums - Given an array of integers arr, find the sum of min(b), where b ranges over every (contiguous) subarray of arr. Since the answer may be large, return the answer modulo 109 + 7.
- */
-class Solution {
-    fun sumSubarrayMins(arr: IntArray): Int {
-        val subArrayMinSumsDP = IntArray(arr.size)
-//  this dp array will keep the sum of mins of subarrays ending at index i
-
-        val indicesStack = mutableListOf<Int>()
-        val MOD = 1_00_00_00_007
-
-        for(counter in 0 until arr.size){
-            while(!indicesStack.isEmpty() && arr[indicesStack.last()] >= arr[counter]){
-//  monotonic stack
-//  find the smaller item which will control the sums till its index
-                indicesStack.removeAt(indicesStack.size - 1)
-            }
-
-            if(indicesStack.size > 0){
-//  there is a prev smaller item                
-                val prevSmallIndex = indicesStack.last()
-//  we already have the sums till prev small item index and for the remaining the current item is the smallest
-                subArrayMinSumsDP[counter] =  
-                (counter - prevSmallIndex) * arr[counter] + subArrayMinSumsDP[prevSmallIndex] 
-            }else{
-//  for all the items before counter, current one is the smallest                
-                subArrayMinSumsDP[counter] = (counter + 1) * arr[counter]
-            }
-            indicesStack.add(counter)
-        }
-
-        var sumOfMins = 0L
-        for(sum in subArrayMinSumsDP){
-            sumOfMins += sum
-            sumOfMins %= MOD
-        }
-
-        return sumOfMins.toInt()
-    }
-}
-
-/* Maximum Product Subarray - Given an integer array nums, find a subarray that has the largest product, and return the product
- */
-class Solution {
-    fun maxProduct(nums: IntArray): Int {
-        if(nums.size == 0){
-            return 0
-        }
-
-        var maxProductSoFar = nums[0]
-        var minProductSoFar = nums[0]
-        var result = maxProductSoFar
-
-        for(counter in 1 until nums.size){
-            val currNum = nums[counter]
-
-//  either we discard the prev subarray or we choose
-            val tempMax = maxOf(currNum, 
-                            maxOf(currNum * maxProductSoFar, currNum * minProductSoFar))
-
-//  because we have negative numbers; minProductSoFar can make big number later
-            minProductSoFar = minOf(currNum, 
-                            minOf(currNum * maxProductSoFar, currNum * minProductSoFar))
-
-            maxProductSoFar = tempMax
-            result = maxOf(result, maxProductSoFar)
-        }
-
-        return result
-    }
-}
-
 /* 
 Unique Paths - There is a robot on an m x n grid. The robot is initially located at the top-left corner (i.e., grid[0][0]). The robot tries to move to the bottom-right corner (i.e., grid[m - 1][n - 1]). The robot can only move either down or right at any point in time.
 
@@ -380,28 +309,27 @@ const uniquePaths = (m, n) => {
 /* Climbing Stairs - You are climbing a staircase. It takes n steps to reach the top.
 Each time you can either climb 1 or 2 steps. In how many distinct ways can you climb to the top?
  */
-class Solution {
-    fun climbStairs(n: Int): Int {
-//  we will solve this using DP        
-        if(n == 1){
-            return 1
-        }
-
-        val dpArr = IntArray(n + 1)
-//  one way to climb
-        dpArr[1] = 1
-//  two ways to climb
-        dpArr[2] = 2
-
-        for(counter in 3 until n + 1){
-//  we need number of ways
-//  either we can come from 2 steps below or 1 step below
-            dpArr[counter] = dpArr[counter - 1] + dpArr[counter - 2]
-        }
-
-        return dpArr[n]
+/**
+ * @param {number} n
+ * @return {number}
+ */
+const climbStairs = (n) => {
+    if (n == 1) {
+        return 1
     }
-}
+    const dp = Array(n + 1)
+
+    //  one way to climb
+    dp[1] = 1
+    //  two ways to climb
+    dp[2] = 2
+
+    for (let i = 3; i <= n; i++) {
+        dp[i] = dp[i - 1] + dp[i - 2]
+    }
+
+    return dp[n]
+};
 
 /* Decode Ways - A message containing letters from A-Z can be encoded into numbers using the following mapping:
 

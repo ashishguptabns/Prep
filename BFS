@@ -113,177 +113,190 @@ const hasPath = (maze, start, destination) => {
 A knight has 8 possible moves it can make, as illustrated below. Each move is two squares in a cardinal direction, then one square in an orthogonal direction.
 Return the minimum number of steps needed to move the knight to the square [x, y]. It is guaranteed the answer exists.
  */
-class Solution {
-    fun minKnightMoves(x: Int, y: Int): Int {
-//  notice the chess board is infinite
-        var minSteps = 0
+const minKnightMoves = (x, y) => {
+    // Notice the chess board is infinite
+    let minSteps = 0;
 
-        val offsets = arrayOf(Pair(1, 2), Pair(-1, 2), Pair(-2, 1), Pair(-2, -1), 
-                        Pair(2, 1), Pair(2, -1), Pair(1, -2), Pair(-1, -2))
+    // Possible moves for the knight
+    const offsets = [
+        [1, 2], [-1, 2], [-2, 1], [-2, -1],
+        [2, 1], [2, -1], [1, -2], [-1, -2]
+    ];
 
-//  we are using array to save time else time limit will be exceeded
-        val visitedArr = Array(607, { BooleanArray(607) })
+    // We are using an array to save time; otherwise, time limit will be exceeded
+    const visitedArr = Array(607).fill(null).map(() => Array(607).fill(false));
 
-        val indicesQueue = LinkedList<Pair<Int, Int>>()
-        indicesQueue.offer(Pair(0, 0))
+    // Queue to store the indices for BFS traversal
+    const indicesQueue = [];
+    indicesQueue.push([0, 0]); // Starting position
 
-        while(indicesQueue.isNotEmpty()){
-            val queueSize = indicesQueue.size
+    // BFS traversal
+    while (indicesQueue.length > 0) {
+        const queueSize = indicesQueue.length;
 
-            for(counter in 0 until queueSize){
-//  this for loop is important because we want to process the whole level before increasing minSteps                
-                val currPair = indicesQueue.poll()
-                
-                if(currPair.first == x && currPair.second == y){
-//  found the destination                
-                    return minSteps 
-                }
-                
-                for((dx, dy) in offsets){
-                    val nextX = currPair.first + dx
-                    val nextY = currPair.second + dy
+        // Process all indices at the current level before increasing minSteps
+        for (let counter = 0; counter < queueSize; counter++) {
+            const currPair = indicesQueue.shift(); // Dequeue the front pair
 
-//  adding 302 to ensure 302, 302 is the 0, 0
-                    if(!visitedArr[nextX + 302][nextY + 302]){
-//  next level of points                        
-                        indicesQueue.offer(Pair(nextX, nextY))
-                        visitedArr[nextX + 302][nextY + 302] = true
-                    }
-                }
+            // Check if the current position is the destination
+            if (currPair[0] === x && currPair[1] === y) {
+                // Found the destination
+                return minSteps;
             }
 
-            minSteps++
+            // Explore all possible moves from the current position
+            for (const [dx, dy] of offsets) {
+                const nextX = currPair[0] + dx;
+                const nextY = currPair[1] + dy;
+
+                // Adding 302 to ensure 302, 302 is the (0, 0) reference point
+                if (!visitedArr[nextX + 302][nextY + 302]) {
+                    // Mark the next position as visited and enqueue it for further exploration
+                    indicesQueue.push([nextX, nextY]);
+                    visitedArr[nextX + 302][nextY + 302] = true;
+                }
+            }
         }
 
-        return -1
+        // Move to the next level of positions
+        minSteps++;
     }
+
+    // If the destination is not reachable
+    return -1;
 }
 
 /* Alien Dictionary - There is a new alien language that uses the English alphabet. However, the order among the letters is unknown to you.
 
-You are given a list of strings words from the alien language's dictionary, where the strings in words are 
-sorted lexicographically
- by the rules of this new language.
+You are given a list of strings words from the alien language's dictionary, where the strings in words are sorted lexicographically by the rules of this new language.
 
 Return a string of the unique letters in the new alien language sorted in lexicographically increasing order by the new language's rules. If there is no solution, return "". If there are multiple solutions, return any of them.
  */
-class Solution {
-    fun alienOrder(words: Array<String>): String {
-        val charGraph = mutableMapOf<Char, MutableSet<Char>>()
-        val inDegree = mutableMapOf<Char, Int>()
+const alienOrder = (words) => {
+    // Create a map to represent the graph of characters and their relationships
+    const charGraph = new Map();
+    // Create a map to store the indegree (number of incoming edges) for each character
+    const inDegree = new Map();
 
-//  init the graph nodes and indegree for each node
-        for(word in words){
-            for(char in word){
-                inDegree[char] = 0
-                charGraph[char] = mutableSetOf()
-            }
+    // Initialize the graph nodes and indegree for each node
+    for (const word of words) {
+        for (const char of word) {
+            inDegree.set(char, 0);
+            charGraph.set(char, new Set());
         }
-
-        for(i in 0 until words.size - 1){
-//  travel through each word            
-            val currWord = words[i]
-            val nextWord = words[i + 1]
-
-            if(currWord.startsWith(nextWord) && currWord.length > nextWord.length){
-//  as per the lexicographical condition
-                return ""
-            }
-
-            for(j in 0 until minOf(currWord.length, nextWord.length)){
-//  travel through each char in small word
-                val currWordChar = currWord[j]
-                val nextWordChar = nextWord[j]
-
-                if(currWordChar != nextWordChar){
-                    if(!charGraph[currWordChar]!!.contains(nextWordChar)){
-//  build the edge
-                        charGraph[currWordChar]!!.add(nextWordChar)
-//  set the indegree of next node
-                        inDegree[nextWordChar] = inDegree.getOrDefault(nextWordChar, 0) + 1
-                    }
-//  notice this. we are taking only one new edge per word
-                    break
-                }
-            }
-        }
-
-        val bfsQueue = LinkedList<Char>()
-        val sb = StringBuilder()
-        val seen = mutableSetOf<Char>()
-
-        for((char, degree) in inDegree){
-            if(degree == 0){
-//  start from nodes in the order of indegrees
-                bfsQueue.offer(char)
-            }
-        }
-
-        while(bfsQueue.isNotEmpty()){
-            val currChar = bfsQueue.poll()
-            sb.append(currChar)
-            seen.add(currChar)
-
-            for(nextChar in charGraph[currChar]!!){
-//  this is topological sorting
-                inDegree[nextChar] = inDegree[nextChar]!! - 1
-                if(inDegree[nextChar] == 0){
-                    bfsQueue.offer(nextChar)
-                }
-            }
-        }
-
-//  ensure that we have visited all the nodes
-        return if(seen.size == charGraph.size) sb.toString() else ""
     }
+
+    // Iterate through each pair of adjacent words
+    for (let i = 0; i < words.length - 1; i++) {
+        const currWord = words[i];
+        const nextWord = words[i + 1];
+
+        // Check lexicographical order
+        if (currWord.startsWith(nextWord) && currWord.length > nextWord.length) {
+            // If the current word starts with the next word and is longer, it's not valid
+            return "";
+        }
+
+        // Traverse through each character in the smaller word
+        for (let j = 0; j < Math.min(currWord.length, nextWord.length); j++) {
+            const currWordChar = currWord[j];
+            const nextWordChar = nextWord[j];
+
+            // If characters are different, create an edge in the graph
+            if (currWordChar !== nextWordChar) {
+                if (!charGraph.get(currWordChar).has(nextWordChar)) {
+                    // Build the edge
+                    charGraph.get(currWordChar).add(nextWordChar);
+                    // Increase the indegree of the next node
+                    inDegree.set(nextWordChar, (inDegree.get(nextWordChar) || 0) + 1);
+                }
+                // Take only one new edge per word
+                break;
+            }
+        }
+    }
+
+    // Create a queue for Breadth-First Search (BFS)
+    const bfsQueue = [];
+    // Array to store the result (topological order)
+    const result = [];
+    // Set to keep track of visited nodes
+    const seen = new Set();
+
+    // Initialize the BFS queue with nodes having an indegree of 0
+    //  potential starting chars of the dictionary
+    for (const [char, degree] of inDegree) {
+        if (degree === 0) {
+            bfsQueue.push(char);
+        }
+    }
+
+    // Perform BFS
+    while (bfsQueue.length > 0) {
+        // Dequeue a character from the queue
+        const currChar = bfsQueue.shift();
+        // Append the character to the result
+        result.push(currChar);
+        // Mark the character as visited
+        seen.add(currChar);
+
+        // Update indegrees of adjacent characters and enqueue those with indegree 0
+        for (const nextChar of charGraph.get(currChar)) {
+            inDegree.set(nextChar, inDegree.get(nextChar) - 1);
+            if (inDegree.get(nextChar) === 0) {
+                bfsQueue.push(nextChar);
+            }
+        }
+    }
+
+    // Check if all nodes have been visited (no cycles) and return the result as a string
+    return seen.size === charGraph.size ? result.join('') : '';
 }
 
-
-
-Word Ladder - A transformation sequence from word beginWord to word endWord using a dictionary wordList is a sequence of words beginWord -> s1 -> s2 -> ... -> sk such that:
+/* Word Ladder - A transformation sequence from word beginWord to word endWord using a dictionary wordList is a sequence of words beginWord -> s1 -> s2 -> ... -> sk such that:
 Every adjacent pair of words differs by a single letter.
-Every si for 1 <= i <= k is in wordList. Note that beginWord does not need to be in wordList.
-sk == endWord
+Every si for 1 <= i <= k is in wordList.Note that beginWord does not need to be in wordList.
+    sk == endWord
 Given two words, beginWord and endWord, and a dictionary wordList, return the number of words in the shortest transformation sequence from beginWord to endWord, or 0 if no such sequence exists.
-
+ */
 function ladderLength(beginWord: string, endWord: string, wordList: string[]): number {
 
-//  make the dictionary set from given words    
+    //  make the dictionary set from given words    
     const dictionary = new Set(wordList)
-    if(!dictionary.has(endWord)){
-//  word is not there hence we can't reach it
+    if (!dictionary.has(endWord)) {
+        //  word is not there hence we can't reach it
         return 0
     }
 
-//  now that we have the end word so min steps is 1 if we can reach the end word
+    //  now that we have the end word so min steps is 1 if we can reach the end word
     let steps = 1
 
-//  we will do the bfs    
+    //  we will do the bfs    
     const wordsQueue = [beginWord]
-//  mark the word visited    
+    //  mark the word visited    
     const visited = new Set(wordsQueue)
 
-    while(wordsQueue.length){
+    while (wordsQueue.length) {
         const currLevelSize = wordsQueue.length
-        for(let i = 0; i < currLevelSize; i++){
-//  remove the first element and return            
+        for (let i = 0; i < currLevelSize; i++) {
+            //  remove the first element and return            
             const word = wordsQueue.shift()
-            if(word === endWord){
-//  found the end word                
+            if (word === endWord) {
+                //  found the end word                
                 return steps
             }
 
-//  we will try to make new words for next travel
-            for(let j = 0; j < word.length; j++){
-                for(let k = 0; k < 26; k++){
+            //  we will try to make new words for next travel
+            for (let j = 0; j < word.length; j++) {
+                for (let k = 0; k < 26; k++) {
 
-//  String.fromCharCode(97) gives 'a'
-                    const nextWord = word.slice(0, j) 
-                                        + String.fromCharCode(97 + k) 
-                                        + word.slice(j + 1)
+                    //  String.fromCharCode(97) gives 'a'
+                    const nextWord = word.slice(0, j)
+                        + String.fromCharCode(97 + k)
+                        + word.slice(j + 1)
 
-//  add in the queue
-                    if(dictionary.has(nextWord) && !visited.has(nextWord)){
+                    //  add in the queue
+                    if (dictionary.has(nextWord) && !visited.has(nextWord)) {
                         wordsQueue.push(nextWord)
                         visited.add(nextWord)
                     }
@@ -293,7 +306,7 @@ function ladderLength(beginWord: string, endWord: string, wordList: string[]): n
         steps++
     }
 
-//  could not reach the end word
+    //  could not reach the end word
     return 0
 };
 
@@ -447,7 +460,7 @@ const getFood = grid => {
     // Get the number of rows and columns in the grid
     const rows = grid.length;
     const cols = grid[0].length;
-    
+
     // Find the starting position of the person marked with '*'
     let startX, startY;
     for (let i = 0; i < rows; i++) {
@@ -462,7 +475,7 @@ const getFood = grid => {
 
     // Define the possible directions to move (up, down, left, right)
     const directions = [[-1, 0], [1, 0], [0, -1], [0, 1]];
-    
+
     // Create a set to keep track of visited cells to avoid revisiting them
     const visited = new Set();
 

@@ -315,3 +315,57 @@ const asteroidCollision = (asteroids) => {
     // Return the remaining asteroids after collisions
     return stack
 };
+
+/* Sum of Subarray Minimums - Given an array of integers arr, find the sum of min(b), where b ranges over every (contiguous) subarray of arr. Since the answer may be large, return the answer modulo 109 + 7.
+ */
+/**
+ * @param {number[]} arr
+ * @return {number}
+ */
+const sumSubarrayMins = (arr) => {
+    const mod = 10 ** 9 + 7;
+    const stack = [];
+    const n = arr.length;
+    const left = new Array(n);
+    const right = new Array(n);
+
+    // Calculate the nearest smaller element on the left
+    for (let i = 0; i < n; i++) {
+        // Keep popping elements from the stack while the current element is smaller
+        while (stack.length > 0 && arr[i] <= arr[stack.at(-1)]) {
+            stack.pop();
+        }
+        // If the stack is empty, there is no smaller element on the left
+        // Otherwise, the nearest smaller element is the one at the top of the stack
+        left[i] = stack.length === 0 ? -1 : stack.at(-1);
+        // Push the current element's index onto the stack
+        stack.push(i);
+    }
+
+    // Clear the stack for reuse
+    stack.length = 0;
+
+    // Calculate the nearest smaller element on the right
+    for (let i = n - 1; i >= 0; i--) {
+        // Keep popping elements from the stack while the current element is smaller
+        while (stack.length > 0 && arr[i] < arr[stack.at(-1)]) {
+            stack.pop();
+        }
+        // If the stack is empty, there is no smaller element on the right
+        // Otherwise, the nearest smaller element is the one at the top of the stack
+        right[i] = stack.length === 0 ? n : stack.at(-1);
+        // Push the current element's index onto the stack
+        stack.push(i);
+    }
+
+    let result = 0;
+
+    // Calculate the contribution of each element to the final result
+    for (let i = 0; i < n; i++) {
+        // Add the product of the current element, its left, and right distances to the result
+        result = (result + arr[i] * (i - left[i]) * (right[i] - i)) % mod;
+    }
+
+    // Return the final result
+    return result;
+}
