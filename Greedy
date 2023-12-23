@@ -211,24 +211,26 @@ const twoCitySchedCost = (costs) => {
 
 /* Increasing Triplet Subsequence - Given an integer array nums, return true if there exists a triple of indices (i, j, k) such that i < j < k and nums[i] < nums[j] < nums[k]. If no such indices exists, return false.
  */
-class Solution {
-    fun increasingTriplet(nums: IntArray): Boolean {
-        var firstNum = Int.MAX_VALUE
-        var secNum = Int.MAX_VALUE
+/**
+ * @param {number[]} nums
+ * @return {boolean}
+ */
+const increasingTriplet = (nums) => {
+    let first = Infinity
+    let sec = Infinity
 
-        for(num in nums){
-            if(num <= firstNum){
-                firstNum = num
-            }else if(num <= secNum){
-                secNum = num
-            }else{
-                return true
-            }
+    for (const num of nums) {
+        if (num <= first) {
+            first = num
+        } else if (num <= sec) {
+            sec = num
+        } else {
+            return true
         }
-
-        return false
     }
-}
+
+    return false
+};
 
 /* Minimum Number of Arrows to Burst Balloons - There are some spherical balloons taped onto a flat wall that represents the XY-plane. The balloons are represented as a 2D integer array points where points[i] = [xstart, xend] denotes a balloon whose horizontal diameter stretches between xstart and xend. You do not know the exact y-coordinates of the balloons.
 

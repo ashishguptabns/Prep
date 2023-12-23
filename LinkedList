@@ -106,50 +106,44 @@ class LRUCache {
  * obj.put(key,value);
  */
 
-/* Add Two Numbers
+/* Add Two Numbers - You are given two non-empty linked lists representing two non-negative integers. The digits are stored in reverse order, and each of their nodes contains a single digit. Add the two numbers and return the sum as a linked list.
+
+You may assume the two numbers do not contain any leading zero, except the number 0 itself.
  */
 /**
  * Definition for singly-linked list.
- * public class ListNode {
- *     int val;
- *     ListNode next;
- *     ListNode() {}
- *     ListNode(int val) { this.val = val; }
- *     ListNode(int val, ListNode next) { this.val = val; this.next = next; }
+ * function ListNode(val, next) {
+ *     this.val = (val===undefined ? 0 : val)
+ *     this.next = (next===undefined ? null : next)
  * }
  */
-class Solution {
-    public ListNode addTwoNumbers(ListNode l1, ListNode l2) {
-        ListNode result = new ListNode(0);
-        ListNode head = result;
-        int carry = 0;
-        while (l1 != null || l2 != null || carry > 0) {
-            int currSum = 0;
-            if (l1 != null) {
-                currSum += l1.val;
-            }
-            if (l2 != null) {
-                currSum += l2.val;
-            }
-            currSum += carry;
+/**
+ * @param {ListNode} l1
+ * @param {ListNode} l2
+ * @return {ListNode}
+ */
+const addTwoNumbers = (l1, l2) => {
+    const dummyHead = new ListNode(0); // Create a dummy node to simplify code
+    let currentNode = dummyHead;
+    let carry = 0;
 
-            result.val = currSum % 10;
-            carry = currSum / 10;
+    while (l1 || l2 || carry) {
+        const sum = (l1 ? l1.val : 0) + (l2 ? l2.val : 0) + carry;
+        carry = Math.floor(sum / 10);
 
-            if (l1 != null) {
-                l1 = l1.next;
-            }
-            if (l2 != null) {
-                l2 = l2.next;
-            }
-            if (l1 != null || l2 != null || carry > 0) {
-                result.next = new ListNode(0);
-                result = result.next;
-            }
+        currentNode.next = new ListNode(sum % 10);
+        currentNode = currentNode.next;
+
+        if (l1) {
+            l1 = l1.next;
         }
-        return head;
+        if (l2) {
+            l2 = l2.next;
+        }
     }
-}
+
+    return dummyHead.next;
+};
 
 /* Odd Even Linked List - Given the head of a singly linked list, group all the nodes with odd indices together followed by the nodes with even indices, and return the reordered list.
  */
@@ -360,34 +354,39 @@ palindrome or false otherwise.
  *     var next: ListNode? = null
  * }
  */
-class Solution {
-    var frontPtr: ListNode?= null
-    fun isPalindrome(head: ListNode ?): Boolean {
-    //  go to the end and start comparing        
-    frontPtr = head
-    return recurse(head)
-}
+/**
+ * Definition for singly-linked list.
+ * function ListNode(val, next) {
+ *     this.val = (val===undefined ? 0 : val)
+ *     this.next = (next===undefined ? null : next)
+ * }
+ */
+/**
+ * @param {ListNode} head
+ * @return {boolean}
+ */
+const isPalindrome = (head) => {
+    let currNode = head
+    let isPalindrome = true
+    const moveToEnd = (node) => {
+        if (node) {
+            moveToEnd(node.next)
 
-    fun recurse(node: ListNode ?): Boolean{
-    if (node != null) {
-        if (!recurse(node.next)) {
-            return false
+            if (node.val !== currNode.val) {
+                isPalindrome = false
+            }
+            currNode = currNode.next
         }
-        if (node!!.`val` != frontPtr!!.`val`) {
-            return false
-        }
-        frontPtr = frontPtr!!.next
     }
-    return true
-}
-}
+    moveToEnd(head)
 
+    return isPalindrome
+};
 
-
-Merge k Sorted Lists - You are given an array of k linked - lists lists, each linked - list is sorted in ascending order.
+/* Merge k Sorted Lists - You are given an array of k linked - lists lists, each linked - list is sorted in ascending order.
 
 Merge all the linked - lists into one sorted linked - list and return it.
-
+ */
 /**
  * Definition for singly-linked list.
  * function ListNode(val, next) {
