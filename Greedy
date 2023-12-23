@@ -121,24 +121,26 @@ class Solution {
 
 Return true if you can reach the last index, or false otherwise.
  */
-class Solution {
-    fun canJump(nums: IntArray): Boolean {
-//  we have to see whether we can reach the end or not from the starting point
-//  start from the last position 
-        var lastPos = nums.size - 1
+/**
+ * @param {number[]} nums
+ * @return {boolean}
+ */
+const canJump = (nums) => {
+    //  we have to see whether we can reach the end or not from the starting point
+    //  start from the last position 
+    let lastPos = nums.length - 1
 
-//  go backwards and change lastPos to the index where we can reach from previous index
-        for(index in nums.size - 2 downTo 0){
-            if(index + nums[index] >= lastPos){
-//  we can reach the lastPos from index
-                lastPos = index                
-            }
-        }    
-
-//  we should be able to reach 0th index
-        return lastPos == 0
+    //  go backwards and change lastPos to the index where we can reach from previous index
+    for (let i = nums.length - 2; i >= 0; i--) {
+        if (i + nums[i] >= lastPos) {
+            //  we can reach the lastPos from index
+            lastPos = i
+        }
     }
-}
+
+    //  we should be able to reach 0th index
+    return lastPos === 0
+};
 
 /* Minimum Rounds to Complete All Tasks - You are given a 0-indexed integer array tasks, where tasks[i] represents the difficulty level of a task. In each round, you can complete either 2 or 3 tasks of the same difficulty level.
 
