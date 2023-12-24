@@ -248,21 +248,21 @@ const minRemoveToMakeValid = (s) => {
 
     const stack = []
 
-    for(let i = 0; i < s.length; i++){
-        if(s[i] === '('){
+    for (let i = 0; i < s.length; i++) {
+        if (s[i] === '(') {
             //  keep the position 
             stack.push(i)
-        }else if(s[i] === ')'){
-            if(stack.length){
+        } else if (s[i] === ')') {
+            if (stack.length) {
                 stack.pop()
-            }else{
+            } else {
                 //  remove the invalid closing bracket
                 s[i] = ''
             }
         }
     }
 
-    for(let position of stack){
+    for (let position of stack) {
         //  remove the invalid opening bracket
         s[position] = ''
     }

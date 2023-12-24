@@ -459,51 +459,51 @@ const smallestCommonElement = (mat) => {
 /* Kth Smallest Subarray Sum - Given an integer array nums of length n and an integer k, return the kth smallest subarray sum.
  */
 const kthSmallestSubarraySum = (nums, k) => {
-  // Helper function to count the number of subarrays with sum less than or equal to maxSum
-  const countSubarrays = (maxSum) => {
-    let count = 0;
-    let sum = 0;
-    let left = 0;
+    // Helper function to count the number of subarrays with sum less than or equal to maxSum
+    const countSubarrays = (maxSum) => {
+        let count = 0;
+        let sum = 0;
+        let left = 0;
 
-    for (let right = 0; right < nums.length; right++) {
-      sum += nums[right];
+        for (let right = 0; right < nums.length; right++) {
+            sum += nums[right];
 
-      // Shrink the subarray from the left until the sum is less than or equal to maxSum
-      while (sum > maxSum) {
-        sum -= nums[left];
-        left++;
-      }
+            // Shrink the subarray from the left until the sum is less than or equal to maxSum
+            while (sum > maxSum) {
+                sum -= nums[left];
+                left++;
+            }
 
-      // Add the count of subarrays with sum less than or equal to maxSum
-      count += right - left + 1;
+            // Add the count of subarrays with sum less than or equal to maxSum
+            count += right - left + 1;
+        }
+
+        return count;
     }
 
-    return count;
-  }
+    // Sort the array to use binary search
+    nums.sort((a, b) => a - b);
 
-  // Sort the array to use binary search
-  nums.sort((a, b) => a - b);
+    let low = nums[0];
+    let high = nums.reduce((a, b) => a + b, 0); // Sum of all elements in the array
 
-  let low = nums[0];
-  let high = nums.reduce((a, b) => a + b, 0); // Sum of all elements in the array
+    // Binary search to find the Kth smallest subarray sum
+    while (low < high) {
+        const mid = Math.floor((low + high) / 2);
+        const count = countSubarrays(mid);
 
-  // Binary search to find the Kth smallest subarray sum
-  while (low < high) {
-    const mid = Math.floor((low + high) / 2);
-    const count = countSubarrays(mid);
-
-    // Adjust the search space based on the count
-    if (count < k) {
-      // If the count is less than K, increase the lower bound
-      low = mid + 1;
-    } else {
-      // If the count is greater than or equal to K, decrease the upper bound
-      high = mid;
+        // Adjust the search space based on the count
+        if (count < k) {
+            // If the count is less than K, increase the lower bound
+            low = mid + 1;
+        } else {
+            // If the count is greater than or equal to K, decrease the upper bound
+            high = mid;
+        }
     }
-  }
 
-  // The final low value is the Kth smallest subarray sum
-  return low;
+    // The final low value is the Kth smallest subarray sum
+    return low;
 }
 
 /* Cutting Ribbons 
@@ -514,11 +514,11 @@ const kthSmallestSubarraySum = (nums, k) => {
 - You can discard excess ribbon material.
 Return the maximum possible positive integer length of those k ribbons, or 0 if it's not achievable.
  */
- /**
- * @param {number[]} ribbons - Array of ribbon lengths
- * @param {number} k - Target number of segments
- * @return {number} - Maximum valid ribbon length
- */
+/**
+* @param {number[]} ribbons - Array of ribbon lengths
+* @param {number} k - Target number of segments
+* @return {number} - Maximum valid ribbon length
+*/
 const maxLength = (ribbons, k) => {
     // Function to check if it's possible to cut ribbons into segments with a given length
     const canCut = (length) => {

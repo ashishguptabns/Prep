@@ -257,10 +257,8 @@ const numOfSubarrays = (arr, k, threshold) => {
     return count
 };
 
-
-
-Find k length substrings without repeat characters -
-
+/* Find k length substrings without repeat characters -
+ */
 /**
  * @param {string} s
  * @param {number} k

@@ -1,5 +1,5 @@
-LRUCache - Design a data structure that follows the constraints of a Least Recently Used(LRU) cache.
-
+/* LRUCache - Design a data structure that follows the constraints of a Least Recently Used(LRU) cache.
+ */
 class LRUCache {
 
     class DLinkedNode {
@@ -507,12 +507,10 @@ class MinHeap {
     }
 }
 
-
-
-Insert greatest common divisors - Given the head of a linked list head, in which each node contains an integer value.
+/* Insert greatest common divisors - Given the head of a linked list head, in which each node contains an integer value.
 
 Between every pair of adjacent nodes, insert a new node with a value equal to the greatest common divisor of them.
-
+ */
 /**
  * Definition for singly-linked list.
  * function ListNode(val, next) {
@@ -549,12 +547,10 @@ const findGCD = (a, b) => {
     return a;
 }
 
-
-
-Nested List Weight Sum - Given a nested list of integers, return the sum of all integers in the list weighted by their depth.
+/* Nested List Weight Sum - Given a nested list of integers, return the sum of all integers in the list weighted by their depth.
 
 Each element is either an integer, or a list-- whose elements may also be integers or other lists.
-
+ */
 const depthSum = (nestedList) => {
     const dfs = (nestedList, depth) => {
         let totalSum = 0;
@@ -576,10 +572,8 @@ const depthSum = (nestedList) => {
     return dfs(nestedList, 1);
 }
 
-
-
-Max twin sum of a linked list - Given the head of a linked list with even length, return the maximum twin sum of the linked list.
-
+/* Max twin sum of a linked list - Given the head of a linked list with even length, return the maximum twin sum of the linked list.
+ */
 /**
  * Definition for singly-linked list.
  * function ListNode(val, next) {

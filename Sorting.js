@@ -172,85 +172,85 @@ const sortArray = (nums) => {
 /* Selection Sort - O(n^2) */
 
 const sortArray = (nums) => {
-    //  selection sort
+  //  selection sort
 
-    const n = nums.length;
-    for (let i = 0; i < n - 1; i++) {
-        let min = i;
-        //  find an index smaller than i
-        for (let j = i + 1; j < n; j++) {
-            if (nums[j] < nums[min]) {
-                min = j;
-            }
-        }
-        //  bring small item to left side
-        [nums[i], nums[min]] = [nums[min], nums[i]];
+  const n = nums.length;
+  for (let i = 0; i < n - 1; i++) {
+    let min = i;
+    //  find an index smaller than i
+    for (let j = i + 1; j < n; j++) {
+      if (nums[j] < nums[min]) {
+        min = j;
+      }
     }
-    return nums;
+    //  bring small item to left side
+    [nums[i], nums[min]] = [nums[min], nums[i]];
+  }
+  return nums;
 
 };
 
 /* Bubble sort */
 
 const sortArray = (nums) => {
-    //  bubble sort
+  //  bubble sort
 
-    for (var k = nums.length - 1; k >= 1; k--) {
-        for (var i = 0; i < k; i++) {
-            if (nums[i] > nums[i + 1]) {
-                [nums[i], nums[i + 1]] = [nums[i + 1], nums[i]]
-            }
-        }
+  for (var k = nums.length - 1; k >= 1; k--) {
+    for (var i = 0; i < k; i++) {
+      if (nums[i] > nums[i + 1]) {
+        [nums[i], nums[i + 1]] = [nums[i + 1], nums[i]]
+      }
     }
-    return nums;
+  }
+  return nums;
 
 };
 
 /* Insertion sort */
 
 const sortArray = (nums) => {
-    //  insertion sort
+  //  insertion sort
 
-    for (let i = 1; i < nums.length; i++) {
-        const value = nums[i];
-        let hole = i;
-        while (hole > 0 && nums[hole - 1] > value) {
-            nums[hole] = nums[hole - 1];
-            hole = hole - 1
-        }
-        nums[hole] = value;
+  for (let i = 1; i < nums.length; i++) {
+    const value = nums[i];
+    let hole = i;
+    while (hole > 0 && nums[hole - 1] > value) {
+      nums[hole] = nums[hole - 1];
+      hole = hole - 1
     }
-    return nums;
+    nums[hole] = value;
+  }
+  return nums;
 
 };
 
 /* Quick sort */
 
 const sortArray = (nums) => {
-    //  quick sort
+  //  quick sort
 
-    function quickSortHelper(nums, start, end) {
-        if (start >= end) {
-            return nums
-        }
-
-        const pivotValue = nums[start]
-        let smaller = start
-        for (var i = start + 1; i <= end; i++) {
-            const bigger = i
-            if (nums[bigger] < pivotValue) {
-                smaller++
-                [nums[smaller], nums[bigger]] = [nums[bigger], nums[smaller]]
-            }
-        }
-        [nums[smaller], nums[start]] = [nums[start], nums[smaller]]
-
-        quickSortHelper(nums, start, smaller - 1)
-        quickSortHelper(nums, smaller + 1, end)
-        return nums
+  function quickSortHelper(nums, start, end) {
+    if (start >= end) {
+      return nums
     }
 
-    return quickSortHelper(nums, 0, nums.length - 1)
+    const pivotValue = nums[start]
+    let smaller = start
+    for (var i = start + 1; i <= end; i++) {
+      const bigger = i
+      if (nums[bigger] < pivotValue) {
+        smaller++
+        [nums[smaller], nums[bigger]] = [nums[bigger], nums[smaller]]
+      }
+    }
+    [nums[smaller], nums[start]] = [nums[start], nums[smaller]]
+
+    quickSortHelper(nums, start, smaller - 1)
+    quickSortHelper(nums, smaller + 1, end)
+    return nums
+  }
+
+  return quickSortHelper(nums, 0, nums.length - 1)
 
 };
 
@@ -264,7 +264,7 @@ const sortArray = (nums) => {
 const merge = (intervals) => {
   // Check if the input array is empty or undefined
   if (!intervals || !intervals.length) {
-      return [];
+    return [];
   }
 
   // Array to store the merged intervals
@@ -278,17 +278,17 @@ const merge = (intervals) => {
 
   // Iterate through each interval in the sorted array
   for (const [start, end] of intervals) {
-      // Check if the current interval overlaps with the last merged interval
-      if (start <= lastEnd) {
-          // Merge overlapping intervals by updating lastEnd
-          lastEnd = Math.max(end, lastEnd);
-      } else {
-          // Add the merged interval to the result array
-          merged.push([lastStart, lastEnd]);
-          // Update lastStart and lastEnd for the new interval
-          lastStart = start;
-          lastEnd = end;
-      }
+    // Check if the current interval overlaps with the last merged interval
+    if (start <= lastEnd) {
+      // Merge overlapping intervals by updating lastEnd
+      lastEnd = Math.max(end, lastEnd);
+    } else {
+      // Add the merged interval to the result array
+      merged.push([lastStart, lastEnd]);
+      // Update lastStart and lastEnd for the new interval
+      lastStart = start;
+      lastEnd = end;
+    }
   }
 
   // Add the last merged interval to the result array

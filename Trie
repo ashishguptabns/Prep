@@ -1,10 +1,10 @@
-Longest Word With All Prefixes - Given an array of strings words, find the longest string in words such that every prefix of it is also in words.
+/* Longest Word With All Prefixes - Given an array of strings words, find the longest string in words such that every prefix of it is also in words.
 
   Input: words = ["a", "banana", "app", "appl", "ap", "apple"]
 Output: "apple"
 Explanation:
 - "apple" is the longest word in words.
-- Every prefix of "apple" is also in words: ("a", "app", "appl", "ap").
+- Every prefix of "apple" is also in words: ("a", "app", "appl", "ap"). */
 
 const longestWord = (words) => {
   const trie = new Trie();
@@ -12,12 +12,12 @@ const longestWord = (words) => {
   //  we will find shorter words with same prefix first
   words.sort(); // Sort the words lexicographically to ensure we find the longest one first
 
-  let longest = “”
+  let longest = ''
   for (const word of words) {
     //  get all characters except last one
     const prefix = word.slice(0, -1);
 
-    if (prefix === “” || trie.search(prefix)) {
+    if (prefix === '' || trie.search(prefix)) {
       //  prefix is already present in the trie -> word has all prefixes in the set of words
       trie.insert(word);
       if (word.length > longest.length) {

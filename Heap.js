@@ -62,11 +62,11 @@ Notice that you can apply the operation on the same pile more than once.
 
 Return the minimum possible total number of stones remaining after applying the k operations.
  */
- /**
- * @param {number[]} piles
- * @param {number} k
- * @return {number}
- */
+/**
+* @param {number[]} piles
+* @param {number} k
+* @return {number}
+*/
 const minStoneSum = (piles, k) => {
     //  heap is important because we want to find the pile with most stones after each operation
     const maxHeap = new MaxPriorityQueue()
@@ -88,7 +88,7 @@ const minStoneSum = (piles, k) => {
 
         //  keep reducing left stones
         sum -= topPile - leftPile
-        
+
         //  keep the left stones back in the heap for this pile to be placed at right index
         maxHeap.enqueue(leftPile)
     }
