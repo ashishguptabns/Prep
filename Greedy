@@ -1,36 +1,37 @@
 /*
-Jump Game - You are given a 0-indexed array of integers nums of length n. You are initially positioned at nums[0].
+Jump Game || - You are given a 0-indexed array of integers nums of length n. You are initially positioned at nums[0].
 Each element nums[i] represents the maximum length of a forward jump from index i. In other words, if you are at nums[i], you can jump to any nums[i + j] where:
 0 <= j <= nums[i] and
 i + j < n
 Return the minimum number of jumps to reach nums[n - 1]. The test cases are generated such that you can reach nums[n - 1]
 */
 
-class Solution {
-    public int jump(int[] nums) {
-//         this problem can be solved using greedy approach
-        int numJumps = 0;
-        int currJumpEnd = 0;
-        int farthest = 0;
-        
-//         last index is left because if the last jump reaches there or beyond then that is already calculated
-        for (int i = 0; i < nums.length - 1; i++){
+/**
+ * @param {number[]} nums
+ * @return {number}
+ */
+const jump = (nums) => {
+    let numJumps = 0
+    let currJumpEnd = 0
+    let farthest = 0
 
-//	how far can we go from current index i
-            farthest = Math.max(farthest, i + nums[i]);
+    //  last index is left because if the last jump reaches there or beyond then that is already calculated
+    for (let i = 0; i < nums.length - 1; i++) {
 
-//         when we reach the next jump point it means one jump is needed at min even though it might not be the jump point
-            if(i == currJumpEnd){
-                numJumps++;
+        //  how far can we go from current index i
+        farthest = Math.max(farthest, i + nums[i])
 
-//	this means that we will not be jumping from index i but the index which has given us the farthest index 
-                currJumpEnd = farthest;
-            }
+        //  when we reach the next jump point it means one jump is needed at min even though it might not be the jump point
+        if (i === currJumpEnd) {
+            numJumps++
+
+            //  this means that we will not be jumping from index i but the index which has given us the farthest index 
+            currJumpEnd = farthest
         }
-        
-        return numJumps;
     }
-}
+
+    return numJumps
+};
 
 /*
 Gas Station - There are n gas stations along a circular route, where the amount of gas at the ith station is gas[i].
@@ -81,41 +82,45 @@ Find Original Array From Doubled Array - An integer array original is transforme
 Given an array changed, return original if changed is a doubled array. If changed is not a doubled array, return an empty array. The elements in original may be returned in any order.
 */
 
-class Solution {
-    fun findOriginalArray(changed: IntArray): IntArray {
-
-        if(changed.size % 2 != 0){
-            return IntArray(0);
-        }
-
-//      sort the array and for each item maintain its count in a map. Iterate through the sorted array and for each item reduce the frequency of value and its double from the map and store this value in the array called original
-        changed.sort()
-        val map = mutableMapOf<Int, Int>()
-
-        var originalArray = IntArray(changed.size / 2)
-
-        for(item in changed){
-            map.put(item, map.getOrDefault(item, 0) as Int + 1)
-        }
-
-        var originalArrayIndex = 0
-
-        for(item in changed){
-            if(map.get(item) as Int > 0){
-                map.put(item, map.get(item) as Int - 1)
-                val twiceNum = item * 2
-                if(map.getOrDefault(twiceNum, 0) as Int > 0){
-                    map.put(twiceNum, map.get(twiceNum) as Int - 1)
-                    originalArray[originalArrayIndex++] = item
-                }else{
-                    return IntArray(0)
-                }
-            }
-        }
-
-        return originalArray
+/**
+ * @param {number[]} changed
+ * @return {number[]}
+ */
+const findOriginalArray = (changed) => {
+    if (changed.length % 2 === 1) {
+        return []
     }
-}
+    const res = []
+    const map = new Map()
+
+    changed.sort((a, b) => a - b)
+
+    for (let i = 0; i < changed.length; i++) {
+        const curr = changed[i]
+
+        if (map.has(curr)) {
+            const currValFreq = map.get(curr)
+
+            if (currValFreq === 1) {
+                map.delete(curr)
+            } else {
+                map.set(curr, currValFreq - 1)
+            }
+        } else {
+            const double = curr * 2
+
+            if (map.has(double)) {
+                map.set(double, map.get(double) + 1)
+            } else {
+                map.set(double, 1)
+            }
+
+            res.push(curr)
+        }
+    }
+
+    return map.size > 0 ? [] : res
+};
 
 /* Jump Game - You are given an integer array nums. You are initially positioned at the array's first index, and each element in the array represents your maximum jump length at that position.
 

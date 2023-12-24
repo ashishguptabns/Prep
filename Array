@@ -45,7 +45,7 @@ Return the minimum time Bob needs to make the rope colorful.
  * @param {number[]} neededTime
  * @return {number}
  */
-const minCost = (colors, neededTime) => {
+const minCostRope = (colors, neededTime) => {
   let time = 0;
 
   //  start from 2nd balloon
@@ -196,7 +196,7 @@ const longestConsecutive = (nums) => {
  * @param {number[]} nums
  * @return {number}
  */
-const maxProduct = (nums) => {
+const maxProductS = (nums) => {
   if (!nums.length) {
       return 0
   }
