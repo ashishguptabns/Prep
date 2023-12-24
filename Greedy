@@ -294,39 +294,26 @@ const maxProfit = function (prices) {
     return maxProfit
 };
 
-
-
-Largest Number - Given a list of non-negative integers nums, arrange them such that they form the largest number and return it.
+/* Largest Number - Given a list of non-negative integers nums, arrange them such that they form the largest number and return it.
 
 Since the result may be very large, so you need to return a string instead of an integer
-
-function largestNumber(nums: number[]): string {
-
-//  we will convert all the digits to string and then sort the string array
-
-    var asStringArr: string[] = []
-    for(var index = 0; index < nums.length; index++){
-        asStringArr[index] = nums[index].toString()
+ */
+/**
+ * @param {number[]} nums
+ * @return {string}
+ */
+const largestNumber = (nums) => {
+    if (!nums || !nums.length) {
+        return '0'
     }
 
-    asStringArr.sort((a, b) => {
-        var str1 = a + b
-        var str2 = b + a
+    nums.sort((a, b) => `${b}${a}` - `${a}${b}`)
 
-        return str2.localeCompare(str1)
-    })
-
-    if(asStringArr[0] == '0'){
-        return "0"
+    if (nums[0] === 0) {
+        return '0'
     }
 
-    var largestStr = ""
-    for(var str of asStringArr){
-//  we already have the sorted order  
-        largestStr += str
-    }
-
-    return largestStr
+    return nums.join('')
 };
 
 /* Minimum Increment to Make Array Unique - You are given an integer array nums. In one move, you can pick an index i where 0 <= i < nums.length and increment nums[i] by 1.

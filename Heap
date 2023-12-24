@@ -1,23 +1,26 @@
-Given an array of meeting time intervals intervals where intervals[i] = [starti, endi], return the minimum number of conference rooms required.
+/* Given an array of meeting time intervals intervals where intervals[i] = [starti, endi], return the minimum number of conference rooms required.
+ */
+const minMeetingRoom = (intervals) => {
+    // Sort the intervals based on start time
+    intervals.sort((a, b) => a[0] - b[0]);
 
-fun minMeetingRooms(intervals: Array<IntArray>): Int {
+    // Min priority queue to store end times of meetings
+    const pq = new MinPriorityQueue();
 
-//	sort the intervals based on start time
-    intervals.sortBy { it[0] }
- 
-// 	min heap to store end times of meetings
-    val heap = PriorityQueue<Int>() 
-
-    for (interval in intervals) {
-        if (heap.isNotEmpty() && interval[0] >= heap.peek()) {
-//	no extra meeting room needed as end time is less than next one’s start time
-// 	remove the meeting that ends earliest
-            heap.poll() 
+    for (const [start, end] of intervals) {
+        // If the priority queue is not empty and the start time of the current interval
+        // is greater than or equal to the end time of the meeting at the front of the queue
+        if (!pq.isEmpty && start >= pq.peek().value) {
+            // No extra meeting room needed as end time is less than the next one's start time
+            // Remove the meeting that ends earliest
+            pq.dequeue();
         }
-// 	add the end time of the current meeting to the heap
-        heap.offer(interval[1]) 
+        // Add the end time of the current meeting to the priority queue
+        pq.enqueue({ value: end });
     }
-    return heap.size
+
+    // The size of the priority queue represents the minimum number of meeting rooms required
+    return pq.size;
 }
 
 /* Top K Frequent Elements - Given an integer array nums and an integer k, return the k most frequent elements. You may return the answer in any order. */

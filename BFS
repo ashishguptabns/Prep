@@ -259,55 +259,48 @@ Every si for 1 <= i <= k is in wordList.Note that beginWord does not need to be 
     sk == endWord
 Given two words, beginWord and endWord, and a dictionary wordList, return the number of words in the shortest transformation sequence from beginWord to endWord, or 0 if no such sequence exists.
  */
-function ladderLength(beginWord: string, endWord: string, wordList: string[]): number {
+/**
+ * @param {string} beginWord
+ * @param {string} endWord
+ * @param {string[]} wordList
+ * @return {number}
+ */
+const ladderLength = (beginWord, endWord, wordList) => {
+    // Create a set for faster lookup
+    const map = new Set(wordList);
 
-    //  make the dictionary set from given words    
-    const dictionary = new Set(wordList)
-    if (!dictionary.has(endWord)) {
-        //  word is not there hence we can't reach it
-        return 0
+    // If the end word is not in the word list, it's not possible to transform
+    if (!map.has(endWord)) {
+        return 0;
     }
 
-    //  now that we have the end word so min steps is 1 if we can reach the end word
-    let steps = 1
+    let steps = 1; // Initialize the number of transformations
 
-    //  we will do the bfs    
-    const wordsQueue = [beginWord]
-    //  mark the word visited    
-    const visited = new Set(wordsQueue)
-
-    while (wordsQueue.length) {
-        const currLevelSize = wordsQueue.length
-        for (let i = 0; i < currLevelSize; i++) {
-            //  remove the first element and return            
-            const word = wordsQueue.shift()
-            if (word === endWord) {
-                //  found the end word                
-                return steps
+    let queue = [beginWord]; // Start BFS with the initial word
+    while (queue.length) {
+        const next = []; // Initialize the next level of words to explore
+        for (const curr of queue) {
+            if (curr === endWord) {
+                return steps; // If we reached the endWord, return the number of transformations
             }
 
-            //  we will try to make new words for next travel
-            for (let j = 0; j < word.length; j++) {
-                for (let k = 0; k < 26; k++) {
+            for (let i = 0; i < curr.length; i++) {
+                for (let j = 0; j < 26; j++) {
+                    // Generate next possible word by changing one letter at a time
+                    const nextWord = curr.slice(0, i) + String.fromCharCode(97 + j) + curr.slice(i + 1);
 
-                    //  String.fromCharCode(97) gives 'a'
-                    const nextWord = word.slice(0, j)
-                        + String.fromCharCode(97 + k)
-                        + word.slice(j + 1)
-
-                    //  add in the queue
-                    if (dictionary.has(nextWord) && !visited.has(nextWord)) {
-                        wordsQueue.push(nextWord)
-                        visited.add(nextWord)
+                    if (map.has(nextWord)) {
+                        next.push(nextWord); // Add valid next words to the queue for exploration
+                        map.delete(nextWord); // Remove the word from the set to avoid repetition
                     }
                 }
             }
         }
-        steps++
+        queue = next; // Move to the next level of words
+        steps++; // Increment the number of transformations
     }
 
-    //  could not reach the end word
-    return 0
+    return 0; // If no transformation sequence is found, return 0
 };
 
 /* Minimum Genetic Mutation - Given the two gene strings startGene and endGene and the gene bank bank, return the minimum number of mutations needed to mutate from startGene to endGene. If there is no such a mutation, return -1.

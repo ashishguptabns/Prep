@@ -155,76 +155,6 @@ const maxPathSum = (root) => {
     return max
 };
 
-/* Implement Trie(Prefix Tree) */
-
-class TrieNode {
-    value: string
-    kids: Map<string, TrieNode>
-    isEndOfWord: boolean
-
-    constructor(value: string) {
-        this.value = value
-        this.kids = new Map()
-        this.isEndOfWord = false
-    }
-}
-
-class Trie {
-
-    root: TrieNode
-
-    constructor() {
-        //  no alphabet to avoid confusion        
-        this.root = new TrieNode("_")
-    }
-
-    insert(word: string): void {
-        let currNode = this.root
-        for (let i = 0; i < word.length; i++) {
-            const char = word[i]
-            if (!currNode.kids.has(char)) {
-                currNode.kids.set(char, new TrieNode(char))
-            }
-            currNode = currNode.kids.get(char)
-        }
-        currNode.isEndOfWord = true
-    }
-
-    search(word: string): boolean {
-        let currNode = this.root
-        for (let i = 0; i < word.length; i++) {
-            const char = word[i]
-            if (!currNode.kids.has(char)) {
-                return false
-            }
-            currNode = currNode.kids.get(char)
-        }
-
-        return currNode.isEndOfWord
-    }
-
-    startsWith(prefix: string): boolean {
-        let currNode = this.root
-        for (let i = 0; i < prefix.length; i++) {
-            const char = prefix[i]
-            if (!currNode.kids.has(char)) {
-                return false
-            }
-            currNode = currNode.kids.get(char)
-        }
-        return true
-    }
-
-}
-
-/**
- * Your Trie object will be instantiated and called as such:
- * var obj = new Trie()
- * obj.insert(word)
- * var param_2 = obj.search(word)
- * var param_3 = obj.startsWith(prefix)
- */
-
 /* Kth Smallest Element in a BST
  */
 /**
@@ -374,44 +304,31 @@ const inorderSuccessor = (root, p) => {
 /* Populating Next Right Pointers in Each Node - You are given a perfect binary tree where all leaves are on the same level, and every parent has two children.Populate each next pointer to point to its next right node.If there is no next right node, the next pointer should be set to NULL.
  */
 /**
- * Definition for Node.
- * class Node {
- *     val: number
- *     left: Node | null
- *     right: Node | null
- *     next: Node | null
- *     constructor(val?: number, left?: Node, right?: Node, next?: Node) {
- *         this.val = (val===undefined ? 0 : val)
- *         this.left = (left===undefined ? null : left)
- *         this.right = (right===undefined ? null : right)
- *         this.next = (next===undefined ? null : next)
- *     }
- * }
+ * @param {Node} root
+ * @return {Node}
  */
-
-function connect(root: Node | null): Node | null {
+const connect = (root) => {
     if (!root) {
-        return null
+        return root
     }
 
     //  we will try to go towards the left most node and connect all the nodes in the next level
-    let leftMostNode: Node = root
-    while (leftMostNode.left !== null) {
+    let leftMostNode = root
+    while (leftMostNode.left) {
         let currNode = leftMostNode
-        while (currNode != null) {
-            //  make the connect of direct kids            
+        while (currNode) {
+            //  make the connect of direct kids           
             currNode.left.next = currNode.right
 
             //  make the connect with neighbors' kids            
-            if (currNode.next != null) {
+            if (currNode.next) {
                 currNode.right.next = currNode.next.left
             }
 
-            //  move to right side and repeat            
+            //  move to right side and repeat
             currNode = currNode.next
         }
 
-        //  move to new level
         leftMostNode = leftMostNode.left
     }
 
