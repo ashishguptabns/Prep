@@ -803,3 +803,142 @@ const wordBreak = (s, wordDict) => {
     // The final value of dp[n] indicates whether the entire string can be segmented
     return dp[n];
 };
+
+/* Maximal Square - Given an m x n binary matrix filled with 0's and 1's, find the largest square containing only 1's and return its area.
+ */
+
+/**
+ * @param {character[][]} matrix
+ * @return {number}
+ */
+const maximalSquare = (matrix) => {
+    // Extend each row by appending '0' to the end
+    for (let r = 0; r < matrix.length; r++) {
+        matrix[r].push('0');
+    }
+
+    // Add a new row filled with '0' to the bottom of the matrix
+    matrix.push(Array(matrix[0].length).fill('0'));
+
+    // Variable to store the maximum square size
+    let maxSquare = 0;
+
+    // Loop through the matrix in reverse order
+    for (let r = matrix.length - 2; r >= 0; r--) {
+        for (let c = matrix[0].length - 2; c >= 0; c--) {
+            // If the current cell contains '1', update it with the size of the maximal square
+            if (matrix[r][c] === '1') {
+                // Compute the size of the maximal square at the current cell
+                matrix[r][c] = Math.min(
+                    parseInt(matrix[r + 1][c]),
+                    parseInt(matrix[r + 1][c + 1]),
+                    parseInt(matrix[r][c + 1])
+                ) + 1;
+
+                // Update the maximum square size if needed
+                maxSquare = Math.max(maxSquare, matrix[r][c] ** 2);
+            }
+        }
+    }
+
+    // Return the maximum square size found in the matrix
+    return maxSquare;
+};
+
+/* Edit distance - Given two strings word1 and word2, return the minimum number of operations required to convert word1 to word2.
+
+You have the following three operations permitted on a word:
+
+Insert a character
+Delete a character
+Replace a character
+ */
+
+/**
+ * @param {string} word1
+ * @param {string} word2
+ * @return {number}
+ */
+const minDistance = (word1, word2) => {
+    // Create a 2D array to store the minimum edit distances
+    const dp = Array(word1.length + 1).fill().map(() => Array(word2.length + 1));
+
+    // Initialize the first row and column of the array
+    for (let r = 0; r <= word1.length; r++) {
+        for (let c = 0; c <= word2.length; c++) {
+            // If it's the first row, set the initial values as the length of the second word
+            if (r === 0) {
+                dp[r][c] = c;
+            }
+            // If it's the first column, set the initial values as the length of the first word
+            else if (c === 0) {
+                dp[r][c] = r;
+            }
+            // If the letters at the current positions are the same, no additional cost
+            else if (word1[r - 1] === word2[c - 1]) {
+                dp[r][c] = dp[r - 1][c - 1];
+            }
+            // If letters are different, choose the minimum cost of insertion, deletion, or substitution
+            else {
+                dp[r][c] = Math.min(dp[r][c - 1], dp[r - 1][c - 1], dp[r - 1][c]) + 1;
+            }
+        }
+    }
+
+    // Return the minimum edit distance for the entire words
+    return dp[word1.length][word2.length];
+};
+
+/* Interleaving string - Given strings s1, s2, and s3, find whether s3 is formed by an interleaving of s1 and s2.
+
+An interleaving of two strings s and t is a configuration where s and t are divided into n and m 
+substrings
+ respectively, such that:
+
+s = s1 + s2 + ... + sn
+t = t1 + t2 + ... + tm
+|n - m| <= 1
+The interleaving is s1 + t1 + s2 + t2 + s3 + t3 + ... or t1 + s1 + t2 + s2 + t3 + s3 + ...
+Note: a + b is the concatenation of strings a and b.
+ */
+
+/**
+ * @param {string} s1
+ * @param {string} s2
+ * @param {string} s3
+ * @return {boolean}
+ */
+const isInterleave = (s1, s2, s3) => {
+    // Check if the total length of s1 and s2 is equal to s3
+    if (s1.length + s2.length !== s3.length) {
+        return false;
+    }
+
+    // Initialize a 2D array to store intermediate results
+    const dp = [];
+
+    // Iterate over the lengths of s1 and s2
+    for (let i = 0; i <= s1.length; i++) {
+        dp[i] = [];
+        for (let j = 0; j <= s2.length; j++) {
+            // Base case: an empty s1 and s2 can form an empty s3
+            if (i === 0 && j === 0) {
+                dp[i][j] = true;
+            } else if (i === 0) {
+                // If s1 is empty, check if s2 and s3 match
+                dp[i][j] = dp[i][j - 1] && s2[j - 1] === s3[j - 1];
+            } else if (j === 0) {
+                // If s2 is empty, check if s1 and s3 match
+                dp[i][j] = dp[i - 1][j] && s1[i - 1] === s3[i - 1];
+            } else {
+                // General case: Check if s1 or s2 contributed to the current character of s3
+                dp[i][j] =
+                    (dp[i][j - 1] && s2[j - 1] === s3[i + j - 1]) ||
+                    (dp[i - 1][j] && s1[i - 1] === s3[i + j - 1]);
+            }
+        }
+    }
+
+    // The result is stored in the bottom-right corner of the dp array
+    return dp[s1.length][s2.length];
+};
