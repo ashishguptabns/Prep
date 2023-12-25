@@ -26,6 +26,7 @@ const countUniqueCategoriesWithUnionFind = (data) => {
         categoryIndexMap.set(item.category, index);
         count++;
       } else {
+        // group with the same category
         // perform the union operation between roots of current index and first occurrence index of this category
         const root1 = unionFind.find(index);
         const root2 = unionFind.find(categoryIndexMap.get(item.category));
@@ -40,10 +41,10 @@ const countUniqueCategoriesWithUnionFind = (data) => {
   return count;
 }
 
-//  disjoint set union 
-//  to track disjoint sets and perform union and find operations
+//  disjoint set union - efficiently tracks relationships among elements and identifies connected components within a set
 class UnionFind {
   constructor(size) {
+    //  store the parent of each element
     this.parent = new Array(size);
     for (let i = 0; i < size; i++) {
       //  each element is its own parent - individual disjoint sets
@@ -54,9 +55,10 @@ class UnionFind {
   //  find the root of the set to which x element belongs
   find(x) {
     if (this.parent[x] !== x) {
-      //  move up the ancestors
+      //  move up the ancestors and keep updating the parent
       this.parent[x] = this.find(this.parent[x]);
     }
+    //  found the root of this set
     return this.parent[x];
   }
 

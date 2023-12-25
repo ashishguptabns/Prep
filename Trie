@@ -12,6 +12,10 @@ const longestWord = (words) => {
   //  we will find shorter words with same prefix first
   words.sort(); // Sort the words lexicographically to ensure we find the longest one first
 
+  for (const word of words) {
+    trie.insert(word);
+  }
+
   let longest = ''
   for (const word of words) {
     //  get all characters except last one
@@ -41,7 +45,7 @@ class Trie {
     this.root = new TrieNode();
   }
 
-  insert(word) {
+  insert = (word) => {
     let node = this.root;
     for (const char of word) {
       if (!node.children.has(char)) {
@@ -89,7 +93,7 @@ const suggestedProducts = (products, searchWord) => {
     //  go through the characters
     for (let i = 0; i < p.length; i++) {
       if (!root[p[i]]) {
-        //  give suggestions of each character ending
+        //  give suggestions for each character ending - prefix
         root[p[i]] = { 'sug': [] };
       }
       if (root[p[i]]['sug'].length < 3) {
