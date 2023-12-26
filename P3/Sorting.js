@@ -1,6 +1,9 @@
 /* Sort the matrix diagonally - Given an m x n matrix mat of integers, sort each matrix diagonal in ascending order and return the resulting matrix.
  */
 const diagonalSort = (mat) => {
+
+  /* Note - First focus on upper half then lower half. Travel each diagonal, extract elements, sort them and place them back in the matrix */
+
   const numRows = mat.length;
   const numCols = mat[0].length;
 
@@ -66,29 +69,25 @@ You must solve the problem by counting sort.
  * @param {number} coins
  * @return {number}
  */
-/**
- * @param {number[]} costs
- * @param {number} coins
- * @return {number}
- */
 const maxIceCream = (costs, coins) => {
-  //  track frequencies of each cost entity
+  //  track ice creams for each cost
   const frequencies = Array(Math.max(...costs) + 1).fill(0);
   for (const cost of costs) {
     frequencies[cost] += 1;
   }
 
-  let bars = 0;
+  let max = 0;
   //  we are moving from low to high so count will be maximum
   for (let cost = 1; cost <= coins && cost < frequencies.length; ++cost) {
-    //  min is required cause there might not be enough coins or enough items
+    //  either take all at this cost
+    //  or take what remaining coins can afford
     const count = Math.min(frequencies[cost], Math.floor(coins / cost));
 
     //  update left coins
     coins -= cost * count;
-    bars += count;
+    max += count;
   }
-  return bars;
+  return max;
 };
 
 /* Group anagrams - Given an array of strings strs, group the anagrams together. You can return the answer in any order. */
@@ -128,7 +127,10 @@ According to the definition of h-index on Wikipedia: The h-index is defined as t
  * @return {number}
  */
 const hIndex = (citations) => {
+  //  sort the citations
+  //  travel through the array and keep finding the h index
   citations.sort((a, b) => a - b);
+
   let res = 0;
   let n = citations.length;
 
@@ -142,15 +144,19 @@ const hIndex = (citations) => {
 
 /* Explain merge sort */
 
-const sortArray = (nums) => {
+const mergeSort = (nums) => {
   //  merge sort
+  //  divide the array in half recursively
+  //  sort both halves up the last recursion
+  //  merge both
 
   if (nums.length < 2) {
     return nums;
   }
 
-  const merge = (left, right) => {
+  const sortNMerge = (left, right) => {
     const sortedArr = [];
+    //  notice that left and right arrays are already sorted
     while (left.length && right.length) {
       if (left[0] <= right[0]) {
         sortedArr.push(left.shift());
@@ -159,6 +165,7 @@ const sortArray = (nums) => {
       }
     }
 
+    //  include whatever is left of both arrays
     return [...sortedArr, ...left, ...right];
   };
 
@@ -166,18 +173,19 @@ const sortArray = (nums) => {
   const left = nums.slice(0, mid);
   const right = nums.slice(mid);
 
-  return merge(sortArray(left), sortArray(right));
+  return sortNMerge(mergeSort(left), mergeSort(right));
 };
 
 /* Selection Sort - O(n^2) */
 
-const sortArray = (nums) => {
+const selectionSort = (nums) => {
   //  selection sort
+  //  at each index, find the smallest element in the right subarray and swap
 
   const n = nums.length;
   for (let i = 0; i < n - 1; i++) {
     let min = i;
-    //  find an index smaller than i
+    //  find the smallest index in right subarray which is smaller than i also
     for (let j = i + 1; j < n; j++) {
       if (nums[j] < nums[min]) {
         min = j;
@@ -192,11 +200,11 @@ const sortArray = (nums) => {
 
 /* Bubble sort */
 
-const sortArray = (nums) => {
+const bubbleSort = (nums) => {
   //  bubble sort
 
-  for (var k = nums.length - 1; k >= 1; k--) {
-    for (var i = 0; i < k; i++) {
+  for (let k = nums.length - 1; k >= 1; k--) {
+    for (let i = 0; i < k; i++) {
       if (nums[i] > nums[i + 1]) {
         [nums[i], nums[i + 1]] = [nums[i + 1], nums[i]]
       }
@@ -208,7 +216,7 @@ const sortArray = (nums) => {
 
 /* Insertion sort */
 
-const sortArray = (nums) => {
+const insertionSort = (nums) => {
   //  insertion sort
 
   for (let i = 1; i < nums.length; i++) {
@@ -226,7 +234,7 @@ const sortArray = (nums) => {
 
 /* Quick sort */
 
-const sortArray = (nums) => {
+const quickSort = (nums) => {
   //  quick sort
 
   function quickSortHelper(nums, start, end) {

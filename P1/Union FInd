@@ -22,7 +22,8 @@ const countUniqueCategoriesWithUnionFind = (data) => {
   data.forEach((item, index) => {
     if (item.category) {
       if (!categoryIndexMap.has(item.category)) {
-        //  found the first occurrence
+        //  found a new category
+        //  record the first occurence
         categoryIndexMap.set(item.category, index);
         count++;
       } else {
