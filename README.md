@@ -1,1 +1,1 @@
-Goal is to complete 500 DSA questions and describe the solutions in this repo.
+Goal is to complete 500 medium/hard DSA questions and describe the solutions in this repo
