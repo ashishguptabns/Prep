@@ -224,7 +224,7 @@ const topKFrequent = (nums, k) => {
         minHeap.enqueue(element, count)
         while (minHeap.size() > k) {
             //  only keep k elements
-            //  notice we are removing smaller ones
+            //  notice we are removing items with smallest frequencies
             minHeap.dequeue()
         }
     }
@@ -281,6 +281,7 @@ Return the number of the room that held the most meetings. If there are multiple
 A half-closed interval [a, b) is the interval between a and b including a and not including b.
  */
 
+// todo
 
 /* Maximum score from removing stones - You are playing a solitaire game with three piles of stones of sizes a​​​​​​, b,​​​​​​ and c​​​​​​ respectively. Each turn you choose two different non-empty piles, take one stone from each, and add 1 point to your score. The game stops when there are fewer than two non-empty piles (meaning there are no more available moves).
 
@@ -310,11 +311,11 @@ const maximumScore = (a, b, c) => {
         const pile2 = maxHeap.pop()
 
         if (pile1 > 1) {
-            //  take out one stone
+            //  take out one stone and push back
             maxHeap.push(pile1 - 1)
         }
         if (pile2 > 1) {
-            //  take out one stone
+            //  take out one stone and push back
             maxHeap.push(pile2 - 1)
         }
 
@@ -322,27 +323,6 @@ const maximumScore = (a, b, c) => {
     }
 
     return score
-};
-
-/* Kth largest integer in an array - You are given an array of strings nums and an integer k. Each string in nums represents an integer without leading zeros.
-
-Return the string that represents the kth largest integer in nums.
- */
-/**
- * @param {string[]} nums
- * @param {number} k
- * @return {string}
- */
-const kthLargestNumber = (nums, k) => {
-    const maxHeap = new MaxPriorityQueue({ compare: (a, b) => { return b - a } })
-
-    nums.forEach(num => maxHeap.enqueue(BigInt(num)))
-
-    while (k > 1) {
-        maxHeap.dequeue()
-        k--
-    }
-    return maxHeap.front().toString()
 };
 
 /* K closest points to origin - Given an array of points where points[i] = [xi, yi] represents a point on the X-Y plane and an integer k, return the k closest points to the origin (0, 0).
@@ -385,14 +365,14 @@ Return the minimum possible total number of stones remaining after applying the 
 const minStoneSum = (piles, k) => {
     //  heap is important because we want to find the pile with most stones after each operation
     const maxHeap = new MaxPriorityQueue()
-    let sum = 0
+    let stones = 0
 
     piles.forEach((pile) => {
         //  max pile of stones will be on top of heap            
         maxHeap.enqueue(pile)
 
         //  track total stones
-        sum += pile
+        stones += pile
     })
 
     for (let i = 0; i < k; i++) {
@@ -402,12 +382,33 @@ const minStoneSum = (piles, k) => {
         const leftPile = Math.ceil(topPile / 2)
 
         //  keep reducing left stones
-        sum -= topPile - leftPile
+        stones -= topPile - leftPile
 
         //  keep the left stones back in the heap for this pile to be placed at right index
         maxHeap.enqueue(leftPile)
     }
 
-    return sum
+    return stones
+};
+
+/* Kth largest integer in an array - You are given an array of strings nums and an integer k. Each string in nums represents an integer without leading zeros.
+
+Return the string that represents the kth largest integer in nums.
+ */
+/**
+ * @param {string[]} nums
+ * @param {number} k
+ * @return {string}
+ */
+const kthLargestNumber = (nums, k) => {
+    const maxHeap = new MaxPriorityQueue({ compare: (a, b) => { return b - a } })
+
+    nums.forEach(num => maxHeap.enqueue(BigInt(num)))
+
+    while (k > 1) {
+        maxHeap.dequeue()
+        k--
+    }
+    return maxHeap.front().toString()
 };
 
