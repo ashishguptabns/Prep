@@ -1,24 +1,24 @@
 /* Make Max Heap */
 
 class MaxHeap {
-    //  a binary tree where value of each node is greater than or equal to the values of the children
+    //  max heap is a binary tree in which value of each node is greater than or equal to the values of the children
 
     constructor() {
         this.heap = []
     }
 
-    push(value) {
+    push = (value) => {
         //  push as the last item
         this.heap.push(value)
-        //  move up to right position
+        //  start from last position and move the item to its right position
         this.heapifyUp()
     }
 
-    isEmpty() {
+    isEmpty = () => {
         return this.heap.length === 0
     }
 
-    pop() {
+    pop = () => {
         if (this.isEmpty()) {
             return null
         }
@@ -36,7 +36,7 @@ class MaxHeap {
         return root
     }
 
-    heapifyUp() {
+    heapifyUp = () => {
         //  start from the last item
         let currentIdx = this.heap.length - 1;
 
@@ -69,12 +69,12 @@ class MaxHeap {
             let swapIdx = null;
 
             if (leftChildIdx < this.heap.length && this.heap[leftChildIdx] > this.heap[currentIdx]) {
-                //  child is bigger than parent
+                //  left child is bigger than parent
                 swapIdx = leftChildIdx;
             }
 
             if (rightChildIdx < this.heap.length && this.heap[rightChildIdx] > this.heap[currentIdx]) {
-                //  child is bigger than parent
+                //  right child is bigger than parent
                 if (swapIdx === null || this.heap[rightChildIdx] > this.heap[swapIdx]) {
                     //  right child can be better option than left
                     swapIdx = rightChildIdx;
@@ -82,6 +82,7 @@ class MaxHeap {
             }
 
             if (swapIdx === null) {
+                //  item is at right position
                 break;
             }
 
@@ -95,19 +96,19 @@ class MaxHeap {
 /* Make Min Heap */
 
 class MinHeap {
-    //  each node should be less than or equal to its children
+    //  min heap is a binary tree wherein each node should be less than or equal to its children
 
     constructor() {
         this.heap = [];
     }
 
-    push(val) {
+    push = (val) => {
         this.heap.push(val);
-        //  move up the tree
+        //  start from the last position and move to its right position
         this.heapifyUp();
     }
 
-    pop() {
+    pop = () => {
         if (this.isEmpty()) {
             return null;
         }
@@ -124,11 +125,11 @@ class MinHeap {
         return root;
     }
 
-    isEmpty() {
+    isEmpty = () => {
         return this.heap.length === 0;
     }
 
-    heapifyUp() {
+    heapifyUp = () => {
         //  start from end
         let index = this.heap.length - 1;
 
@@ -137,7 +138,7 @@ class MinHeap {
 
             //  child should be bigger
             if (this.heap[index] < this.heap[parentIndex]) {
-                this.swap(index, parentIndex);
+                [this.heap[parentIndex], this.heap[index]] = [this.heap[index], this.heap[parentIndex]]
                 index = parentIndex;
             } else {
                 break;
@@ -145,7 +146,7 @@ class MinHeap {
         }
     }
 
-    heapifyDown() {
+    heapifyDown = () => {
         let index = 0;
         const length = this.heap.length;
 
@@ -163,18 +164,12 @@ class MinHeap {
             }
 
             if (smallestChildIndex !== index) {
-                this.swap(index, smallestChildIndex);
+                [this.heap[smallestChildIndex], this.heap[index]] = [this.heap[index], this.heap[smallestChildIndex]]
                 index = smallestChildIndex;
             } else {
                 break;
             }
         }
-    }
-
-    swap(i, j) {
-        const temp = this.heap[i];
-        this.heap[i] = this.heap[j];
-        this.heap[j] = temp;
     }
 }
 
