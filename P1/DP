@@ -5,6 +5,15 @@
  * @return {string}
  */
 const longestPalindrome = (s) => {
+
+    /* 
+    Note 
+        - think of substrings starting at i and ending at j
+        - handle special cases of substrings of length 1 and 2
+        - build the dp array from base cases
+        - for each starting point, iterate through possible ending points
+    */
+
     const strLength = s.length
     if (strLength <= 1) {
         return s
@@ -14,6 +23,7 @@ const longestPalindrome = (s) => {
 
     //  all substrings of length 1 are palindrome
     for (let i = 0; i < strLength - 1; i++) {
+        //  starting and ending at i
         dpMatrix[i][i] = true
     }
 
@@ -48,33 +58,6 @@ const longestPalindrome = (s) => {
     return s.substring(startIndex, startIndex + maxLength)
 };
 
-/* Flip String to Monotone Increasing - A binary string is monotone increasing if it consists of some number of 0's (possibly none), followed by some number of 1's (also possibly none).
-
-You are given a binary string s. You can flip s[i] changing it from 0 to 1 or from 1 to 0.
-
-Return the minimum number of flips to make s monotone increasing.
- */
-/**
- * @param {string} s
- * @return {number}
- */
-const minFlipsMonoIncr = (s) => {
-    let numOfOnesSoFar = 0
-    let numFlips = 0
-
-    for (const c of s) {
-        if (c === '1') {
-            //  this is monotone increasing, no flips required             
-            numOfOnesSoFar++
-        } else {
-            //  we might have to flip this character '0' or all the 1s we found so far                
-            numFlips = Math.min(numOfOnesSoFar, numFlips + 1)
-        }
-    }
-
-    return numFlips
-};
-
 /* House Robber - You are a professional robber planning to rob houses along a street. Each house has a certain amount of money stashed, the only constraint stopping you from robbing each of them is that adjacent houses have security systems connected and it will automatically contact the police if two adjacent houses were broken into on the same night.
 
 Given an integer array nums representing the amount of money of each house, return the maximum amount of money you can rob tonight without alerting the police.
@@ -84,6 +67,14 @@ Given an integer array nums representing the amount of money of each house, retu
  * @return {number}
  */
 const rob = (nums) => {
+
+    /* 
+    Note
+        - build a dp array in which ith item is how much money has been collected till ith house
+        - bases cases are 1st and 2nd houses
+        - at each ith house either take ith house and money till i-2 house or take money till i-1 house
+    */
+
     // Handle edge cases
     if (!nums || !nums.length) {
         return 0;
@@ -159,7 +150,15 @@ You may assume that you have an infinite number of each kind of coin.
  * @return {number}
  */
 const coinChange = (coins, amount) => {
-    // Initialize an array dp to store the minimum number of coins needed for each amount
+
+    /* 
+    Note
+        - Go through each coin and try to make up each amount having this coin
+        - either keep the coin and the coins to make up amount - coin or leave the number as it is
+    */
+
+    //  Initialize an array dp to store the minimum number of coins needed for each amount
+    //  default amount has been kept high
     const dp = Array(amount + 1).fill(amount + 1);
 
     // Base case: 0 coins needed to make amount 0
