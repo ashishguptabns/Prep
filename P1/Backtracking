@@ -3,7 +3,7 @@
 const generateParenthesis = (n) => {
     const res = []
 
-    //  l: left remaining, r: right remaining
+    //  l: left taken, r: right taken
     const backTrack = (l, r, currStr) => {
         if (currStr.length === 2 * n) {
             res.push(currStr)
@@ -47,11 +47,13 @@ const letterCombinations = (digits) => {
 
     const findCombinations = (currCharIndex, currString, digits, list, letterMap) => {
         if (currCharIndex == digits.length) {
+            //  considered all the characters
             list.push(currString)
         } else {
             const currDigit = digits[currCharIndex]
             const currChars = letterMap[currDigit]
             for (const c of currChars) {
+                //  run the backtracking for each character for each digit
                 findCombinations(currCharIndex + 1, currString + c, digits, list, letterMap)
             }
         }
@@ -62,44 +64,6 @@ const letterCombinations = (digits) => {
     }
 
     return list
-};
-
-/* All Paths From Source to Target - Given a directed acyclic graph(DAG) of n nodes labeled from 0 to n - 1, find all possible paths from node 0 to node n - 1 and return them in any order.
-
-The graph is given as follows: graph[i] is a list of all nodes you can visit from node i(i.e., there is a directed edge from node i to node graph[i][j]).
- */
-const allPathsSourceTarget = (graph) => {
-    //  we will solve using backtracking
-    //  srcIndex = 0, targetIndex = graphsize - 1
-
-    const src = 0
-    const target = graph.length - 1
-
-    const allPaths = []
-
-    const dfs = (startNode, path, visitedMap) => {
-        path.push(startNode)
-        if (startNode === target) {
-            //  found the target
-            allPaths.push([...path])
-            return
-        }
-        //  explore all the adjacent nodes
-        for (let neighbour of graph[startNode]) {
-            if (!visitedMap[neighbour]) {
-                visitedMap[neighbour] = true
-                //  call dfs with neighbour as a new start node
-                dfs(neighbour, path, visitedMap)
-                //  unmark for the other path
-                visitedMap[neighbour] = false
-                //  remove this neighbour also
-                path.pop()
-            }
-        }
-    }
-
-    dfs(src, [], {})
-    return allPaths
 };
 
 /* Non-decreasing Subsequences - Given an integer array nums, return all the different possible non-decreasing subsequences of the given array with at least two elements. You may return the answer in any order.
