@@ -4,13 +4,15 @@ Find the smallest set of vertices from which all nodes in the graph are reachabl
  */
 const findSmallestSetOfVertices = (n, edges) => {
 
+  //  count indegrees of each node and find the node which has no indegree and hence the node we need to find
+
   //  nodes are numbered 0 to n - 1
   //  by default 0 edges are incoming
-  const indegree = new Array(n).fill(0)
+  const indegree = Array(n).fill(0)
 
   //  track how many edges are incoming in each node
   for (const [from, to] of edges) {
-    //  maintain count of edges to this node
+    //  maintain count of incoming edges to this node
     indegree[to]++
   }
 
@@ -30,16 +32,21 @@ const findSmallestSetOfVertices = (n, edges) => {
  */
 const minSemesters = (n, prerequisites, k) => {
   const graph = new Map();
-  const indegree = new Array(n + 1).fill(0);
+  const indegree = Array(n + 1).fill(0);
 
   for (const [course, prereq] of prerequisites) {
     if (!graph.has(prereq)) {
+      //  maintain the courses which will be unlocked with this prereq
       graph.set(prereq, []);
     }
     graph.get(prereq).push(course);
+
+    //  indegree tells you how many prereqs are needed for this course
     indegree[course]++;
   }
 
+  //  start the BFS from courses which have zero prereqs or are unlocked
+  //  queue will have only unlocked courses
   const queue = [];
   for (let i = 1; i <= n; i++) {
     if (indegree[i] === 0) {
@@ -49,13 +56,18 @@ const minSemesters = (n, prerequisites, k) => {
 
   let semesters = 0;
   while (queue.length > 0) {
+    //  max number of courses we can take in one semester
     const size = Math.min(queue.length, k);
     for (let i = 0; i < size; i++) {
       const course = queue.shift();
       if (graph.has(course)) {
+        //  find all the courses which will be unlocked having done this course
         for (const nextCourse of graph.get(course)) {
+          //  decrease the indegree cause one prereq is done in this semester
           indegree[nextCourse]--;
+
           if (indegree[nextCourse] === 0) {
+            //  this course is unlocked now
             queue.push(nextCourse);
           }
         }
@@ -66,7 +78,8 @@ const minSemesters = (n, prerequisites, k) => {
 
   for (let i = 1; i <= n; i++) {
     if (indegree[i] > 0) {
-      return -1; // If there are still courses with prerequisites, it's impossible to complete all courses
+      // If there are still courses with prerequisites, it's impossible to complete all courses
+      return -1;
     }
   }
 
