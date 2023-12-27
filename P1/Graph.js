@@ -101,7 +101,7 @@ A node u is an ancestor of another node v if u can reach v via a set of edges.
  */
 const getAncestors = (n, edges) => {
   // Build a graph
-  const graph = new Array(n);
+  const graph = Array(n);
   for (let i = 0; i < graph.length; i++) {
     graph[i] = [];
   }
@@ -110,7 +110,7 @@ const getAncestors = (n, edges) => {
   }
 
   // Initialize output array
-  const ancestors = new Array(n);
+  const ancestors = Array(n);
   for (let i = 0; i < ancestors.length; i++) {
     ancestors[i] = [];
   }
@@ -138,7 +138,7 @@ const getAncestors = (n, edges) => {
           seen.add(currNode);
           ancestors[currNode].push(ancestor);
 
-          // The first time we reach the node, we populate the queue with the neighbors
+          // The first time we reach the node, we populate the queue with the neighbors of current node
           // to continue the BFS
           for (const nextNode of graph[currNode]) {
             nextQueue.push(nextNode);
@@ -165,17 +165,13 @@ Return true if you can finish all courses.Otherwise, return false.
  */
 // Function to find the order of courses
 const findOrder = (numCourses, prerequisites) => {
-  if (!prerequisites.length) {
-    return true
-  }
 
   // Array to store the in-degrees of each course
   const inDegrees = Array(numCourses).fill(0);
 
   // Count the in-degrees for each course based on prerequisites
-  for (const [v, u] of prerequisites) {
-    //  can come to v from course u
-    inDegrees[v]++;
+  for (const [to, from] of prerequisites) {
+    inDegrees[to]++;
   }
 
   // Queue to store courses with in-degree 0 (can be taken first)
@@ -195,20 +191,21 @@ const findOrder = (numCourses, prerequisites) => {
   // Process courses in topological order
   while (q.length) {
     // Take a course with in-degree 0 from the queue
-    const u0 = q.shift();
+    const currCourse = q.shift();
+
+    // Add the course to the result
+    res.push(currCourse);
 
     // Decrement the total number of courses remaining
     numCourses--;
 
-    // Add the course to the result
-    res.push(u0);
-
     // Update in-degrees for courses dependent on the current course
     for (const [v, u] of prerequisites) {
-      if (u === u0) {
+      if (u === currCourse) {
+        //  course v got unlocked now
         inDegrees[v]--;
 
-        // If the in-degree becomes 0, add the course to the queue
+        // If the in-degree becomes 0, add the course to the queue as we can take this course now
         if (inDegrees[v] === 0) {
           q.push(v);
         }
