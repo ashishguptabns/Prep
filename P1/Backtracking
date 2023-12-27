@@ -25,7 +25,6 @@ const generateParenthesis = (n) => {
     return res
 };
 
-
 /* Letter Combinations of a Phone Number - Given a string containing digits from 2-9 inclusive, return all possible letter combinations that the number could represent. Return the answer in any order.
  */
 /**
@@ -74,18 +73,27 @@ const letterCombinations = (digits) => {
  */
 const findSubsequences = (nums) => {
     const res = []
+
+    //  maintain a map of all subseqs found so far to avoid repeats
     const map = {}
-    const iterate = (index, temp) => {
-        if (map[temp]) return;
-        if (temp.length >= 2) {
-            res.push(temp)
+    const iterate = (index, currSS) => {
+        if (map[currSS]) {
+            //  we already have this subseq
+            return;
+        }
+        //  mark as found
+        map[currSS] = true;
+
+        if (currSS.length >= 2) {
+            //  as per condition
+            res.push(currSS)
         }
         for (let i = index; i < nums.length; i++) {
-            if (temp[temp.length - 1] > nums[i]) {
+            if (currSS.at(-1) > nums[i]) {
+                //  curr element is smaller than the last element of subseq
                 continue;
             }
-            map[temp] = true;
-            iterate(i + 1, [...temp, nums[i]])
+            iterate(i + 1, [...currSS, nums[i]])
         }
     }
     iterate(0, [])
@@ -103,7 +111,7 @@ const permute = (nums) => {
             return
         }
         for (let i = 0; i < nums.length; i++) {
-            //  add ith index num to currArr and remove from nums for further iteration
+            //  add ith item to currArr and remove from nums for further iteration
             backTrack([...currArr, nums[i]], [...nums.slice(0, i), ...nums.slice(i + 1)], res)
         }
     }
@@ -131,11 +139,10 @@ const combinationSum = (candidates, target) => {
             res.push([...currArr])
             return
         }
-        if (0 > targetLeft) {
+        if (targetLeft < 0) {
             return
         }
         for (let i = currIndex; i < candidates.length; i++) {
-            //  same item can be considered multiple times
             currArr.push(candidates[i])
             backTrack(i, currArr, targetLeft - candidates[i])
             //  remove for next iteration
@@ -146,7 +153,6 @@ const combinationSum = (candidates, target) => {
 
     return res
 };
-
 
 /* Power set - Given an integer array nums of unique elements, return all possible 
 subsets (the power set).
@@ -178,7 +184,7 @@ const subsets = (nums) => {
     return result
 };
 
-/* Letter tile possibilities - You have n  tiles, where each tile has one letter tiles[i] printed on it.
+/* Letter tile possibilities - You have n tiles, where each tile has one letter tiles[i] printed on it.
 
 Return the number of possible non-empty sequences of letters you can make using the letters printed on those tiles.
  */
@@ -190,9 +196,7 @@ const numTilePossibilities = (tiles) => {
             set.add(currSeq)
         }
         for (let i = 0; i < leftTiles.length; i++) {
-            const newSeq = currSeq + leftTiles[i]
-            const newLeftTiles = leftTiles.slice(0, i) + leftTiles.slice(i + 1)
-            backTrack(newSeq, newLeftTiles)
+            backTrack(currSeq + leftTiles[i], leftTiles.slice(0, i) + leftTiles.slice(i + 1))
         }
     }
     backTrack('', tiles)
