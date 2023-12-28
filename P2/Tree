@@ -1,3 +1,144 @@
+/* All Nodes Distance K in Binary Tree - Given the root of a binary tree, the value of a target node target, and an integer k, return an array of the values of all nodes that have a distance k from the target node.
+ */
+/**
+ * Definition for a binary tree node.
+ * function TreeNode(val) {
+ *     this.val = val;
+ *     this.left = this.right = null;
+ * }
+ */
+/**
+ * @param {TreeNode} root
+ * @param {TreeNode} target
+ * @param {number} k
+ * @return {number[]}
+ */
+const distanceK = (root, target, k) => {
+    if (!root) {
+        return
+    }
+
+    const findTarget = (node, parent, target) => {
+        if (node) {
+            node.parent = parent
+            if (node == target) {
+                return node
+            }
+            return findTarget(node.left, node, target) || findTarget(node.right, node, target)
+        }
+    }
+
+    //  find the target and assign a parent to each node
+    const targetNode = findTarget(root, null, target)
+
+    const res = []
+
+    const findAllKApart = (node, k, res) => {
+        if (!node || node.visited) {
+            return res
+        }
+
+        if (k === 0) {
+            //  reached the end
+            res.push(node.val)
+            return res
+        }
+
+        //  mark
+        node.visited = true
+
+        //  travel in all directions
+        findAllKApart(node.left, k - 1, res)
+        findAllKApart(node.right, k - 1, res)
+        findAllKApart(node.parent, k - 1, res)
+
+        return res
+    }
+
+    //  start the travel from target node and keep marking visited
+    findAllKApart(targetNode, k, res)
+
+    return res
+};
+
+/* Sum of nodes with even valued grandparent - Given the root of a binary tree, return the sum of values of nodes with an even - valued grandparent.If there are no nodes with an even - valued grandparent, return 0.
+ */
+const sumEvenGrandparent = (root) => {
+
+    //  visit each node and maintain the parent and gparent
+
+    let sum = 0
+
+    const dfs = (node, parent, gparent) => {
+        if (node) {
+            if (gparent && gparent.val % 2 === 0) {
+                sum += node.val
+            }
+            dfs(node.left, node, parent)
+            dfs(node.right, node, parent)
+        }
+    }
+    dfs(root, null, null)
+
+    return sum
+
+};
+
+/* Validate Binary Search Tree - Given the root of a binary tree, determine if it is a valid binary search tree (BST).
+
+A valid BST is defined as follows:
+The left subtree of a node contains only nodes with keys less than the node's key.
+The right subtree of a node contains only nodes with keys greater than the node's key.
+Both the left and right subtrees must also be binary search trees.
+ */
+/**
+ * Definition for a binary tree node.
+ * function TreeNode(val, left, right) {
+ *     this.val = (val===undefined ? 0 : val)
+ *     this.left = (left===undefined ? null : left)
+ *     this.right = (right===undefined ? null : right)
+ * }
+ */
+/**
+ * @param {TreeNode} root
+ * @return {boolean}
+ */
+const isValidBST = (root, min = -Infinity, max = Infinity) => {
+    if (!root) {
+        return true
+    }
+
+    if (root.val <= min || root.val >= max) {
+        return false
+    }
+
+    return isValidBST(root.left, min, root.val) && isValidBST(root.right, root.val, max)
+};
+
+/* Maximum Difference Between Node and Ancestor - Given the root of a binary tree, find the maximum value v for which there exist different nodes a and b where v = |a.val - b.val| and a is an ancestor of b.
+
+A node a is an ancestor of b if either: any child of a is equal to b or any child of a is an ancestor of b.
+ */
+const maxAncestorDiff = (root) => {
+    let maxDiff = 0
+
+    const findDiff = (node, maxSoFar, minSoFar) => {
+        //  notice that max and min are coming from the ancestors
+        if (node) {
+            maxSoFar = Math.max(maxSoFar, node.val)
+            minSoFar = Math.min(minSoFar, node.val)
+
+            maxDiff = Math.max(maxSoFar - minSoFar, maxDiff)
+
+            findDiff(node.left, maxSoFar, minSoFar)
+            findDiff(node.right, maxSoFar, minSoFar)
+        }
+    }
+    findDiff(root, root.val, root.val)
+
+    return maxDiff
+};
+
 /* Lowest Common Ancestor of two nodes in a Binary Tree - Given a binary tree, find the lowest common ancestor (LCA) of two given nodes in the tree.
 
 According to the definition of LCA on Wikipedia: “The lowest common ancestor is defined between two nodes p and q as the lowest node in T that has both p and q as descendants (where we allow a node to be a descendant of itself).” */
@@ -999,6 +1140,69 @@ const deepestLeavesSum = (root) => {
     }
 
     return levelSum
+};
+
+/* Maximum Product of Splitted Binary Tree - Given the root of a binary tree, split the binary tree into two subtrees by removing one edge such that the product of the sums of the subtrees is maximized.
+
+Return the maximum product of the sums of the two subtrees. Since the answer may be too large, return it modulo 109 + 7.
+
+Note that you need to maximize the answer before taking the mod and not after taking it.
+ */
+
+/**
+ * Definition for a binary tree node.
+ * function TreeNode(val, left, right) {
+ *     this.val = (val===undefined ? 0 : val)
+ *     this.left = (left===undefined ? null : left)
+ *     this.right = (right===undefined ? null : right)
+ * }
+ */
+/**
+ * @param {TreeNode} root
+ * @return {number}
+ */
+const maxProduct = (root) => {
+    // Initialize an array to store the sums of nodes in different subtrees.
+    let res = [];
+
+    // Define a constant for modulo operation.
+    const MOD = 10 ** 9 + 7;
+
+    // Define a recursive function to perform depth-first search (DFS) on the tree.
+    const dfs = (node) => {
+        if (!node) {
+            return 0; // Return 0 for null nodes.
+        }
+
+        if (!node.left && !node.right) {
+            return node.val; // Return the value for leaf nodes.
+        }
+
+        // Recursively calculate the sums of left and right subtrees.
+        const leftSum = dfs(node.left);
+        const rightSum = dfs(node.right);
+
+        // Add the sums to the result array.
+        res.push(leftSum, rightSum);
+
+        // Return the sum of the current subtree.
+        return leftSum + node.val + rightSum;
+    };
+
+    // Calculate the total sum of the tree using DFS.
+    const totalSum = dfs(root);
+
+    // Initialize a variable to store the maximum product.
+    let max = 0;
+
+    // Iterate through the sums in the result array and calculate the product.
+    for (const sum of res) {
+        const curr = sum * (totalSum - sum);
+        max = Math.max(max, curr); // Update the maximum product.
+    }
+
+    // Return the maximum product modulo MOD.
+    return max % MOD;
 };
 
 // todo
