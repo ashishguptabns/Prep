@@ -8,12 +8,13 @@ Given the integer n and the array dislikes where dislikes[i] = [ai, bi] indicate
  * @return {boolean}
  */
 const possibleBipartition = (n, dislikes) => {
-    // Create the adjacency list graph
-    const adjList = new Array(n + 1).fill(null).map(() => []);
-    for (const edge of dislikes) {
+    //  Create the adjacency list graph
+    //  notice label is from 1 to n
+    const adjList = Array(n + 1).fill(null).map(() => []);
+    for (const [a, b] of dislikes) {
         // Add edges to the adjacency list
-        adjList[edge[0]].push(edge[1]);
-        adjList[edge[1]].push(edge[0]);
+        adjList[a].push(b);
+        adjList[b].push(a);
     }
 
     // Initialize an array to store the color of each node
@@ -38,7 +39,7 @@ const possibleBipartition = (n, dislikes) => {
             // Check the neighbors and color them
             for (const neighbor of adjList[currNode]) {
                 if (color[neighbor] === color[currNode]) {
-                    // Condition is broken - the same color is found in neighbors
+                    // Condition is broken - hateful neighbors
                     return false;
                 }
                 if (color[neighbor] === 0) {
@@ -52,61 +53,6 @@ const possibleBipartition = (n, dislikes) => {
     }
     // All nodes are colored without conflicts, so the graph can be bipartitioned
     return true;
-};
-
-/* The Maze - There is a ball in a maze with empty spaces (represented as 0) and walls (represented as 1). The ball can go through the empty spaces by rolling up, down, left or right, but it won't stop rolling until hitting a wall. When the ball stops, it could choose the next direction.
-
-Given the m x n maze, the ball's start position and the destination, where start = [startrow, startcol] and destination = [destinationrow, destinationcol], return true if the ball can stop at the destination, otherwise return false.
- */
-const hasPath = (maze, start, destination) => {
-    const [startRow, startCol] = start;
-    const [destRow, destCol] = destination;
-    const rows = maze.length;
-    const cols = maze[0].length;
-    const visited = Array.from({ length: rows }, () => Array(cols).fill(false));
-
-    const directions = [[-1, 0], [1, 0], [0, -1], [0, 1]];
-
-    const dfs = (row, col) => {
-        // Check if the current position is the destination
-        if (row === destRow && col === destCol) {
-            return true;
-        }
-
-        // Mark the current position as visited
-        visited[row][col] = true;
-
-        // Explore in all directions
-        for (const [dr, dc] of directions) {
-            let newRow = row;
-            let newCol = col;
-
-            // Keep rolling until hitting a wall
-            while (
-                newRow + dr >= 0 &&
-                newRow + dr < rows &&
-                newCol + dc >= 0 &&
-                newCol + dc < cols &&
-                maze[newRow + dr][newCol + dc] === 0
-            ) {
-                newRow += dr;
-                newCol += dc;
-            }
-
-            // Check if the new position has not been visited
-            if (!visited[newRow][newCol]) {
-                // Recursively explore the new position
-                if (dfs(newRow, newCol)) {
-                    return true;
-                }
-            }
-        }
-
-        return false;
-    };
-
-    // Start DFS from the given start position
-    return dfs(startRow, startCol);
 };
 
 /* Minimum Knight Moves - In an infinite chess board with coordinates from -infinity to +infinity, you have a knight at square [0, 0].
@@ -223,7 +169,7 @@ const alienOrder = (words) => {
     // Set to keep track of visited nodes
     const seen = new Set();
 
-    // Initialize the BFS queue with nodes having an indegree of 0
+    //  Initialize the BFS queue with nodes having an indegree of 0
     //  potential starting chars of the dictionary
     for (const [char, degree] of inDegree) {
         if (degree === 0) {
@@ -244,6 +190,7 @@ const alienOrder = (words) => {
         for (const nextChar of charGraph.get(currChar)) {
             inDegree.set(nextChar, inDegree.get(nextChar) - 1);
             if (inDegree.get(nextChar) === 0) {
+                //  unlocked a new char
                 bfsQueue.push(nextChar);
             }
         }
@@ -285,6 +232,7 @@ const ladderLength = (beginWord, endWord, wordList) => {
             }
 
             for (let i = 0; i < curr.length; i++) {
+                //  try to transform each char one at a time as per condition
                 for (let j = 0; j < 26; j++) {
                     // Generate next possible word by changing one letter at a time
                     const nextWord = curr.slice(0, i) + String.fromCharCode(97 + j) + curr.slice(i + 1);
@@ -372,83 +320,8 @@ const minMutation = (startGene, endGene, bank) => {
     return -1;
 };
 
-/* Same tree - Given the roots of two binary trees p and q, write a function to check if they are the same or not.
- */
-/**
- * Definition for a binary tree node.
- * function TreeNode(val, left, right) {
- *     this.val = (val===undefined ? 0 : val)
- *     this.left = (left===undefined ? null : left)
- *     this.right = (right===undefined ? null : right)
- * }
- */
-/**
- * @param {TreeNode} p
- * @param {TreeNode} q
- * @return {boolean}
- */
-const isSameTree = (p, q) => {
-    if (!p && !q) {
-        return true
-    }
-    if ((p && !q) || (!p && q) || (p.val !== q.val)) {
-        return false
-    }
-
-    return isSameTree(p.left, q.left) && isSameTree(p.right, q.right)
-};
-
-
-
-Deepest leaves sum - Given the root of a binary tree, return the sum of values of its deepest leaves.
-
-/**
- * Definition for a binary tree node.
- * function TreeNode(val, left, right) {
- *     this.val = (val===undefined ? 0 : val)
- *     this.left = (left===undefined ? null : left)
- *     this.right = (right===undefined ? null : right)
- * }
- */
-/**
- * @param {TreeNode} root
- * @return {number}
- */
-const deepestLeavesSum = (root) => {
-
-    // solve this using BFS
-    // keep tracking the sum and return the last level's
-
-    if (!root) {
-        return 0
-    }
-
-    const queue = [root]
-    let levelSum
-
-    while (queue.length > 0) {
-        const currLevelSize = queue.length
-        levelSum = 0
-
-        for (let i = 0; i < currLevelSize; i++) {
-            const node = queue.shift()
-            levelSum += node.val
-
-            if (node.left) {
-                queue.push(node.left)
-            }
-            if (node.right) {
-                queue.push(node.right)
-            }
-        }
-    }
-
-    return levelSum
-};
-
 /* Shortest Path to Get Food */
 
-// Function to find the minimum steps required to reach food ('#') from the person's starting position ('*') on a 2D grid.
 const getFood = grid => {
     // Get the number of rows and columns in the grid
     const rows = grid.length;
@@ -475,40 +348,31 @@ const getFood = grid => {
     // Function to check if a given position is valid (within the grid boundaries)
     const isValid = (x, y) => x >= 0 && x < rows && y >= 0 && y < cols;
 
-    // Breadth-first search algorithm to find the minimum steps to reach food
-    const bfs = () => {
-        // Initialize the queue with the starting position and the number of steps taken
-        const queue = [[startX, startY, 0]];
+    // Initialize the queue with the starting position and the number of steps taken
+    const queue = [[startX, startY, 0]];
 
-        while (queue.length > 0) {
-            // Dequeue the current position and steps taken
-            const [x, y, steps] = queue.shift();
+    while (queue.length > 0) {
+        // Dequeue the current position and steps taken
+        const [x, y, steps] = queue.shift();
 
-            // Check if food is found at the current position
-            if (grid[x][y] === '#') {
-                return steps; // Return the number of steps taken when food is found
-            }
-
-            // Explore neighbors in all possible directions
-            for (const [dx, dy] of directions) {
-                const newX = x + dx;
-                const newY = y + dy;
-
-                // Check if the new position is valid and has not been visited before
-                if (isValid(newX, newY) && grid[newX][newY] !== 'X' && !visited.has(`${newX}-${newY}`)) {
-                    visited.add(`${newX}-${newY}`); // Mark the new position as visited
-                    queue.push([newX, newY, steps + 1]); // Enqueue the new position with updated steps
-                }
-            }
+        // Check if food is found at the current position
+        if (grid[x][y] === '#') {
+            return steps; // Return the number of steps taken when food is found
         }
 
-        // Return -1 if no food is found (should not happen if the grid is well-formed)
-        return -1;
-    };
+        // Explore neighbors in all possible directions
+        for (const [dx, dy] of directions) {
+            const newX = x + dx;
+            const newY = y + dy;
 
-    // Start BFS to find the minimum steps
-    const result = bfs();
+            // Check if the new position is valid and has not been visited before
+            if (isValid(newX, newY) && grid[newX][newY] !== 'X' && !visited.has(`${newX}-${newY}`)) {
+                visited.add(`${newX}-${newY}`); // Mark the new position as visited
+                queue.push([newX, newY, steps + 1]); // Enqueue the new position with updated steps
+            }
+        }
+    }
 
-    // Return the result, which is either the minimum steps or -1 if no food is found
-    return result;
+    // Return -1 if no food is found (should not happen if the grid is well-formed)
+    return -1;
 };

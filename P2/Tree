@@ -929,6 +929,78 @@ const printBoundary = (root) => {
     }
 }
 
+/* Same tree - Given the roots of two binary trees p and q, write a function to check if they are the same or not.
+ */
+/**
+ * Definition for a binary tree node.
+ * function TreeNode(val, left, right) {
+ *     this.val = (val===undefined ? 0 : val)
+ *     this.left = (left===undefined ? null : left)
+ *     this.right = (right===undefined ? null : right)
+ * }
+ */
+/**
+ * @param {TreeNode} p
+ * @param {TreeNode} q
+ * @return {boolean}
+ */
+const isSameTree = (p, q) => {
+    if (!p && !q) {
+        return true
+    }
+    if ((p && !q) || (!p && q) || (p.val !== q.val)) {
+        return false
+    }
+
+    return isSameTree(p.left, q.left) && isSameTree(p.right, q.right)
+};
+
+/* Deepest leaves sum - Given the root of a binary tree, return the sum of values of its deepest leaves.
+ */
+/**
+ * Definition for a binary tree node.
+ * function TreeNode(val, left, right) {
+ *     this.val = (val===undefined ? 0 : val)
+ *     this.left = (left===undefined ? null : left)
+ *     this.right = (right===undefined ? null : right)
+ * }
+ */
+/**
+ * @param {TreeNode} root
+ * @return {number}
+ */
+const deepestLeavesSum = (root) => {
+
+    // solve this using BFS
+    // keep tracking the sum and return the last level's
+
+    if (!root) {
+        return 0
+    }
+
+    const queue = [root]
+    let levelSum
+
+    while (queue.length > 0) {
+        const currLevelSize = queue.length
+        levelSum = 0
+
+        for (let i = 0; i < currLevelSize; i++) {
+            const node = queue.shift()
+            levelSum += node.val
+
+            if (node.left) {
+                queue.push(node.left)
+            }
+            if (node.right) {
+                queue.push(node.right)
+            }
+        }
+    }
+
+    return levelSum
+};
+
 // todo
 /* Sum root to leaf numbers */
 
@@ -937,3 +1009,4 @@ const printBoundary = (root) => {
 
 // todo
 /* Construct tree from inorder and postorder traversal */
+
