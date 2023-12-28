@@ -18,9 +18,7 @@ const longestCommonPrefix = (strs) => {
     return lcp
 };
 
-/* Single Element in a Sorted Array - You are given a sorted array consisting of only integers where every element appears exactly twice, except for one element which appears exactly once.
-Return the single element that appears only once.
-Your solution must run in O(log n) time and O(1) space.
+/* Single Element in a Sorted Array - You are given a sorted array consisting of only integers where every element appears exactly twice, except for one element which appears exactly once. Return the single element that appears only once. Your solution must run in O(log n) time and O(1) space.
  */
 /**
  * @param {number[]} nums
@@ -36,7 +34,7 @@ const singleNonDuplicate = (nums) => {
     while (left < right) {
         let mid = Math.floor((left + right) / 2)
         if (mid % 2 === 1) {
-            //  odd index
+            //  odd index, make it even
             mid -= 1
         }
 
@@ -354,14 +352,10 @@ const kthSmallest = (matrix, k) => {
     return left
 };
 
-// Median of two sorted arrays - Given two sorted arrays nums1 and nums2 of size m and n respectively, return the median of the two sorted arrays.
+/* Search in rotated array - Given the array nums after the possible rotation and an integer target, return the index of target if it is in nums, or -1 if it is not in nums.
 
-// The overall run time complexity should be O(log (m+n)).
-
-// Search in rotated array - Given the array nums after the possible rotation and an integer target, return the index of target if it is in nums, or -1 if it is not in nums.
-
-// You must write an algorithm with O(log n) runtime complexity.
-
+You must write an algorithm with O(log n) runtime complexity.
+ */
 /**
  * @param {number[]} nums
  * @param {number} target
@@ -386,6 +380,7 @@ const search = (nums, target) => {
                 low = mid + 1
             }
         } else {
+            //  right half is sorted
             if (nums[mid] <= target && target <= nums[high]) {
                 low = mid + 1
             } else {
@@ -398,10 +393,8 @@ const search = (nums, target) => {
     return -1
 };
 
-
-
-Smallest common number sorted rows - Given a matrix mat where every row is sorted in increasing order, return the smallest common element in all rows.
-
+/* Smallest common number sorted rows - Given a matrix mat where every row is sorted in increasing order, return the smallest common element in all rows.
+ */
 const smallestCommonElement = (mat) => {
     const rows = mat.length;
     const cols = mat[0].length;
@@ -640,3 +633,10 @@ const findMin = (nums) => {
     // The left pointer now points to the minimum element in the rotated sorted array
     return nums[left];
 };
+
+// todo
+/* Median of two sorted arrays - Given two sorted arrays nums1 and nums2 of size m and n respectively, return the median of the two sorted arrays.
+
+The overall run time complexity should be O(log (m+n)).
+ */
+
