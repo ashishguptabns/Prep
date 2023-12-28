@@ -2,7 +2,7 @@
  */
 const diagonalSort = (mat) => {
 
-  /* Note - First focus on upper half then lower half. Travel each diagonal, extract elements, sort them and place them back in the matrix */
+  // Note - First focus on upper half then lower half. Travel each diagonal, extract elements, sort them and place them back in the matrix
 
   const numRows = mat.length;
   const numCols = mat[0].length;
@@ -116,8 +116,7 @@ const groupAnagrams = (strs) => {
   return [...map.values()];
 };
 
-/* 
-H-index - Given an array of integers citations where citations[i] is the number of citations a researcher received for their ith paper, return the researcher's h-index.
+/* H-index - Given an array of integers citations where citations[i] is the number of citations a researcher received for their ith paper, return the researcher's h-index.
 
 According to the definition of h-index on Wikipedia: The h-index is defined as the maximum value of h such that the given researcher has published at least h papers that have each been cited at least h times.
  */

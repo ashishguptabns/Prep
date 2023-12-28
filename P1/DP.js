@@ -6,13 +6,11 @@
  */
 const longestPalindrome = (s) => {
 
-    /* 
-    Note 
-        - think of substrings starting at i and ending at j
-        - handle special cases of substrings of length 1 and 2
-        - build the dp array from base cases
-        - for each starting point, iterate through possible ending points
-    */
+    // Note 
+    //     - think of substrings starting at i and ending at j
+    //     - handle special cases of substrings of length 1 and 2
+    //     - build the dp array from base cases
+    //     - for each starting point, iterate through possible ending points
 
     const strLength = s.length
     if (strLength <= 1) {
@@ -68,12 +66,10 @@ Given an integer array nums representing the amount of money of each house, retu
  */
 const rob = (nums) => {
 
-    /* 
-    Note
-        - build a dp array in which ith item is how much money has been collected till ith house
-        - bases cases are 1st and 2nd houses
-        - at each ith house either take ith house and money till i-2 house or take money till i-1 house
-    */
+    // Note
+    //     - build a dp array in which ith item is how much money has been collected till ith house
+    //     - bases cases are 1st and 2nd houses
+    //     - at each ith house either take ith house and money till i-2 house or take money till i-1 house
 
     // Handle edge cases
     if (!nums || !nums.length) {
@@ -151,11 +147,9 @@ You may assume that you have an infinite number of each kind of coin.
  */
 const coinChange = (coins, amount) => {
 
-    /* 
-    Note
-        - Go through each coin and try to make up each amount having this coin
-        - either keep the coin and the coins to make up amount - coin or leave the number as it is
-    */
+    // Note
+    //     - Go through each coin and try to make up each amount having this coin
+    //     - either keep the coin and the coins to make up amount - coin or leave the number as it is
 
     //  Initialize an array dp to store the minimum number of coins needed for each amount
     //  default amount has been kept high
@@ -216,11 +210,9 @@ substring of the partition is a palindrome. Return all possible palindrome parti
 const partition = (s) => {
     //  use DP and DFS
 
-    /* 
-    Note
-        - we will keep the palindrome data in 2D DP array for every string starting at i and ending at j
-        - do a DFS and explore all possible substrings
-    */
+    // Note
+    //     - we will keep the palindrome data in 2D DP array for every string starting at i and ending at j
+    //     - do a DFS and explore all possible substrings
 
     const dp = Array.from({ length: s.length }, () => Array(s.length).fill(false))
 
@@ -274,8 +266,7 @@ const longestCommonSubsequence = (text1, text2) => {
     return dp[0][0];
 };
 
-/* 
-Unique Paths - There is a robot on an m x n grid. The robot is initially located at the top-left corner (i.e., grid[0][0]). The robot tries to move to the bottom-right corner (i.e., grid[m - 1][n - 1]). The robot can only move either down or right at any point in time.
+/* Unique Paths - There is a robot on an m x n grid. The robot is initially located at the top-left corner (i.e., grid[0][0]). The robot tries to move to the bottom-right corner (i.e., grid[m - 1][n - 1]). The robot can only move either down or right at any point in time.
 
 Given the two integers m and n, return the number of possible unique paths that the robot can take to reach the bottom-right corner.
  */

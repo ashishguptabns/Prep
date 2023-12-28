@@ -1,8 +1,3 @@
-// todo
-/* LRUCache - Design a data structure that follows the constraints of a Least Recently Used(LRU) cache.
- */
-
-
 /**
  * Your LRUCache object will be instantiated and called as such:
  * LRUCache obj = new LRUCache(capacity);
@@ -718,3 +713,7 @@ const removeNthFromEnd = (head, n) => {
 
 // todo
 /* Rotate list */
+
+// todo
+/* LRUCache - Design a data structure that follows the constraints of a Least Recently Used(LRU) cache.
+ */

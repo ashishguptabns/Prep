@@ -401,10 +401,9 @@ const dotProduct = (sparseVector1, sparseVector2) => {
   }
 
   return result;
-};
 
-/* Note: If sparse vectors are given in array format then convert into a map (index, value) ignoring the indices with zero values
- */
+  // Note: If sparse vectors are given in array format then convert into a map (index, value) ignoring the indices with zero values
+};
 
 /* Partitioning Into Minimum Number Of Deci-Binary Numbers - Given a string n that represents a positive decimal integer, return the minimum number of positive deci-binary numbers needed so that they sum up to n.
  */
