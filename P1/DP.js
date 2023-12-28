@@ -255,7 +255,7 @@ const partition = (s) => {
  * @return {number}
  */
 const longestCommonSubsequence = (text1, text2) => {
-    // Don't have to be contiguous
+    //  Don't have to be contiguous
 
     const dp = Array.from({ length: text1.length + 1 },
         () => Array(text2.length + 1).fill(0));
@@ -403,9 +403,6 @@ const lengthOfLIS = (nums) => {
     // Initialize an array dp to store the length of LIS ending at each index
     const dp = Array(nums.length).fill(1);
 
-    // Initialize a variable to store the maximum length of LIS
-    let maxLength = 1;
-
     // Loop through each element in the array starting from index 1
     for (let i = 1; i < nums.length; i++) {
         // Nested loop to compare the current element with previous elements
@@ -415,15 +412,12 @@ const lengthOfLIS = (nums) => {
                 //  Update the length of LIS ending at the current index
                 //  either choose the array till j with current element or array till i
                 dp[i] = Math.max(dp[i], dp[j] + 1);
-
-                // Update the maximum length of LIS if needed
-                maxLength = Math.max(maxLength, dp[i]);
             }
         }
     }
 
     // Return the overall maximum length of LIS
-    return maxLength;
+    return Math.max(...dp);
 };
 
 /* Maximum Profit in Job Scheduling - We have n jobs, where every job is scheduled to be done from startTime[i] to endTime[i], obtaining a profit of profit[i].
@@ -507,13 +501,15 @@ const knightDialer = (n) => {
     }
 
     //  base case is length 1
-    const dpArr = new Array(10).fill(1)
+    let dpArr = new Array(10).fill(1)
 
     //  start from length 2 till n
-    for (let i = 2; i <= n; i++) {
+    for (let currLen = 2; currLen <= n; currLen++) {
+        //  store counts for current length
         const newDpArr = new Array(10).fill(0)
         for (let j = 0; j < 10; j++) {
             for (const nextDigit of adjMap[j]) {
+                //  Add the count from the previous length at the next move's position to newDpArr[j].
                 newDpArr[j] = (newDpArr[j] + dpArr[nextDigit]) % mod
             }
         }
@@ -553,86 +549,49 @@ const numTrees = (numNodes) => {
     return dpArr[numNodes]
 };
 
-/* All possible full binary trees - Given an integer n, return a list of all possible full binary trees with n nodes. Each node of each tree in the answer must have Node.val == 0.
- */
-const allPossibleFBT = (n) => {
-    // we will use DP to keep precomputed trees
-    const memo = {}
-
-    const createFBT = (size) => {
-        //  FBT of one node can be created
-        if (size === 1) {
-            return [new TreeNode()]
-        }
-        //  can not form FBT with even number of nodes
-        if (size % 2 == 0) {
-            return []
-        }
-        //  we have already computed the result
-        if (memo[size]) {
-            return memo[size]
-        }
-
-        const trees = []
-
-        // iterate over all possible odd numbers
-        for (let left = 1; left < size; left += 2) {
-            //  get all possible left subtress
-            const leftTrees = createFBT(left)
-            //  get all possible right subtress
-            const rightTress = createFBT(size - left - 1)
-            if (leftTrees && rightTress) {
-                //  create combination of trees
-                for (const l of leftTrees) {
-                    for (r of rightTress) {
-                        const root = new TreeNode(0, l, r)
-                        //  track the root of all trees
-                        trees.push(root)
-                    }
-                }
-            }
-        }
-
-        //  keep for future use
-        memo[size] = trees
-        return trees
-    }
-
-    return createFBT(n)
-
-};
-
 /* Count sorted vowel strings - Given an integer n, return the number of strings of length n that consist only of vowels (a, e, i, o, u) and are lexicographically sorted.
  */
 const countVowelStrings = (n) => {
+    // Memoization object to store computed results and avoid redundant calculations
     const memo = {}
 
+    // Backtracking function to explore all possible combinations of vowels
     const backTrack = (index, strLength) => {
+        // Generate a unique key for the current state using index and string length
         const key = index + '_' + strLength
 
+        // Check if the result for the current state is already memoized
         if (memo[key]) {
             return memo[key]
         }
+
+        // Base case: if the string has reached the desired length, it is a valid vowel string
         if (strLength === n) {
-            //  valid vowel string 
             return 1
         }
 
+        // If the string length exceeds n, it is not a valid string
         if (strLength > n) {
             return 0
         }
 
+        // Initialize count for the current state
         let count = 0
+
+        // Explore all possible vowel combinations starting from the current index
         for (let i = index; i < 5; i++) {
+            // Recursively call the backTrack function for the next position
             count += backTrack(i, strLength + 1)
         }
 
+        // Memoize the count for the current state
         memo[key] = count
 
+        // Return the count for the current state
         return count
     }
 
-    //  explore all possible combinations of vowels
+    // Start exploring all possible combinations of vowels from the beginning (index 0) with an empty string
     return backTrack(0, 0)
 };
 
@@ -679,8 +638,8 @@ const countSquares = (matrix) => {
                 dp[i][j] = 1
                 count += dp[i][j]
             } else {
-                //  find the cell which has min submatrices in DP array
-                const side = Math.min(dp[i - 1][j], Math.min(dp[i - 1][j - 1], dp[i][j - 1]))
+                //  find the cell which has min submatrices in adjacent cells
+                const side = Math.min(dp[i - 1][j], dp[i - 1][j - 1], dp[i][j - 1])
 
                 //  include this cell in the count
                 dp[i][j] = side + 1
@@ -829,11 +788,11 @@ const minDistance = (word1, word2) => {
     // Initialize the first row and column of the array
     for (let r = 0; r <= word1.length; r++) {
         for (let c = 0; c <= word2.length; c++) {
-            // If it's the first row, set the initial values as the length of the second word
+            // we need c edits to make word1 equal to word2
             if (r === 0) {
                 dp[r][c] = c;
             }
-            // If it's the first column, set the initial values as the length of the first word
+            // we need r edits to make word1 equal to word2
             else if (c === 0) {
                 dp[r][c] = r;
             }
@@ -850,6 +809,71 @@ const minDistance = (word1, word2) => {
 
     // Return the minimum edit distance for the entire words
     return dp[word1.length][word2.length];
+};
+
+// todo
+/* Decode Ways - A message containing letters from A-Z can be encoded into numbers using the following mapping:
+
+'A' -> "1"
+'B' -> "2"
+...
+'Z' -> "26"
+To decode an encoded message, all the digits must be grouped then mapped back into letters using the reverse of the mapping above (there may be multiple ways). For example, "11106" can be mapped into:
+
+"AAJF" with the grouping (1 1 10 6)
+"KJF" with the grouping (11 10 6)
+Note that the grouping (1 11 06) is invalid because "06" cannot be mapped into 'F' since "6" is different from "06".
+
+Given a string s containing only digits, return the number of ways to decode it.
+ */
+
+/* All possible full binary trees - Given an integer n, return a list of all possible full binary trees with n nodes. Each node of each tree in the answer must have Node.val == 0.
+ */
+const allPossibleFBT = (n) => {
+    // we will use DP to keep precomputed trees
+    const memo = {}
+
+    const createFBT = (size) => {
+        //  FBT of one node can be created
+        if (size === 1) {
+            return [new TreeNode()]
+        }
+        //  can not form FBT with even number of nodes
+        if (size % 2 == 0) {
+            return []
+        }
+        //  we have already computed the result
+        if (memo[size]) {
+            return memo[size]
+        }
+
+        const trees = []
+
+        // iterate over all possible odd numbers
+        for (let left = 1; left < size; left += 2) {
+            //  get all possible left subtress
+            const leftTrees = createFBT(left)
+            //  get all possible right subtress
+            const rightTress = createFBT(size - left - 1)
+            if (leftTrees && rightTress) {
+                //  create combination of trees
+                for (const l of leftTrees) {
+                    for (r of rightTress) {
+                        const root = new TreeNode(0, l, r)
+                        //  track the root of all trees
+                        trees.push(root)
+                    }
+                }
+            }
+        }
+
+        //  keep for future use
+        memo[size] = trees
+        return trees
+    }
+
+    return createFBT(n)
+
 };
 
 /* Interleaving string - Given strings s1, s2, and s3, find whether s3 is formed by an interleaving of s1 and s2.
@@ -905,48 +929,4 @@ const isInterleave = (s1, s2, s3) => {
     // The result is stored in the bottom-right corner of the dp array
     return dp[s1.length][s2.length];
 };
-
-// todo
-/* Decode Ways - A message containing letters from A-Z can be encoded into numbers using the following mapping:
-
-'A' -> "1"
-'B' -> "2"
-...
-'Z' -> "26"
-To decode an encoded message, all the digits must be grouped then mapped back into letters using the reverse of the mapping above (there may be multiple ways). For example, "11106" can be mapped into:
-
-"AAJF" with the grouping (1 1 10 6)
-"KJF" with the grouping (11 10 6)
-Note that the grouping (1 11 06) is invalid because "06" cannot be mapped into 'F' since "6" is different from "06".
-
-Given a string s containing only digits, return the number of ways to decode it.
- */
-// class Solution {
-//     fun numDecodings(s: String): Int {
-//         if (s[0] == '0') {
-//             //  there is no mapping possible
-//             return 0
-//         }
-
-//         val dpArr = IntArray(s.length + 1)
-//         dpArr[0] = 1
-
-//         dpArr[1] = 1
-
-//         for (charCounter in 1 until s.length) {
-//             if (s[charCounter] != '0') {
-//                 //  only taking the current char
-//                 dpArr[charCounter + 1] = dpArr[charCounter]
-//             }
-
-//             val twoDigits = s.substring(charCounter - 1, charCounter + 1).toInt()
-//             if (twoDigits >= 10 && twoDigits <= 26) {
-//                 //  other ways to decode if we take the last 2 chars
-//                 dpArr[charCounter + 1] += dpArr[charCounter - 1]
-//             }
-//         }
-
-//         return dpArr[s.length]
-//     }
-// }
 

@@ -244,15 +244,61 @@ const minFlipsMonoIncr = (s) => {
   let numFlips = 0
 
   for (const c of s) {
-      if (c === '1') {
-          //  this is monotone increasing, no flips required             
-          numOfOnesSoFar++
-      } else {
-          //  we might have to flip this character '0' or all the 1s we found so far                
-          numFlips = Math.min(numOfOnesSoFar, numFlips + 1)
-      }
+    if (c === '1') {
+      //  this is monotone increasing, no flips required             
+      numOfOnesSoFar++
+    } else {
+      //  we might have to flip this character '0' or all the 1s we found so far                
+      numFlips = Math.min(numOfOnesSoFar, numFlips + 1)
+    }
   }
 
   return numFlips
 };
 
+/* Max sum circular subarray - Given a circular integer array nums of length n, return the maximum possible sum of a non-empty subarray of nums.
+
+A circular array means the end of the array connects to the beginning of the array. Formally, the next element of nums[i] is nums[(i + 1) % n] and the previous element of nums[i] is nums[(i - 1 + n) % n].
+
+A subarray may only include each element of the fixed buffer nums at most once. Formally, for a subarray nums[i], nums[i + 1], ..., nums[j], there does not exist i <= k1, k2 <= j with k1 % n == k2 % n.
+ */
+
+/**
+ * @param {number[]} nums
+ * @return {number}
+ */
+const maxSubarraySumCircular = (nums) => {
+  // Initialize variables to keep track of current maximum and minimum subarray sums,
+  // overall sum, maximum sum, and minimum sum
+  let curMax = 0,
+    curMin = 0,
+    sum = 0,
+    maxSum = nums[0],
+    minSum = nums[0];
+
+  // Iterate through the array
+  for (let num of nums) {
+    // Calculate the current maximum subarray sum using Kadane's algorithm
+    curMax = Math.max(curMax, 0) + num;
+    // Update the maximum sum if the current maximum is greater
+    maxSum = Math.max(maxSum, curMax);
+
+    // Calculate the current minimum subarray sum using Kadane's algorithm
+    curMin = Math.min(curMin, 0) + num;
+    // Update the minimum sum if the current minimum is smaller
+    minSum = Math.min(minSum, curMin);
+
+    // Calculate the overall sum of the array
+    sum += num;
+  }
+
+  // If the overall sum is equal to the minimum sum, it means all elements are negative,
+  // so return the maximum sum (the maximum subarray sum in this case)
+  if (sum === minSum) {
+    return maxSum;
+  }
+
+  // Otherwise, return the maximum of the maximum sum and the difference between
+  // the overall sum and the minimum sum (considering the circular nature of the array)
+  return Math.max(maxSum, sum - minSum);
+};

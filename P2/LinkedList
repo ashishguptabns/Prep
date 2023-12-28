@@ -1,103 +1,7 @@
+// todo
 /* LRUCache - Design a data structure that follows the constraints of a Least Recently Used(LRU) cache.
  */
-class LRUCache {
 
-    class DLinkedNode {
-        int key;
-        int value;
-        DLinkedNode next;
-        DLinkedNode prev;
-}
-    
-    private int size, capacity;
-
-// 	we will keep head and tail for reference
-    private DLinkedNode head, tail;
-
-// 	for each int key, we will keep a node in the map
-    private Map < Integer, DLinkedNode > cacheMap = new HashMap <> ();
-    
-    public LRUCache(int capacity) {
-    this.size = 0;
-    this.capacity = capacity;
-
-    head = new DLinkedNode();
-    tail = new DLinkedNode();
-
-    head.next = tail;
-    tail.prev = head;
-}
-    
-    public int get(int key) {
-//         get the node from the map
-        DLinkedNode node = cacheMap.get(key);
-    if (node == null) {
-        return -1;
-    }
-
-    //         if we find a node then we should move the node to starting of double linked list as per LRU definition
-    moveToHead(node);
-    return node.value;
-}
-    
-    public void moveToHead(DLinkedNode node){
-
-    // 	remove the node from its current place and add next to head
-    removeNode(node);
-    addNode(node);
-}
-    
-    public void addNode(DLinkedNode node){
-
-    //         always add the new node right after head
-    node.next = head.next;
-    node.prev = head;
-
-    head.next.prev = node;
-    head.next = node;
-}
-     
-    public void removeNode(DLinkedNode node){
-        DLinkedNode prev = node.prev;
-        DLinkedNode next = node.next;
-
-    prev.next = next;
-    next.prev = prev;
-}
-    
-    public void put(int key, int value) {
-        DLinkedNode node = cacheMap.get(key);
-    if (node == null) {
-            DLinkedNode newNode = new DLinkedNode();
-        newNode.key = key;
-        newNode.value = value;
-
-        cacheMap.put(key, newNode);
-        addNode(newNode);
-
-        size++;
-
-        if (size > capacity) {
-//                 remove the last node in double linked list
-                DLinkedNode tail = popTail();
-            cacheMap.remove(tail.key);
-            size--;
-        }
-    } else {
-
-        // 	if node already exists then simply move next to head
-        node.value = value;
-        moveToHead(node);
-    }
-}
-    
-    public DLinkedNode popTail(){
-//         remove the node before tail as tail and head are for reference
-        DLinkedNode nodeToRemove = tail.prev;
-    removeNode(nodeToRemove);
-    return nodeToRemove;
-}
-}
 
 /**
  * Your LRUCache object will be instantiated and called as such:
@@ -808,3 +712,9 @@ const removeNthFromEnd = (head, n) => {
     // Return the head of the modified linked list
     return head;
 };
+
+// todo
+/* Sort list */
+
+// todo
+/* Rotate list */

@@ -410,3 +410,57 @@ Return the number of the room that held the most meetings. If there are multiple
 
 A half-closed interval [a, b) is the interval between a and b including a and not including b.
  */
+
+/* Find K Pairs with Smallest Sums - You are given two integer arrays nums1 and nums2 sorted in non-decreasing order and an integer k.
+
+Define a pair (u, v) which consists of one element from the first array and one element from the second array.
+
+Return the k pairs (u1, v1), (u2, v2), ..., (uk, vk) with the smallest sums.
+ */
+
+/**
+* @param {number[]} nums1
+* @param {number[]} nums2
+* @param {number} k
+* @return {number[][]}
+*/
+const kSmallestPairs = (nums1, nums2, k) => {
+    // Check if either of the input arrays is empty
+    if (!nums1.length || !nums2.length) {
+        return [];
+    }
+
+    // Create a min-heap with priority based on the sum of pairs
+    const minHeap = new MinPriorityQueue({ priority: x => x[0] });
+
+    // Initialize the min-heap with pairs formed by taking elements from nums1
+    // and the first element from nums2
+    for (let i = 0; i < nums1.length; i++) {
+        const num1 = nums1[i];
+        const num2 = nums2[0];
+        minHeap.enqueue([num1 + num2, i, 0]); // Sum, index in nums1, index in nums2
+    }
+
+    const n = nums2.length;
+    const res = []; // Result array to store k smallest pairs
+
+    // Continue until either k pairs are found or the min-heap is empty
+    while (k > 0 && !minHeap.isEmpty()) {
+        // Dequeue the pair with the smallest sum
+        const [sum, idx1, idx2] = minHeap.dequeue().element;
+
+        // Add the pair to the result array
+        res.push([nums1[idx1], nums2[idx2]]);
+
+        // Decrement the remaining pairs to find
+        k--;
+
+        // If there are more elements in nums2, enqueue the next pair with the current element from nums1
+        if (idx2 < n - 1) {
+            minHeap.enqueue([nums1[idx1] + nums2[idx2 + 1], idx1, idx2 + 1]);
+        }
+    }
+
+    // Return the final array containing k smallest pairs
+    return res;
+};
