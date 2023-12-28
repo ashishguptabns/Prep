@@ -392,13 +392,8 @@ const distanceK = (root, target, k) => {
     return res
 };
 
-
-
-
-
-
-Sum of nodes with even valued grandparent - Given the root of a binary tree, return the sum of values of nodes with an even - valued grandparent.If there are no nodes with an even - valued grandparent, return 0.
-
+/* Sum of nodes with even valued grandparent - Given the root of a binary tree, return the sum of values of nodes with an even - valued grandparent.If there are no nodes with an even - valued grandparent, return 0.
+ */
 const sumEvenGrandparent = (root) => {
 
     //  visit each node and maintain the parent and gparent
@@ -420,12 +415,10 @@ const sumEvenGrandparent = (root) => {
 
 };
 
-
-
-Battleships in a board - Given an m x n matrix board where each cell is a battleship 'X' or empty '.', return the number of the battleships on board.
+/* Battleships in a board - Given an m x n matrix board where each cell is a battleship 'X' or empty '.', return the number of the battleships on board.
 
 Battleships can only be placed horizontally or vertically on board.In other words, they can only be made of the shape 1 x k(1 row, k columns) or k x 1(k rows, 1 column), where k can be of any size.At least one horizontal or vertical cell separates between two battleships(i.e., there are no adjacent battleships).
-
+ */
 /**
  * @param {character[][]} board
  * @return {number}
@@ -464,13 +457,12 @@ const countBattleships = (board) => {
     return ships
 };
 
-
-Find eventual safe states - There is a directed graph of n nodes with each node labeled from 0 to n - 1. The graph is represented by a 0 - indexed 2D integer array graph where graph[i] is an integer array of nodes adjacent to node i, meaning there is an edge from node i to each node in graph[i].
+/* Find eventual safe states - There is a directed graph of n nodes with each node labeled from 0 to n - 1. The graph is represented by a 0 - indexed 2D integer array graph where graph[i] is an integer array of nodes adjacent to node i, meaning there is an edge from node i to each node in graph[i].
 
 A node is a terminal node if there are no outgoing edges.A node is a safe node if every possible path starting from that node leads to a terminal node(or another safe node).
 
 Return an array containing all the safe nodes of the graph.The answer should be sorted in ascending order.
-
+ */
 /**
  * @param {number[][]} graph
  * @return {number[]}
