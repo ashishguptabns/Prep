@@ -458,45 +458,42 @@ const kthSmallestSubarraySum = (nums, k) => {
         let sum = 0;
         let left = 0;
 
+        // Use a sliding window approach to count subarrays
         for (let right = 0; right < nums.length; right++) {
             sum += nums[right];
 
-            // Shrink the subarray from the left until the sum is less than or equal to maxSum
+            // Shrink the window from the left side if the sum becomes greater than maxSum
             while (sum > maxSum) {
                 sum -= nums[left];
                 left++;
             }
 
-            // Add the count of subarrays with sum less than or equal to maxSum
+            // Count the subarrays with sum less than or equal to maxSum
             count += right - left + 1;
         }
 
         return count;
     }
 
-    // Sort the array to use binary search
-    nums.sort((a, b) => a - b);
+    // Initialize the search range with the minimum and maximum values in the array
+    let left = Math.min(...nums);
+    let right = Math.max(...nums);
 
-    let low = nums[0];
-    let high = nums.reduce((a, b) => a + b, 0); // Sum of all elements in the array
-
-    // Binary search to find the Kth smallest subarray sum
-    while (low < high) {
-        const mid = Math.floor((low + high) / 2);
+    // Perform binary search to find the kth smallest subarray sum
+    while (left < right) {
+        const mid = Math.floor((left + right) / 2);
         const count = countSubarrays(mid);
 
-        // Adjust the search space based on the count
+        // Adjust the search range based on the count of subarrays
         if (count < k) {
-            // If the count is less than K, increase the lower bound
-            low = mid + 1;
+            left = mid + 1;
         } else {
-            // If the count is greater than or equal to K, decrease the upper bound
-            high = mid;
+            right = mid;
         }
     }
 
-    // The final low value is the Kth smallest subarray sum
-    return low;
+    // Return the final result
+    return left;
 }
 
 /* Cutting Ribbons 
