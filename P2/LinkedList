@@ -27,12 +27,17 @@ const addTwoNumbers = (l1, l2) => {
     let carry = 0;
 
     while (l1 || l2 || carry) {
+        // Calculate the sum of current digits and carry
         const sum = (l1 ? l1.val : 0) + (l2 ? l2.val : 0) + carry;
+
+        // Update carry for the next calculation
         carry = Math.floor(sum / 10);
 
+        // Create a new node with the current digit and link it to the result linked list
         currentNode.next = new ListNode(sum % 10);
         currentNode = currentNode.next;
 
+        // Move to the next nodes in the input linked lists if they exist
         if (l1) {
             l1 = l1.next;
         }
@@ -41,6 +46,7 @@ const addTwoNumbers = (l1, l2) => {
         }
     }
 
+    // Return the result linked list (excluding the dummy head)
     return dummyHead.next;
 };
 
@@ -79,63 +85,6 @@ const oddEvenList = (head) => {
     return head
 };
 
-
-/* Reorder List - You are given the head of a singly linked-list. The list can be represented as:
-
-L0 → L1 → … → Ln - 1 → Ln
-Reorder the list to be on the following form:
-
-L0 → Ln → L1 → Ln - 1 → L2 → Ln - 2 → …
-You may not modify the values in the list's nodes. Only nodes themselves may be changed.
- */
-/**
- * Example:
- * var li = ListNode(5)
- * var v = li.`val`
- * Definition for singly-linked list.
- * class ListNode(var `val`: Int) {
- *     var next: ListNode? = null
- * }
- */
-const reorderList = (head) => {
-    // Initialize a stack to store nodes
-    const stack = [];
-    // Initialize a variable 'node' to the head of the linked list
-    let node = head;
-
-    // Check if the linked list is empty
-    if (!node) {
-        return;
-    }
-
-    // Traverse the linked list and push each node onto the stack
-    while (node) {
-        stack.push(node);
-        node = node.next;
-    }
-
-    // Get the length of the stack (number of nodes in the linked list)
-    const length = stack.length;
-    // Reset 'node' to the head of the linked list
-    node = head;
-
-    // Reorder the linked list by alternating between popping and shifting nodes
-    for (let i = 0; i < length; i++) {
-        // If the current index is even, connect the current node to the node at the front of the stack
-        if (i % 2 === 0) {
-            node.next = stack.shift();
-        } else {
-            // If the current index is odd, connect the current node to the node at the end of the stack
-            node.next = stack.pop();
-        }
-        // Move to the next node in the linked list
-        node = node.next;
-    }
-
-    // Set the 'next' pointer of the last node to null to terminate the reordered list
-    node.next = null;
-};
-
 /* Flatten a Multilevel Doubly Linked List - Given the head of the first level of the list, flatten the list so that all the nodes appear in a single-level, doubly linked list. Let curr be a node with a child list. The nodes in the child list should appear after curr and before curr.next in the flattened list.
 
 Return the head of the flattened list. The nodes in the list must have all of their child pointers set to null.
@@ -155,6 +104,20 @@ Return the head of the flattened list. The nodes in the list must have all of th
  * @return {Node}
  */
 const flatten = (head) => {
+
+    // pseudo code
+    // have a temp node which has head node as next node
+    // apply flattenDFS with temp and head as input
+    // input are prev and curr node
+    // if curr is null - we reached the end and prev is the tail to return
+    // link the curr as prev's next node and vice versa
+    // hold next of curr as we explore the kids of curr
+    // appply flattenDFS with curr and curr's child
+    // remove the child
+    // apply flattenDFS with tail of nested flattening and temp next of curr
+    // remove the prev pointer of head
+    // return next of temp i.e. head node
+
     const flattenDFS = (prev, curr) => {
         if (!curr) {
             //  prev is the tail
@@ -207,9 +170,12 @@ const flatten = (head) => {
  * @return {ListNode}
  */
 const detectCycle = (head) => {
-    //  we will take a slow pointer and a fast pointer moving with double speed
+
+    //  pseudo code
+    //  take a slow pointer and a fast pointer moving with double speed
     //  metNode is where these two pointers meet
-    //  we will start two pointers; one from head another from meetPoint and where these two meet is the start of cycle
+    //  if fastNode has null as next - no cycle exists
+    //  start two pointers; one from head another from meetPoint and where these two meet is the start of cycle
 
     if (!head) {
         return head
@@ -265,6 +231,12 @@ palindrome or false otherwise.
  * @return {boolean}
  */
 const isPalindrome = (head) => {
+
+    // pseudo code
+    // keep a global var to track left pointer
+    // go to the end of list
+    // compare the right pointer to left pointer
+
     let currNode = head
     let isPalindrome = true
     const moveToEnd = (node) => {
@@ -298,6 +270,17 @@ Merge all the linked - lists into one sorted linked - list and return it.
  * @return {ListNode}
  */
 const mergeKLists = (lists) => {
+
+    // pseudo code
+    // add all heads into a min heap
+        // min heap will hold heads in sorted order
+    // have a dummy node to track the head
+    // keep a moving node - curr
+    // loop through the heap
+        // pop a node and assign it as next node of curr
+        // move the curr node to next
+        // push the next of the node which was popped from the heap into the heap
+    // return dummy's next
 
     //  we will solve this using min heap
     const minHeap = new MinHeap()
@@ -716,4 +699,14 @@ const removeNthFromEnd = (head, n) => {
 
 // todo
 /* LRUCache - Design a data structure that follows the constraints of a Least Recently Used(LRU) cache.
+ */
+
+// todo
+/* Reorder List - You are given the head of a singly linked-list. The list can be represented as:
+
+L0 → L1 → … → Ln - 1 → Ln
+Reorder the list to be on the following form:
+
+L0 → Ln → L1 → Ln - 1 → L2 → Ln - 2 → …
+You may not modify the values in the list's nodes. Only nodes themselves may be changed.
  */
