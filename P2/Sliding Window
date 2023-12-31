@@ -232,6 +232,19 @@ const numOfSubarrays = (arr, k, threshold) => {
  * @return {string[]}
  */
 const findSubstrings = (s, k) => {
+    const hasRepeatCharacters = (str) => {
+        const set = new Set();
+
+        for (let char of str) {
+            if (set.has(char)) {
+                return true; // Repeat character found
+            }
+            set.add(char);
+        }
+
+        return false; // No repeat characters
+    }
+
     const result = [];
 
     for (let i = 0; i <= s.length - k; i++) {
@@ -244,24 +257,6 @@ const findSubstrings = (s, k) => {
 
     return result;
 };
-
-/**
- * Helper function to check if a string has repeat characters.
- * @param {string} str
- * @return {boolean}
- */
-const hasRepeatCharacters = (str) => {
-    const set = new Set();
-
-    for (let char of str) {
-        if (set.has(char)) {
-            return true; // Repeat character found
-        }
-        set.add(char);
-    }
-
-    return false; // No repeat characters
-}
 
 /* Maximize the confusion in exam - A teacher is writing a test with n true/false questions, with 'T' denoting true and 'F' denoting false. He wants to confuse the students by maximizing the number of consecutive questions with the same answer (multiple trues or multiple falses in a row).
 
