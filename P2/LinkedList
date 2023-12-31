@@ -651,14 +651,23 @@ const mergeNodes = (head) => {
  * @return {ListNode}
  */
 var swapPairs = function (head) {
+
+    /* pseudo code
+        have a temp node to track head    
+        move through the list - start from temp
+            do the swapping
+            move curr to the node before two nodes which will be swapped
+        return next of temp
+    */
+
     if (head && head.next) {
 
         //  temp node to track the head
-        const ans = new ListNode(0)
-        ans.next = head
+        const temp = new ListNode(0)
+        temp.next = head
 
         //  moving pointer
-        let curr = ans
+        let curr = temp
         while (curr.next && curr.next.next) {
             //  nodes to swap
             let node1 = curr.next
@@ -671,7 +680,7 @@ var swapPairs = function (head) {
             //  skip one node
             curr = curr.next.next
         }
-        return ans.next
+        return temp.next
     }
     return head
 };
