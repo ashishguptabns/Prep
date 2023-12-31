@@ -107,6 +107,15 @@ const longestSubarray = (nums) => {
  * @return {number}
  */
 const lengthOfLongestSubstring = (s) => {
+
+    /* pseudo code
+        move through the array of chars
+            maintain a map to keep last index of a char
+            if a repeat is found then discard a part of the substring 
+                update substring start index - either curr substring left or last occurence of char
+            keep tracking max length
+    */
+
     let maxLength = 0
     const charIndexMap = {}
     let subStringLeftIndex = 0
@@ -142,32 +151,38 @@ A subarray is a contiguous part of an array.
  * @return {number}
  */
 const countSubarrays = (nums, minK, maxK) => {
-    //  we will take sliding window approach
+    /* pseudo code
+        move through the array
+            track index which is out of range
+            equal to min
+            equal to max
+            add the num of subarrays for this range 
+    */
 
-    let left = -1
-    let right = -1
+    let minPos = -1
+    let maxPos = -1
 
     //  most recent index out of range    
-    let outOfRangeIndex = -1
+    let startIndex = -1
 
     let numSubArrays = 0
 
     for (let i = 0; i < nums.length; i++) {
         //  update out of range index        
         if (nums[i] < minK || nums[i] > maxK) {
-            outOfRangeIndex = i
+            startIndex = i
         }
 
         //  update recent positions if any
         if (nums[i] === minK) {
-            left = i
+            minPos = i
         }
         if (nums[i] === maxK) {
-            right = i
+            maxPos = i
         }
 
-        //  number of subarrays is number of elements between outOfRangeBound and smaller of two indices
-        numSubArrays += Math.max(0, Math.min(right, left) - outOfRangeIndex)
+        //  number of subarrays is number of elements between startIndex and smaller of two indices
+        numSubArrays += Math.max(0, Math.min(maxPos, minPos) - startIndex)
     }
 
     return numSubArrays
