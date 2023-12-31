@@ -105,18 +105,18 @@ Return the head of the flattened list. The nodes in the list must have all of th
  */
 const flatten = (head) => {
 
-    // pseudo code
-    // have a temp node which has head node as next node
-    // apply flattenDFS with temp and head as input
-    // input are prev and curr node
-    // if curr is null - we reached the end and prev is the tail to return
-    // link the curr as prev's next node and vice versa
-    // hold next of curr as we explore the kids of curr
-    // appply flattenDFS with curr and curr's child
-    // remove the child
-    // apply flattenDFS with tail of nested flattening and temp next of curr
-    // remove the prev pointer of head
-    // return next of temp i.e. head node
+    /* pseudo code
+    have a temp node which has head node as next node
+    apply flattenDFS with temp and head as input
+        input are prev and curr node
+        if curr is null - we reached the end and prev is the tail to return
+        link the curr as prev's next node and vice versa
+        hold next of curr as we explore the kids of curr
+        appply flattenDFS with curr and curr's child - this will give the tail
+        remove the child
+        apply flattenDFS with tail of nested flattening and temp next of curr
+    remove the prev pointer of head
+    return next of temp i.e. head node */
 
     const flattenDFS = (prev, curr) => {
         if (!curr) {
@@ -171,11 +171,11 @@ const flatten = (head) => {
  */
 const detectCycle = (head) => {
 
-    //  pseudo code
-    //  take a slow pointer and a fast pointer moving with double speed
-    //  metNode is where these two pointers meet
-    //  if fastNode has null as next - no cycle exists
-    //  start two pointers; one from head another from meetPoint and where these two meet is the start of cycle
+    /* pseudo code
+     take a slow pointer and a fast pointer moving with double speed
+        metNode is where these two pointers meet
+     if fastNode has null as next - no cycle exists
+     start two pointers; one from head another from meetPoint and where these two meet is the start of cycle */
 
     if (!head) {
         return head
@@ -232,10 +232,10 @@ palindrome or false otherwise.
  */
 const isPalindrome = (head) => {
 
-    // pseudo code
-    // keep a global var to track left pointer
-    // go to the end of list
-    // compare the right pointer to left pointer
+    /* pseudo code
+    keep a global var to track left pointer
+    go to the end of list
+    compare the right pointer to left pointer */
 
     let currNode = head
     let isPalindrome = true
@@ -271,16 +271,16 @@ Merge all the linked - lists into one sorted linked - list and return it.
  */
 const mergeKLists = (lists) => {
 
-    // pseudo code
-    // add all heads into a min heap
-        // min heap will hold heads in sorted order
-    // have a dummy node to track the head
-    // keep a moving node - curr
-    // loop through the heap
-        // pop a node and assign it as next node of curr
-        // move the curr node to next
-        // push the next of the node which was popped from the heap into the heap
-    // return dummy's next
+    /* pseudo code
+    add all heads into a min heap
+    min heap will hold heads in sorted order
+    have a dummy node to track the head
+    keep a moving node - curr
+    loop through the heap
+        pop a node and assign it as next node of curr
+        move the curr node to next
+        push the next of the node which was popped from the heap into the heap
+    return dummy's next */
 
     //  we will solve this using min heap
     const minHeap = new MinHeap()
@@ -405,6 +405,16 @@ Between every pair of adjacent nodes, insert a new node with a value equal to th
  * @return {ListNode}
  */
 const insertGreatestCommonDivisors = (head) => {
+
+    const findGCD = (a, b) => {
+        while (b !== 0) {
+            const temp = b;
+            b = a % b;
+            a = temp;
+        }
+        return a;
+    }
+
     let currNode = head
 
     while (currNode && currNode.next) {
@@ -420,24 +430,24 @@ const insertGreatestCommonDivisors = (head) => {
     return head
 };
 
-const findGCD = (a, b) => {
-    while (b !== 0) {
-        const temp = b;
-        b = a % b;
-        a = temp;
-    }
-    return a;
-}
-
 /* Nested List Weight Sum - Given a nested list of integers, return the sum of all integers in the list weighted by their depth.
 
 Each element is either an integer, or a list-- whose elements may also be integers or other lists.
  */
 const depthSum = (nestedList) => {
-    const dfs = (nestedList, depth) => {
+
+    /* pseudo code
+    we have to use DFS approach to solve this problem
+    DFS will receive the curr node or array with depth and return the weighted sum
+        loop through the array
+        call DFS if the curr node is an array and find the sum
+        return the sum 
+    */
+
+    const dfs = (nestedArr, depth) => {
         let totalSum = 0;
 
-        for (let element of nestedList) {
+        for (const element of nestedArr) {
             //  check for nesting
             if (Array.isArray(element)) {
                 //  get the sum of this list
@@ -514,7 +524,7 @@ const spiralMatrix = (m, n, head) => {
     let direction = 'r'
 
     //  -1 by default
-    const mat = new Array(m).fill().map(() => new Array(n).fill(-1))
+    const mat = Array(m).fill().map(() => Array(n).fill(-1))
 
     //  iterate till linked list finishes
     while (head) {
@@ -542,10 +552,18 @@ const spiralMatrix = (m, n, head) => {
         }
 
         //  handle moving pointers
-        if (direction === 'r') currCol++
-        if (direction === 'd') currRow++
-        if (direction === 'l') currCol--
-        if (direction === 'u') currRow--
+        if (direction === 'r') {
+            currCol++
+        }
+        if (direction === 'd') {
+            currRow++
+        }
+        if (direction === 'l') {
+            currCol--
+        }
+        if (direction === 'u') {
+            currRow--
+        }
 
         head = head.next
     }
@@ -573,10 +591,21 @@ Return the head of the modified linked list.
  */
 const mergeNodes = (head) => {
 
-    //  we will use two pointers approach
+    /* pseudo code
+    keep a dummy to track the head
+    keep a curr node and a prev node both starting with head
+    move through the list with curr node
+        curr node  is 0
+            connnect prev to next of curr and skip the 0 node
+        curr node is non 0
+            move through to 0 node
+                keep passing the sum to next node
+                keep skipping the curr node - connect prev to next
+            now curr node is the node just before 0 - assign to prev
+    return dummy's next */
 
     //  use this to keep track of the head
-    let start = head
+    let dummy = head
 
     //  this node will move
     let currNode = head
@@ -604,7 +633,7 @@ const mergeNodes = (head) => {
     }
 
     //  first node was 0
-    return start.next
+    return dummy.next
 };
 
 /* Swap nodes in pairs - Given a linked list, swap every two adjacent nodes and return its head. You must solve the problem without modifying the values in the list's nodes (i.e., only nodes themselves may be changed.)
