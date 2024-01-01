@@ -467,100 +467,6 @@ const maxVowels = (s, k) => {
     return maxCount
 };
 
-/* Longest repeating character replacement - You are given a string s and an integer k. You can choose any character of the string and change it to any other uppercase English character. You can perform this operation at most k times.
-
-Return the length of the longest substring containing the same letter you can get after performing the above operations.
- */
-
-/**
- * @param {string} s
- * @param {number} k
- * @return {number}
- */
-const characterReplacement = (s, k) => {
-    // Initialize left and right pointers for the sliding window
-    let left = 0;
-    let right = 0;
-
-    // Initialize the maximum count of a character in the current window
-    let maxCharCount = 0;
-
-    // Create a dictionary to keep track of character frequencies in the current window
-    const visited = {};
-
-    // Iterate through the string using the sliding window
-    while (right < s.length) {
-        // Current character in the window
-        const char = s[right];
-
-        // Update the frequency of the current character in the visited dictionary
-        visited[char] = visited[char] ? visited[char] + 1 : 1;
-
-        // Update the maximum count of a character in the current window
-        if (visited[char] > maxCharCount) {
-            maxCharCount = visited[char];
-        }
-
-        // Check if the length of the window - maximum character count is greater than 'k'
-        //  we need to have a single char in the window
-        if (right - left + 1 - maxCharCount > k) {
-            // Move the left pointer to shrink the window
-            visited[s[left]]--;  // Reduce the frequency of the character at the left end
-            left++;
-        }
-
-        // Expand the window to the right
-        right++;
-    }
-
-    // The length of the longest substring with at most 'k' replacements
-    return right - left;
-};
-
-/* Longest Continuous Subarray With Absolute Diff Less Than or Equal to Limit - Given an array of integers nums and an integer limit, return the size of the longest non-empty subarray such that the absolute difference between any two elements of this subarray is less than or equal to limit.
-*/
-
-/**
- * @param {number[]} nums
- * @param {number} limit
- * @return {number}
- */
-const longestCSubarray = (nums, limit) => {
-    // Initialize an empty queue to store elements of the current subarray.
-    const queue = [];
-
-    // Initialize pointers and variables to track the current subarray.
-    let left = -1;  // `left` represents the left boundary of the current subarray.
-    let max = min = nums[0];  // `max` and `min` represent the maximum and minimum values in the current subarray.
-
-    // Loop through each element in the input array.
-    for (const num of nums) {
-        // Update the maximum and minimum values in the current subarray.
-        max = Math.max(max, num);
-        min = Math.min(min, num);
-
-        // Add the current element to the queue.
-        queue.push(num);
-
-        // Check if the difference between max and min is within the limit.
-        if (max - min <= limit) {
-            // If within limit, continue with the next element.
-            continue;
-        }
-
-        // If the difference exceeds the limit, remove elements from the left of the subarray.
-        const cut = queue.shift();  // Remove the leftmost element.
-        left += 1;  // Move the left boundary to the right.
-
-        // Update max and min if the removed element was equal to the current max or min.
-        max === cut && (max = Math.max(...queue));
-        min === cut && (min = Math.min(...queue));
-    }
-
-    // Return the length of the longest contiguous subarray.
-    return nums.length - left - 1;
-};
-
 /* Sliding window maximum - You are given an array of integers nums, there is a sliding window of size k which is moving from the very left of the array to the very right. You can only see the k numbers in the window. Each time the sliding window moves right by one position.
 
 Return the max sliding window.
@@ -572,6 +478,13 @@ Return the max sliding window.
  * @return {number[]}
  */
 const maxSlidingWindow = (nums, k) => {
+
+    /* pseudo code
+        move through the array
+            maintain the max index of curr window using queue
+            keep pushing max of current window in res array
+    */
+
     // Result array to store the maximum elements in each sliding window
     const res = [];
     // Variables to represent the left and right pointers of the sliding window
@@ -717,5 +630,118 @@ const findAnagrams = (s, p) => {
 
     // Return the array of starting indices of anagrams
     return resultList;
+};
+
+/* Longest repeating character replacement - You are given a string s and an integer k. You can choose any character of the string and change it to any other uppercase English character. You can perform this operation at most k times.
+
+Return the length of the longest substring containing the same letter you can get after performing the above operations.
+ */
+
+/**
+ * @param {string} s
+ * @param {number} k
+ * @return {number}
+ */
+const characterReplacement = (s, k) => {
+
+    /* pseudo code
+        go through the string chars
+            maintain frequency of the char
+            track max count of a char in current window
+            if max char count with k exceeds window size
+                shrink window from left with freq of left most char
+    */
+
+    // Initialize left and right pointers for the sliding window
+    let left = 0;
+    let right = 0;
+
+    // Initialize the maximum count of a character in the current window
+    let maxCharCount = 0;
+
+    // Create a dictionary to keep track of character frequencies in the current window
+    const freqMap = {};
+
+    // Iterate through the string using the sliding window
+    while (right < s.length) {
+        // Current character in the window
+        const char = s[right];
+
+        // Update the frequency of the current character in the visited dictionary
+        freqMap[char] = freqMap[char] ? freqMap[char] + 1 : 1;
+
+        // Update the maximum count of a character in the current window
+        if (freqMap[char] > maxCharCount) {
+            maxCharCount = freqMap[char];
+        }
+
+        // Check if the length of the window - maximum character count is greater than 'k'
+        //  we need to have a single char in the window
+        if (right - left + 1 - maxCharCount > k) {
+            // Move the left pointer to shrink the window
+            freqMap[s[left]]--;  // Reduce the frequency of the character at the left end
+            left++;
+        }
+
+        // Expand the window to the right
+        right++;
+    }
+
+    // The length of the longest substring with at most 'k' replacements
+    return right - left;
+};
+
+/* Longest Continuous Subarray With Absolute Diff Less Than or Equal to Limit - Given an array of integers nums and an integer limit, return the size of the longest non-empty subarray such that the absolute difference between any two elements of this subarray is less than or equal to limit.
+*/
+
+/**
+ * @param {number[]} nums
+ * @param {number} limit
+ * @return {number}
+ */
+const longestCSubarray = (nums, limit) => {
+
+    /* pseudo code
+        go through nums array
+            track max and min in current window
+            keep a queue to represent curr window
+            if diff crosses limit
+                shrink window from left - remove first item of queue
+                update max and min accordingly
+    */
+
+    // Initialize an empty queue to store elements of the current subarray.
+    const queue = [];
+
+    // Initialize pointers and variables to track the current subarray.
+    let left = -1;  // `left` represents the left boundary of the current subarray.
+    let max = min = nums[0];  // `max` and `min` represent the maximum and minimum values in the current subarray.
+
+    // Loop through each element in the input array.
+    for (const num of nums) {
+        // Update the maximum and minimum values in the current subarray.
+        max = Math.max(max, num);
+        min = Math.min(min, num);
+
+        // Add the current element to the queue.
+        queue.push(num);
+
+        // Check if the difference between max and min is within the limit.
+        if (max - min <= limit) {
+            // If within limit, continue with the next element.
+            continue;
+        }
+
+        // If the difference exceeds the limit, remove elements from the left of the subarray.
+        const cut = queue.shift();  // Remove the leftmost element.
+        left += 1;  // Move the left boundary to the right.
+
+        // Update max and min if the removed element was equal to the current max or min.
+        max === cut && (max = Math.max(...queue));
+        min === cut && (min = Math.min(...queue));
+    }
+
+    // Return the length of the longest contiguous subarray.
+    return nums.length - left - 1;
 };
 
