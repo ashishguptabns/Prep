@@ -1,3 +1,4 @@
+// todo
 /* Design Circular Queue
 
 MyCircularQueue(k) Initializes the object with the size of the queue to be k.
@@ -8,126 +9,61 @@ boolean deQueue() Deletes an element from the circular queue. Return true if the
 boolean isEmpty() Checks whether the circular queue is empty or not.
 boolean isFull() Checks whether the circular queue is full or not.
  */
-class MyCircularQueue(k: Int) {
-
-    class Node(val value: Int, var nextNode: Node? = null)
-
-    val capacity = k
-    var currMembers = 0
-    var head: Node? = null
-    var tail: Node? = null
-
-    fun enQueue(value: Int): Boolean {
-
-        if(currMembers == capacity){
-            return false
-        }
-
-        val newNode = Node(value)
-        if(currMembers == 0){
-            head = newNode
-            tail = newNode
-        }else{
-            tail?.nextNode = newNode
-            tail = tail?.nextNode
-        }
-
-        currMembers++
-
-        return true
-    }
-
-    fun deQueue(): Boolean {
-        if(currMembers == 0){
-            return false
-        }
-
-        head = head?.nextNode
-        currMembers--
-        
-        return true
-    }
-
-    fun Front(): Int {
-        if(currMembers == 0){
-            return -1
-        }else{
-            return head?.value as Int
-        }
-    }
-
-    fun Rear(): Int {
-        if(currMembers == 0){
-            return -1
-        }else{
-            return tail?.value as Int
-        }
-    }
-
-    fun isEmpty(): Boolean {
-        return currMembers == 0
-    }
-
-    fun isFull(): Boolean {
-        return currMembers == capacity
-    }
-
-}
 
 /* Implement stack using 2 queues - Implement a last-in-first-out (LIFO) stack using only two queues */
 
 class MyStack {
-    constructor() {
-        this.queue1 = [];
-        this.queue2 = [];
+  constructor() {
+    this.queue1 = [];
+    this.queue2 = [];
+  }
+
+  push = function (x) {
+    this.queue1.push(x)
+  };
+
+  pop = function () {
+    //  move all elements from queue1 to queue2 except the last element
+    while (this.queue1.length > 1) {
+      //  follow FIFO
+      this.queue2.push(this.queue1.shift())
     }
 
-    push = function (x) {
-        this.queue1.push(x)
-    };
+    const poppedItem = this.queue1.shift()
 
-    pop = function () {
-        //  move all elements from queue1 to queue2 except the last element
-        while (this.queue1.length > 1) {
-            //  follow FIFO
-            this.queue2.push(this.queue1.shift())
-        }
+    // Swap the names of queue1 and queue2 using a temporary variable
+    const temp = this.queue1;
+    this.queue1 = this.queue2;
+    this.queue2 = temp;
 
-        const poppedItem = this.queue1.shift()
+    return poppedItem
 
-        // Swap the names of queue1 and queue2 using a temporary variable
-        const temp = this.queue1;
-        this.queue1 = this.queue2;
-        this.queue2 = temp;
+  };
 
-        return poppedItem
-
-    };
-
-    top() {
-        // Similar to pop, move all elements from queue1 to queue2 except the last one
-        while (this.queue1.length > 1) {
-            this.queue2.push(this.queue1.shift());
-        }
-
-        // The last element in queue1 is the top of the stack
-        const topItem = this.queue1[0];
-
-        // Move it to queue2
-        this.queue2.push(this.queue1.shift());
-
-        // Swap the names of queue1 and queue2 using a temporary variable
-        const temp = this.queue1;
-        this.queue1 = this.queue2;
-        this.queue2 = temp;
-
-        // Return the top item
-        return topItem;
+  top() {
+    // Similar to pop, move all elements from queue1 to queue2 except the last one
+    while (this.queue1.length > 1) {
+      this.queue2.push(this.queue1.shift());
     }
 
-    empty = function () {
-        return this.queue1.length === 0 && this.queue2.length === 0;
-    };
+    // The last element in queue1 is the top of the stack
+    const topItem = this.queue1[0];
+
+    // Move it to queue2
+    this.queue2.push(this.queue1.shift());
+
+    // Swap the names of queue1 and queue2 using a temporary variable
+    const temp = this.queue1;
+    this.queue1 = this.queue2;
+    this.queue2 = temp;
+
+    // Return the top item
+    return topItem;
+  }
+
+  empty = function () {
+    return this.queue1.length === 0 && this.queue2.length === 0;
+  };
 };
 
 /** 
@@ -163,7 +99,7 @@ class MovingAverage {
   getMovingAverage() {
     if (this.data.length === 0) {
       // No data available
-      return null; 
+      return null;
     }
 
     return this.sum / this.data.length;

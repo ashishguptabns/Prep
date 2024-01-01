@@ -1,3 +1,23 @@
+// todo
+/* Sort list */
+
+// todo
+/* Rotate list */
+
+// todo
+/* LRUCache - Design a data structure that follows the constraints of a Least Recently Used(LRU) cache.
+ */
+
+// todo
+/* Reorder List - You are given the head of a singly linked-list. The list can be represented as:
+
+L0 → L1 → … → Ln - 1 → Ln
+Reorder the list to be on the following form:
+
+L0 → Ln → L1 → Ln - 1 → L2 → Ln - 2 → …
+You may not modify the values in the list's nodes. Only nodes themselves may be changed.
+ */
+
 /* Add Two Numbers - You are given two non-empty linked lists representing two non-negative integers. The digits are stored in reverse order, and each of their nodes contains a single digit. Add the two numbers and return the sum as a linked list.
 
 You may assume the two numbers do not contain any leading zero, except the number 0 itself.
@@ -722,22 +742,3 @@ const removeNthFromEnd = (head, n) => {
     return head;
 };
 
-// todo
-/* Sort list */
-
-// todo
-/* Rotate list */
-
-// todo
-/* LRUCache - Design a data structure that follows the constraints of a Least Recently Used(LRU) cache.
- */
-
-// todo
-/* Reorder List - You are given the head of a singly linked-list. The list can be represented as:
-
-L0 → L1 → … → Ln - 1 → Ln
-Reorder the list to be on the following form:
-
-L0 → Ln → L1 → Ln - 1 → L2 → Ln - 2 → …
-You may not modify the values in the list's nodes. Only nodes themselves may be changed.
- */

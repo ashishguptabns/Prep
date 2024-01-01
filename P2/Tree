@@ -1,3 +1,12 @@
+// todo
+/* Sum root to leaf numbers */
+
+// todo
+/* Flatten tree to linked list */
+
+// todo
+/* Construct tree from inorder and postorder traversal */
+
 /* All Nodes Distance K in Binary Tree - Given the root of a binary tree, the value of a target node target, and an integer k, return an array of the values of all nodes that have a distance k from the target node.
  */
 /**
@@ -14,34 +23,46 @@
  * @return {number[]}
  */
 const distanceK = (root, target, k) => {
+
+    /* pseudo code 
+        travel to the target node and assign parent to each node visited
+        start DFS from target node with k distance
+            do not do a repeat visit
+            if distance k is covered
+                push the node to res array 
+            else
+                mark the node as visited
+                travel in 3 dirs - left, right, parent with distance - 1 left
+    */
+
     if (!root) {
         return
     }
 
-    const findTarget = (node, parent, target) => {
+    const assignParent = (node, parent, target) => {
         if (node) {
             node.parent = parent
             if (node == target) {
                 return node
             }
-            return findTarget(node.left, node, target) || findTarget(node.right, node, target)
+            return assignParent(node.left, node, target) || assignParent(node.right, node, target)
         }
     }
 
     //  find the target and assign a parent to each node
-    const targetNode = findTarget(root, null, target)
+    const targetNode = assignParent(root, null, target)
 
     const res = []
 
     const findAllKApart = (node, k, res) => {
         if (!node || node.visited) {
-            return res
+            return
         }
 
         if (k === 0) {
             //  reached the end
             res.push(node.val)
-            return res
+            return
         }
 
         //  mark
@@ -51,8 +72,6 @@ const distanceK = (root, target, k) => {
         findAllKApart(node.left, k - 1, res)
         findAllKApart(node.right, k - 1, res)
         findAllKApart(node.parent, k - 1, res)
-
-        return res
     }
 
     //  start the travel from target node and keep marking visited
@@ -65,7 +84,9 @@ const distanceK = (root, target, k) => {
  */
 const sumEvenGrandparent = (root) => {
 
-    //  visit each node and maintain the parent and gparent
+    /* pseudo code
+        visit each node and maintain the parent and gparent 
+    */
 
     let sum = 0
 
@@ -104,6 +125,11 @@ Both the left and right subtrees must also be binary search trees.
  * @return {boolean}
  */
 const isValidBST = (root, min = -Infinity, max = Infinity) => {
+
+    /* pseudo code
+        visit each node with min and max bounds
+    */
+
     if (!root) {
         return true
     }
@@ -120,6 +146,11 @@ const isValidBST = (root, min = -Infinity, max = Infinity) => {
 A node a is an ancestor of b if either: any child of a is equal to b or any child of a is an ancestor of b.
  */
 const maxAncestorDiff = (root) => {
+
+    /* pseudo code
+        visit each node with min and max found so far
+    */
+
     let maxDiff = 0
 
     const findDiff = (node, maxSoFar, minSoFar) => {
@@ -144,6 +175,12 @@ const maxAncestorDiff = (root) => {
 According to the definition of LCA on Wikipedia: “The lowest common ancestor is defined between two nodes p and q as the lowest node in T that has both p and q as descendants (where we allow a node to be a descendant of itself).” */
 
 const lowestCommonAncestor = (root, p, q) => {
+
+    /* pseudo code
+        visit each node and check if p or q is found
+        if both were found in either left or right subtree then this node is the LCA
+    */
+
     if (!root || root === p || root === q) {
         return root;
     }
@@ -159,43 +196,6 @@ const lowestCommonAncestor = (root, p, q) => {
         return left || right;
     }
 }
-
-/* Minimum Time to Collect All Apples in a Tree - Given an undirected tree consisting of n vertices numbered from 0 to n-1, which has some apples in their vertices. You spend 1 second to walk over one edge of the tree. Return the minimum time in seconds you have to spend to collect all apples in the tree, starting at vertex 0 and coming back to this vertex.
-
-The edges of the undirected tree are given in the array edges, where edges[i] = [ai, bi] means that exists an edge connecting the vertices ai and bi. Additionally, there is a boolean array hasApple, where hasApple[i] = true means that vertex i has an apple; otherwise, it does not have any apple.
- */
-/**
- * @param {number} n
- * @param {number[][]} edges
- * @param {boolean[]} hasApple
- * @return {number}
- */
-const minTime = (n, edges, hasApple) => {
-    const adjlist = Array.from({ length: n }, () => new Array());
-    for (const [from, to] of edges) {
-        //  undirected edges
-        adjlist[from].push(to);
-        adjlist[to].push(from);
-    }
-
-    const dfs = (node, parent) => {
-        let pathlen = 0;
-        for (const neighbour of adjlist[node]) {
-            if (neighbour == parent) {
-                //  skip the parent cause counting is already done
-                continue;
-            }
-            pathlen += dfs(neighbour, node);
-        }
-        if (node == 0) {
-            return pathlen;
-        }
-        return pathlen > 0 || hasApple[node] ? pathlen + 2 : 0;
-    }
-
-    //  start with root
-    return dfs(0, -1);
-};
 
 /* Add One Row to Tree - Given the root of a binary tree and two integers val and depth, add a row of nodes with value val at the given depth depth.
  */
@@ -214,6 +214,14 @@ const minTime = (n, edges, hasApple) => {
  * @return {TreeNode}
  */
 const addOneRow = (root, val, depth) => {
+
+    /* pseudo code
+        visit each node with its depth
+        just before the mentioned depth
+            add left node with curr node's left as left child
+            add right node with curr node's right as right child
+    */
+
     if (!root) {
         return root
     }
@@ -231,6 +239,8 @@ const addOneRow = (root, val, depth) => {
             const { left, right } = node
             node.left = new TreeNode(val, left)
             node.right = new TreeNode(val, null, right)
+
+            return
         }
 
         refactor(node.left, currDepth + 1)
@@ -270,6 +280,14 @@ Given the root of a binary tree, return the maximum path sum of any non - empty 
  * @return {number}
  */
 const maxPathSum = (root) => {
+
+    /* pseudo code
+        visit each node
+            find max sum from left and right subtrees
+            keep tracking the max so far
+            return either left or right max with curr node's value
+    */
+
     let max = -Infinity // Variable to store the maximum path sum
 
     // Recursive function to calculate the maximum path sum for a subtree
@@ -311,7 +329,7 @@ const maxPathSum = (root) => {
  * @param {number} k
  * @return {number}
  */
-const kthSmallest = function (root, k) {
+const kthSmallest = (root, k) => {
     const inorderArr = []
 
     const inorder = (root) => {
@@ -425,6 +443,15 @@ The successor of a node p is the node with the smallest key greater than p.val.
  */
 
 const inorderSuccessor = (root, p) => {
+
+    /* pseudo code
+        go through the nodes
+        if a node is greater than target node
+            go to left
+            also this node can be the successor
+        else go to right
+    */
+
     let currNode = root
     let successor
 
@@ -449,6 +476,14 @@ const inorderSuccessor = (root, p) => {
  * @return {Node}
  */
 const connect = (root) => {
+
+    /* pseudo code
+        start from left most node at each level
+            move through the level
+                connect left to right
+                connect right to neighbour's left
+    */
+
     if (!root) {
         return root
     }
@@ -494,6 +529,13 @@ In a complete binary tree, every level, except possibly the last, is completely 
  * @return {boolean}
  */
 const isCompleteTree = (root) => {
+
+    /* pseudo code
+        do a level order travel
+            track if a node was null and right side neighbours are not null
+                not a complete tree
+    */
+
     if (root) {
         const queue = [root]
         let foundNullNode = false
@@ -579,33 +621,31 @@ Subtree includes the root
  * @return {number}
  */
 const averageOfSubtree = (root) => {
-    const countAvgNodes = { count: 0 }
+    let countAvgNodes = 0
+    const dfs = (node) => {
+        if (node) {
+            const left = dfs(node.left)
+            const right = dfs(node.right)
 
-    dfs(root, countAvgNodes)
+            const subTreeSum = left.sum + right.sum + node.val
+            const subTreeCount = 1 + left.count + right.count
 
-    return countAvgNodes.count
-};
+            const avg = Math.floor(subTreeSum / subTreeCount)
 
-const dfs = (node, countAvgNodes) => {
-    if (node) {
-        const leftCountSum = dfs(node.left, countAvgNodes)
-        const rightCountSum = dfs(node.right, countAvgNodes)
+            if (avg === node.val) {
+                countAvgNodes++
+            }
 
-        const subTreeSum = leftCountSum.sum + rightCountSum.sum + node.val
-        const subTreeCount = 1 + leftCountSum.count + rightCountSum.count
-
-        const avg = Math.floor(subTreeSum / subTreeCount)
-
-        if (avg === node.val) {
-            countAvgNodes.count++
+            //  send the count also to track
+            return { count: subTreeCount, sum: subTreeSum }
         }
 
-        //  send the count also to track
-        return { count: subTreeCount, sum: subTreeSum }
+        return { count: 0, sum: 0 }
     }
+    dfs(root)
 
-    return { count: 0, sum: 0 }
-}
+    return countAvgNodes
+};
 
 /* Maximum binary tree - You are given an integer array nums with no duplicates.A maximum binary tree can be built recursively from nums using the following algorithm:
 Create a root node whose value is the maximum value in nums.
@@ -652,42 +692,6 @@ const constructMaximumBinaryTree = (nums) => {
     root.right = constructMaximumBinaryTree(nums.slice(maxIndex + 1));
 
     return root;
-};
-
-/* BST from preorder - Given an array of integers preorder, which represents the preorder traversal of a BST(i.e., binary search tree), construct the tree and return its root.
- */
-/**
- * Definition for a binary tree node.
- * function TreeNode(val, left, right) {
- *     this.val = (val===undefined ? 0 : val)
- *     this.left = (left===undefined ? null : left)
- *     this.right = (right===undefined ? null : right)
- * }
- */
-/**
- * @param {number[]} preorder
- * @return {TreeNode}
- */
-const bstFromPreorder = (preorder) => {
-    let i = 0
-    const process = (bound) => {
-        if (i === preorder.length || preorder[i] > bound) {
-            return null
-        }
-
-        const num = preorder[i]
-        const node = new TreeNode(num)
-        i++
-
-        //  curr node is the bound for left subtree
-        node.left = process(node.val)
-        //  ancestor bound is the bound for right subtree
-        node.right = process(bound)
-
-        return node
-    }
-
-    return process(Number.MAX_SAFE_INTEGER)
 };
 
 /* Convert a BST into a GST(greater sum tree) - Given the root of a Binary Search Tree(BST), convert it to a Greater Tree such that every key of the original BST is changed to the original key plus the sum of all keys greater than the original key in BST.
@@ -1205,12 +1209,39 @@ const maxProduct = (root) => {
     return max % MOD;
 };
 
-// todo
-/* Sum root to leaf numbers */
+/* BST from preorder - Given an array of integers preorder, which represents the preorder traversal of a BST(i.e., binary search tree), construct the tree and return its root.
+ */
+/**
+ * Definition for a binary tree node.
+ * function TreeNode(val, left, right) {
+ *     this.val = (val===undefined ? 0 : val)
+ *     this.left = (left===undefined ? null : left)
+ *     this.right = (right===undefined ? null : right)
+ * }
+ */
+/**
+ * @param {number[]} preorder
+ * @return {TreeNode}
+ */
+const bstFromPreorder = (preorder) => {
+    let i = 0
+    const process = (bound) => {
+        if (i === preorder.length || preorder[i] > bound) {
+            return null
+        }
 
-// todo
-/* Flatten tree to linked list */
+        const num = preorder[i]
+        const node = new TreeNode(num)
+        i++
 
-// todo
-/* Construct tree from inorder and postorder traversal */
+        //  curr node is the bound for left subtree
+        node.left = process(node.val)
+        //  ancestor bound is the bound for right subtree
+        node.right = process(bound)
+
+        return node
+    }
+
+    return process(Infinity)
+};
 

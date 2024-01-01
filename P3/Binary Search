@@ -1,3 +1,9 @@
+// todo
+/* Median of two sorted arrays - Given two sorted arrays nums1 and nums2 of size m and n respectively, return the median of the two sorted arrays.
+
+The overall run time complexity should be O(log (m+n)).
+ */
+
 /* Longest Common Prefix - Write a function to find the longest common prefix string amongst an array of strings.
 If there is no common prefix, return an empty string ""
  */
@@ -630,10 +636,4 @@ const findMin = (nums) => {
     // The left pointer now points to the minimum element in the rotated sorted array
     return nums[left];
 };
-
-// todo
-/* Median of two sorted arrays - Given two sorted arrays nums1 and nums2 of size m and n respectively, return the median of the two sorted arrays.
-
-The overall run time complexity should be O(log (m+n)).
- */
 

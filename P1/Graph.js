@@ -1,3 +1,12 @@
+// todo
+/* Snakes and ladders */
+
+// todo
+/* Evaluate division */
+
+// todo
+/* Surrounded regions */
+
 /* All Paths From Source to Target - Given a directed acyclic graph(DAG) of n nodes labeled from 0 to n - 1, find all possible paths from node 0 to node n - 1 and return them in any order.
 
 The graph is given as follows: graph[i] is a list of all nodes you can visit from node i(i.e., there is a directed edge from node i to node graph[i][j]).
@@ -569,11 +578,40 @@ const countSubTrees = (n, edges, labels) => {
   return ans
 };
 
-// todo
-/* Snakes and ladders */
+/* Minimum Time to Collect All Apples in a Tree - Given an undirected tree consisting of n vertices numbered from 0 to n-1, which has some apples in their vertices. You spend 1 second to walk over one edge of the tree. Return the minimum time in seconds you have to spend to collect all apples in the tree, starting at vertex 0 and coming back to this vertex.
 
-// todo
-/* Evaluate division */
+The edges of the undirected tree are given in the array edges, where edges[i] = [ai, bi] means that exists an edge connecting the vertices ai and bi. Additionally, there is a boolean array hasApple, where hasApple[i] = true means that vertex i has an apple; otherwise, it does not have any apple.
+ */
+/**
+ * @param {number} n
+ * @param {number[][]} edges
+ * @param {boolean[]} hasApple
+ * @return {number}
+ */
+const minTime = (n, edges, hasApple) => {
+  const adjlist = Array.from({ length: n }, () => new Array());
+  for (const [from, to] of edges) {
+      //  undirected edges
+      adjlist[from].push(to);
+      adjlist[to].push(from);
+  }
 
-// todo
-/* Surrounded regions */
+  const dfs = (node, parent) => {
+      let pathlen = 0;
+      for (const neighbour of adjlist[node]) {
+          if (neighbour == parent) {
+              //  skip the parent cause counting is already done
+              continue;
+          }
+          pathlen += dfs(neighbour, node);
+      }
+      if (node == 0) {
+          return pathlen;
+      }
+      return pathlen > 0 || hasApple[node] ? pathlen + 2 : 0;
+  }
+
+  //  start with root
+  return dfs(0, -1);
+};
+
