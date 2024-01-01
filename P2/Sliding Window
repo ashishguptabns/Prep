@@ -272,6 +272,17 @@ Return the maximum number of consecutive 'T's or 'F's in the answer key after pe
  * @return {number}
  */
 const maxConsecutiveAnswers = (answerKey, k) => {
+
+    /* pseudo code
+        we will find max length of subseqs having max k Ts or Fs
+        run through the array
+            keep tracking the count of given char - T or F
+            more than k chars
+                shrink windown from left
+            keep tracking the max window length
+        return max length found so far
+    */
+
     const maxConsequtive = (char) => {
         let left = 0, charCount = 0, max = 0
         //  Iterating over the answer key using right pointer
@@ -341,7 +352,13 @@ Return a sorted list of all the integers in the range [low, high] inclusive that
  * @return {number[]}
  */
 const sequentialDigits = (low, high) => {
-    //  use sliding window
+
+    /* pseudo code
+        run a size loop from minLen to maxLen
+            run another loop with starting points in digits string
+                take a substring from digits of length size with different starting points
+                compare and push to ans array
+    */
 
     const digits = '123456789'
     const ans = []
@@ -377,23 +394,30 @@ Return the minimum number of operations needed such that there is at least one o
  * @return {number}
  */
 const minimumRecolors = (blocks, k) => {
-    //  use sliding window
+    /* pseudo code
+        go through the blocks array
+            track number of whites
+            when found a subarray of length k
+                record the min of numWhites
+                shrink the window from left
+                    numWhites also if possible
+    */
 
     let min = Infinity
     let start = 0
-    let currMin = 0
+    let numWhites = 0
     for (let end = 0; end < blocks.length; end++) {
         if (blocks[end] === 'W') {
-            currMin++
+            numWhites++
         }
         if (end - start + 1 === k) {
             //  found the window
-            min = Math.min(currMin, min)
+            min = Math.min(numWhites, min)
 
             //  shrink window from left
             if (blocks[start++] === 'W') {
                 //  remove the count
-                currMin--
+                numWhites--
             }
         }
     }
