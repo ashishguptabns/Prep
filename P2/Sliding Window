@@ -434,6 +434,13 @@ const minimumRecolors = (blocks, k) => {
 * @return {number}
 */
 const maxVowels = (s, k) => {
+
+    /* pseudo code
+        go through the string
+            keep tracking vowel count
+            shrink the window from left
+    */
+
     let maxCount = 0, count = 0;
     const vowel = ['a', "e", "i", "o", "u"]
     for (let i = 0; i < s.length; i++) {
