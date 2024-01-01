@@ -10,13 +10,6 @@
 /* All Nodes Distance K in Binary Tree - Given the root of a binary tree, the value of a target node target, and an integer k, return an array of the values of all nodes that have a distance k from the target node.
  */
 /**
- * Definition for a binary tree node.
- * function TreeNode(val) {
- *     this.val = val;
- *     this.left = this.right = null;
- * }
- */
-/**
  * @param {TreeNode} root
  * @param {TreeNode} target
  * @param {number} k
@@ -113,14 +106,6 @@ The right subtree of a node contains only nodes with keys greater than the node'
 Both the left and right subtrees must also be binary search trees.
  */
 /**
- * Definition for a binary tree node.
- * function TreeNode(val, left, right) {
- *     this.val = (val===undefined ? 0 : val)
- *     this.left = (left===undefined ? null : left)
- *     this.right = (right===undefined ? null : right)
- * }
- */
-/**
  * @param {TreeNode} root
  * @return {boolean}
  */
@@ -200,14 +185,6 @@ const lowestCommonAncestor = (root, p, q) => {
 /* Add One Row to Tree - Given the root of a binary tree and two integers val and depth, add a row of nodes with value val at the given depth depth.
  */
 /**
- * Definition for a binary tree node.
- * function TreeNode(val, left, right) {
- *     this.val = (val===undefined ? 0 : val)
- *     this.left = (left===undefined ? null : left)
- *     this.right = (right===undefined ? null : right)
- * }
- */
-/**
  * @param {TreeNode} root
  * @param {number} val
  * @param {number} depth
@@ -258,24 +235,6 @@ The path sum of a path is the sum of the node's values in the path.
 Given the root of a binary tree, return the maximum path sum of any non - empty path.
  */
 /**
- * Example:
- * var ti = TreeNode(5)
- * var v = ti.`val`
- * Definition for a binary tree node.
- * class TreeNode(var `val`: Int) {
- *     var left: TreeNode? = null
- *     var right: TreeNode? = null
- * }
- */
-/**
- * Definition for a binary tree node.
- * function TreeNode(val, left, right) {
- *     this.val = (val===undefined ? 0 : val)
- *     this.left = (left===undefined ? null : left)
- *     this.right = (right===undefined ? null : right)
- * }
- */
-/**
  * @param {TreeNode} root
  * @return {number}
  */
@@ -317,14 +276,6 @@ const maxPathSum = (root) => {
 /* Kth Smallest Element in a BST
  */
 /**
- * Definition for a binary tree node.
- * function TreeNode(val, left, right) {
- *     this.val = (val===undefined ? 0 : val)
- *     this.left = (left===undefined ? null : left)
- *     this.right = (right===undefined ? null : right)
- * }
- */
-/**
  * @param {TreeNode} root
  * @param {number} k
  * @return {number}
@@ -347,14 +298,6 @@ const kthSmallest = (root, k) => {
 };
 
 /* Binary Tree Level Order Traversal
- */
-/**
- * Definition for a binary tree node.
- * function TreeNode(val, left, right) {
- *     this.val = (val===undefined ? 0 : val)
- *     this.left = (left===undefined ? null : left)
- *     this.right = (right===undefined ? null : right)
- * }
  */
 /**
  * @param {TreeNode} root
@@ -389,14 +332,6 @@ const levelOrder = (root) => {
 /* Construct Binary Tree from Preorder and Inorder Traversal - Given two integer arrays preorder and inorder where preorder is the preorder traversal of a binary tree and inorder is the inorder traversal of the same tree, construct and return the binary tree.
  */
 /**
- * Definition for a binary tree node.
- * function TreeNode(val, left, right) {
- *     this.val = (val===undefined ? 0 : val)
- *     this.left = (left===undefined ? null : left)
- *     this.right = (right===undefined ? null : right)
- * }
- */
-/**
  * @param {number[]} preorder
  * @param {number[]} inorder
  * @return {TreeNode}
@@ -427,19 +362,6 @@ const buildTree = (preorder, inorder) => {
 /* Inorder Successor in BST - Given the root of a binary search tree and a node p in it, return the in -order successor of that node in the BST.If the given node has no in -order successor in the tree, return null.
 
 The successor of a node p is the node with the smallest key greater than p.val.
- */
-/**
- * Definition for a binary tree node.
- * class TreeNode {
- *     val: number
- *     left: TreeNode | null
- *     right: TreeNode | null
- *     constructor(val?: number, left?: TreeNode | null, right?: TreeNode | null) {
- *         this.val = (val===undefined ? 0 : val)
- *         this.left = (left===undefined ? null : left)
- *         this.right = (right===undefined ? null : right)
- *     }
- * }
  */
 
 const inorderSuccessor = (root, p) => {
@@ -515,15 +437,6 @@ const connect = (root) => {
 
 In a complete binary tree, every level, except possibly the last, is completely filled, and all nodes in the last level are as far left as possible.It can have between 1 and 2h nodes inclusive at the last level h.
  */
-
-/**
- * Definition for a binary tree node.
- * function TreeNode(val, left, right) {
- *     this.val = (val===undefined ? 0 : val)
- *     this.left = (left===undefined ? null : left)
- *     this.right = (right===undefined ? null : right)
- * }
- */
 /**
  * @param {TreeNode} root
  * @return {boolean}
@@ -564,14 +477,6 @@ For each kind of duplicate subtrees, you only need to return the root node of an
 Two trees are duplicate if they have the same structure with the same node values.
  */
 /**
- * Definition for a binary tree node.
- * function TreeNode(val, left, right) {
- *     this.val = (val===undefined ? 0 : val)
- *     this.left = (left===undefined ? null : left)
- *     this.right = (right===undefined ? null : right)
- * }
- */
-/**
  * @param {TreeNode} root
  * @return {TreeNode[]}
  */
@@ -607,14 +512,6 @@ const findDuplicateSubtrees = (root) => {
 
 /* Count nodes equal to average of subtress - Given the root of a binary tree, return the number of nodes where the value of the node is equal to the average of the values in its subtree. 
 Subtree includes the root
- */
-/**
- * Definition for a binary tree node.
- * function TreeNode(val, left, right) {
- *     this.val = (val===undefined ? 0 : val)
- *     this.left = (left===undefined ? null : left)
- *     this.right = (right===undefined ? null : right)
- * }
  */
 /**
  * @param {TreeNode} root
@@ -654,18 +551,16 @@ Recursively build the right subtree on the subarray suffix to the right of the m
 Return the maximum binary tree built from nums.
  */
 /**
- * Definition for a binary tree node.
- * function TreeNode(val, left, right) {
- *     this.val = (val===undefined ? 0 : val)
- *     this.left = (left===undefined ? null : left)
- *     this.right = (right===undefined ? null : right)
- * }
- */
-/**
  * @param {number[]} nums
  * @return {TreeNode}
  */
 const constructMaximumBinaryTree = (nums) => {
+
+    /* pseudo code
+        find the max item of the array and make it the root
+        use left and right subarray to do this recursively
+    */
+
     if (nums.length === 0) {
         return null;
     }
@@ -697,14 +592,6 @@ const constructMaximumBinaryTree = (nums) => {
 /* Convert a BST into a GST(greater sum tree) - Given the root of a Binary Search Tree(BST), convert it to a Greater Tree such that every key of the original BST is changed to the original key plus the sum of all keys greater than the original key in BST.
  */
 /**
- * Definition for a binary tree node.
- * function TreeNode(val, left, right) {
- *     this.val = (val===undefined ? 0 : val)
- *     this.left = (left===undefined ? null : left)
- *     this.right = (right===undefined ? null : right)
- * }
- */
-/**
  * @param {TreeNode} root
  * @return {TreeNode}
  */
@@ -733,6 +620,13 @@ const bstToGst = (root) => {
 A binary search tree is balanced if the depth of the two subtrees of every node never differs by more than 1.
  */
 const balanceBST = (root) => {
+
+    /* pseudo code
+        get the inorder array of given BST
+        use the mid for the root and left, right subarrays for children
+        do this recursively
+    */
+
     const toArray = (node) => {
         if (node) {
             return [...toArray(node.left), node.val, ...toArray(node.right)]
@@ -784,7 +678,7 @@ const reverseOddLevels = (root) => {
         }
 
         if (level % 2) {
-            //  odd level; revers the current queue
+            //  odd level; reverse the current queue
             for (let i = 0, j = queue.length - 1; i < j; i++, j--) {
                 const temp = queue[i].val
                 queue[i].val = queue[j].val
@@ -800,149 +694,19 @@ const reverseOddLevels = (root) => {
     return root
 };
 
-/* Path In Zigzag Labelled Binary Tree - In an infinite binary tree where every node has two children, the nodes are labelled in row order.
-
-In the odd numbered rows(ie., the first, third, fifth, ...), the labelling is left to right, while in the even numbered rows(second, fourth, sixth, ...), the labelling is right to left.
-
-Given the label of a node in this tree, return the labels in the path from the root of the tree to the node with that label.
- */
-/**
- * @param {number} label
- * @return {number[]}
- */
-const pathInZigZagTree = (label) => {
-    let level = 0;
-
-    //  find the level of label
-    while (Math.pow(2, level + 1) <= label) {
-        level++;
-    }
-
-    const getParent = (label, lvl) => {
-        if (label === 1) {
-            //  no parent of root
-            return [];
-        }
-        const lvlMaxVal = Math.pow(2, lvl + 1) - 1, lvlMinVal = Math.pow(2, lvl);
-        const mirror = lvlMinVal + (lvlMaxVal - label);
-
-        //  parent by def
-        const parent = Math.floor(mirror / 2);
-
-        //  find parent to this parent and so on
-        return [...getParent(parent, lvl - 1), parent];
-    }
-    return [...getParent(label, level), label];
-};
-
-/* Construct quad tree - Given a n * n matrix grid of 0's and 1's only.We want to represent grid with a Quad - Tree.
-
-Return the root of the Quad - Tree representing grid.
- */
-/**
- * // Definition for a QuadTree node.
- * function Node(val,isLeaf,topLeft,topRight,bottomLeft,bottomRight) {
- *    this.val = val;
- *    this.isLeaf = isLeaf;
- *    this.topLeft = topLeft;
- *    this.topRight = topRight;
- *    this.bottomLeft = bottomLeft;
- *    this.bottomRight = bottomRight;
- * };
- */
-
-/**
- * @param {number[][]} grid
- * @return {Node}
- */
-const construct = (grid) => {
-    //  n * n grid
-    let n = grid.length;
-
-    //  rowStart, rowEnd, colStart, colEnd
-    const quadTree = (rs, re, cs, ce) => {
-        const len = re - rs;
-        if (len === 1) {
-            //  leaf node
-            return new Node(grid[rs][cs], 1);
-        }
-        let mid = Math.floor(len / 2);
-
-        //  find children
-        let topLeft = quadTree(rs, rs + mid, cs, cs + mid);
-        let topRight = quadTree(rs, rs + mid, cs + mid, ce);
-        let bottomLeft = quadTree(rs + mid, re, cs, cs + mid);
-        let bottomRight = quadTree(rs + mid, re, cs + mid, ce);
-
-        const topLeftVal = topLeft.val
-        //  all children are leafs
-        if (topLeft.isLeaf && topRight.isLeaf && bottomLeft.isLeaf && bottomRight.isLeaf) {
-            //  all children have same values
-            if (topLeftVal === topRight.val && topLeftVal === bottomLeft.val && topLeftVal === bottomRight.val) {
-                //  leaf node
-                return new Node(topLeftVal, 1);
-            }
-        }
-
-        //  not a leaf node
-        return new Node(1, 0, topLeft, topRight, bottomLeft, bottomRight);
-    }
-    const head = quadTree(0, n, 0, n);
-    return head;
-};
-
-/* BST to sorted DLL */
-
-const bstToDoublyLinkedList = (root) => {
-    if (root === null) {
-        return null;
-    }
-
-    const convertBSTtoDLL = (root, prevNode) => {
-        if (root === null) {
-            return prevNode;
-        }
-
-        // Recursively convert the left subtree
-        prevNode = convertBSTtoDLL(root.left, prevNode);
-
-        // Convert current node
-        const currentNode = new DoublyLinkedListNode(root.val);
-        currentNode.prev = prevNode;
-        if (prevNode) {
-            prevNode.next = currentNode;
-        }
-
-        // Recursively convert the right subtree
-        return convertBSTtoDLL(root.right, currentNode);
-    };
-
-    // Start the in-order traversal
-    const head = convertBSTtoDLL(root, null);
-
-    // Find the head of the doubly linked list
-    while (head.prev !== null) {
-        head = head.prev;
-    }
-
-    return head;
-};
-
 /* Binary tree right side view - Given the root of a binary tree, imagine yourself standing on the right side of it, return the values of the nodes you can see ordered from top to bottom.
- */
-/**
- * Definition for a binary tree node.
- * function TreeNode(val, left, right) {
- *     this.val = (val===undefined ? 0 : val)
- *     this.left = (left===undefined ? null : left)
- *     this.right = (right===undefined ? null : right)
- * }
  */
 /**
  * @param {TreeNode} root
  * @return {number[]}
  */
 const rightSideView = (root, ans = [], depth = 0) => {
+
+    /* pseudo code
+        visit each node from left to right with depth info
+        keep setting the value for a depth in an array
+    */
+
     if (!root) {
         return ans
     }
@@ -956,15 +720,6 @@ const rightSideView = (root, ans = [], depth = 0) => {
 
 /* Binary tree zigzag level order traversal - Given the root of a binary tree, return the zigzag level order traversal of its nodes' values. (i.e., from left to right, then right to left for the next level and alternate between).
 */
-
-/**
- * Definition for a binary tree node.
- * function TreeNode(val, left, right) {
- *     this.val = (val===undefined ? 0 : val)
- *     this.left = (left===undefined ? null : left)
- *     this.right = (right===undefined ? null : right)
- * }
- */
 /**
  * @param {TreeNode} root
  * @return {number[][]}
@@ -1077,14 +832,6 @@ const printBoundary = (root) => {
 /* Same tree - Given the roots of two binary trees p and q, write a function to check if they are the same or not.
  */
 /**
- * Definition for a binary tree node.
- * function TreeNode(val, left, right) {
- *     this.val = (val===undefined ? 0 : val)
- *     this.left = (left===undefined ? null : left)
- *     this.right = (right===undefined ? null : right)
- * }
- */
-/**
  * @param {TreeNode} p
  * @param {TreeNode} q
  * @return {boolean}
@@ -1101,14 +848,6 @@ const isSameTree = (p, q) => {
 };
 
 /* Deepest leaves sum - Given the root of a binary tree, return the sum of values of its deepest leaves.
- */
-/**
- * Definition for a binary tree node.
- * function TreeNode(val, left, right) {
- *     this.val = (val===undefined ? 0 : val)
- *     this.left = (left===undefined ? null : left)
- *     this.right = (right===undefined ? null : right)
- * }
  */
 /**
  * @param {TreeNode} root
@@ -1151,15 +890,6 @@ const deepestLeavesSum = (root) => {
 Return the maximum product of the sums of the two subtrees. Since the answer may be too large, return it modulo 109 + 7.
 
 Note that you need to maximize the answer before taking the mod and not after taking it.
- */
-
-/**
- * Definition for a binary tree node.
- * function TreeNode(val, left, right) {
- *     this.val = (val===undefined ? 0 : val)
- *     this.left = (left===undefined ? null : left)
- *     this.right = (right===undefined ? null : right)
- * }
  */
 /**
  * @param {TreeNode} root
@@ -1212,14 +942,6 @@ const maxProduct = (root) => {
 /* BST from preorder - Given an array of integers preorder, which represents the preorder traversal of a BST(i.e., binary search tree), construct the tree and return its root.
  */
 /**
- * Definition for a binary tree node.
- * function TreeNode(val, left, right) {
- *     this.val = (val===undefined ? 0 : val)
- *     this.left = (left===undefined ? null : left)
- *     this.right = (right===undefined ? null : right)
- * }
- */
-/**
  * @param {number[]} preorder
  * @return {TreeNode}
  */
@@ -1243,5 +965,121 @@ const bstFromPreorder = (preorder) => {
     }
 
     return process(Infinity)
+};
+
+/* Path In Zigzag Labelled Binary Tree - In an infinite binary tree where every node has two children, the nodes are labelled in row order.
+
+In the odd numbered rows(ie., the first, third, fifth, ...), the labelling is left to right, while in the even numbered rows(second, fourth, sixth, ...), the labelling is right to left.
+
+Given the label of a node in this tree, return the labels in the path from the root of the tree to the node with that label.
+ */
+/**
+ * @param {number} label
+ * @return {number[]}
+ */
+const pathInZigZagTree = (label) => {
+    let level = 0;
+
+    //  find the level of label
+    while (Math.pow(2, level + 1) <= label) {
+        level++;
+    }
+
+    const getParent = (label, lvl) => {
+        if (label === 1) {
+            //  no parent of root
+            return [];
+        }
+        const lvlMaxVal = Math.pow(2, lvl + 1) - 1, lvlMinVal = Math.pow(2, lvl);
+        const mirror = lvlMinVal + (lvlMaxVal - label);
+
+        //  parent by def
+        const parent = Math.floor(mirror / 2);
+
+        //  find parent to this parent and so on
+        return [...getParent(parent, lvl - 1), parent];
+    }
+    return [...getParent(label, level), label];
+};
+
+/* Construct quad tree - Given a n * n matrix grid of 0's and 1's only.We want to represent grid with a Quad - Tree.
+
+Return the root of the Quad - Tree representing grid.
+ */
+/**
+ * @param {number[][]} grid
+ * @return {Node}
+ */
+const construct = (grid) => {
+    //  n * n grid
+    let n = grid.length;
+
+    //  rowStart, rowEnd, colStart, colEnd
+    const quadTree = (rs, re, cs, ce) => {
+        const len = re - rs;
+        if (len === 1) {
+            //  leaf node
+            return new Node(grid[rs][cs], 1);
+        }
+        let mid = Math.floor(len / 2);
+
+        //  find children
+        let topLeft = quadTree(rs, rs + mid, cs, cs + mid);
+        let topRight = quadTree(rs, rs + mid, cs + mid, ce);
+        let bottomLeft = quadTree(rs + mid, re, cs, cs + mid);
+        let bottomRight = quadTree(rs + mid, re, cs + mid, ce);
+
+        const topLeftVal = topLeft.val
+        //  all children are leafs
+        if (topLeft.isLeaf && topRight.isLeaf && bottomLeft.isLeaf && bottomRight.isLeaf) {
+            //  all children have same values
+            if (topLeftVal === topRight.val && topLeftVal === bottomLeft.val && topLeftVal === bottomRight.val) {
+                //  leaf node
+                return new Node(topLeftVal, 1);
+            }
+        }
+
+        //  not a leaf node
+        return new Node(1, 0, topLeft, topRight, bottomLeft, bottomRight);
+    }
+    const head = quadTree(0, n, 0, n);
+    return head;
+};
+
+/* BST to sorted DLL */
+
+const bstToDoublyLinkedList = (root) => {
+    if (root === null) {
+        return null;
+    }
+
+    const convertBSTtoDLL = (root, prevNode) => {
+        if (root === null) {
+            return prevNode;
+        }
+
+        // Recursively convert the left subtree
+        prevNode = convertBSTtoDLL(root.left, prevNode);
+
+        // Convert current node
+        const currentNode = new DoublyLinkedListNode(root.val);
+        currentNode.prev = prevNode;
+        if (prevNode) {
+            prevNode.next = currentNode;
+        }
+
+        // Recursively convert the right subtree
+        return convertBSTtoDLL(root.right, currentNode);
+    };
+
+    // Start the in-order traversal
+    const head = convertBSTtoDLL(root, null);
+
+    // Find the head of the doubly linked list
+    while (head.prev !== null) {
+        head = head.prev;
+    }
+
+    return head;
 };
 

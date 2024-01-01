@@ -23,13 +23,6 @@ You may not modify the values in the list's nodes. Only nodes themselves may be 
 You may assume the two numbers do not contain any leading zero, except the number 0 itself.
  */
 /**
- * Definition for singly-linked list.
- * function ListNode(val, next) {
- *     this.val = (val===undefined ? 0 : val)
- *     this.next = (next===undefined ? null : next)
- * }
- */
-/**
  * @param {ListNode} l1
  * @param {ListNode} l2
  * @return {ListNode}
@@ -66,13 +59,6 @@ const addTwoNumbers = (l1, l2) => {
 /* Odd Even Linked List - Given the head of a singly linked list, group all the nodes with odd indices together followed by the nodes with even indices, and return the reordered list.
  */
 /**
- * Definition for singly-linked list.
- * function ListNode(val, next) {
- *     this.val = (val===undefined ? 0 : val)
- *     this.next = (next===undefined ? null : next)
- * }
- */
-/**
  * @param {ListNode} head
  * @return {ListNode}
  */
@@ -102,16 +88,6 @@ const oddEvenList = (head) => {
 
 Return the head of the flattened list. The nodes in the list must have all of their child pointers set to null.
  */
-/**
- * // Definition for a Node.
- * function Node(val,prev,next,child) {
- *    this.val = val;
- *    this.prev = prev;
- *    this.next = next;
- *    this.child = child;
- * };
- */
-
 /**
  * @param {Node} head
  * @return {Node}
@@ -169,15 +145,6 @@ const flatten = (head) => {
 };
 
 /* Linked List Cycle - Given the head of a linked list, return the node where the cycle begins. If there is no cycle, return null. */
-
-/**
- * Definition for singly-linked list.
- * function ListNode(val) {
- *     this.val = val;
- *     this.next = null;
- * }
- */
-
 /**
  * @param {ListNode} head
  * @return {ListNode}
@@ -224,22 +191,6 @@ const detectCycle = (head) => {
 palindrome or false otherwise.
  */
 /**
- * Example:
- * var li = ListNode(5)
- * var v = li.`val`
- * Definition for singly-linked list.
- * class ListNode(var `val`: Int) {
- *     var next: ListNode? = null
- * }
- */
-/**
- * Definition for singly-linked list.
- * function ListNode(val, next) {
- *     this.val = (val===undefined ? 0 : val)
- *     this.next = (next===undefined ? null : next)
- * }
- */
-/**
  * @param {ListNode} head
  * @return {boolean}
  */
@@ -270,13 +221,6 @@ const isPalindrome = (head) => {
 /* Merge k Sorted Lists - You are given an array of k linked - lists lists, each linked - list is sorted in ascending order.
 
 Merge all the linked - lists into one sorted linked - list and return it.
- */
-/**
- * Definition for singly-linked list.
- * function ListNode(val, next) {
- *     this.val = (val===undefined ? 0 : val)
- *     this.next = (next===undefined ? null : next)
- * }
  */
 /**
  * @param {ListNode[]} lists
@@ -407,13 +351,6 @@ class MinHeap {
 Between every pair of adjacent nodes, insert a new node with a value equal to the greatest common divisor of them.
  */
 /**
- * Definition for singly-linked list.
- * function ListNode(val, next) {
- *     this.val = (val===undefined ? 0 : val)
- *     this.next = (next===undefined ? null : next)
- * }
- */
-/**
  * @param {ListNode} head
  * @return {ListNode}
  */
@@ -478,13 +415,6 @@ const depthSum = (nestedList) => {
 }
 
 /* Max twin sum of a linked list - Given the head of a linked list with even length, return the maximum twin sum of the linked list.
- */
-/**
- * Definition for singly-linked list.
- * function ListNode(val, next) {
- *     this.val = (val===undefined ? 0 : val)
- *     this.next = (next===undefined ? null : next)
- * }
  */
 /**
  * @param {ListNode} head
@@ -592,13 +522,6 @@ For every two consecutive 0's, merge all the nodes lying in between them into a 
 Return the head of the modified linked list.
  */
 /**
- * Definition for singly-linked list.
- * function ListNode(val, next) {
- *     this.val = (val===undefined ? 0 : val)
- *     this.next = (next===undefined ? null : next)
- * }
- */
-/**
  * @param {ListNode} head
  * @return {ListNode}
  */
@@ -651,14 +574,6 @@ const mergeNodes = (head) => {
 
 /* Swap nodes in pairs - Given a linked list, swap every two adjacent nodes and return its head. You must solve the problem without modifying the values in the list's nodes (i.e., only nodes themselves may be changed.)
  */
-
-/**
- * Definition for singly-linked list.
- * function ListNode(val, next) {
- *     this.val = (val===undefined ? 0 : val)
- *     this.next = (next===undefined ? null : next)
- * }
- */
 /**
  * @param {ListNode} head
  * @return {ListNode}
@@ -699,14 +614,6 @@ var swapPairs = function (head) {
 };
 
 /* Remove Nth Node From End of List - Given the head of a linked list, remove the nth node from the end of the list and return its head.
- */
-
-/**
- * Definition for singly-linked list.
- * function ListNode(val, next) {
- *     this.val = (val===undefined ? 0 : val)
- *     this.next = (next===undefined ? null : next)
- * }
  */
 /**
  * @param {ListNode} head
