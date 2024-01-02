@@ -725,6 +725,15 @@ const rightSideView = (root, ans = [], depth = 0) => {
  * @return {number[][]}
  */
 const zigzagLevelOrder = (root) => {
+
+    /* pseudo code
+        do a level order travel and keep level information in the queue
+            if the level is odd
+                push to the last of queue
+            else
+                push to start of queue
+    */
+
     let res = []
 
     if (root) {
@@ -855,8 +864,10 @@ const isSameTree = (p, q) => {
  */
 const deepestLeavesSum = (root) => {
 
-    // solve this using BFS
-    // keep tracking the sum and return the last level's
+    /* pseudo code
+        do a level order travel
+        keep tracking the sum of each level and return the last level's 
+    */
 
     if (!root) {
         return 0
@@ -885,60 +896,6 @@ const deepestLeavesSum = (root) => {
     return levelSum
 };
 
-/* Maximum Product of Splitted Binary Tree - Given the root of a binary tree, split the binary tree into two subtrees by removing one edge such that the product of the sums of the subtrees is maximized.
-
-Return the maximum product of the sums of the two subtrees. Since the answer may be too large, return it modulo 109 + 7.
-
-Note that you need to maximize the answer before taking the mod and not after taking it.
- */
-/**
- * @param {TreeNode} root
- * @return {number}
- */
-const maxProduct = (root) => {
-    // Initialize an array to store the sums of nodes in different subtrees.
-    let res = [];
-
-    // Define a constant for modulo operation.
-    const MOD = 10 ** 9 + 7;
-
-    // Define a recursive function to perform depth-first search (DFS) on the tree.
-    const dfs = (node) => {
-        if (!node) {
-            return 0; // Return 0 for null nodes.
-        }
-
-        if (!node.left && !node.right) {
-            return node.val; // Return the value for leaf nodes.
-        }
-
-        // Recursively calculate the sums of left and right subtrees.
-        const leftSum = dfs(node.left);
-        const rightSum = dfs(node.right);
-
-        // Add the sums to the result array.
-        res.push(leftSum, rightSum);
-
-        // Return the sum of the current subtree.
-        return leftSum + node.val + rightSum;
-    };
-
-    // Calculate the total sum of the tree using DFS.
-    const totalSum = dfs(root);
-
-    // Initialize a variable to store the maximum product.
-    let max = 0;
-
-    // Iterate through the sums in the result array and calculate the product.
-    for (const sum of res) {
-        const curr = sum * (totalSum - sum);
-        max = Math.max(max, curr); // Update the maximum product.
-    }
-
-    // Return the maximum product modulo MOD.
-    return max % MOD;
-};
-
 /* BST from preorder - Given an array of integers preorder, which represents the preorder traversal of a BST(i.e., binary search tree), construct the tree and return its root.
  */
 /**
@@ -946,6 +903,13 @@ const maxProduct = (root) => {
  * @return {TreeNode}
  */
 const bstFromPreorder = (preorder) => {
+
+    /* pseudo code
+        keep a bound to check if curr item is right to be the root of curr subtree
+        first item will be the root of curr subtree
+        process the left sub tree then right subtree recursively
+    */
+
     let i = 0
     const process = (bound) => {
         if (i === preorder.length || preorder[i] > bound) {
@@ -1081,5 +1045,59 @@ const bstToDoublyLinkedList = (root) => {
     }
 
     return head;
+};
+
+/* Maximum Product of Splitted Binary Tree - Given the root of a binary tree, split the binary tree into two subtrees by removing one edge such that the product of the sums of the subtrees is maximized.
+
+Return the maximum product of the sums of the two subtrees. Since the answer may be too large, return it modulo 109 + 7.
+
+Note that you need to maximize the answer before taking the mod and not after taking it.
+ */
+/**
+ * @param {TreeNode} root
+ * @return {number}
+ */
+const maxProduct = (root) => {
+    // Initialize an array to store the sums of nodes in different subtrees.
+    let res = [];
+
+    // Define a constant for modulo operation.
+    const MOD = 10 ** 9 + 7;
+
+    // Define a recursive function to perform depth-first search (DFS) on the tree.
+    const dfs = (node) => {
+        if (!node) {
+            return 0; // Return 0 for null nodes.
+        }
+
+        if (!node.left && !node.right) {
+            return node.val; // Return the value for leaf nodes.
+        }
+
+        // Recursively calculate the sums of left and right subtrees.
+        const leftSum = dfs(node.left);
+        const rightSum = dfs(node.right);
+
+        // Add the sums to the result array.
+        res.push(leftSum, rightSum);
+
+        // Return the sum of the current subtree.
+        return leftSum + node.val + rightSum;
+    };
+
+    // Calculate the total sum of the tree using DFS.
+    const totalSum = dfs(root);
+
+    // Initialize a variable to store the maximum product.
+    let max = 0;
+
+    // Iterate through the sums in the result array and calculate the product.
+    for (const sum of res) {
+        const curr = sum * (totalSum - sum);
+        max = Math.max(max, curr); // Update the maximum product.
+    }
+
+    // Return the maximum product modulo MOD.
+    return max % MOD;
 };
 
