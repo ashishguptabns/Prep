@@ -388,29 +388,38 @@ const countIncreasingSubarraysDP = (arr) => {
 /* Count square submatrices with all 1s - Given a m * n matrix of ones and zeros, return how many square submatrices have all ones.
  */
 const countSquares = (matrix) => {
+
+    /* pseudo code
+        move through each row
+            move through each col
+                handle first row and col
+                keep tracking the count
+                handle normal cell
+    */
+
     let count = 0
 
     //  dp array same as matrix
     const dp = new Array(matrix.length).fill().map(() => new Array(matrix[0].length).fill(0))
 
     //  visit each cell of the matrix
-    for (let i = 0; i < matrix.length; i++) {
-        for (let j = 0; j < matrix[0].length; j++) {
-            if (matrix[i][j] === 0) {
+    for (let row = 0; row < matrix.length; row++) {
+        for (let col = 0; col < matrix[0].length; col++) {
+            if (matrix[row][col] === 0) {
                 //  ignore 0s
-            } else if (i === 0 || j === 0) {
+            } else if (row === 0 || col === 0) {
                 //  only one sub matrix possible for each [i, j]
-                dp[i][j] = 1
-                count += dp[i][j]
+                dp[row][col] = 1
+                count += dp[row][col]
             } else {
                 //  find the cell which has min submatrices in adjacent cells
-                const side = Math.min(dp[i - 1][j], dp[i - 1][j - 1], dp[i][j - 1])
+                const side = Math.min(dp[row - 1][col], dp[row - 1][col - 1], dp[row][col - 1])
 
                 //  include this cell in the count
-                dp[i][j] = side + 1
+                dp[row][col] = side + 1
 
                 //  count all submatrices
-                count += dp[i][j]
+                count += dp[row][col]
             }
         }
     }
@@ -426,6 +435,14 @@ const countSquares = (matrix) => {
  * @return {number} - Minimum cost to paint all houses.
  */
 const minCost = (costs) => {
+
+    /* pseudo code
+        imagine a matrix with rows as houses and cols as colors
+        base case - first house can be painted by any of 3 colors
+        move through each house
+            choose the cost of painting with a color with a different color for prev house (min cost)
+    */
+
     if (costs.length === 0) {
         return 0;
     }
@@ -437,18 +454,18 @@ const minCost = (costs) => {
     dp[0] = [...costs[0]];
 
     // Iterate through the houses starting from the second one
-    for (let i = 1; i < n; i++) {
+    for (let house = 1; house < n; house++) {
         //  painting ith house with the first color
         //  prev house can't be of same color
-        dp[i][0] = costs[i][0] + Math.min(dp[i - 1][1], dp[i - 1][2]);
+        dp[house][0] = costs[house][0] + Math.min(dp[house - 1][1], dp[house - 1][2]);
 
         //  painting ith house with the sec color
         //  prev house can't be of same color
-        dp[i][1] = costs[i][1] + Math.min(dp[i - 1][0], dp[i - 1][2]);
+        dp[house][1] = costs[house][1] + Math.min(dp[house - 1][0], dp[house - 1][2]);
 
         //  painting ith house with the 3rd color
         //  prev house can't be of same color
-        dp[i][2] = costs[i][2] + Math.min(dp[i - 1][0], dp[i - 1][1]);
+        dp[house][2] = costs[house][2] + Math.min(dp[house - 1][0], dp[house - 1][1]);
     }
 
     // The result is the minimum cost among the last row of the dp matrix
@@ -459,13 +476,19 @@ const minCost = (costs) => {
 
 Note that the same word in the dictionary may be reused multiple times in the segmentation.
  */
-
 /**
  * @param {string} s
  * @param {string[]} wordDict
  * @return {boolean}
  */
 const wordBreak = (s, wordDict) => {
+
+    /* pseudo code
+        move through the chars of given string
+            go through each word of dictionary
+                see if current substring can be formed by combining curr word and (substring - word)
+    */
+
     // Length of the input string
     const n = s.length;
     // dp[i] is true if the substring s[0...i-1] can be segmented into words from the dictionary
@@ -491,47 +514,6 @@ const wordBreak = (s, wordDict) => {
     return dp[n];
 };
 
-/* Maximal Square - Given an m x n binary matrix filled with 0's and 1's, find the largest square containing only 1's and return its area.
- */
-
-/**
- * @param {character[][]} matrix
- * @return {number}
- */
-const maximalSquare = (matrix) => {
-    // Extend each row by appending '0' to the end
-    for (let r = 0; r < matrix.length; r++) {
-        matrix[r].push('0');
-    }
-
-    // Add a new row filled with '0' to the bottom of the matrix
-    matrix.push(Array(matrix[0].length).fill('0'));
-
-    // Variable to store the maximum square size
-    let maxSquare = 0;
-
-    // Loop through the matrix in reverse order
-    for (let r = matrix.length - 2; r >= 0; r--) {
-        for (let c = matrix[0].length - 2; c >= 0; c--) {
-            // If the current cell contains '1', update it with the size of the maximal square
-            if (matrix[r][c] === '1') {
-                // Compute the size of the maximal square at the current cell
-                matrix[r][c] = Math.min(
-                    parseInt(matrix[r + 1][c]),
-                    parseInt(matrix[r + 1][c + 1]),
-                    parseInt(matrix[r][c + 1])
-                ) + 1;
-
-                // Update the maximum square size if needed
-                maxSquare = Math.max(maxSquare, matrix[r][c] ** 2);
-            }
-        }
-    }
-
-    // Return the maximum square size found in the matrix
-    return maxSquare;
-};
-
 /* Edit distance - Given two strings word1 and word2, return the minimum number of operations required to convert word1 to word2.
 
 You have the following three operations permitted on a word:
@@ -547,6 +529,20 @@ Replace a character
  * @return {number}
  */
 const minDistance = (word1, word2) => {
+
+    /* pseudo code
+        move through chars of word1
+            move through chars of word2
+                if we choose 0 chars of word1
+                    edits needed = chars of word2
+                same if we choose 0 chars of word2
+                    edits needed = chars of word1
+                if chars in word1 and word2 are same
+                    no edit needed - same edit value till last chars selection
+                else
+                    choose min of 3 possible combos and add 1 as mandatory edit
+    */
+
     // Create a 2D array to store the minimum edit distances
     const dp = Array(word1.length + 1).fill().map(() => Array(word2.length + 1));
 
@@ -574,109 +570,6 @@ const minDistance = (word1, word2) => {
 
     // Return the minimum edit distance for the entire words
     return dp[word1.length][word2.length];
-};
-
-/* All possible full binary trees - Given an integer n, return a list of all possible full binary trees with n nodes. Each node of each tree in the answer must have Node.val == 0.
- */
-const allPossibleFBT = (n) => {
-    // we will use DP to keep precomputed trees
-    const memo = {}
-
-    const createFBT = (size) => {
-        //  FBT of one node can be created
-        if (size === 1) {
-            return [new TreeNode()]
-        }
-        //  can not form FBT with even number of nodes
-        if (size % 2 == 0) {
-            return []
-        }
-        //  we have already computed the result
-        if (memo[size]) {
-            return memo[size]
-        }
-
-        const trees = []
-
-        // iterate over all possible odd numbers
-        for (let left = 1; left < size; left += 2) {
-            //  get all possible left subtress
-            const leftTrees = createFBT(left)
-            //  get all possible right subtress
-            const rightTress = createFBT(size - left - 1)
-            if (leftTrees && rightTress) {
-                //  create combination of trees
-                for (const l of leftTrees) {
-                    for (r of rightTress) {
-                        const root = new TreeNode(0, l, r)
-                        //  track the root of all trees
-                        trees.push(root)
-                    }
-                }
-            }
-        }
-
-        //  keep for future use
-        memo[size] = trees
-        return trees
-    }
-
-    return createFBT(n)
-
-};
-
-/* Interleaving string - Given strings s1, s2, and s3, find whether s3 is formed by an interleaving of s1 and s2.
-
-An interleaving of two strings s and t is a configuration where s and t are divided into n and m 
-substrings
- respectively, such that:
-
-s = s1 + s2 + ... + sn
-t = t1 + t2 + ... + tm
-|n - m| <= 1
-The interleaving is s1 + t1 + s2 + t2 + s3 + t3 + ... or t1 + s1 + t2 + s2 + t3 + s3 + ...
-Note: a + b is the concatenation of strings a and b.
- */
-
-/**
- * @param {string} s1
- * @param {string} s2
- * @param {string} s3
- * @return {boolean}
- */
-const isInterleave = (s1, s2, s3) => {
-    // Check if the total length of s1 and s2 is equal to s3
-    if (s1.length + s2.length !== s3.length) {
-        return false;
-    }
-
-    // Initialize a 2D array to store intermediate results
-    const dp = [];
-
-    // Iterate over the lengths of s1 and s2
-    for (let i = 0; i <= s1.length; i++) {
-        dp[i] = [];
-        for (let j = 0; j <= s2.length; j++) {
-            // Base case: an empty s1 and s2 can form an empty s3
-            if (i === 0 && j === 0) {
-                dp[i][j] = true;
-            } else if (i === 0) {
-                // If s1 is empty, check if s2 and s3 match
-                dp[i][j] = dp[i][j - 1] && s2[j - 1] === s3[j - 1];
-            } else if (j === 0) {
-                // If s2 is empty, check if s1 and s3 match
-                dp[i][j] = dp[i - 1][j] && s1[i - 1] === s3[i - 1];
-            } else {
-                // General case: Check if s1 or s2 contributed to the current character of s3
-                dp[i][j] =
-                    (dp[i][j - 1] && s2[j - 1] === s3[i + j - 1]) ||
-                    (dp[i - 1][j] && s1[i - 1] === s3[i + j - 1]);
-            }
-        }
-    }
-
-    // The result is stored in the bottom-right corner of the dp array
-    return dp[s1.length][s2.length];
 };
 
 /* Decode Ways - A message containing letters from A-Z can be encoded into numbers using the following mapping:
@@ -1001,5 +894,150 @@ const countVowelStrings = (n) => {
 
     // Start exploring all possible combinations of vowels from the beginning (index 0) with an empty string
     return backTrack(0, 0)
+};
+
+/* Maximal Square - Given an m x n binary matrix filled with 0's and 1's, find the largest square containing only 1's and return its area.
+ */
+
+/**
+ * @param {character[][]} matrix
+ * @return {number}
+ */
+const maximalSquare = (matrix) => {
+
+    // Extend each row by appending '0' to the end
+    for (let r = 0; r < matrix.length; r++) {
+        matrix[r].push('0');
+    }
+
+    // Add a new row filled with '0' to the bottom of the matrix
+    matrix.push(Array(matrix[0].length).fill('0'));
+
+    // Variable to store the maximum square size
+    let maxSquare = 0;
+
+    // Loop through the matrix in reverse order
+    for (let r = matrix.length - 2; r >= 0; r--) {
+        for (let c = matrix[0].length - 2; c >= 0; c--) {
+            // If the current cell contains '1', update it with the size of the maximal square
+            if (matrix[r][c] === '1') {
+                // Compute the size of the maximal square at the current cell
+                matrix[r][c] = Math.min(
+                    parseInt(matrix[r + 1][c]),
+                    parseInt(matrix[r + 1][c + 1]),
+                    parseInt(matrix[r][c + 1])
+                ) + 1;
+
+                // Update the maximum square size if needed
+                maxSquare = Math.max(maxSquare, matrix[r][c] ** 2);
+            }
+        }
+    }
+
+    // Return the maximum square size found in the matrix
+    return maxSquare;
+};
+
+/* All possible full binary trees - Given an integer n, return a list of all possible full binary trees with n nodes. Each node of each tree in the answer must have Node.val == 0.
+ */
+const allPossibleFBT = (n) => {
+    // we will use DP to keep precomputed trees
+    const memo = {}
+
+    const createFBT = (size) => {
+        //  FBT of one node can be created
+        if (size === 1) {
+            return [new TreeNode()]
+        }
+        //  can not form FBT with even number of nodes
+        if (size % 2 == 0) {
+            return []
+        }
+        //  we have already computed the result
+        if (memo[size]) {
+            return memo[size]
+        }
+
+        const trees = []
+
+        // iterate over all possible odd numbers
+        for (let left = 1; left < size; left += 2) {
+            //  get all possible left subtress
+            const leftTrees = createFBT(left)
+            //  get all possible right subtress
+            const rightTress = createFBT(size - left - 1)
+            if (leftTrees && rightTress) {
+                //  create combination of trees
+                for (const l of leftTrees) {
+                    for (r of rightTress) {
+                        const root = new TreeNode(0, l, r)
+                        //  track the root of all trees
+                        trees.push(root)
+                    }
+                }
+            }
+        }
+
+        //  keep for future use
+        memo[size] = trees
+        return trees
+    }
+
+    return createFBT(n)
+
+};
+
+/* Interleaving string - Given strings s1, s2, and s3, find whether s3 is formed by an interleaving of s1 and s2.
+
+An interleaving of two strings s and t is a configuration where s and t are divided into n and m 
+substrings
+ respectively, such that:
+
+s = s1 + s2 + ... + sn
+t = t1 + t2 + ... + tm
+|n - m| <= 1
+The interleaving is s1 + t1 + s2 + t2 + s3 + t3 + ... or t1 + s1 + t2 + s2 + t3 + s3 + ...
+Note: a + b is the concatenation of strings a and b.
+ */
+
+/**
+ * @param {string} s1
+ * @param {string} s2
+ * @param {string} s3
+ * @return {boolean}
+ */
+const isInterleave = (s1, s2, s3) => {
+    // Check if the total length of s1 and s2 is equal to s3
+    if (s1.length + s2.length !== s3.length) {
+        return false;
+    }
+
+    // Initialize a 2D array to store intermediate results
+    const dp = [];
+
+    // Iterate over the lengths of s1 and s2
+    for (let i = 0; i <= s1.length; i++) {
+        dp[i] = [];
+        for (let j = 0; j <= s2.length; j++) {
+            // Base case: an empty s1 and s2 can form an empty s3
+            if (i === 0 && j === 0) {
+                dp[i][j] = true;
+            } else if (i === 0) {
+                // If s1 is empty, check if s2 and s3 match
+                dp[i][j] = dp[i][j - 1] && s2[j - 1] === s3[j - 1];
+            } else if (j === 0) {
+                // If s2 is empty, check if s1 and s3 match
+                dp[i][j] = dp[i - 1][j] && s1[i - 1] === s3[i - 1];
+            } else {
+                // General case: Check if s1 or s2 contributed to the current character of s3
+                dp[i][j] =
+                    (dp[i][j - 1] && s2[j - 1] === s3[i + j - 1]) ||
+                    (dp[i - 1][j] && s1[i - 1] === s3[i + j - 1]);
+            }
+        }
+    }
+
+    // The result is stored in the bottom-right corner of the dp array
+    return dp[s1.length][s2.length];
 };
 
