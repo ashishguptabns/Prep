@@ -1,19 +1,70 @@
-// todo
-/* Snakes and ladders */
+/* Surrounded regions -Given an m x n matrix board containing 'X' and 'O', capture all regions that are 4-directionally surrounded by 'X'.
 
-// todo
-/* Evaluate division */
+A region is captured by flipping all 'O's into 'X's in that surrounded region.
+*/
+/**
+ * @param {character[][]} board
+ * @return {void} Do not return anything, modify board in-place instead.
+ */
+const solve = (board) => {
 
-// todo
-/* Surrounded regions */
+  /* pseudo code
+    go to each border cell
+      mark cell as visited which is O
+      repeat for neighbour cells which are not on border
+    
+    go to each cell
+      if it is marked visited
+        restore to O
+      else mark X
+  */
+
+  const dfs = (i, j) => {
+    if (i < 0 || i >= board.length || j < 0 || j >= board[i].length
+      || board[i][j] === 'V' || board[i][j] === 'X') {
+      return
+    }
+
+    board[i][j] = 'V';
+    dfs(i + 1, j);
+    dfs(i - 1, j);
+    dfs(i, j + 1);
+    dfs(i, j - 1);
+  }
+
+  for (let r = 0; r < board.length; r++) {
+    for (let c = 0; c < board[0].length; c++) {
+      if (board[r][c] === 'O' && (r === 0 || c === 0 || r === board.length - 1
+        || c === board[0].length - 1)) {
+        dfs(r, c);
+      }
+    }
+  }
+
+  for (let r = 0; r < board.length; r++) {
+    for (let c = 0; c < board[0].length; c++) {
+      if (board[r][c] === 'V') {
+        board[r][c] = 'O';
+      } else {
+        board[r][c] = 'X';
+      }
+    }
+  }
+};
 
 /* All Paths From Source to Target - Given a directed acyclic graph(DAG) of n nodes labeled from 0 to n - 1, find all possible paths from node 0 to node n - 1 and return them in any order.
 
 The graph is given as follows: graph[i] is a list of all nodes you can visit from node i(i.e., there is a directed edge from node i to node graph[i][j]).
  */
 const allPathsSourceTarget = (graph) => {
-  //  we will solve using dfs
-  //  srcIndex = 0, targetIndex = graphsize - 1
+  /* pseudo code
+    we will solve using dfs
+    srcIndex = 0, targetIndex = graphsize - 1 
+    start DFS from 0
+      keep tracking the nodes in curr path
+      visit each neighbour of the curr node
+      maintain curr node in visited map
+  */
 
   const src = 0
   const target = graph.length - 1
@@ -21,225 +72,29 @@ const allPathsSourceTarget = (graph) => {
   const allPaths = []
 
   const dfs = (startNode, path, visitedMap) => {
-      path.push(startNode)
-      if (startNode === target) {
-          //  reached the end
-          allPaths.push([...path])
-          return
+    path.push(startNode)
+    if (startNode === target) {
+      //  reached the end
+      allPaths.push([...path])
+      return
+    }
+    //  explore all the next nodes for current node
+    for (let neighbour of graph[startNode]) {
+      if (!visitedMap[neighbour]) {
+        visitedMap[neighbour] = true
+        //  call dfs with neighbour as a new start node
+        dfs(neighbour, path, visitedMap)
+        //  unmark for the other path
+        visitedMap[neighbour] = false
+        //  remove this neighbour also
+        path.pop()
       }
-      //  explore all the next nodes for current node
-      for (let neighbour of graph[startNode]) {
-          if (!visitedMap[neighbour]) {
-              visitedMap[neighbour] = true
-              //  call dfs with neighbour as a new start node
-              dfs(neighbour, path, visitedMap)
-              //  unmark for the other path
-              visitedMap[neighbour] = false
-              //  remove this neighbour also
-              path.pop()
-          }
-      }
+    }
   }
 
   dfs(src, [], {})
   return allPaths
 };
-
-/* Find eventual safe states - There is a directed graph of n nodes with each node labeled from 0 to n - 1. The graph is represented by a 0 - indexed 2D integer array graph where graph[i] is an integer array of nodes adjacent to node i, meaning there is an edge from node i to each node in graph[i].
-
-A node is a terminal node if there are no outgoing edges.A node is a safe node if every possible path starting from that node leads to a terminal node(or another safe node).
-
-Return an array containing all the safe nodes of the graph.The answer should be sorted in ascending order.
- */
-/**
- * @param {number[][]} graph
- * @return {number[]}
- */
-const eventualSafeNodes = (graph) => {
-  const ans = [];
-  const map = new Map();
-  const dfs = (graph, node, map) => {
-      if (map.has(node)) {
-          return map.get(node);
-      }
-      //  this will help find circular or unsafe nodes
-      map.set(node, false);
-
-      //  check all the neighbors
-      for (let nei of graph[node]) {
-          if (!dfs(graph, nei, map)) {
-              //  this neighbor is not safe
-              return false;
-          }
-      }
-
-      //  all the neighbors are safe
-      map.set(node, true);
-      return true;
-  }
-  for (let i = 0; i < graph.length; i++) {
-      if (dfs(graph, i, map)) {
-          ans.push(i);
-      }
-  }
-  return ans;
-};
-
-/* Find Closest Node to Given Two Nodes - You are given a directed graph of n nodes numbered from 0 to n - 1, where each node has at most one outgoing edge.
-
-The graph is represented with a given 0 - indexed array edges of size n, indicating that there is a directed edge from node i to node edges[i].If there is no outgoing edge from i, then edges[i] == -1.
-
-You are also given two integers node1 and node2.
-
-Return the index of the node that can be reached from both node1 and node2, such that the maximum between the distance from node1 to that node, and from node2 to that node is minimized.If there are multiple answers, return the node with the smallest index, and if no possible answer exists, return -1.
-
-Note that edges may contain cycles.
- */
-/**
- * @param {number[]} edges
- * @param {number} node1
- * @param {number} node2
- * @return {number}
- */
-// This function finds the closest meeting node between two nodes in a graph represented by edges.
-// It takes the graph edges, and two nodes (node1 and node2) as parameters.
-const closestMeetingNode = (edges, node1, node2) => {
-  // Initialize two maps to store the distances from node1 and node2 to each node in the graph.
-  const map1 = {};
-  const map2 = {};
-
-  // Initialize a counter to keep track of the distance from the starting node (node1 or node2).
-  let count = 0;
-
-  // Populate map1 with distances from node1 to each node in the graph.
-  while (map1[node1] == undefined && node1 != -1) {
-      map1[node1] = count;
-      count++;
-      node1 = edges[node1];
-  }
-
-  // Reset the counter for map2.
-  count = 0;
-
-  // Populate map2 with distances from node2 to each node in the graph.
-  while (map2[node2] == undefined && node2 != -1) {
-      map2[node2] = count;
-      count++;
-      node2 = edges[node2];
-  }
-
-  // Initialize variables to find the maximum of the minimum distances between node1 and node2.
-  let max = Infinity;
-  let res = -1;
-
-  // Iterate through each node in the graph.
-  for (let i = 0; i < edges.length; i++) {
-      // If either map1 or map2 doesn't have information about the distance to the current node, skip to the next iteration.
-      if (map1[i] == undefined || map2[i] == undefined) {
-          continue;
-      }
-
-      // Calculate the maximum of the distances from node1 and node2 to the current node.
-      let localMax = Math.max(map1[i], map2[i]);
-
-      // Update the result if the current node provides a smaller maximum distance.
-      if (localMax < max) {
-          max = localMax;
-          res = i;
-      }
-  }
-
-  // Return the node that minimizes the maximum distance from both node1 and node2.
-  return res;
-};
-
-/* Alien Dictionary - There is a new alien language that uses the English alphabet. However, the order among the letters is unknown to you.
-
-You are given a list of strings words from the alien language's dictionary, where the strings in words are sorted lexicographically by the rules of this new language.
-
-Return a string of the unique letters in the new alien language sorted in lexicographically increasing order by the new language's rules. If there is no solution, return "". If there are multiple solutions, return any of them.
- */
-const alienOrder = (words) => {
-  // Create a map to represent the graph of characters and their relationships
-  const charGraph = new Map();
-  // Create a map to store the indegree (number of incoming edges) for each character
-  const inDegree = new Map();
-
-  // Initialize the graph nodes and indegree for each node
-  for (const word of words) {
-      for (const char of word) {
-          inDegree.set(char, 0);
-          charGraph.set(char, new Set());
-      }
-  }
-
-  // Iterate through each pair of adjacent words
-  for (let i = 0; i < words.length - 1; i++) {
-      const currWord = words[i];
-      const nextWord = words[i + 1];
-
-      // Check lexicographical order
-      if (currWord.startsWith(nextWord) && currWord.length > nextWord.length) {
-          // If the current word starts with the next word and is longer, it's not valid
-          return "";
-      }
-
-      // Traverse through each character in the smaller word
-      for (let j = 0; j < Math.min(currWord.length, nextWord.length); j++) {
-          const currWordChar = currWord[j];
-          const nextWordChar = nextWord[j];
-
-          // If characters are different, create an edge in the graph
-          if (currWordChar !== nextWordChar) {
-              if (!charGraph.get(currWordChar).has(nextWordChar)) {
-                  // Build the edge
-                  charGraph.get(currWordChar).add(nextWordChar);
-                  // Increase the indegree of the next node
-                  inDegree.set(nextWordChar, (inDegree.get(nextWordChar) || 0) + 1);
-              }
-              // Take only one new edge per word
-              break;
-          }
-      }
-  }
-
-  // Create a queue for Breadth-First Search (BFS)
-  const bfsQueue = [];
-  // Array to store the result (topological order)
-  const result = [];
-  // Set to keep track of visited nodes
-  const seen = new Set();
-
-  //  Initialize the BFS queue with nodes having an indegree of 0
-  //  potential starting chars of the dictionary
-  for (const [char, degree] of inDegree) {
-      if (degree === 0) {
-          bfsQueue.push(char);
-      }
-  }
-
-  // Perform BFS
-  while (bfsQueue.length > 0) {
-      // Dequeue a character from the queue
-      const currChar = bfsQueue.shift();
-      // Append the character to the result
-      result.push(currChar);
-      // Mark the character as visited
-      seen.add(currChar);
-
-      // Update indegrees of adjacent characters and enqueue those with indegree 0
-      for (const nextChar of charGraph.get(currChar)) {
-          inDegree.set(nextChar, inDegree.get(nextChar) - 1);
-          if (inDegree.get(nextChar) === 0) {
-              //  unlocked a new char
-              bfsQueue.push(nextChar);
-          }
-      }
-  }
-
-  // Check if all nodes have been visited (no cycles) and return the result as a string
-  return seen.size === charGraph.size ? result.join('') : '';
-}
 
 /* Possible Bipartition - We want to split a group of n people (labeled from 1 to n) into two groups of any size. Each person may dislike some other people, and they should not go into the same group.
 
@@ -255,9 +110,9 @@ const possibleBipartition = (n, dislikes) => {
   //  notice label is from 1 to n
   const adjList = Array(n + 1).fill(null).map(() => []);
   for (const [a, b] of dislikes) {
-      // Add edges to the adjacency list
-      adjList[a].push(b);
-      adjList[b].push(a);
+    // Add edges to the adjacency list
+    adjList[a].push(b);
+    adjList[b].push(a);
   }
 
   // Initialize an array to store the color of each node
@@ -265,34 +120,34 @@ const possibleBipartition = (n, dislikes) => {
   // 0: not colored, 1: color 1, -1: color 2
 
   for (let node = 1; node <= n; node++) {
-      // Iterate through the nodes
+    // Iterate through the nodes
 
-      if (color[node] !== 0) {
-          // Found a colored node; skip it as it is already processed
-          continue;
+    if (color[node] !== 0) {
+      // Found a colored node; skip it as it is already processed
+      continue;
+    }
+
+    // We will do BFS from this node
+    const queue = [node];
+    color[node] = 1;
+
+    while (queue.length) {
+      const currNode = queue.shift();
+
+      // Check the neighbors and color them
+      for (const neighbor of adjList[currNode]) {
+        if (color[neighbor] === color[currNode]) {
+          // Condition is broken - hateful neighbors
+          return false;
+        }
+        if (color[neighbor] === 0) {
+          // Color the neighbor with the opposite color
+          color[neighbor] = -color[currNode];
+          // Add in the queue for BFS
+          queue.push(neighbor);
+        }
       }
-
-      // We will do BFS from this node
-      const queue = [node];
-      color[node] = 1;
-
-      while (queue.length) {
-          const currNode = queue.shift();
-
-          // Check the neighbors and color them
-          for (const neighbor of adjList[currNode]) {
-              if (color[neighbor] === color[currNode]) {
-                  // Condition is broken - hateful neighbors
-                  return false;
-              }
-              if (color[neighbor] === 0) {
-                  // Color the neighbor with the opposite color
-                  color[neighbor] = -color[currNode];
-                  // Add in the queue for BFS
-                  queue.push(neighbor);
-              }
-          }
-      }
+    }
   }
   // All nodes are colored without conflicts, so the graph can be bipartitioned
   return true;
@@ -535,8 +390,8 @@ const countSubTrees = (n, edges, labels) => {
 
   // Create the undirected graph
   for (const [from, to] of edges) {
-      adjList[from].push(to)
-      adjList[to].push(from)
+    adjList[from].push(to)
+    adjList[to].push(from)
   }
 
   // Initialize an array to store the result for each node
@@ -547,28 +402,28 @@ const countSubTrees = (n, edges, labels) => {
 
   // Depth-first search (DFS) function to traverse the tree
   const dfs = (node, parent, pcount) => {
-      // Initialize an array to count the occurrences of each character in the current subtree
-      const count = Array(26).fill(0)
+    // Initialize an array to count the occurrences of each character in the current subtree
+    const count = Array(26).fill(0)
 
-      // Traverse each neighbor of the current node
-      for (const neighbour of adjList[node]) {
-          // Skip the parent node to avoid revisiting it
-          if (neighbour === parent) {
-              continue
-          }
-
-          // Recursively call DFS for the current neighbor
-          dfs(neighbour, node, count)
+    // Traverse each neighbor of the current node
+    for (const neighbour of adjList[node]) {
+      // Skip the parent node to avoid revisiting it
+      if (neighbour === parent) {
+        continue
       }
 
-      // Increment the count for the character at the current node
-      count[labels.charCodeAt(node) - 97]++
-      ans[node] = count[labels.charCodeAt(node) - 97]
+      // Recursively call DFS for the current neighbor
+      dfs(neighbour, node, count)
+    }
 
-      // Update the parent count array with the counts from the current subtree
-      for (let i = 0; i < 26; i++) {
-          pcount[i] += count[i]
-      }
+    // Increment the count for the character at the current node
+    count[labels.charCodeAt(node) - 97]++
+    ans[node] = count[labels.charCodeAt(node) - 97]
+
+    // Update the parent count array with the counts from the current subtree
+    for (let i = 0; i < 26; i++) {
+      pcount[i] += count[i]
+    }
   }
 
   // Start DFS from the root node (node 0) with a dummy parent (-1) and initial count array
@@ -591,27 +446,223 @@ The edges of the undirected tree are given in the array edges, where edges[i] = 
 const minTime = (n, edges, hasApple) => {
   const adjlist = Array.from({ length: n }, () => new Array());
   for (const [from, to] of edges) {
-      //  undirected edges
-      adjlist[from].push(to);
-      adjlist[to].push(from);
+    //  undirected edges
+    adjlist[from].push(to);
+    adjlist[to].push(from);
   }
 
   const dfs = (node, parent) => {
-      let pathlen = 0;
-      for (const neighbour of adjlist[node]) {
-          if (neighbour == parent) {
-              //  skip the parent cause counting is already done
-              continue;
-          }
-          pathlen += dfs(neighbour, node);
+    let pathlen = 0;
+    for (const neighbour of adjlist[node]) {
+      if (neighbour == parent) {
+        //  skip the parent cause counting is already done
+        continue;
       }
-      if (node == 0) {
-          return pathlen;
-      }
-      return pathlen > 0 || hasApple[node] ? pathlen + 2 : 0;
+      pathlen += dfs(neighbour, node);
+    }
+    if (node == 0) {
+      return pathlen;
+    }
+    return pathlen > 0 || hasApple[node] ? pathlen + 2 : 0;
   }
 
   //  start with root
   return dfs(0, -1);
 };
+
+/* Find eventual safe states - There is a directed graph of n nodes with each node labeled from 0 to n - 1. The graph is represented by a 0 - indexed 2D integer array graph where graph[i] is an integer array of nodes adjacent to node i, meaning there is an edge from node i to each node in graph[i].
+
+A node is a terminal node if there are no outgoing edges.A node is a safe node if every possible path starting from that node leads to a terminal node(or another safe node).
+
+Return an array containing all the safe nodes of the graph.The answer should be sorted in ascending order.
+ */
+/**
+ * @param {number[][]} graph
+ * @return {number[]}
+ */
+const eventualSafeNodes = (graph) => {
+  const ans = [];
+  const map = new Map();
+  const dfs = (graph, node, map) => {
+    if (map.has(node)) {
+      return map.get(node);
+    }
+    //  this will help find circular or unsafe nodes
+    map.set(node, false);
+
+    //  check all the neighbors
+    for (let nei of graph[node]) {
+      if (!dfs(graph, nei, map)) {
+        //  this neighbor is not safe
+        return false;
+      }
+    }
+
+    //  all the neighbors are safe
+    map.set(node, true);
+    return true;
+  }
+  for (let i = 0; i < graph.length; i++) {
+    if (dfs(graph, i, map)) {
+      ans.push(i);
+    }
+  }
+  return ans;
+};
+
+/* Find Closest Node to Given Two Nodes - You are given a directed graph of n nodes numbered from 0 to n - 1, where each node has at most one outgoing edge.
+
+The graph is represented with a given 0 - indexed array edges of size n, indicating that there is a directed edge from node i to node edges[i].If there is no outgoing edge from i, then edges[i] == -1.
+
+You are also given two integers node1 and node2.
+
+Return the index of the node that can be reached from both node1 and node2, such that the maximum between the distance from node1 to that node, and from node2 to that node is minimized.If there are multiple answers, return the node with the smallest index, and if no possible answer exists, return -1.
+
+Note that edges may contain cycles.
+ */
+/**
+ * @param {number[]} edges
+ * @param {number} node1
+ * @param {number} node2
+ * @return {number}
+ */
+// This function finds the closest meeting node between two nodes in a graph represented by edges.
+// It takes the graph edges, and two nodes (node1 and node2) as parameters.
+const closestMeetingNode = (edges, node1, node2) => {
+  // Initialize two maps to store the distances from node1 and node2 to each node in the graph.
+  const map1 = {};
+  const map2 = {};
+
+  // Initialize a counter to keep track of the distance from the starting node (node1 or node2).
+  let count = 0;
+
+  // Populate map1 with distances from node1 to each node in the graph.
+  while (map1[node1] == undefined && node1 != -1) {
+    map1[node1] = count;
+    count++;
+    node1 = edges[node1];
+  }
+
+  // Reset the counter for map2.
+  count = 0;
+
+  // Populate map2 with distances from node2 to each node in the graph.
+  while (map2[node2] == undefined && node2 != -1) {
+    map2[node2] = count;
+    count++;
+    node2 = edges[node2];
+  }
+
+  // Initialize variables to find the maximum of the minimum distances between node1 and node2.
+  let max = Infinity;
+  let res = -1;
+
+  // Iterate through each node in the graph.
+  for (let i = 0; i < edges.length; i++) {
+    // If either map1 or map2 doesn't have information about the distance to the current node, skip to the next iteration.
+    if (map1[i] == undefined || map2[i] == undefined) {
+      continue;
+    }
+
+    // Calculate the maximum of the distances from node1 and node2 to the current node.
+    let localMax = Math.max(map1[i], map2[i]);
+
+    // Update the result if the current node provides a smaller maximum distance.
+    if (localMax < max) {
+      max = localMax;
+      res = i;
+    }
+  }
+
+  // Return the node that minimizes the maximum distance from both node1 and node2.
+  return res;
+};
+
+/* Alien Dictionary - There is a new alien language that uses the English alphabet. However, the order among the letters is unknown to you.
+
+You are given a list of strings words from the alien language's dictionary, where the strings in words are sorted lexicographically by the rules of this new language.
+
+Return a string of the unique letters in the new alien language sorted in lexicographically increasing order by the new language's rules. If there is no solution, return "". If there are multiple solutions, return any of them.
+ */
+const alienOrder = (words) => {
+  // Create a map to represent the graph of characters and their relationships
+  const charGraph = new Map();
+  // Create a map to store the indegree (number of incoming edges) for each character
+  const inDegree = new Map();
+
+  // Initialize the graph nodes and indegree for each node
+  for (const word of words) {
+    for (const char of word) {
+      inDegree.set(char, 0);
+      charGraph.set(char, new Set());
+    }
+  }
+
+  // Iterate through each pair of adjacent words
+  for (let i = 0; i < words.length - 1; i++) {
+    const currWord = words[i];
+    const nextWord = words[i + 1];
+
+    // Check lexicographical order
+    if (currWord.startsWith(nextWord) && currWord.length > nextWord.length) {
+      // If the current word starts with the next word and is longer, it's not valid
+      return "";
+    }
+
+    // Traverse through each character in the smaller word
+    for (let j = 0; j < Math.min(currWord.length, nextWord.length); j++) {
+      const currWordChar = currWord[j];
+      const nextWordChar = nextWord[j];
+
+      // If characters are different, create an edge in the graph
+      if (currWordChar !== nextWordChar) {
+        if (!charGraph.get(currWordChar).has(nextWordChar)) {
+          // Build the edge
+          charGraph.get(currWordChar).add(nextWordChar);
+          // Increase the indegree of the next node
+          inDegree.set(nextWordChar, (inDegree.get(nextWordChar) || 0) + 1);
+        }
+        // Take only one new edge per word
+        break;
+      }
+    }
+  }
+
+  // Create a queue for Breadth-First Search (BFS)
+  const bfsQueue = [];
+  // Array to store the result (topological order)
+  const result = [];
+  // Set to keep track of visited nodes
+  const seen = new Set();
+
+  //  Initialize the BFS queue with nodes having an indegree of 0
+  //  potential starting chars of the dictionary
+  for (const [char, degree] of inDegree) {
+    if (degree === 0) {
+      bfsQueue.push(char);
+    }
+  }
+
+  // Perform BFS
+  while (bfsQueue.length > 0) {
+    // Dequeue a character from the queue
+    const currChar = bfsQueue.shift();
+    // Append the character to the result
+    result.push(currChar);
+    // Mark the character as visited
+    seen.add(currChar);
+
+    // Update indegrees of adjacent characters and enqueue those with indegree 0
+    for (const nextChar of charGraph.get(currChar)) {
+      inDegree.set(nextChar, inDegree.get(nextChar) - 1);
+      if (inDegree.get(nextChar) === 0) {
+        //  unlocked a new char
+        bfsQueue.push(nextChar);
+      }
+    }
+  }
+
+  // Check if all nodes have been visited (no cycles) and return the result as a string
+  return seen.size === charGraph.size ? result.join('') : '';
+}
 
