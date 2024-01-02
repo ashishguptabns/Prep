@@ -4,7 +4,27 @@
  * @param {number[]} height
  * @return {number}
  */
+/**
+ * @param {number[]} height
+ * @return {number}
+ */
 const trap = (heights) => {
+
+  /* pseudo code
+    notice that the width of each bar is given
+    keep two pointers starting at 0 and end of array
+    go through the heights
+      keep tracking max heights on left and right side
+      if left max height is bigger than right
+        if curr height is bigger than left max height
+          update
+        else
+          add the water at this index to res
+        move the left pointer
+      else 
+        repeat above logic for right side item
+  */
+
   let leftMaxH = 0;
   let rightMaxH = 0;
   let left = 0;
@@ -20,14 +40,14 @@ const trap = (heights) => {
         leftMaxH = heights[left];
       } else {
         //  this much water can be held at this index
-        res += Math.min(leftMaxH, rightMaxH) - heights[left];
+        res += leftMaxH - heights[left]
       }
       left += 1;
     } else {
       if (rightMaxH <= heights[right]) {
         rightMaxH = heights[right];
       } else {
-        res += Math.min(leftMaxH, rightMaxH) - heights[right];
+        res += rightMaxH - heights[right]
       }
       right -= 1;
     }
@@ -41,23 +61,29 @@ Find two lines that together with the x-axis form a container, such that the con
 Return the maximum amount of water a container can store.
  */
 
-const maxArea = (height) => {
-  //  solve using two pointers
+const maxArea = (heights) => {
+  /* pseudo code
+    keep two pointers at start and end
+    move through the array
+      find the curr area of water
+      update the area
+      search for a better height on either side
+  */
 
   let left = 0;
-  let right = height.length - 1;
+  let right = heights.length - 1;
 
   let maxArea = 0;
 
   while (left < right) {
     //  Area will be minimum of two heights
-    const currArea = (right - left) * Math.min(height[left], height[right]);
+    const currArea = (right - left) * Math.min(heights[left], heights[right]);
     if (currArea > maxArea) {
       maxArea = currArea;
     }
 
     //  search for better height
-    if (height[left] < height[right]) {
+    if (heights[left] < heights[right]) {
       left++;
     } else {
       right--;
@@ -121,45 +147,6 @@ const threeSum = (nums) => {
   return res; // Return the array of unique triplets with a sum of zero
 };
 
-/* Next Permutation - The next permutation of an array of integers is the next lexicographically greater permutation of its integer.
- */
-/**
- * @param {number[]} nums
- * @return {void} Do not return anything, modify nums in-place instead.
- */
-const nextPermutation = (nums) => {
-  //  consider 1, 5, 8, 4, 7, 6, 5, 3, 1
-
-  let first = nums.length - 2;
-
-  //  travel from right end and find a point firstPointer where [firstPointer + 1] element is higher than firstPointer element
-  while (first >= 0 && nums[first] >= nums[first + 1]) {
-    first--;
-  }
-
-  if (first >= 0) {
-    let second = nums.length - 1;
-    //  find a number which is greater than our firstPointer item
-    while (nums[second] <= nums[first]) {
-      second--;
-    }
-    //  swap 4 with 5 -> 1, 5, 8, 5, 7, 6, 4, 3, 1
-    [nums[first], nums[second]] = [nums[second], nums[first]];
-  }
-
-  const reverse = (nums, start) => {
-    let left = start;
-    let right = nums.length - 1;
-    while (left < right) {
-      [nums[left], nums[right]] = [nums[right], nums[left]];
-      left++;
-      right--;
-    }
-  };
-  //  to find the next larger number -> 1, 5, 8, 5, 1, 3, 4, 6, 7
-  reverse(nums, first + 1);
-};
-
 /* 3Sum Closest - Given an integer array nums of length n and an integer target, find three integers in nums such that the sum is closest to target.
 Return the sum of the three integers.
  */
@@ -211,6 +198,13 @@ We will use the integers 0, 1, and 2 to represent the color red, white, and blue
  * @return {void} Do not return anything, modify nums in-place instead.
  */
 const sortColors = (nums) => {
+
+  /* pseudo code
+    keep pointers for 0s and 2s
+    move through the array
+      keep putting the 0s and 2s at their respective pointers
+  */
+
   let zero = 0;
   let two = nums.length - 1;
 
@@ -462,3 +456,43 @@ const minSubArrayLen = (target, nums) => {
 
   return minLen === Infinity ? 0 : minLen;
 };
+
+/* Next Permutation - The next permutation of an array of integers is the next lexicographically greater permutation of its integer.
+ */
+/**
+ * @param {number[]} nums
+ * @return {void} Do not return anything, modify nums in-place instead.
+ */
+const nextPermutation = (nums) => {
+  //  consider 1, 5, 8, 4, 7, 6, 5, 3, 1
+
+  let first = nums.length - 2;
+
+  //  travel from right end and find a point firstPointer where [firstPointer + 1] element is higher than firstPointer element
+  while (first >= 0 && nums[first] >= nums[first + 1]) {
+    first--;
+  }
+
+  if (first >= 0) {
+    let second = nums.length - 1;
+    //  find a number which is greater than our firstPointer item
+    while (nums[second] <= nums[first]) {
+      second--;
+    }
+    //  swap 4 with 5 -> 1, 5, 8, 5, 7, 6, 4, 3, 1
+    [nums[first], nums[second]] = [nums[second], nums[first]];
+  }
+
+  const reverse = (nums, start) => {
+    let left = start;
+    let right = nums.length - 1;
+    while (left < right) {
+      [nums[left], nums[right]] = [nums[right], nums[left]];
+      left++;
+      right--;
+    }
+  };
+  //  to find the next larger number -> 1, 5, 8, 5, 1, 3, 4, 6, 7
+  reverse(nums, first + 1);
+};
+
