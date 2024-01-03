@@ -176,6 +176,16 @@ class MinHeap {
 /* Given an array of meeting time intervals intervals where intervals[i] = [starti, endi], return the minimum number of conference rooms required.
  */
 const minMeetingRoom = (intervals) => {
+
+    /* pseudo code
+        sort the given intervals by their start times
+        move through the intervals
+            remove all the intervals from MinPQ whose end times are less or equal to curr interval's start time
+                cause we don't need another room
+            keep adding the interval end time in MinPQ
+        return the size of MinPQ
+    */
+
     // Sort the intervals based on start time
     intervals.sort((a, b) => a[0] - b[0]);
 
@@ -208,17 +218,26 @@ const minMeetingRoom = (intervals) => {
  * @return {number[]}
  */
 const topKFrequent = (nums, k) => {
+
+    /* pseudo code
+        maintain freq of each num in a map
+        move through the entries of map
+            push the entry in the min heap
+            maintain the size of heap equal to k
+                this will have top k freq nums
+    */
+
     //  maintain frequency in the map
     const map = {}
-    //  maintain elements by their frequency in the heap
-    const minHeap = new MinPriorityQueue()
-
-    const res = []
-
     //  track frequency of each num
     for (const n of nums) {
         map[n] = map[n] + 1 || 1
     }
+
+    //  maintain elements by their frequency in the heap
+    const minHeap = new MinPriorityQueue()
+
+    const res = []
 
     for (const [element, count] of Object.entries(map)) {
         minHeap.enqueue(element, count)
@@ -279,10 +298,13 @@ Given three integers a​​​​​, b,​​​​​ and c​​​​​, r
  */
 const maximumScore = (a, b, c) => {
 
-    //  use max heap to track sizes of piles
-    //  take two largest piles and get a score as per condition
-    //  then put the piles back
-
+    /* pseudo code
+        use max heap to track sizes of piles
+        move through the heap
+            take two largest piles, remove a pile and put back in the heap
+            then put the piles back
+            keep tracking the score
+     */
     const maxHeap = new MaxHeap()
     maxHeap.push(a)
     maxHeap.push(b)

@@ -754,3 +754,48 @@ const minTime = (n, edges, hasApple) => {
   return dfs(0, -1);
 };
 
+/* Explain dijkstra algorithm */
+
+const dijkstra = (graph, startNode) => {
+  const INF = Number.MAX_SAFE_INTEGER;
+  const n = graph.length;
+  const distances = new Array(n).fill(INF); // Array to store the shortest distances from startNode to all other nodes
+  const visited = new Array(n).fill(false); // Array to track visited nodes
+
+  distances[startNode] = 0; // Distance from startNode to itself is always 0
+
+  const minDistance = (distances, visited) => {
+    let min = Number.MAX_SAFE_INTEGER;
+    let minIndex = -1;
+
+    for (let i = 0; i < distances.length; i++) {
+      // Find the node with the minimum distance value among the unvisited nodes
+      if (!visited[i] && distances[i] <= min) {
+        min = distances[i];
+        minIndex = i;
+      }
+    }
+
+    return minIndex; // Return the index of the node with the minimum distance
+  }
+
+  for (let i = 0; i < n - 1; i++) {
+    const u = minDistance(distances, visited); // Find the node with the minimum distance value among the unvisited nodes
+    visited[u] = true; // Mark the selected node as visited
+
+    for (let v = 0; v < n; v++) {
+      // Update distance[v] if and only if it is not visited, there is an edge from u to v, the total weight from startNode to v through u is smaller than the current value of distance[v]
+      if (
+        !visited[v] &&
+        graph[u][v] !== 0 &&
+        distances[u] !== INF &&
+        distances[u] + graph[u][v] < distances[v]
+      ) {
+        distances[v] = distances[u] + graph[u][v]; // Update the distance[v] value
+      }
+    }
+  }
+
+  return distances; // Return the array of shortest distances
+}
+

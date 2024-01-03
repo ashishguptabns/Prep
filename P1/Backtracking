@@ -180,6 +180,13 @@ const subsets = (nums) => {
 Return the number of possible non-empty sequences of letters you can make using the letters printed on those tiles.
  */
 const numTilePossibilities = (tiles) => {
+
+    /* pseudo code
+        backtrack with curr seq and left tiles array
+            move i through given tiles array
+                backtrack with new seq and tiles array except ith tile
+    */
+
     const set = new Set()
 
     const backTrack = (currSeq, leftTiles) => {
@@ -201,6 +208,11 @@ const numTilePossibilities = (tiles) => {
  * @return {string[]}
  */
 const letterCombinations = (digits) => {
+
+    /* pseudo code
+        
+    */
+
     const letterMap = {
         '2': 'abc',
         '3': 'def',
@@ -213,7 +225,7 @@ const letterCombinations = (digits) => {
     }
     const list = []
 
-    const findCombinations = (currCharIndex, currString, digits, list, letterMap) => {
+    const backtrack = (currCharIndex, currString, digits, list, letterMap) => {
         if (currCharIndex == digits.length) {
             //  considered all the characters
             list.push(currString)
@@ -222,13 +234,13 @@ const letterCombinations = (digits) => {
             const currChars = letterMap[currDigit]
             for (const c of currChars) {
                 //  run the backtracking for each character for each digit
-                findCombinations(currCharIndex + 1, currString + c, digits, list, letterMap)
+                backtrack(currCharIndex + 1, currString + c, digits, list, letterMap)
             }
         }
     }
 
     if (digits.length > 0) {
-        findCombinations(0, '', digits, list, letterMap)
+        backtrack(0, '', digits, list, letterMap)
     }
 
     return list
