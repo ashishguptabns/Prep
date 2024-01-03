@@ -419,43 +419,6 @@ const findOrder = (numCourses, prerequisites) => {
   return numCourses === 0 ? res : [];
 };
 
-/* Minimum Time to Collect All Apples in a Tree - Given an undirected tree consisting of n vertices numbered from 0 to n-1, which has some apples in their vertices. You spend 1 second to walk over one edge of the tree. Return the minimum time in seconds you have to spend to collect all apples in the tree, starting at vertex 0 and coming back to this vertex.
-
-The edges of the undirected tree are given in the array edges, where edges[i] = [ai, bi] means that exists an edge connecting the vertices ai and bi. Additionally, there is a boolean array hasApple, where hasApple[i] = true means that vertex i has an apple; otherwise, it does not have any apple.
- */
-/**
- * @param {number} n
- * @param {number[][]} edges
- * @param {boolean[]} hasApple
- * @return {number}
- */
-const minTime = (n, edges, hasApple) => {
-  const adjlist = Array.from({ length: n }, () => new Array());
-  for (const [from, to] of edges) {
-    //  undirected edges
-    adjlist[from].push(to);
-    adjlist[to].push(from);
-  }
-
-  const dfs = (node, parent) => {
-    let pathlen = 0;
-    for (const neighbour of adjlist[node]) {
-      if (neighbour == parent) {
-        //  skip the parent cause counting is already done
-        continue;
-      }
-      pathlen += dfs(neighbour, node);
-    }
-    if (node == 0) {
-      return pathlen;
-    }
-    return pathlen > 0 || hasApple[node] ? pathlen + 2 : 0;
-  }
-
-  //  start with root
-  return dfs(0, -1);
-};
-
 /* Find eventual safe states - There is a directed graph of n nodes with each node labeled from 0 to n - 1. The graph is represented by a 0 - indexed 2D integer array graph where graph[i] is an integer array of nodes adjacent to node i, meaning there is an edge from node i to each node in graph[i].
 
 A node is a terminal node if there are no outgoing edges.A node is a safe node if every possible path starting from that node leads to a terminal node(or another safe node).
@@ -467,6 +430,15 @@ Return an array containing all the safe nodes of the graph.The answer should be 
  * @return {number[]}
  */
 const eventualSafeNodes = (graph) => {
+
+  /* pseudo code
+    go through each node in the graph
+      run a DFS to check if it is a safe node
+        keep a map to maintain safe/unsafe boolean for each node
+        run a DFS for each neighbour
+        set true in map if no unsafe nodes are found
+  */
+
   const ans = [];
   const map = new Map();
   const dfs = (graph, node, map) => {
@@ -512,9 +484,17 @@ Note that edges may contain cycles.
  * @param {number} node2
  * @return {number}
  */
-// This function finds the closest meeting node between two nodes in a graph represented by edges.
-// It takes the graph edges, and two nodes (node1 and node2) as parameters.
 const closestMeetingNode = (edges, node1, node2) => {
+
+  /* pseudo code
+    keep two maps and store distances of each node from node1 and node2
+      notice circular edges
+    go through the edges
+      for each node find the max distance between node1 and node2
+      if distance is less than max so far
+        update the distance and the node
+  */
+
   // Initialize two maps to store the distances from node1 and node2 to each node in the graph.
   const map1 = {};
   const map2 = {};
@@ -571,6 +551,21 @@ You are given a list of strings words from the alien language's dictionary, wher
 Return a string of the unique letters in the new alien language sorted in lexicographically increasing order by the new language's rules. If there is no solution, return "". If there are multiple solutions, return any of them.
  */
 const alienOrder = (words) => {
+
+  /* pseudo code
+    we will need a graph of chars and indegree of each char to find the order
+    go through each word
+      consider curr word and next word
+      move j through smaller word
+        if chars at j are different
+          build an edge from curr word char to next word char
+          increase the indegree of next word char
+          break the loop for next word
+    start a BFS with chars having 0 indegree
+      visit neighbours of curr char and decrease indegrees
+      move the char with 0 indegree to the queue
+  */
+
   // Create a map to represent the graph of characters and their relationships
   const charGraph = new Map();
   // Create a map to store the indegree (number of incoming edges) for each character
@@ -711,5 +706,51 @@ const countSubTrees = (n, edges, labels) => {
 
   // Return the result array
   return ans
+};
+
+/* Minimum Time to Collect All Apples in a Tree - Given an undirected tree consisting of n vertices numbered from 0 to n-1, which has some apples in their vertices. You spend 1 second to walk over one edge of the tree. Return the minimum time in seconds you have to spend to collect all apples in the tree, starting at vertex 0 and coming back to this vertex.
+
+The edges of the undirected tree are given in the array edges, where edges[i] = [ai, bi] means that exists an edge connecting the vertices ai and bi. Additionally, there is a boolean array hasApple, where hasApple[i] = true means that vertex i has an apple; otherwise, it does not have any apple.
+ */
+/**
+ * @param {number} n
+ * @param {number[][]} edges
+ * @param {boolean[]} hasApple
+ * @return {number}
+ */
+const minTime = (n, edges, hasApple) => {
+
+  /* pseudo code
+    build a graph from the edges
+      a -> b, b -> a
+    start a DFS from the root with parent as -1
+      run a DFS for all neighbours except parent
+      keep adding the path lengths found from DFS
+  */
+
+  const adjlist = Array.from({ length: n }, () => new Array());
+  for (const [from, to] of edges) {
+    //  undirected edges
+    adjlist[from].push(to);
+    adjlist[to].push(from);
+  }
+
+  const dfs = (node, parent) => {
+    let pathlen = 0;
+    for (const neighbour of adjlist[node]) {
+      if (neighbour == parent) {
+        //  skip the parent cause counting is already done
+        continue;
+      }
+      pathlen += dfs(neighbour, node);
+    }
+    if (node == 0) {
+      return pathlen;
+    }
+    return pathlen > 0 || hasApple[node] ? pathlen + 2 : 0;
+  }
+
+  //  start with root
+  return dfs(0, -1);
 };
 
