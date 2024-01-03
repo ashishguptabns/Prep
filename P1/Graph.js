@@ -1,3 +1,35 @@
+/* Smallest set of vertices to reach all nodes - Given a directed acyclic graph, with n vertices numbered from 0 to n-1, and an array edges where edges[i] = [fromi, toi] represents a directed edge from node fromi to node toi.
+
+Find the smallest set of vertices from which all nodes in the graph are reachable. It's guaranteed that a unique solution exists.
+ */
+const findSmallestSetOfVertices = (n, edges) => {
+
+  /* pseudo code
+    count indegrees of each node and find the node which has no indegree and hence the node we need to find 
+  */
+
+  //  nodes are numbered 0 to n - 1
+  //  by default 0 edges are incoming
+  const indegree = Array(n).fill(0)
+
+  //  track how many edges are incoming in each node
+  for (const [from, to] of edges) {
+    //  maintain count of incoming edges to this node
+    indegree[to]++
+  }
+
+  const res = []
+
+  for (const node in indegree) {
+    //  found a node which is unreachable from other nodes
+    if (indegree[node] === 0) {
+      res.push(node)
+    }
+  }
+
+  return res
+};
+
 /* Surrounded regions -Given an m x n matrix board containing 'X' and 'O', capture all regions that are 4-directionally surrounded by 'X'.
 
 A region is captured by flipping all 'O's into 'X's in that surrounded region.
@@ -62,7 +94,7 @@ const allPathsSourceTarget = (graph) => {
     srcIndex = 0, targetIndex = graphsize - 1 
     start DFS from 0
       keep tracking the nodes in curr path
-      visit each neighbour of the curr node
+      visit each neighbour of the curr node and do a DFS
       maintain curr node in visited map
   */
 
@@ -106,6 +138,19 @@ Given the integer n and the array dislikes where dislikes[i] = [ai, bi] indicate
  * @return {boolean}
  */
 const possibleBipartition = (n, dislikes) => {
+
+  /* pseudo code 
+    create a graph from dislikes array
+      a -> b and b -> a
+    move through each node till n
+      maintain color
+      start a BFS 
+        go through neighbours of current node 
+          color should not match
+          give a color
+          push in the queue for next travel
+  */
+
   //  Create the adjacency list graph
   //  notice label is from 1 to n
   const adjList = Array(n + 1).fill(null).map(() => []);
@@ -153,39 +198,24 @@ const possibleBipartition = (n, dislikes) => {
   return true;
 };
 
-/* Smallest set of vertices to reach all nodes - Given a directed acyclic graph, with n vertices numbered from 0 to n-1, and an array edges where edges[i] = [fromi, toi] represents a directed edge from node fromi to node toi.
-
-Find the smallest set of vertices from which all nodes in the graph are reachable. It's guaranteed that a unique solution exists.
- */
-const findSmallestSetOfVertices = (n, edges) => {
-
-  //  count indegrees of each node and find the node which has no indegree and hence the node we need to find
-
-  //  nodes are numbered 0 to n - 1
-  //  by default 0 edges are incoming
-  const indegree = Array(n).fill(0)
-
-  //  track how many edges are incoming in each node
-  for (const [from, to] of edges) {
-    //  maintain count of incoming edges to this node
-    indegree[to]++
-  }
-
-  const res = []
-
-  for (const node in indegree) {
-    //  found a node which is unreachable from other nodes
-    if (indegree[node] === 0) {
-      res.push(node)
-    }
-  }
-
-  return res
-};
-
 /* Parallel courses - Find the minimum number of semesters needed to take all courses given a set of prerequisites and a maximum number of courses you can take per semester.
  */
 const minSemesters = (n, prerequisites, k) => {
+
+  /* pseudo code
+    build a graph
+      prereq -> array of courses
+      maintain indegree of each course - how many prereqs are needed
+    start BFS with courses which have 0 prereqs
+      decide number of courses to process
+      go through kids and reduce the indegree cause this course has been taken
+      if a kid has 0 indegree 
+        add to the queue as it is ready to be taken
+      keep tracking num sems
+    check if there are still some courses with indegree more than 0
+      can't take all courses
+  */
+
   const graph = new Map();
   const indegree = Array(n + 1).fill(0);
 
@@ -255,6 +285,14 @@ A node u is an ancestor of another node v if u can reach v via a set of edges.
  * @return {number[][]}
  */
 const getAncestors = (n, edges) => {
+
+  /* pseudo code
+    build a graph
+    go through all nodes till n
+      do a BFS on neighbours of current node
+        keep pushing current node as an ancestor of the node being visited in BFS
+  */
+
   // Build a graph
   const graph = Array(n);
   for (let i = 0; i < graph.length; i++) {
@@ -271,9 +309,9 @@ const getAncestors = (n, edges) => {
   }
 
   // Process all ancestors from 0 to n. This will ensure sorted order in the output.
-  for (let ancestor = 0; ancestor < graph.length; ancestor++) {
+  for (let originNode = 0; originNode < n; originNode++) {
     //  we can go to neighbours from this ancestor
-    const neighbors = graph[ancestor];
+    const neighbors = graph[originNode];
 
     // Use BFS to traverse the entire path from any ancestor
     let queue = neighbors;
@@ -291,7 +329,7 @@ const getAncestors = (n, edges) => {
         // Only record the ancestor if we haven't seen this node yet
         if (!seen.has(currNode)) {
           seen.add(currNode);
-          ancestors[currNode].push(ancestor);
+          ancestors[currNode].push(originNode);
 
           // The first time we reach the node, we populate the queue with the neighbors of current node
           // to continue the BFS
@@ -311,7 +349,7 @@ const getAncestors = (n, edges) => {
 /* Course Schedule - There are a total of numCourses courses you have to take, labeled from 0 to numCourses - 1. You are given an array prerequisites where prerequisites[i] = [ai, bi] indicates that you must take course bi first if you want to take course ai.
 
 For example, the pair[0, 1], indicates that to take course 0 you have to first take course 1.
-Return true if you can finish all courses.Otherwise, return false.
+return order of courses
  */
 /**
  * @param {number} numCourses
@@ -320,6 +358,16 @@ Return true if you can finish all courses.Otherwise, return false.
  */
 // Function to find the order of courses
 const findOrder = (numCourses, prerequisites) => {
+
+  /* pseudo code
+    maintain indegree of each course
+    start a BFS with courses with 0 indegree
+      go through prereqs
+        keep reducing the indegrees of courses for which this prereq was needed
+        when a course has 0 indegree
+          add to the queue
+    check if all the courses have been taken
+  */
 
   // Array to store the in-degrees of each course
   const inDegrees = Array(numCourses).fill(0);
@@ -334,8 +382,7 @@ const findOrder = (numCourses, prerequisites) => {
 
   // Add courses with in-degree 0 to the queue
   for (let i = 0; i < inDegrees.length; i++) {
-    const degree = inDegrees[i];
-    if (degree === 0) {
+    if (inDegrees[i] === 0) {
       q.push(i);
     }
   }
@@ -357,7 +404,7 @@ const findOrder = (numCourses, prerequisites) => {
     // Update in-degrees for courses dependent on the current course
     for (const [v, u] of prerequisites) {
       if (u === currCourse) {
-        //  course v got unlocked now
+        //  course v got one prereq unlock
         inDegrees[v]--;
 
         // If the in-degree becomes 0, add the course to the queue as we can take this course now
@@ -370,67 +417,6 @@ const findOrder = (numCourses, prerequisites) => {
 
   // If all courses can be taken, return the result; otherwise, return an empty array
   return numCourses === 0 ? res : [];
-};
-
-/* Number of Nodes in the Sub-Tree With the Same Label - You are given a tree (i.e. a connected, undirected graph that has no cycles) consisting of n nodes numbered from 0 to n - 1 and exactly n - 1 edges. The root of the tree is the node 0, and each node of the tree has a label which is a lower-case character given in the string labels (i.e. The node with the number i has the label labels[i]).
-
-The edges array is given on the form edges[i] = [ai, bi], which means there is an edge between nodes ai and bi in the tree.
-
-Return an array of size n where ans[i] is the number of nodes in the subtree of the ith node which have the same label as node i.
- */
-/**
- * @param {number} n
- * @param {number[][]} edges
- * @param {string} labels
- * @return {number[]}
- */
-const countSubTrees = (n, edges, labels) => {
-  // Create an adjacency list to represent the undirected graph
-  const adjList = Array.from(Array(n), () => new Array())
-
-  // Create the undirected graph
-  for (const [from, to] of edges) {
-    adjList[from].push(to)
-    adjList[to].push(from)
-  }
-
-  // Initialize an array to store the result for each node
-  const ans = Array(n).fill(0)
-
-  // Initialize an array to count the occurrences of each character in the subtree
-  const count = Array(26).fill(0)
-
-  // Depth-first search (DFS) function to traverse the tree
-  const dfs = (node, parent, pcount) => {
-    // Initialize an array to count the occurrences of each character in the current subtree
-    const count = Array(26).fill(0)
-
-    // Traverse each neighbor of the current node
-    for (const neighbour of adjList[node]) {
-      // Skip the parent node to avoid revisiting it
-      if (neighbour === parent) {
-        continue
-      }
-
-      // Recursively call DFS for the current neighbor
-      dfs(neighbour, node, count)
-    }
-
-    // Increment the count for the character at the current node
-    count[labels.charCodeAt(node) - 97]++
-    ans[node] = count[labels.charCodeAt(node) - 97]
-
-    // Update the parent count array with the counts from the current subtree
-    for (let i = 0; i < 26; i++) {
-      pcount[i] += count[i]
-    }
-  }
-
-  // Start DFS from the root node (node 0) with a dummy parent (-1) and initial count array
-  dfs(0, -1, count)
-
-  // Return the result array
-  return ans
 };
 
 /* Minimum Time to Collect All Apples in a Tree - Given an undirected tree consisting of n vertices numbered from 0 to n-1, which has some apples in their vertices. You spend 1 second to walk over one edge of the tree. Return the minimum time in seconds you have to spend to collect all apples in the tree, starting at vertex 0 and coming back to this vertex.
@@ -665,4 +651,65 @@ const alienOrder = (words) => {
   // Check if all nodes have been visited (no cycles) and return the result as a string
   return seen.size === charGraph.size ? result.join('') : '';
 }
+
+/* Number of Nodes in the Sub-Tree With the Same Label - You are given a tree (i.e. a connected, undirected graph that has no cycles) consisting of n nodes numbered from 0 to n - 1 and exactly n - 1 edges. The root of the tree is the node 0, and each node of the tree has a label which is a lower-case character given in the string labels (i.e. The node with the number i has the label labels[i]).
+
+The edges array is given on the form edges[i] = [ai, bi], which means there is an edge between nodes ai and bi in the tree.
+
+Return an array of size n where ans[i] is the number of nodes in the subtree of the ith node which have the same label as node i.
+ */
+/**
+ * @param {number} n
+ * @param {number[][]} edges
+ * @param {string} labels
+ * @return {number[]}
+ */
+const countSubTrees = (n, edges, labels) => {
+  // Create an adjacency list to represent the undirected graph
+  const adjList = Array.from(Array(n), () => new Array())
+
+  // Create the undirected graph
+  for (const [from, to] of edges) {
+    adjList[from].push(to)
+    adjList[to].push(from)
+  }
+
+  // Initialize an array to store the result for each node
+  const ans = Array(n).fill(0)
+
+  // Initialize an array to count the occurrences of each character in the subtree
+  const count = Array(26).fill(0)
+
+  // Depth-first search (DFS) function to traverse the tree
+  const dfs = (node, parent, pcount) => {
+    // Initialize an array to count the occurrences of each character in the current subtree
+    const count = Array(26).fill(0)
+
+    // Traverse each neighbor of the current node
+    for (const neighbour of adjList[node]) {
+      // Skip the parent node to avoid revisiting it
+      if (neighbour === parent) {
+        continue
+      }
+
+      // Recursively call DFS for the current neighbor
+      dfs(neighbour, node, count)
+    }
+
+    // Increment the count for the character at the current node
+    count[labels.charCodeAt(node) - 97]++
+    ans[node] = count[labels.charCodeAt(node) - 97]
+
+    // Update the parent count array with the counts from the current subtree
+    for (let i = 0; i < 26; i++) {
+      pcount[i] += count[i]
+    }
+  }
+
+  // Start DFS from the root node (node 0) with a dummy parent (-1) and initial count array
+  dfs(0, -1, count)
+
+  // Return the result array
+  return ans
+};
 
