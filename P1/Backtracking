@@ -1,6 +1,15 @@
 /* Generate Parentheses - Given n pairs of parentheses, write a function to generate all combinations of well-formed parentheses. */
 
 const generateParenthesis = (n) => {
+
+    /* pseudo code 
+        backtrack with num left brackets, right brackets and formed string so far
+            if left brackets are less than n
+                keep backtracking with more left braces
+            if right braces are less than left ones
+                keep backtracking with more right braces 
+    */
+
     const res = []
 
     //  l: left taken, r: right taken
@@ -23,6 +32,166 @@ const generateParenthesis = (n) => {
     backTrack(0, 0, '')
 
     return res
+};
+
+/* Non-decreasing Subsequences - Given an integer array nums, return all the different possible non-decreasing subsequences of the given array with at least two elements. You may return the answer in any order.
+ */
+/**
+ * @param {number[]} nums
+ * @return {number[][]}
+ */
+const findSubsequences = (nums) => {
+
+    /* pseudo code
+        back track with curr index in nums array
+            keep pushing to res array as per condition
+            move through nums array
+                back track with a valid item
+    */
+
+    const res = []
+
+    //  maintain a map of all subseqs found so far to avoid repeats
+    const map = {}
+    const backtrack = (index, currSS) => {
+        if (map[currSS]) {
+            //  we already have this subseq
+            return;
+        }
+        //  mark as found
+        map[currSS] = true;
+
+        if (currSS.length >= 2) {
+            //  as per condition
+            res.push(currSS)
+        }
+        for (let i = index; i < nums.length; i++) {
+            if (currSS.at(-1) > nums[i]) {
+                //  curr element is smaller than the last element of subseq
+                continue;
+            }
+            backtrack(i + 1, [...currSS, nums[i]])
+        }
+    }
+    backtrack(0, [])
+    return res;
+};
+
+/* Permutations - Given an array nums of distinct integers, return all the possible permutations. You can return the answer in any order.
+ */
+const permute = (nums) => {
+
+    /* pseudo code
+        backtrack with curr arr and nums arr
+            run through whole nums array
+                backtrack with (curr arr + curr item) and (nums except curr item)
+    */
+
+    const res = []
+
+    const backTrack = (currArr, nums) => {
+        if (nums.length === 0) {
+            res.push(currArr)
+            return
+        }
+        for (let i = 0; i < nums.length; i++) {
+            //  add ith item to currArr and remove from nums for further iteration
+            backTrack([...currArr, nums[i]], [...nums.slice(0, i), ...nums.slice(i + 1)], res)
+        }
+    }
+
+    backTrack([], nums)
+    return res
+};
+
+/* Combination Sum - Given a collection of candidate numbers (candidates) and a target number (target), find all unique combinations in candidates where the candidate numbers sum to target.
+
+Each number in candidates may only be used once in the combination.
+
+Note: The solution set must not contain duplicate combinations.
+ */
+/**
+ * @param {number[]} candidates
+ * @param {number} target
+ * @return {number[][]}
+ */
+const combinationSum = (candidates, target) => {
+
+    /* pseudo code
+        backtrack with curr index, curr arr and left target    
+            run through the candidates from curr index
+                backtrack with target left 
+    */
+
+    const res = []
+
+    const backTrack = (currIndex, currArr, targetLeft) => {
+        if (0 === targetLeft) {
+            res.push([...currArr])
+            return
+        }
+        if (targetLeft < 0) {
+            return
+        }
+        for (let i = currIndex; i < candidates.length; i++) {
+            //  same item can be considered multiple times
+            backTrack(i, [...currArr, candidates[i]], targetLeft - candidates[i])
+        }
+    }
+    backTrack(0, [], target)
+
+    return res
+};
+
+/* Power set - Given an integer array nums of unique elements, return all possible 
+subsets (the power set).
+
+The solution set must not contain duplicate subsets. Return the solution in any order
+ */
+const subsets = (nums) => {
+
+    /* pseudo code
+        backtrack with curr index and curr subset
+            run through nums array from curr index
+                backtrack with new index and new subset
+    */
+
+    //  this will contain all the subsets    
+    const result = []
+
+    const backTrack = (startIndex, currSubset) => {
+        //  we need all possible subsets
+        result.push([...currSubset])
+
+        //  find all possible subsets going forward
+        for (let i = startIndex; i < nums.length; i++) {
+            //  all possible subsets with the current element
+            backTrack(i + 1, [nums[i], ...currSubset])
+        }
+    }
+
+    backTrack(0, [])
+
+    return result
+};
+
+/* Letter tile possibilities - You have n tiles, where each tile has one letter tiles[i] printed on it.
+
+Return the number of possible non-empty sequences of letters you can make using the letters printed on those tiles.
+ */
+const numTilePossibilities = (tiles) => {
+    const set = new Set()
+
+    const backTrack = (currSeq, leftTiles) => {
+        if (currSeq.length > 0) {
+            set.add(currSeq)
+        }
+        for (let i = 0; i < leftTiles.length; i++) {
+            backTrack(currSeq + leftTiles[i], leftTiles.slice(0, i) + leftTiles.slice(i + 1))
+        }
+    }
+    backTrack('', tiles)
+    return set.size
 };
 
 /* Letter Combinations of a Phone Number - Given a string containing digits from 2-9 inclusive, return all possible letter combinations that the number could represent. Return the answer in any order.
@@ -63,143 +232,5 @@ const letterCombinations = (digits) => {
     }
 
     return list
-};
-
-/* Non-decreasing Subsequences - Given an integer array nums, return all the different possible non-decreasing subsequences of the given array with at least two elements. You may return the answer in any order.
- */
-/**
- * @param {number[]} nums
- * @return {number[][]}
- */
-const findSubsequences = (nums) => {
-    const res = []
-
-    //  maintain a map of all subseqs found so far to avoid repeats
-    const map = {}
-    const iterate = (index, currSS) => {
-        if (map[currSS]) {
-            //  we already have this subseq
-            return;
-        }
-        //  mark as found
-        map[currSS] = true;
-
-        if (currSS.length >= 2) {
-            //  as per condition
-            res.push(currSS)
-        }
-        for (let i = index; i < nums.length; i++) {
-            if (currSS.at(-1) > nums[i]) {
-                //  curr element is smaller than the last element of subseq
-                continue;
-            }
-            iterate(i + 1, [...currSS, nums[i]])
-        }
-    }
-    iterate(0, [])
-    return res;
-};
-
-/* Permutations - Given an array nums of distinct integers, return all the possible permutations. You can return the answer in any order.
- */
-const permute = (nums) => {
-    const res = []
-
-    const backTrack = (currArr, nums) => {
-        if (nums.length === 0) {
-            res.push(currArr)
-            return
-        }
-        for (let i = 0; i < nums.length; i++) {
-            //  add ith item to currArr and remove from nums for further iteration
-            backTrack([...currArr, nums[i]], [...nums.slice(0, i), ...nums.slice(i + 1)], res)
-        }
-    }
-
-    backTrack([], nums)
-    return res
-};
-
-/* Combination Sum - Given a collection of candidate numbers (candidates) and a target number (target), find all unique combinations in candidates where the candidate numbers sum to target.
-
-Each number in candidates may only be used once in the combination.
-
-Note: The solution set must not contain duplicate combinations.
- */
-/**
- * @param {number[]} candidates
- * @param {number} target
- * @return {number[][]}
- */
-const combinationSum = (candidates, target) => {
-    const res = []
-
-    const backTrack = (currIndex, currArr, targetLeft) => {
-        if (0 === targetLeft) {
-            res.push([...currArr])
-            return
-        }
-        if (targetLeft < 0) {
-            return
-        }
-        for (let i = currIndex; i < candidates.length; i++) {
-            currArr.push(candidates[i])
-            backTrack(i, currArr, targetLeft - candidates[i])
-            //  remove for next iteration
-            currArr.pop()
-        }
-    }
-    backTrack(0, [], target)
-
-    return res
-};
-
-/* Power set - Given an integer array nums of unique elements, return all possible 
-subsets (the power set).
-
-The solution set must not contain duplicate subsets. Return the solution in any order
- */
-const subsets = (nums) => {
-    //  this will contain all the subsets    
-    const result = []
-
-    const backTrack = (startIndex, currSubset) => {
-        //  we need all possible subsets
-        result.push([...currSubset])
-
-        //  find all possible subsets going forward
-        for (let i = startIndex; i < nums.length; i++) {
-
-            //  all possible subsets with the current element
-            currSubset.push(nums[i])
-            backTrack(i + 1, currSubset)
-
-            //  remove the current element for the next iteration of for loop            
-            currSubset.pop()
-        }
-    }
-
-    backTrack(0, [])
-
-    return result
-};
-
-/* Letter tile possibilities - You have n tiles, where each tile has one letter tiles[i] printed on it.
-
-Return the number of possible non-empty sequences of letters you can make using the letters printed on those tiles.
- */
-const numTilePossibilities = (tiles) => {
-    const set = new Set()
-
-    const backTrack = (currSeq, leftTiles) => {
-        if (currSeq.length > 0) {
-            set.add(currSeq)
-        }
-        for (let i = 0; i < leftTiles.length; i++) {
-            backTrack(currSeq + leftTiles[i], leftTiles.slice(0, i) + leftTiles.slice(i + 1))
-        }
-    }
-    backTrack('', tiles)
-    return set.size
 };
 
