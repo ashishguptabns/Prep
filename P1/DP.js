@@ -1042,8 +1042,76 @@ const isInterleave = (s1, s2, s3) => {
     return dp[s1.length][s2.length];
 };
 
-// todo
-/* Minimum Path Sum */
+/* Minimum Path Sum - Given a m x n grid filled with non-negative numbers, find a path from top left to bottom right, which minimizes the sum of all numbers along its path.
 
-// todo
-/* Partition Equal Subset Sum */
+Note: You can only move either down or right at any point in time.
+*/
+/**
+ * @param {number[][]} grid
+ * @return {number}
+ */
+const minPathSum = (grid) => {
+    // Iterate through each row of the grid
+    for (let r = 0; r < grid.length; r++) {
+        // Iterate through each column of the grid
+        for (let c = 0; c < grid[0].length; c++) {
+            // Skip the top-left corner (starting point) as it has no incoming paths
+            if (r === 0 && c === 0) {
+                continue;
+            }
+
+            // Calculate the minimum sum by considering the top and left neighboring values
+            // If there's a value to the left of the current cell, get its value; otherwise, use Infinity
+            const left = c > 0 ? grid[r][c - 1] : Infinity;
+
+            // If there's a value above the current cell, get its value; otherwise, use Infinity
+            const top = r > 0 ? grid[r - 1][c] : Infinity;
+
+            // Update the current cell with the minimum sum of the top and left values plus its own value
+            grid[r][c] = Math.min(left, top) + grid[r][c];
+        }
+    }
+
+    // Return the minimum path sum found in the bottom-right corner of the grid
+    return grid[grid.length - 1][grid[0].length - 1];
+};
+
+/* Partition Equal Subset Sum - Given an integer array nums, return true if you can partition the array into two subsets such that the sum of the elements in both subsets is equal or false otherwise.
+ */
+
+/**
+ * @param {number[]} nums
+ * @return {boolean}
+ */
+// Define a function to check if it's possible to partition an array into two subsets with equal sums
+const canPartition = (nums) => {
+    let sum = nums.reduce((prevVal, currValue) => prevVal + currValue, 0); // Calculate the sum of all values in the array
+
+    // If the sum is odd, it cannot be partitioned into two subsets with equal sums
+    if (sum % 2 !== 0) {
+        return false;
+    }
+
+    let target = sum / 2; // Calculate the target sum for each subset
+    let dp = new Set(); // Use a set to keep track of unique sums
+    dp.add(0); // Initialize with 0 as an empty subset has a sum of 0
+
+    // Iterate through the array in reverse order
+    for (let i = nums.length - 1; i >= 0; i--) {
+        let nextDp = new Set(); // Create a new set for the next iteration
+
+        // Iterate through the values in the current set
+        for (const ele of dp.values()) {
+            let newVal = ele + nums[i]; // Calculate the new sum by adding the current element
+            if (newVal === target) {
+                return true;
+            } // If the new sum is equal to the target, return true
+
+            nextDp.add(newVal); // Add the new sum to the next set
+        }
+
+        dp = new Set([...dp, ...nextDp]); // Combine the current set and the next set for the next iteration
+    }
+
+    return false; // If no subset with the target sum is found, return false
+};
