@@ -647,6 +647,98 @@ const alienOrder = (words) => {
   return seen.size === charGraph.size ? result.join('') : '';
 }
 
+/* Minimum Time to Collect All Apples in a Tree - Given an undirected tree consisting of n vertices numbered from 0 to n-1, which has some apples in their vertices. You spend 1 second to walk over one edge of the tree. Return the minimum time in seconds you have to spend to collect all apples in the tree, starting at vertex 0 and coming back to this vertex.
+
+The edges of the undirected tree are given in the array edges, where edges[i] = [ai, bi] means that exists an edge connecting the vertices ai and bi. Additionally, there is a boolean array hasApple, where hasApple[i] = true means that vertex i has an apple; otherwise, it does not have any apple.
+ */
+/**
+ * @param {number} n
+ * @param {number[][]} edges
+ * @param {boolean[]} hasApple
+ * @return {number}
+ */
+const minTime = (n, edges, hasApple) => {
+
+  /* pseudo code
+    build a graph from the edges
+      a -> b, b -> a
+    start a DFS from the root with parent as -1
+      run a DFS for all neighbours except parent
+      keep adding the path lengths found from DFS
+  */
+
+  const adjlist = Array.from({ length: n }, () => new Array());
+  for (const [from, to] of edges) {
+    //  undirected edges
+    adjlist[from].push(to);
+    adjlist[to].push(from);
+  }
+
+  const dfs = (node, parent) => {
+    let pathlen = 0;
+    for (const neighbour of adjlist[node]) {
+      if (neighbour == parent) {
+        //  skip the parent cause counting is already done
+        continue;
+      }
+      pathlen += dfs(neighbour, node);
+    }
+    if (node == 0) {
+      return pathlen;
+    }
+    return pathlen > 0 || hasApple[node] ? pathlen + 2 : 0;
+  }
+
+  //  start with root
+  return dfs(0, -1);
+};
+
+/* Dijkstra's algorithm for finding the shortest paths in a graph 
+
+Function signature: dijkstra(graph, start)
+Input: graph - a graph object with nodes, neighbors, and weights
+       start - the starting node for the algorithm
+*/
+
+const dijkstra = (graph, startNode) => {
+  // Create a set of unvisited nodes, distances, and a priority queue
+  const unvisitedNodes = new Set(graph.nodes);
+  const distances = {};
+  const pq = new MinPriorityQueue();
+
+  // Initialize distances to all nodes as undefined (Infinity will be used in the comparisons)
+  // Set the distance of the start node to 0
+  distances[startNode] = 0;
+  // Enqueue the start node with its distance (0) into the priority queue
+  pq.enqueue(startNode, 0);
+
+  // Continue until all nodes are visited
+  while (!pq.isEmpty()) {
+    // Get the node with the smallest tentative distance from the priority queue
+    const currentNode = pq.dequeue().element;
+
+    // Mark the current node as visited by removing it from the set of unvisited nodes
+    unvisitedNodes.delete(currentNode);
+
+    for (const neighbor in graph.neighbors(currentNode)) {
+      // Calculate the tentative distance from the start to the neighbor through the current node
+      const tentativeDistance = distances[currentNode] + graph.weights[currentNode][neighbor];
+
+      // If the tentative distance is smaller than the current distance to the neighbor
+      // or the neighbor's distance is undefined (not yet visited)
+      if (!distances[neighbor] || tentativeDistance < distances[neighbor]) {
+        // Update the distance for the neighbor
+        distances[neighbor] = tentativeDistance;
+
+        // Enqueue the neighbor with its new tentative distance into the priority queue
+        pq.enqueue(neighbor, tentativeDistance);
+      }
+    }
+  }
+
+  return distances;
+}
+
 /* Number of Nodes in the Sub-Tree With the Same Label - You are given a tree (i.e. a connected, undirected graph that has no cycles) consisting of n nodes numbered from 0 to n - 1 and exactly n - 1 edges. The root of the tree is the node 0, and each node of the tree has a label which is a lower-case character given in the string labels (i.e. The node with the number i has the label labels[i]).
 
 The edges array is given on the form edges[i] = [ai, bi], which means there is an edge between nodes ai and bi in the tree.
@@ -707,95 +799,4 @@ const countSubTrees = (n, edges, labels) => {
   // Return the result array
   return ans
 };
-
-/* Minimum Time to Collect All Apples in a Tree - Given an undirected tree consisting of n vertices numbered from 0 to n-1, which has some apples in their vertices. You spend 1 second to walk over one edge of the tree. Return the minimum time in seconds you have to spend to collect all apples in the tree, starting at vertex 0 and coming back to this vertex.
-
-The edges of the undirected tree are given in the array edges, where edges[i] = [ai, bi] means that exists an edge connecting the vertices ai and bi. Additionally, there is a boolean array hasApple, where hasApple[i] = true means that vertex i has an apple; otherwise, it does not have any apple.
- */
-/**
- * @param {number} n
- * @param {number[][]} edges
- * @param {boolean[]} hasApple
- * @return {number}
- */
-const minTime = (n, edges, hasApple) => {
-
-  /* pseudo code
-    build a graph from the edges
-      a -> b, b -> a
-    start a DFS from the root with parent as -1
-      run a DFS for all neighbours except parent
-      keep adding the path lengths found from DFS
-  */
-
-  const adjlist = Array.from({ length: n }, () => new Array());
-  for (const [from, to] of edges) {
-    //  undirected edges
-    adjlist[from].push(to);
-    adjlist[to].push(from);
-  }
-
-  const dfs = (node, parent) => {
-    let pathlen = 0;
-    for (const neighbour of adjlist[node]) {
-      if (neighbour == parent) {
-        //  skip the parent cause counting is already done
-        continue;
-      }
-      pathlen += dfs(neighbour, node);
-    }
-    if (node == 0) {
-      return pathlen;
-    }
-    return pathlen > 0 || hasApple[node] ? pathlen + 2 : 0;
-  }
-
-  //  start with root
-  return dfs(0, -1);
-};
-
-/* Explain dijkstra algorithm */
-
-const dijkstra = (graph, startNode) => {
-  const INF = Number.MAX_SAFE_INTEGER;
-  const n = graph.length;
-  const distances = new Array(n).fill(INF); // Array to store the shortest distances from startNode to all other nodes
-  const visited = new Array(n).fill(false); // Array to track visited nodes
-
-  distances[startNode] = 0; // Distance from startNode to itself is always 0
-
-  const minDistance = (distances, visited) => {
-    let min = Number.MAX_SAFE_INTEGER;
-    let minIndex = -1;
-
-    for (let i = 0; i < distances.length; i++) {
-      // Find the node with the minimum distance value among the unvisited nodes
-      if (!visited[i] && distances[i] <= min) {
-        min = distances[i];
-        minIndex = i;
-      }
-    }
-
-    return minIndex; // Return the index of the node with the minimum distance
-  }
-
-  for (let i = 0; i < n - 1; i++) {
-    const u = minDistance(distances, visited); // Find the node with the minimum distance value among the unvisited nodes
-    visited[u] = true; // Mark the selected node as visited
-
-    for (let v = 0; v < n; v++) {
-      // Update distance[v] if and only if it is not visited, there is an edge from u to v, the total weight from startNode to v through u is smaller than the current value of distance[v]
-      if (
-        !visited[v] &&
-        graph[u][v] !== 0 &&
-        distances[u] !== INF &&
-        distances[u] + graph[u][v] < distances[v]
-      ) {
-        distances[v] = distances[u] + graph[u][v]; // Update the distance[v] value
-      }
-    }
-  }
-
-  return distances; // Return the array of shortest distances
-}
 
