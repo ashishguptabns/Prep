@@ -594,64 +594,6 @@ const minDistance = (word1, word2) => {
     return dp[word1.length][word2.length];
 };
 
-/* Longest Increasing Path in a Matrix - Given an m x n integers matrix, return the length of the longest increasing path in matrix.
-
-From each cell, you can either move in four directions: left, right, up, or down. You may not move diagonally or move outside the boundary (i.e., wrap-around is not allowed).
- */
-/**
- * @param {number[][]} matrix
- * @return {number}
- */
-const longestIncreasingPath = (matrix) => {
-    //  Memoization table to store calculated results
-    //  this will store the length of increasing path from a point [i, j]
-    const dp = {};
-
-    // Recursive function to find the length of the increasing path
-    function solve(i, j, val) {
-        // Base cases: out of bounds or not an increasing path
-        if (i < 0 || j < 0 || i >= matrix.length || j >= matrix[0].length) {
-            return 0;
-        }
-        if (matrix[i][j] <= val) {
-            //  not an increasing path
-            return 0;
-        }
-
-        // Check if the result for the current position is already memoized
-        if (dp[`${i}-${j}`]) {
-            return dp[`${i}-${j}`];
-        }
-
-        // Explore all possible directions and find the length of the increasing path
-        let down = solve(i + 1, j, matrix[i][j]) + 1;
-        let up = solve(i - 1, j, matrix[i][j]) + 1;
-        let right = solve(i, j + 1, matrix[i][j]) + 1;
-        let left = solve(i, j - 1, matrix[i][j]) + 1;
-
-        // Save the maximum length for the current position
-        dp[`${i}-${j}`] = Math.max(down, up, right, left);
-
-        return dp[`${i}-${j}`];
-    }
-
-    // Iterate through each element in the matrix to find the maximum increasing path
-    let max = 0;
-    for (let i = 0; i < matrix.length; i++) {
-        for (let j = 0; j < matrix[0].length; j++) {
-            // Skip if the result for the current position is already calculated
-            if (dp[`${i}-${j}`] != undefined) {
-                continue;
-            }
-            // Update the maximum length by considering the increasing path starting from the current position
-            max = Math.max(max, solve(i, j, -1));
-        }
-    }
-
-    // Return the length of the longest increasing path
-    return max;
-};
-
 /* Unique Binary Search Trees - Given an integer n, return the number of structurally unique BST's (binary search trees) which has exactly n nodes of unique values from 1 to n.
  */
 /**
@@ -688,6 +630,289 @@ const numTrees = (numNodes) => {
     }
 
     return dpArr[numNodes]
+};
+
+/* Decode Ways - A message containing letters from A-Z can be encoded into numbers using the following mapping:
+
+'A' -> "1"
+'B' -> "2"
+...
+'Z' -> "26"
+To decode an encoded message, all the digits must be grouped then mapped back into letters using the reverse of the mapping above (there may be multiple ways). For example, "11106" can be mapped into:
+
+"AAJF" with the grouping (1 1 10 6)
+"KJF" with the grouping (11 10 6)
+Note that the grouping (1 11 06) is invalid because "06" cannot be mapped into 'F' since "6" is different from "06".
+
+Given a string s containing only digits, return the number of ways to decode it.
+*/
+
+const numDecodings = (s) => {
+
+    /* pseudo code
+        keep a dp array
+            ith item tells number of ways to decode s till ith index
+        base cases
+            length 0 and 1
+        move through the string
+            find last one and two digits of this substring
+            last digit not 0
+                add dp[i - 1]
+            last two digits are between 10 and 26
+                add dp[i - 2]
+    */
+
+    // Check for edge cases: empty string or leading zero
+    if (!s || s[0] === '0') {
+        return 0;
+    }
+
+    // Get the length of the input string
+    const n = s.length;
+
+    // Initialize an array dp to store the number of ways to decode at each position
+    const dp = Array(n + 1).fill(0);
+
+    // There is one way to decode a string of length 0 and 1
+    dp[0] = 1;
+    dp[1] = 1;
+
+    // Iterate through the string starting from the third character
+    for (let i = 2; i <= n; ++i) {
+        // Extract one and two-digit numbers from the string
+        const lastDigit = parseInt(s[i - 1]);
+        const lastTwoDigits = parseInt(s.substring(i - 2, i));
+
+        // If the one-digit number is not zero, add the number of ways to decode at the previous position
+        if (lastDigit !== 0) {
+            dp[i] += dp[i - 1];
+        }
+
+        // If the two-digit number is between 10 and 26 (inclusive), add the number of ways to decode two positions back
+        if (10 <= lastTwoDigits && lastTwoDigits <= 26) {
+            dp[i] += dp[i - 2];
+        }
+    }
+
+    // The final result is stored in dp[n], representing the number of ways to decode the entire string
+    return dp[n];
+};
+
+/* Palindrome Partitioning - Given a string s, partition s such that every 
+substring of the partition is a palindrome. Return all possible palindrome partitioning of s.
+ */
+/**
+ * @param {string} s
+ * @return {string[][]}
+ */
+const partition = (s) => {
+
+    /* pseudo code
+        Keep a 2D DP array 
+            store palindrome true/false for every substring starting at i and ending at j
+        do a DFS and explore all possible substrings
+    */
+
+    const dp = Array.from({ length: s.length }, () => Array(s.length).fill(false))
+
+    const res = []
+
+    const dfs = (currIndex, currList) => {
+        if (currIndex == s.length) {
+            //  reached the end
+            res.push([...currList])
+        }
+
+        //  explore all substrings
+        for (let end = currIndex; end < s.length; end++) {
+            //  found a palindrome
+            if (s[currIndex] === s[end] && (end - currIndex <= 2 || dp[currIndex + 1][end - 1])) {
+                dp[currIndex][end] = true
+                dfs(end + 1, [...currList, s.slice(currIndex, end + 1)])
+            }
+        }
+    }
+
+    dfs(0, [])
+
+    return res
+};
+
+/* Maximum Profit in Job Scheduling - We have n jobs, where every job is scheduled to be done from startTime[i] to endTime[i], obtaining a profit of profit[i].
+
+You're given the startTime, endTime and profit arrays, return the maximum profit you can take such that there are no two jobs in the subset with overlapping time range.
+
+If you choose a job that ends at time X you will be able to start another job that starts at time X.
+ */
+/**
+ * @param {number[]} startTime
+ * @param {number[]} endTime
+ * @param {number[]} profit
+ * @return {number}
+ */
+const jobScheduling = (startTime, endTime, profit) => {
+
+    /* pseudo code
+        keep a dp array
+            ith item tells max profit till ith job
+        keep a jobs array with start, end and profit
+            sort by start time
+        base case
+            start from the last job and its profit
+        move through jobs in reverse
+            find a next job which starts when ith job ends
+            either keep the curr job's profit and profit till next compatible job
+            or carry the profit accrued so far
+    */
+
+    const numJobs = jobs.length
+    const dpArr = Array(numJobs)
+
+    // Create an array to store the jobs as [start time, end time, profit]
+    const jobs = []
+    for (let i = 0; i < startTime.length; i++) {
+        jobs.push([startTime[i], endTime[i], profit[i]])
+    }
+
+    // Sort the jobs array based on start times in ascending order
+    jobs.sort((a, b) => a[0] - b[0])
+
+    // Base case: Set the profit for the last job in the profitArr array
+    dpArr[numJobs - 1] = jobs.at(-1)[2]
+
+    // Iterate through the jobs array in reverse order to fill the profitArr array
+    for (let i = numJobs - 2; i >= 0; i--) {
+        const [start, end, profit] = jobs[i]
+        let next = i + 1
+
+        // Find the next job whose start time is greater than or equal to the current job's end time
+        while (next < numJobs && jobs[next][0] < end) {
+            next++
+        }
+
+        // Calculate the maximum profit for the current job by considering two cases:
+        // 1. Include the current job and add its profit to the profit of the next compatible job
+        // 2. Exclude the current job and consider the profit of the next job
+        dpArr[i] = Math.max(profit + (next < numJobs ? dpArr[next] : 0),
+            dpArr[i + 1])
+    }
+
+    // Return the maximum profit for scheduling jobs
+    return dpArr[0]
+};
+
+/* Knight Dialer - Given an integer n, return how many distinct phone numbers of length n we can dial.
+
+You are allowed to place the knight on any numeric cell initially and then you should perform n - 1 jumps to dial a number of length n. All jumps should be valid knight jumps.
+ */
+/**
+ * @param {number} n
+ * @return {number}
+ */
+const knightDialer = (n) => {
+
+    /* pseudo code
+        keep a dp array 
+            ith item tells num of phone numbers we can dial of length i
+            base case is 1
+                can place the knight on any digit
+        move through diff lengths
+            keep a diff dp array to store counts till curr len
+                move through all digits till 10
+                    move through next possible digits for curr digit
+                        add count of nums till curr digit and next digit for prev length
+            reassign the dp arr for prev length
+    */
+
+    const mod = 10 ** 9 + 7
+
+    //  map of starting position vs next positions
+    const adjMap = {
+        1: [6, 8],
+        2: [7, 9],
+        3: [4, 8],
+        4: [3, 9, 0],
+        5: [],
+        6: [1, 7, 0],
+        7: [2, 6],
+        8: [1, 3],
+        9: [2, 4],
+        0: [4, 6],
+    }
+
+    //  base case is length 1 as can place on any digit
+    const currLenDpArr = new Array(10).fill(1)
+
+    //  start from length 2 till n
+    for (let currLen = 2; currLen <= n; currLen++) {
+        //  store counts for current length
+        const newLenDpArr = new Array(10).fill(0)
+        for (let digit = 0; digit < 10; digit++) {
+            for (const nextDigit of adjMap[digit]) {
+                //  Add the count from the previous length at the next move's position to newDpArr[digit].
+                newLenDpArr[digit] = (newLenDpArr[digit] + currLenDpArr[nextDigit]) % mod
+            }
+        }
+
+        currLenDpArr = newLenDpArr
+    }
+
+    //  sum is the accumulator
+    return currLenDpArr.reduce((sum, val) => (sum + val) % mod, 0)
+};
+
+/* Count sorted vowel strings - Given an integer n, return the number of strings of length n that consist only of vowels (a, e, i, o, u) and are lexicographically sorted.
+ */
+const countVowelStrings = (n) => {
+
+    /* pseudo code
+        backtrack with curr index and curr str length
+            run i through the vowel string starting at curr index
+                backtrack with i and curr str length + 1 (choosing one vowel)
+            keep the count in memo for this index and str length
+    */
+
+    // Memoization object to store computed results and avoid redundant calculations
+    const memo = {}
+
+    // Backtracking function to explore all possible combinations of vowels
+    const backTrack = (index, strLength) => {
+        // Generate a unique key for the current state using index and string length
+        const key = index + '_' + strLength
+
+        // Check if the result for the current state is already memoized
+        if (memo[key]) {
+            return memo[key]
+        }
+
+        // Base case: if the string has reached the desired length, it is a valid vowel string
+        if (strLength === n) {
+            return 1
+        }
+
+        // If the string length exceeds n, it is not a valid string
+        if (strLength > n) {
+            return 0
+        }
+
+        // Initialize count for the current state
+        let count = 0
+
+        // Explore all possible vowel combinations starting from the current index
+        for (let i = index; i < 5; i++) {
+            // Recursively call the backTrack function for the next position
+            count += backTrack(i, strLength + 1)
+        }
+
+        // Memoize the count for the current state
+        memo[key] = count
+
+        // Return the count for the current state
+        return count
+    }
+
+    // Start exploring all possible combinations of vowels from the beginning (index 0) with an empty string
+    return backTrack(0, 0)
 };
 
 /* Maximal Square - Given an m x n binary matrix filled with 0's and 1's, find the largest square containing only 1's and return its area.
@@ -909,257 +1134,61 @@ const canPartition = (nums) => {
     return false; // If no subset with the target sum is found, return false
 };
 
-/* Decode Ways - A message containing letters from A-Z can be encoded into numbers using the following mapping:
+/* Longest Increasing Path in a Matrix - Given an m x n integers matrix, return the length of the longest increasing path in matrix.
 
-'A' -> "1"
-'B' -> "2"
-...
-'Z' -> "26"
-To decode an encoded message, all the digits must be grouped then mapped back into letters using the reverse of the mapping above (there may be multiple ways). For example, "11106" can be mapped into:
-
-"AAJF" with the grouping (1 1 10 6)
-"KJF" with the grouping (11 10 6)
-Note that the grouping (1 11 06) is invalid because "06" cannot be mapped into 'F' since "6" is different from "06".
-
-Given a string s containing only digits, return the number of ways to decode it.
-*/
-
-const numDecodings = (s) => {
-
-    /* pseudo code
-        keep a dp array
-            ith item tells number of ways to decode s till ith index
-        base cases
-            length 0 and 1
-        move through the string
-            find last one and two digits of this substring
-            last digit not 0
-                add dp[i - 1]
-            last two digits are between 10 and 26
-                add dp[i - 2]
-
-    */
-
-    // Check for edge cases: empty string or leading zero
-    if (!s || s[0] === '0') {
-        return 0;
-    }
-
-    // Get the length of the input string
-    const n = s.length;
-
-    // Initialize an array dp to store the number of ways to decode at each position
-    const dp = Array(n + 1).fill(0);
-
-    // There is one way to decode a string of length 0 and 1
-    dp[0] = 1;
-    dp[1] = 1;
-
-    // Iterate through the string starting from the third character
-    for (let i = 2; i <= n; ++i) {
-        // Extract one and two-digit numbers from the string
-        const lastDigit = parseInt(s[i - 1]);
-        const lastTwoDigits = parseInt(s.substring(i - 2, i));
-
-        // If the one-digit number is not zero, add the number of ways to decode at the previous position
-        if (lastDigit !== 0) {
-            dp[i] += dp[i - 1];
-        }
-
-        // If the two-digit number is between 10 and 26 (inclusive), add the number of ways to decode two positions back
-        if (10 <= lastTwoDigits && lastTwoDigits <= 26) {
-            dp[i] += dp[i - 2];
-        }
-    }
-
-    // The final result is stored in dp[n], representing the number of ways to decode the entire string
-    return dp[n];
-};
-
-/* Palindrome Partitioning - Given a string s, partition s such that every 
-substring of the partition is a palindrome. Return all possible palindrome partitioning of s.
+From each cell, you can either move in four directions: left, right, up, or down. You may not move diagonally or move outside the boundary (i.e., wrap-around is not allowed).
  */
 /**
- * @param {string} s
- * @return {string[][]}
- */
-const partition = (s) => {
-
-    /* pseudo code
-        Keep a 2D DP array 
-            store palindrome true/false for every substring starting at i and ending at j
-        do a DFS and explore all possible substrings
-    */
-
-    const dp = Array.from({ length: s.length }, () => Array(s.length).fill(false))
-
-    const res = []
-
-    const dfs = (currIndex, currList) => {
-        if (currIndex == s.length) {
-            //  reached the end
-            res.push([...currList])
-        }
-
-        //  explore all substrings
-        for (let end = currIndex; end < s.length; end++) {
-            //  found a palindrome
-            if (s[currIndex] === s[end] && (end - currIndex <= 2 || dp[currIndex + 1][end - 1])) {
-                dp[currIndex][end] = true
-                dfs(end + 1, [...currList, s.slice(currIndex, end + 1)])
-            }
-        }
-    }
-
-    dfs(0, [])
-
-    return res
-};
-
-/* Maximum Profit in Job Scheduling - We have n jobs, where every job is scheduled to be done from startTime[i] to endTime[i], obtaining a profit of profit[i].
-
-You're given the startTime, endTime and profit arrays, return the maximum profit you can take such that there are no two jobs in the subset with overlapping time range.
-
-If you choose a job that ends at time X you will be able to start another job that starts at time X.
- */
-/**
- * @param {number[]} startTime
- * @param {number[]} endTime
- * @param {number[]} profit
+ * @param {number[][]} matrix
  * @return {number}
  */
-const jobScheduling = (startTime, endTime, profit) => {
-    // Create an array to store the jobs as [start time, end time, profit]
-    const jobs = []
-    for (let i = 0; i < startTime.length; i++) {
-        jobs.push([startTime[i], endTime[i], profit[i]])
-    }
+const longestIncreasingPath = (matrix) => {
+    //  Memoization table to store calculated results
+    //  this will store the length of increasing path from a point [i, j]
+    const dp = {};
 
-    // Sort the jobs array based on start times in ascending order
-    jobs.sort((a, b) => a[0] - b[0])
-
-    // Get the total number of jobs
-    const numJobs = jobs.length
-
-    // Create an array to store the maximum profit for each job
-    const profitArr = Array(numJobs)
-
-    // Base case: Set the profit for the last job in the profitArr array
-    profitArr[numJobs - 1] = jobs.at(-1)[2]
-
-    // Iterate through the jobs array in reverse order to fill the profitArr array
-    for (let i = numJobs - 2; i >= 0; i--) {
-        const [start, end, profit] = jobs[i]
-        let next = i + 1
-
-        // Find the next job whose start time is greater than or equal to the current job's end time
-        while (next < numJobs && jobs[next][0] < end) {
-            next++
+    // Recursive function to find the length of the increasing path
+    function solve(i, j, val) {
+        // Base cases: out of bounds or not an increasing path
+        if (i < 0 || j < 0 || i >= matrix.length || j >= matrix[0].length) {
+            return 0;
+        }
+        if (matrix[i][j] <= val) {
+            //  not an increasing path
+            return 0;
         }
 
-        // Calculate the maximum profit for the current job by considering two cases:
-        // 1. Include the current job and add its profit to the profit of the next compatible job
-        // 2. Exclude the current job and consider the profit of the next job
-        profitArr[i] = Math.max(profit + (next < numJobs ? profitArr[next] : 0),
-            profitArr[i + 1])
+        // Check if the result for the current position is already memoized
+        if (dp[`${i}-${j}`]) {
+            return dp[`${i}-${j}`];
+        }
+
+        // Explore all possible directions and find the length of the increasing path
+        let down = solve(i + 1, j, matrix[i][j]) + 1;
+        let up = solve(i - 1, j, matrix[i][j]) + 1;
+        let right = solve(i, j + 1, matrix[i][j]) + 1;
+        let left = solve(i, j - 1, matrix[i][j]) + 1;
+
+        // Save the maximum length for the current position
+        dp[`${i}-${j}`] = Math.max(down, up, right, left);
+
+        return dp[`${i}-${j}`];
     }
 
-    // Return the maximum profit for scheduling jobs
-    return profitArr[0]
-};
-
-/* Knight Dialer - Given an integer n, return how many distinct phone numbers of length n we can dial.
-
-You are allowed to place the knight on any numeric cell initially and then you should perform n - 1 jumps to dial a number of length n. All jumps should be valid knight jumps.
- */
-/**
- * @param {number} n
- * @return {number}
- */
-const knightDialer = (n) => {
-
-    //  we will use dp to find the distinct phone numbers of length n 
-
-    const mod = 10 ** 9 + 7
-
-    //  map of starting position vs next positions
-    const adjMap = {
-        1: [6, 8],
-        2: [7, 9],
-        3: [4, 8],
-        4: [3, 9, 0],
-        5: [],
-        6: [1, 7, 0],
-        7: [2, 6],
-        8: [1, 3],
-        9: [2, 4],
-        0: [4, 6],
-    }
-
-    //  base case is length 1
-    let dpArr = new Array(10).fill(1)
-
-    //  start from length 2 till n
-    for (let currLen = 2; currLen <= n; currLen++) {
-        //  store counts for current length
-        const newDpArr = new Array(10).fill(0)
-        for (let j = 0; j < 10; j++) {
-            for (const nextDigit of adjMap[j]) {
-                //  Add the count from the previous length at the next move's position to newDpArr[j].
-                newDpArr[j] = (newDpArr[j] + dpArr[nextDigit]) % mod
+    // Iterate through each element in the matrix to find the maximum increasing path
+    let max = 0;
+    for (let i = 0; i < matrix.length; i++) {
+        for (let j = 0; j < matrix[0].length; j++) {
+            // Skip if the result for the current position is already calculated
+            if (dp[`${i}-${j}`] != undefined) {
+                continue;
             }
+            // Update the maximum length by considering the increasing path starting from the current position
+            max = Math.max(max, solve(i, j, -1));
         }
-
-        dpArr = newDpArr
     }
 
-    //  sum is the accumulator
-    return dpArr.reduce((sum, val) => (sum + val) % mod, 0)
-};
-
-/* Count sorted vowel strings - Given an integer n, return the number of strings of length n that consist only of vowels (a, e, i, o, u) and are lexicographically sorted.
- */
-const countVowelStrings = (n) => {
-    // Memoization object to store computed results and avoid redundant calculations
-    const memo = {}
-
-    // Backtracking function to explore all possible combinations of vowels
-    const backTrack = (index, strLength) => {
-        // Generate a unique key for the current state using index and string length
-        const key = index + '_' + strLength
-
-        // Check if the result for the current state is already memoized
-        if (memo[key]) {
-            return memo[key]
-        }
-
-        // Base case: if the string has reached the desired length, it is a valid vowel string
-        if (strLength === n) {
-            return 1
-        }
-
-        // If the string length exceeds n, it is not a valid string
-        if (strLength > n) {
-            return 0
-        }
-
-        // Initialize count for the current state
-        let count = 0
-
-        // Explore all possible vowel combinations starting from the current index
-        for (let i = index; i < 5; i++) {
-            // Recursively call the backTrack function for the next position
-            count += backTrack(i, strLength + 1)
-        }
-
-        // Memoize the count for the current state
-        memo[key] = count
-
-        // Return the count for the current state
-        return count
-    }
-
-    // Start exploring all possible combinations of vowels from the beginning (index 0) with an empty string
-    return backTrack(0, 0)
+    // Return the length of the longest increasing path
+    return max;
 };
 
