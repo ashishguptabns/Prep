@@ -693,7 +693,7 @@ const minTime = (n, edges, hasApple) => {
   return dfs(0, -1);
 };
 
-/* Dijkstra's algorithm for finding the shortest paths in a graph 
+/* Dijkstra's algorithm for finding the shortest paths from a node to other nodes in a graph 
 
 Function signature: dijkstra(graph, start)
 Input: graph - a graph object with nodes, neighbors, and weights
@@ -701,43 +701,78 @@ Input: graph - a graph object with nodes, neighbors, and weights
 */
 
 const dijkstra = (graph, startNode) => {
-  // Create a set of unvisited nodes, distances, and a priority queue
-  const unvisitedNodes = new Set(graph.nodes);
-  const distances = {};
-  const pq = new MinPriorityQueue();
 
-  // Initialize distances to all nodes as undefined (Infinity will be used in the comparisons)
-  // Set the distance of the start node to 0
-  distances[startNode] = 0;
-  // Enqueue the start node with its distance (0) into the priority queue
-  pq.enqueue(startNode, 0);
+  /* pseudo code
+    keep distance and visited array
+      distance tracks ith item's distance from start node
+    move through nodes
+      find a node u at the min distance from unvisited nodes
+        go through each unvisited node and compare the distance
+      move v through adjacent nodes of u
+        update the min distance till node v
+  */
 
-  // Continue until all nodes are visited
-  while (!pq.isEmpty()) {
-    // Get the node with the smallest tentative distance from the priority queue
-    const currentNode = pq.dequeue().element;
+  // Number of vertices in the graph
+  const numNodes = graph.length;
 
-    // Mark the current node as visited by removing it from the set of unvisited nodes
-    unvisitedNodes.delete(currentNode);
+  // Array to store the shortest distance from startNode to each node
+  const distance = Array(numNodes).fill(Infinity);
 
-    for (const neighbor in graph.neighbors(currentNode)) {
-      // Calculate the tentative distance from the start to the neighbor through the current node
-      const tentativeDistance = distances[currentNode] + graph.weights[currentNode][neighbor];
+  // Array to track visited nodes
+  const visited = Array(numNodes).fill(false);
 
-      // If the tentative distance is smaller than the current distance to the neighbor
-      // or the neighbor's distance is undefined (not yet visited)
-      if (!distances[neighbor] || tentativeDistance < distances[neighbor]) {
-        // Update the distance for the neighbor
-        distances[neighbor] = tentativeDistance;
+  // Distance from startNode to itself is 0
+  distance[startNode] = 0;
 
-        // Enqueue the neighbor with its new tentative distance into the priority queue
-        pq.enqueue(neighbor, tentativeDistance);
+  // Helper function to find the vertex with the minimum distance value
+  const findMinDistNode = (distance, visited) => {
+    let min = Infinity;
+    let minNode = -1;
+
+    for (let v = 0; v < distance.length; v++) {
+      // If the vertex v is not yet processed (not visited) and
+      // the distance[v] is less than the current min value
+      if (!visited[v] && distance[v] <= min) {
+        // Update min value and minIndex
+        min = distance[v];
+        minNode = v;
+      }
+    }
+
+    // Return the index of the vertex with the minimum distance
+    return minNode;
+  };
+
+  // Loop through all nodes
+  for (let count = 0; count < numNodes - 1; count++) {
+    // Find the node with the minimum distance among the
+    // nodes not yet processed (not visited)
+    const u = findMinDistNode(distance, visited);
+
+    // Mark the selected node as visited
+    visited[u] = true;
+
+    // Update distance value of the adjacent vertices of the
+    // selected node
+    for (let v = 0; v < numNodes; v++) {
+      // Update distance[v] only if it's not visited, there is
+      // an edge from u to v, and the total weight of path from
+      // startNode to v through u is less than the current value
+      // of distance[v]
+      if (
+        !visited[v] &&
+        graph[u][v] !== 0 &&
+        distance[u] !== Number.MAX_VALUE &&
+        distance[u] + graph[u][v] < distance[v]
+      ) {
+        distance[v] = distance[u] + graph[u][v];
       }
     }
   }
 
-  return distances;
-}
+  // Return the array of shortest distances
+  return distance;
+};
 
 /* Number of Nodes in the Sub-Tree With the Same Label - You are given a tree (i.e. a connected, undirected graph that has no cycles) consisting of n nodes numbered from 0 to n - 1 and exactly n - 1 edges. The root of the tree is the node 0, and each node of the tree has a label which is a lower-case character given in the string labels (i.e. The node with the number i has the label labels[i]).
 
@@ -752,6 +787,16 @@ Return an array of size n where ans[i] is the number of nodes in the subtree of 
  * @return {number[]}
  */
 const countSubTrees = (n, edges, labels) => {
+
+  /* pseudo code
+    build an undirected graph from the edges
+    start DFS from the root
+      do a DFS for each neighbour of curr node
+    increment the count of curr char
+    maintain count of same label in ans array
+    update the count of each label in parent arr
+  */
+
   // Create an adjacency list to represent the undirected graph
   const adjList = Array.from(Array(n), () => new Array())
 
