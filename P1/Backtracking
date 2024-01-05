@@ -210,7 +210,10 @@ const numTilePossibilities = (tiles) => {
 const letterCombinations = (digits) => {
 
     /* pseudo code
-        
+        notice that we are given digits
+        backtrack with curr digit index
+            run through chars of this digit
+                append curr char to curr string and backtrack
     */
 
     const letterMap = {
@@ -225,16 +228,16 @@ const letterCombinations = (digits) => {
     }
     const list = []
 
-    const backtrack = (currCharIndex, currString, digits, list, letterMap) => {
-        if (currCharIndex == digits.length) {
+    const backtrack = (currDigitIndex, currString, digits, list, letterMap) => {
+        if (currDigitIndex == digits.length) {
             //  considered all the characters
             list.push(currString)
         } else {
-            const currDigit = digits[currCharIndex]
+            const currDigit = digits[currDigitIndex]
             const currChars = letterMap[currDigit]
             for (const c of currChars) {
                 //  run the backtracking for each character for each digit
-                backtrack(currCharIndex + 1, currString + c, digits, list, letterMap)
+                backtrack(currDigitIndex + 1, currString + c, digits, list, letterMap)
             }
         }
     }
