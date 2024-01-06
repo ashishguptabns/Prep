@@ -3,6 +3,16 @@ A knight has 8 possible moves it can make, as illustrated below. Each move is tw
 Return the minimum number of steps needed to move the knight to the square [x, y]. It is guaranteed the answer exists.
  */
 const minKnightMoves = (x, y) => {
+
+    /* pseudo code
+        we have to do BFS travel from start point to end point
+            start the queue with [0, 0]
+            loop through queue items
+                loop through curr items
+                    add neighbour points for next travel
+                increment num steps
+    */
+
     // Notice the chess board is infinite
     let minSteps = 0;
 
@@ -16,16 +26,16 @@ const minKnightMoves = (x, y) => {
     const visitedArr = Array(607).fill(null).map(() => Array(607).fill(false));
 
     // Queue to store the indices for BFS traversal
-    const indicesQueue = [];
-    indicesQueue.push([0, 0]); // Starting position
+    const queue = [];
+    queue.push([0, 0]); // Starting position
 
     // BFS traversal
-    while (indicesQueue.length > 0) {
-        const queueSize = indicesQueue.length;
+    while (queue.length > 0) {
+        const queueSize = queue.length;
 
         // Process all indices at the current level before increasing minSteps
         for (let counter = 0; counter < queueSize; counter++) {
-            const currPair = indicesQueue.shift(); // Dequeue the front pair
+            const currPair = queue.shift(); // Dequeue the front pair
 
             // Check if the current position is the destination
             if (currPair[0] === x && currPair[1] === y) {
@@ -41,7 +51,7 @@ const minKnightMoves = (x, y) => {
                 // Adding 302 to ensure 302, 302 is the (0, 0) reference point
                 if (!visitedArr[nextX + 302][nextY + 302]) {
                     // Mark the next position as visited and enqueue it for further exploration
-                    indicesQueue.push([nextX, nextY]);
+                    queue.push([nextX, nextY]);
                     visitedArr[nextX + 302][nextY + 302] = true;
                 }
             }
@@ -68,11 +78,25 @@ Given two words, beginWord and endWord, and a dictionary wordList, return the nu
  * @return {number}
  */
 const ladderLength = (beginWord, endWord, wordList) => {
+
+    /* pseudo code
+        notice that in each word change only one char is allowed to change
+        start the BFS with starting word
+            loop through the queue
+                loop through curr items in the queue
+                    move i through the curr word
+                        move j through all chars till 26
+                            make a potential word
+                            check if it belongs to word list
+                                push to queue for next visit
+                keep incrementing num steps
+    */
+
     // Create a set for faster lookup
-    const map = new Set(wordList);
+    const wordSet = new Set(wordList);
 
     // If the end word is not in the word list, it's not possible to transform
-    if (!map.has(endWord)) {
+    if (!wordSet.has(endWord)) {
         return 0;
     }
 
@@ -92,9 +116,9 @@ const ladderLength = (beginWord, endWord, wordList) => {
                     // Generate next possible word by changing one letter at a time
                     const nextWord = curr.slice(0, i) + String.fromCharCode(97 + j) + curr.slice(i + 1);
 
-                    if (map.has(nextWord)) {
+                    if (wordSet.has(nextWord)) {
                         next.push(nextWord); // Add valid next words to the queue for exploration
-                        map.delete(nextWord); // Remove the word from the set to avoid repetition
+                        wordSet.delete(nextWord); // Remove the word from the set to avoid repetition
                     }
                 }
             }
@@ -117,14 +141,24 @@ Note that the starting point is assumed to be valid, so it might not be included
  * @return {number}
  */
 const minMutation = (startGene, endGene, bank) => {
+
+    /* pseudo code
+        start BFS with curr gene
+            loop through the queue
+                move i through curr gene
+                    move through valid mutations
+                        create a new Gene
+                        check if this gene can be added to the queue for next travel
+    */
+
     // Define the valid mutations that can occur
     const validMutations = ['A', 'C', 'G', 'T'];
 
     // Convert the bank array to a set for faster lookup
-    const bankSet = new Set(bank);
+    const geneSet = new Set(bank);
 
     // Check if the end gene is not in the bank, return -1 as it's not possible
-    if (!bankSet.has(endGene)) {
+    if (!geneSet.has(endGene)) {
         return -1;
     }
 
@@ -132,15 +166,15 @@ const minMutation = (startGene, endGene, bank) => {
     const visitedGenes = new Set();
 
     // Queue for BFS, each element is [gene, mutations]
-    const bfsQueue = [[startGene, 0]];
+    const queue = [[startGene, 0]];
 
     // Mark the start gene as visited
     visitedGenes.add(startGene);
 
     // BFS loop
-    while (bfsQueue.length > 0) {
+    while (queue.length > 0) {
         // Dequeue the current gene and its mutations
-        const [currGene, mutations] = bfsQueue.shift();
+        const [currGene, mutations] = queue.shift();
 
         // Check if the current gene is the end gene
         if (currGene === endGene) {
@@ -161,9 +195,9 @@ const minMutation = (startGene, endGene, bank) => {
                 const newGene = currGene.slice(0, i) + mutationChar + currGene.slice(i + 1);
 
                 // Check if the new gene is in the bank and has not been visited
-                if (bankSet.has(newGene) && !visitedGenes.has(newGene)) {
+                if (geneSet.has(newGene) && !visitedGenes.has(newGene)) {
                     // Found a new valid unvisited gene, enqueue it with mutations + 1
-                    bfsQueue.push([newGene, mutations + 1]);
+                    queue.push([newGene, mutations + 1]);
                     // Mark the new gene as visited
                     visitedGenes.add(newGene);
                 }
@@ -178,14 +212,21 @@ const minMutation = (startGene, endGene, bank) => {
 /* Shortest Path to Get Food */
 
 const getFood = grid => {
-    // Get the number of rows and columns in the grid
-    const rows = grid.length;
-    const cols = grid[0].length;
+
+    /* pseudo code
+        find the pos of the person in the matrix
+        start BFS with the person's pos
+            loop through the queue
+                check if neighbours can be pushed in the queue for next travel
+    */
+
+    const ROWS = grid.length;
+    const COLS = grid[0].length;
 
     // Find the starting position of the person marked with '*'
     let startX, startY;
-    for (let i = 0; i < rows; i++) {
-        for (let j = 0; j < cols; j++) {
+    for (let i = 0; i < ROWS; i++) {
+        for (let j = 0; j < COLS; j++) {
             if (grid[i][j] === '*') {
                 startX = i;
                 startY = j;
@@ -201,7 +242,7 @@ const getFood = grid => {
     const visited = new Set();
 
     // Function to check if a given position is valid (within the grid boundaries)
-    const isValid = (x, y) => x >= 0 && x < rows && y >= 0 && y < cols;
+    const isValid = (x, y) => x >= 0 && x < ROWS && y >= 0 && y < COLS;
 
     // Initialize the queue with the starting position and the number of steps taken
     const queue = [[startX, startY, 0]];

@@ -5,6 +5,11 @@
  * @return {number}
  */
 const numIslands = (grid) => {
+
+    /* pseudo code
+        
+    */
+
     let ans = 0
 
     const dfs = (grid, row, col) => {

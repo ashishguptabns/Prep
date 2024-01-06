@@ -1101,5 +1101,132 @@ const maxProduct = (root) => {
     return max % MOD;
 };
 
+/* Define quad tree */
+
+class Quadtree {
+    constructor(bounds, capacity) {
+        this.bounds = bounds; // {x, y, width, height}
+        this.capacity = capacity;
+        this.points = [];
+        this.divided = false;
+    }
+
+    subdivide() {
+        const { x, y, width, height } = this.bounds;
+        const halfWidth = width / 2;
+        const halfHeight = height / 2;
+
+        this.northwest = new Quadtree({ x, y, width: halfWidth, height: halfHeight }, this.capacity);
+        this.northeast = new Quadtree({ x: x + halfWidth, y, width: halfWidth, height: halfHeight }, this.capacity);
+        this.southwest = new Quadtree({ x, y: y + halfHeight, width: halfWidth, height: halfHeight }, this.capacity);
+        this.southeast = new Quadtree({ x: x + halfWidth, y: y + halfHeight, width: halfWidth, height: halfHeight }, this.capacity);
+
+        this.divided = true;
+    }
+
+    insert(point) {
+        if (!this.boundsContainsPoint(point)) {
+            return false; // Point is outside the bounds
+        }
+
+        if (this.points.length < this.capacity) {
+            this.points.push(point);
+            return true;
+        } else {
+            if (!this.divided) {
+                this.subdivide();
+            }
+
+            return (
+                this.northwest.insert(point) ||
+                this.northeast.insert(point) ||
+                this.southwest.insert(point) ||
+                this.southeast.insert(point)
+            );
+        }
+    }
+
+    query(range, result = []) {
+        if (!this.boundsIntersectsRange(range)) {
+            return result; // No intersection, return empty array
+        }
+
+        for (const point of this.points) {
+            if (this.pointInBounds(point, range)) {
+                result.push(point);
+            }
+        }
+
+        if (this.divided) {
+            this.northwest.query(range, result);
+            this.northeast.query(range, result);
+            this.southwest.query(range, result);
+            this.southeast.query(range, result);
+        }
+
+        return result;
+    }
+
+    boundsContainsPoint(point) {
+        return (
+            point.x >= this.bounds.x &&
+            point.x <= this.bounds.x + this.bounds.width &&
+            point.y >= this.bounds.y &&
+            point.y <= this.bounds.y + this.bounds.height
+        );
+    }
+
+    boundsIntersectsRange(range) {
+        return (
+            this.bounds.x < range.x + range.width &&
+            this.bounds.x + this.bounds.width > range.x &&
+            this.bounds.y < range.y + range.height &&
+            this.bounds.y + this.bounds.height > range.y
+        );
+    }
+
+    pointInBounds(point, bounds) {
+        return (
+            point.x >= bounds.x &&
+            point.x <= bounds.x + bounds.width &&
+            point.y >= bounds.y &&
+            point.y <= bounds.y + bounds.height
+        );
+    }
+
+    searchPoint(x, y) {
+        return this._searchPointRecursive({ x, y });
+    }
+
+    _searchPointRecursive(point) {
+        if (!this.boundsContainsPoint(point)) {
+            return null; // Point is outside the bounds
+        }
+
+        for (const storedPoint of this.points) {
+            if (storedPoint.x === point.x && storedPoint.y === point.y) {
+                return storedPoint; // Found the point
+            }
+        }
+
+        if (this.divided) {
+            const foundInNW = this.northwest._searchPointRecursive(point);
+            if (foundInNW) return foundInNW;
+
+            const foundInNE = this.northeast._searchPointRecursive(point);
+            if (foundInNE) return foundInNE;
+
+            const foundInSW = this.southwest._searchPointRecursive(point);
+            if (foundInSW) return foundInSW;
+
+            const foundInSE = this.southeast._searchPointRecursive(point);
+            if (foundInSE) return foundInSE;
+        }
+
+        return null; // Point not found
+    }
+}
+
 // todo
 /* Flatten Binary Tree to Linked List */
+
