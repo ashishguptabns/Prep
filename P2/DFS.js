@@ -7,7 +7,11 @@
 const numIslands = (grid) => {
 
     /* pseudo code
-        
+        move through each cell
+            if found a land
+                increment the count
+                run a DFS to mark each connected 1 as 0
+                    connected 1s are part of same island
     */
 
     let ans = 0
@@ -60,17 +64,24 @@ Given an array stones of length n where stones[i] = [xi, yi] represents the loca
  * @return {number}
  */
 const removeStones = (stones) => {
-    //  use DFS
-    const visited = new Set()
-    let stoneGroups = 0
 
-    const traverse = (x, y) => {
+    /* pseudo code
+        move through each stone
+            track unvisited stone groups
+            run a DFS to mark stones on the same row and col as visited
+        return stones given - (stones that can not be removed)
+    */
+
+    const visited = new Set()
+    let newStoneGroups = 0
+
+    const dfs = (x, y) => {
         const key = `${x}_${y}`
         if (!visited.has(key)) {
             visited.add(key)
             for (const [newX, newY] of stones) {
                 if (newX === x || newY === y) {
-                    traverse(newX, newY)
+                    dfs(newX, newY)
                 }
             }
         }
@@ -79,17 +90,17 @@ const removeStones = (stones) => {
     for (const [x, y] of stones) {
         const key = `${x}_${y}`
         if (!visited.has(key)) {
-            traverse(x, y)
-            stoneGroups++
+            dfs(x, y)
+            newStoneGroups++
         }
     }
 
-    return stones.length - stoneGroups
+    return stones.length - newStoneGroups
 };
 
 /* Battleships in a board - Given an m x n matrix board where each cell is a battleship 'X' or empty '.', return the number of the battleships on board.
 
-Battleships can only be placed horizontally or vertically on board.In other words, they can only be made of the shape 1 x k(1 row, k columns) or k x 1(k rows, 1 column), where k can be of any size.At least one horizontal or vertical cell separates between two battleships(i.e., there are no adjacent battleships).
+Battleships can only be placed horizontally or vertically on board.In other words, they can only be made of the shape 1 x k(1 row, k columns) or k x 1(k rows, 1 column), where k can be of any size. At least one horizontal or vertical cell separates between two battleships(i.e., there are no adjacent battleships).
  */
 /**
  * @param {character[][]} board
@@ -97,7 +108,12 @@ Battleships can only be placed horizontally or vertically on board.In other word
  */
 const countBattleships = (board) => {
 
-    //  solve using DFS
+    /* pseudo code
+        visit each cell of the matrix
+            if a new ship X is found
+                increase the count
+                do a DFS from the cell to mark adjacent cells as .
+    */
 
     let ships = 0
 
@@ -140,6 +156,19 @@ Return the maximum area of an island in grid. If there is no island, return 0.
  * @return {number}
  */
 const maxAreaOfIsland = (grid) => {
+
+    /* pseudo code
+        visit each cell of the matrix
+            if an island is found
+                run a DFS to find the area  
+                    start a stack with this point
+                    loop through the stack elements
+                        keep tracking the area
+                        mark visited cell as 2
+                        keep pushing adjacent cells in the stack
+                keep tracking the max area
+    */
+
     const ROWS = grid.length
     const COLUMNS = grid[0].length
 
