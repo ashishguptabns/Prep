@@ -213,6 +213,67 @@ const maxAreaOfIsland = (grid) => {
     return maxArea
 };
 
+/* The Maze - There is a ball in a maze with empty spaces (represented as 0) and walls (represented as 1). The ball can go through the empty spaces by rolling up, down, left or right, but it won't stop rolling until hitting a wall. When the ball stops, it could choose the next direction.
+
+Given the m x n maze, the ball's start position and the destination, where start = [startrow, startcol] and destination = [destinationrow, destinationcol], return true if the ball can stop at the destination, otherwise return false.
+ */
+const hasPath = (maze, start, destination) => {
+
+    /* pseudo code
+        start a DFS from starting cell
+            keep doing DFS in adjacent cells till we find the destination cell
+    */
+
+    const [startRow, startCol] = start;
+    const [destRow, destCol] = destination;
+    const ROWS = maze.length;
+    const COLS = maze[0].length;
+    const visited = Array.from({ length: ROWS }, () => Array(COLS).fill(false));
+
+    const directions = [[-1, 0], [1, 0], [0, -1], [0, 1]];
+
+    const dfs = (row, col) => {
+        // Check if the current position is the destination
+        if (row === destRow && col === destCol) {
+            return true;
+        }
+
+        // Mark the current position as visited
+        visited[row][col] = true;
+
+        // Explore in all directions
+        for (const [dr, dc] of directions) {
+            let newRow = row;
+            let newCol = col;
+
+            // Keep rolling until hitting a wall
+            while (
+                newRow + dr >= 0 &&
+                newRow + dr < ROWS &&
+                newCol + dc >= 0 &&
+                newCol + dc < COLS &&
+                maze[newRow + dr][newCol + dc] === 0
+            ) {
+                newRow += dr;
+                newCol += dc;
+            }
+
+            // Check if the new position has not been visited
+            if (!visited[newRow][newCol]) {
+                // Recursively explore the new position
+                if (dfs(newRow, newCol)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    };
+
+    // Start DFS from the given start position
+    return dfs(startRow, startCol);
+};
+
 /* Rotting oranges - You are given an m x n grid where each cell can have one of three values:
 
 - 0 representing an empty cell,
@@ -229,7 +290,18 @@ Return the minimum number of minutes that must elapse until no cell has a fresh 
  * @return {number}
  */
 const orangesRotting = (grid) => {
-    // Get the number of rows and columns in the grid
+
+    /* pseudo code
+        visit each cell
+            find a rotten orange
+                do a DFS
+                    keep putting the time on cells with fresh oranges
+                    repeat DFS for adjacent cells
+        visit each cell
+            find max time
+            check if any fresh orange is left
+    */
+
     const ROWS = grid.length
     const COLS = grid[0].length
 
@@ -279,57 +351,3 @@ const orangesRotting = (grid) => {
     return mins - 2
 };
 
-/* The Maze - There is a ball in a maze with empty spaces (represented as 0) and walls (represented as 1). The ball can go through the empty spaces by rolling up, down, left or right, but it won't stop rolling until hitting a wall. When the ball stops, it could choose the next direction.
-
-Given the m x n maze, the ball's start position and the destination, where start = [startrow, startcol] and destination = [destinationrow, destinationcol], return true if the ball can stop at the destination, otherwise return false.
- */
-const hasPath = (maze, start, destination) => {
-    const [startRow, startCol] = start;
-    const [destRow, destCol] = destination;
-    const rows = maze.length;
-    const cols = maze[0].length;
-    const visited = Array.from({ length: rows }, () => Array(cols).fill(false));
-
-    const directions = [[-1, 0], [1, 0], [0, -1], [0, 1]];
-
-    const dfs = (row, col) => {
-        // Check if the current position is the destination
-        if (row === destRow && col === destCol) {
-            return true;
-        }
-
-        // Mark the current position as visited
-        visited[row][col] = true;
-
-        // Explore in all directions
-        for (const [dr, dc] of directions) {
-            let newRow = row;
-            let newCol = col;
-
-            // Keep rolling until hitting a wall
-            while (
-                newRow + dr >= 0 &&
-                newRow + dr < rows &&
-                newCol + dc >= 0 &&
-                newCol + dc < cols &&
-                maze[newRow + dr][newCol + dc] === 0
-            ) {
-                newRow += dr;
-                newCol += dc;
-            }
-
-            // Check if the new position has not been visited
-            if (!visited[newRow][newCol]) {
-                // Recursively explore the new position
-                if (dfs(newRow, newCol)) {
-                    return true;
-                }
-            }
-        }
-
-        return false;
-    };
-
-    // Start DFS from the given start position
-    return dfs(startRow, startCol);
-};
