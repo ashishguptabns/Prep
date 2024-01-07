@@ -10,6 +10,20 @@ You must write an algorithm that runs in O(n) time and without using the divisio
  * @return {number[]}
  */
 const productExceptSelf = (nums) => {
+
+  /* pseudo code
+    keep an array res
+      ith item tells the product of all items except ith in nums
+    move i from start to end of nums
+      assign leftProduct to res[i]
+      keep track of leftProduct
+    now at ith index in res we have product of items on left
+    move i from end to start of nums
+      multiply rightProduct to res[i]
+      track rightProduct
+    now at ith index in res we have product of left and right items
+  */
+
   const size = nums.length;
   const res = new Array(size).fill(1);
 
@@ -33,36 +47,6 @@ const productExceptSelf = (nums) => {
   return res;
 };
 
-/* Minimum Time to Make Rope Colorful - Alice has n balloons arranged on a rope. You are given a 0-indexed string color where colors[i] is the color of the ith balloon.
-
-Alice wants the rope to be colorful. She does not want two consecutive balloons to be of the same color, so she asks Bob for help. Bob can remove some balloons from the rope to make it colorful. You are given a 0-indexed integer array neededTime where neededTime[i] is the time (in seconds) that Bob needs to remove the ith balloon from the rope.
-
-Return the minimum time Bob needs to make the rope colorful.
- */
-
-/**
- * @param {string} colors
- * @param {number[]} neededTime
- * @return {number}
- */
-const minCostRope = (colors, neededTime) => {
-  let time = 0;
-
-  //  start from 2nd balloon
-  for (let i = 1; i < colors.length; i++) {
-    //  found the consecutive same color balloons
-    if (colors[i] === colors[i - 1]) {
-      if (neededTime[i] > neededTime[i - 1]) {
-        time += neededTime[i - 1];
-      } else {
-        time += neededTime[i];
-      }
-    }
-  }
-
-  return time;
-};
-
 /* Sum of subarray ranges - You are given an integer array nums. The range of a subarray of nums is the difference between the largest and smallest element in the subarray.
 
 Return the sum of all subarray ranges of nums.
@@ -75,52 +59,30 @@ A subarray is a contiguous non-empty sequence of elements within an array.
  * @return {number}
  */
 const subArrayRanges = (nums) => {
+
+  /* pseudo code
+    move start through nums
+      track min and max for subarray starting at start
+      move end through nums starting at start + 1
+        track min and max
+        add to the sum
+  */
+
   let sum = 0;
-  for (let i = 0; i < nums.length; i++) {
+  for (let start = 0; start < nums.length; start++) {
     //  min max for subarrays starting with i
-    let min = nums[i];
-    let max = nums[i];
-    for (let j = i + 1; j < nums.length; j++) {
+    let min = nums[start];
+    let max = nums[start];
+    for (let end = start + 1; end < nums.length; end++) {
       //  min max for subarrays ending with j
-      min = Math.min(min, nums[j]);
-      max = Math.max(max, nums[j]);
+      min = Math.min(min, nums[end]);
+      max = Math.max(max, nums[end]);
 
       sum += max - min;
     }
   }
 
   return sum;
-};
-
-/* Minimum Swaps to Group All 1's Together 
-    - You're given a binary array data (containing just 0s and 1s).
-    - Your goal is to minimize the number of swaps needed to bring all the 1s together in any part of the array.
-*/
-
-const minSwaps = (arr) => {
-  // Count the number of 1's in the array
-  const countOnes = arr.reduce((acc, val) => acc + val, 0);
-
-  // If there are no 1's or only one 1, no swaps are needed for grouping
-  if (countOnes <= 1) {
-    return 0;
-  }
-
-  let windowSize = countOnes;
-  let onesInWindow = arr
-    .slice(0, windowSize)
-    .reduce((acc, val) => acc + val, 0);
-
-  //  these swaps are needed for the left most window
-  let minSwaps = countOnes - onesInWindow;
-
-  // Slide the window through the array and find the minimum number of swaps
-  for (let i = windowSize; i < arr.length; i++) {
-    onesInWindow = onesInWindow + arr[i] - arr[i - windowSize];
-    minSwaps = Math.min(minSwaps, countOnes - onesInWindow);
-  }
-
-  return minSwaps;
 };
 
 /* Maximum Subarray - Given an integer array nums, find the subarray with the largest sum, and return its sum.
@@ -130,22 +92,23 @@ const minSwaps = (arr) => {
  * @return {number}
  */
 const maxSubArray = (nums) => {
-  // Initialize a variable max to negative infinity to ensure it gets updated in the loop
+
+  /* pseudo code
+    move through nums 
+      keep tracking the sum of curr sub array and max found so far
+      ditch the subarray when the sum becomes negative
+  */
+
   let max = -Infinity;
-  // Initialize a variable currSubSum to 0 to keep track of the current subarray sum
   let currSubSum = 0;
 
-  // Iterate through each element (num) in the input array (nums)
   for (const num of nums) {
-    // Add the current element to the current subarray sum
     currSubSum += num;
-    // Update the maximum subarray sum (max) by taking the maximum of the current subarray sum and the existing max
     max = Math.max(max, currSubSum);
     // If the current subarray sum becomes negative, reset it to 0, as we want to find the maximum subarray sum
     currSubSum = Math.max(currSubSum, 0);
   }
 
-  // Return the maximum subarray sum found during the iteration
   return max;
 };
 
@@ -159,6 +122,15 @@ You must write an algorithm that runs in O(n) time.
  * @return {number}
  */
 const longestConsecutive = (nums) => {
+
+  /* pseudo code
+    move through nums
+      check if curr num is the end of a sequence
+        loop through the set with decreasing num
+          track the count
+      track the max length of increasing seq
+  */
+
   // Create a set to efficiently check the presence of elements.
   const set = new Set(nums);
 
@@ -189,6 +161,75 @@ const longestConsecutive = (nums) => {
   return max;
 };
 
+/* Flip String to Monotone Increasing - A binary string is monotone increasing if it consists of some number of 0's (possibly none), followed by some number of 1's (also possibly none).
+
+You are given a binary string s. You can flip s[i] changing it from 0 to 1 or from 1 to 0.
+
+Return the minimum number of flips to make s monotone increasing.
+ */
+/**
+ * @param {string} s
+ * @return {number}
+ */
+const minFlipsMonoIncr = (s) => {
+
+  /* pseudo code
+    move through s
+      found a 1
+        track number of 1s
+      found a 0
+        either flip all 1s or flip curr char
+  */
+
+  let numOfOnesSoFar = 0
+  let numFlips = 0
+
+  for (const c of s) {
+    if (c === '1') {
+      //  this is monotone increasing, no flips required             
+      numOfOnesSoFar++
+    } else {
+      //  we might have to flip this character '0' or all the 1s we found so far                
+      numFlips = Math.min(numOfOnesSoFar, numFlips + 1)
+    }
+  }
+
+  return numFlips
+};
+
+/* Minimum Time to Make Rope Colorful - Alice has n balloons arranged on a rope. You are given a 0-indexed string color where colors[i] is the color of the ith balloon.
+
+Alice wants the rope to be colorful. She does not want two consecutive balloons to be of the same color, so she asks Bob for help. Bob can remove some balloons from the rope to make it colorful. You are given a 0-indexed integer array neededTime where neededTime[i] is the time (in seconds) that Bob needs to remove the ith balloon from the rope.
+
+Return the minimum time Bob needs to make the rope colorful.
+ */
+
+/**
+ * @param {string} colors
+ * @param {number[]} neededTime
+ * @return {number}
+ */
+const minCostRope = (colors, neededTime) => {
+  let time = 0;
+
+  //  start from 2nd balloon
+  for (let i = 1; i < colors.length; i++) {
+    //  found the consecutive same color balloons
+    if (colors[i] === colors[i - 1]) {
+      // If the needed time for the current balloon is greater than the needed time for the previous balloon
+      if (neededTime[i] > neededTime[i - 1]) {
+        // Add the needed time of the previous balloon to the total time
+        time += neededTime[i - 1];
+      } else {
+        // Add the needed time of the current balloon to the total time
+        time += neededTime[i];
+      }
+    }
+  }
+
+  return time;
+};
+
 /* Maximum Product Subarray - Given an integer array nums, find a subarray that has the largest product, and return the product
  */
 /**
@@ -196,6 +237,14 @@ const longestConsecutive = (nums) => {
  * @return {number}
  */
 const maxProductS = (nums) => {
+
+  /* pseudo code
+    track max and min products found so far
+    move i through the nums array
+      check if curr num increase max or min product or we should discard the prev subarray
+      keep tracking the max
+  */
+
   if (!nums.length) {
     return 0;
   }
@@ -203,7 +252,7 @@ const maxProductS = (nums) => {
   let maxProductSoFar = nums[0];
   let minProductSoFar = nums[0];
 
-  let result = maxProductSoFar;
+  let max = maxProductSoFar;
 
   for (let i = 1; i < nums.length; i++) {
     const curr = nums[i];
@@ -222,37 +271,10 @@ const maxProductS = (nums) => {
 
     maxProductSoFar = tempMax;
 
-    result = Math.max(result, maxProductSoFar);
+    max = Math.max(max, maxProductSoFar);
   }
 
-  return result;
-};
-
-/* Flip String to Monotone Increasing - A binary string is monotone increasing if it consists of some number of 0's (possibly none), followed by some number of 1's (also possibly none).
-
-You are given a binary string s. You can flip s[i] changing it from 0 to 1 or from 1 to 0.
-
-Return the minimum number of flips to make s monotone increasing.
- */
-/**
- * @param {string} s
- * @return {number}
- */
-const minFlipsMonoIncr = (s) => {
-  let numOfOnesSoFar = 0
-  let numFlips = 0
-
-  for (const c of s) {
-    if (c === '1') {
-      //  this is monotone increasing, no flips required             
-      numOfOnesSoFar++
-    } else {
-      //  we might have to flip this character '0' or all the 1s we found so far                
-      numFlips = Math.min(numOfOnesSoFar, numFlips + 1)
-    }
-  }
-
-  return numFlips
+  return max;
 };
 
 /* Max sum circular subarray - Given a circular integer array nums of length n, return the maximum possible sum of a non-empty subarray of nums.
@@ -301,3 +323,4 @@ const maxSubarraySumCircular = (nums) => {
   // the overall sum and the minimum sum (considering the circular nature of the array)
   return Math.max(maxSum, sum - minSum);
 };
+
