@@ -1,3 +1,23 @@
+/* Longest Common Prefix - Write a function to find the longest common prefix string amongst an array of strings.
+If there is no common prefix, return an empty string ""
+ */
+/**
+ * @param {string[]} strs
+ * @return {string}
+ */
+const longestCommonPrefix = (strs) => {
+  let lcp = ''
+  for (let i = 0; i < strs[0].length; i++) {
+      if (strs.every(str => str[i] === strs[0][i])) {
+          lcp += strs[0][i]
+      } else {
+          break
+      }
+  }
+
+  return lcp
+};
+
 /* Product of array except self - Given an integer array nums, return an array answer such that answer[i] is equal to the product of all the elements of nums except nums[i].
 
 The product of any prefix or suffix of nums is guaranteed to fit in a 32-bit integer.
