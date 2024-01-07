@@ -102,8 +102,91 @@ Write a solution to show the unique ID of each user, If a user does not have a u
 
 Return the result table in any order. */
 
-# Write your MySQL query statement below
+/* logic
+    left join ensures that all rows from Employee table are included in the result along with matching rows from EmployeeUni table
+    If there's no match from EmployeeUni table, the columns from Employee table will contain NULL values
+*/
 select eu.unique_id, e.name
-from Employees e 
-left join EmployeeUNI eu 
-on e.id = eu.id
+from Employees e left join EmployeeUNI eu on e.id = eu.id
+
+/* Table: Sales
+
++-------------+-------+
+| Column Name | Type  |
++-------------+-------+
+| sale_id     | int   |
+| product_id  | int   |
+| year        | int   |
+| quantity    | int   |
+| price       | int   |
++-------------+-------+
+(sale_id, year) is the primary key (combination of columns with unique values) of this table.
+product_id is a foreign key (reference column) to Product table.
+Each row of this table shows a sale on the product product_id in a certain year.
+Note that the price is per unit.
+ 
+
+Table: Product
+
++--------------+---------+
+| Column Name  | Type    |
++--------------+---------+
+| product_id   | int     |
+| product_name | varchar |
++--------------+---------+
+product_id is the primary key (column with unique values) of this table.
+Each row of this table indicates the product name of each product.
+ 
+
+Write a solution to report the product_name, year, and price for each sale_id in the Sales table.
+
+Return the resulting table in any order. */
+
+# Write your MySQL query statement below
+select product_name, year, price
+from Sales 
+left join Product 
+on Sales.product_id = Product.product_id
+
+/* Table: Visits
+
++-------------+---------+
+| Column Name | Type    |
++-------------+---------+
+| visit_id    | int     |
+| customer_id | int     |
++-------------+---------+
+visit_id is the column with unique values for this table.
+This table contains information about the customers who visited the mall.
+ 
+
+Table: Transactions
+
++----------------+---------+
+| Column Name    | Type    |
++----------------+---------+
+| transaction_id | int     |
+| visit_id       | int     |
+| amount         | int     |
++----------------+---------+
+transaction_id is column with unique values for this table.
+This table contains information about the transactions made during the visit_id.
+ 
+
+Write a solution to find the IDs of the users who visited without making any transactions and the number of times they made these types of visits.
+
+Return the result table sorted in any order. */
+
+/* logic
+    from Visits means data will be taken from this table
+    left join will ensure to take rows from Visits table and matching rows from Transations table. With no match, columns from Transactions table will be Null
+    group the results by customer_id to get the count
+*/
+
+# Write your MySQL query statement below
+select customer_id, count(customer_id) as count_no_trans 
+from Visits as v
+left join Transactions as t 
+on t.visit_id = v.visit_id
+where t.transaction_id is null
+group by customer_id
