@@ -11,6 +11,19 @@ Output: 3
 Explanation: There are 3 unique categories in this example. 1, 2, and 3. */
 
 const countUniqueCategoriesWithUnionFind = (data) => {
+
+  /* pseudo code
+    keep a map to track a category and its first occurence
+    move through data
+      new category
+        record in the map
+        track category count
+      repeat category
+        find the root of curr index
+        find the root of its category
+        apply a union
+  */
+
   //  this map associates each category with the index of first occurrence of this category
   const categoryIndexMap = new Map();
 
@@ -44,6 +57,18 @@ const countUniqueCategoriesWithUnionFind = (data) => {
 
 //  disjoint set union - efficiently tracks relationships among elements and identifies connected components within a set
 class UnionFind {
+
+  /* pseudo code
+    find the root of set to which x belongs
+      keep moving up the parent array till ith item is its own parent and assign the same to parent of x
+      return parent of x
+    union to unite two indices
+      find root of x
+      find root of y
+      both are not equal
+        make rootY as parent of rootX
+  */
+
   constructor(size) {
     //  store the parent of each element
     this.parent = new Array(size);
