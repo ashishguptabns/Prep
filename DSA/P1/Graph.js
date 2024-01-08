@@ -665,58 +665,62 @@ Input: graph - a graph object with nodes, neighbors, and weights
        start - the starting node for the algorithm
 */
 
-const dijkstra = (graph, startNode) => {
+const dijkstra = (graph, start) => {
 
   /* pseudo code
     keep distance and visited array
       distance tracks ith item's distance from start node
-    move through nodes
-      find a node u at the min distance from unvisited nodes
-        go through each unvisited node and compare the distance
-      move v through adjacent nodes of u
-        update the min distance till node v
   */
 
-  const numNodes = graph.length;
+  // Create an object to store the shortest distance from the start node to every other node
+  const distances = {};
 
-  const distance = Array(numNodes).fill(Infinity);
+  // A set to keep track of all visited nodes
+  const visited = new Set();
 
-  const visited = Array(numNodes).fill(false);
+  // Get all the nodes of the graph
+  const nodes = Object.keys(graph);
 
-  distance[startNode] = 0;
+  // Initially, set the shortest distance to every node as Infinity
+  for (const node of nodes) {
+    distances[node] = Infinity;
+  }
 
-  const findMinDistNode = (distance, visited) => {
-    let min = Infinity;
-    let minNode = -1;
+  // The distance from the start node to itself is 0
+  distances[start] = 0;
 
-    for (let v = 0; v < distance.length; v++) {
-      if (!visited[v] && distance[v] <= min) {
-        min = distance[v];
-        minNode = v;
-      }
+  // Loop until all nodes are visited
+  while (nodes.length) {
+    // Sort nodes by distance and pick the closest unvisited node
+    nodes.sort((a, b) => distances[a] - distances[b]);
+    const closestNode = nodes.shift();
+
+    // If the shortest distance to the closest node is still Infinity, then remaining nodes are unreachable and we can break
+    if (distances[closestNode] === Infinity) {
+      break;
     }
 
-    return minNode;
-  };
+    // Mark the chosen node as visited
+    visited.add(closestNode);
 
-  for (let count = 0; count < numNodes - 1; count++) {
-    const u = findMinDistNode(distance, visited);
+    // For each neighboring node of the current node
+    for (const neighbor in graph[closestNode]) {
+      // If the neighbor hasn't been visited yet
+      if (!visited.has(neighbor)) {
+        // Calculate tentative distance to the neighboring node
+        const newDistance = distances[closestNode] + graph[closestNode][neighbor];
 
-    visited[u] = true;
-
-    for (let v = 0; v < numNodes; v++) {
-      if (
-        !visited[v] &&
-        graph[u][v] !== 0 &&
-        distance[u] !== Number.MAX_VALUE &&
-        distance[u] + graph[u][v] < distance[v]
-      ) {
-        distance[v] = distance[u] + graph[u][v];
+        // If the newly calculated distance is shorter than the previously known distance to this neighbor
+        if (newDistance < distances[neighbor]) {
+          // Update the shortest distance to this neighbor
+          distances[neighbor] = newDistance;
+        }
       }
     }
   }
 
-  return distance;
+  // Return the shortest distance from the start node to all nodes
+  return distances;
 };
 
 /* Number of Nodes in the Sub-Tree With the Same Label - You are given a tree (i.e. a connected, undirected graph that has no cycles) consisting of n nodes numbered from 0 to n - 1 and exactly n - 1 edges. The root of the tree is the node 0, and each node of the tree has a label which is a lower-case character given in the string labels (i.e. The node with the number i has the label labels[i]).
