@@ -1,38 +1,3 @@
-/* Longest Word With All Prefixes - Given an array of strings words, find the longest string in words such that every prefix of it is also in words.
-
-  Input: words = ["a", "banana", "app", "appl", "ap", "apple"]
-Output: "apple"
-Explanation:
-- "apple" is the longest word in words.
-- Every prefix of "apple" is also in words: ("a", "app", "appl", "ap"). */
-
-const longestWord = (words) => {
-  const trie = new Trie();
-
-  //  we will find shorter words with same prefix first
-  words.sort(); // Sort the words lexicographically to ensure we find the longest one first
-
-  for (const word of words) {
-    trie.insert(word);
-  }
-
-  let longest = ''
-  for (const word of words) {
-    //  get all characters except last one
-    const prefix = word.slice(0, -1);
-
-    if (prefix === '' || trie.search(prefix)) {
-      //  prefix is already present in the trie -> word has all prefixes in the set of words
-      trie.insert(word);
-      if (word.length > longest.length) {
-        longest = word;
-      }
-    }
-  }
-
-  return longest;
-}
-
 class TrieNode {
   constructor() {
     this.children = new Map();
@@ -41,6 +6,25 @@ class TrieNode {
 }
 
 class Trie {
+
+  /* pseudo code
+    insert a word
+      start node from the root
+      move through chars of word
+        node doesn't have curr char as a child
+          set a child against a new TrieNode
+        move node to this child
+      mark curr node as end of word
+
+    search a prefix
+      start node from the root
+      move through chars of prefix
+        node doesn't have curr char as a child
+          return false
+        move node to this child
+      return if curr node is marked as end of word
+  */
+
   constructor() {
     this.root = new TrieNode();
   }
@@ -83,34 +67,52 @@ Return a list of lists of the suggested products after each character of searchW
  * @return {string[][]}
  */
 const suggestedProducts = (products, searchWord) => {
+
+  /* pseudo code
+    sort the products
+    keep a trie
+    move p through products
+      start node from trie root
+      move through chars of p
+        if node doesn't have this char as key
+          put sugg array against this key
+        if sugg array has less than 3 items
+          push p into the array
+        move node to curr char node
+
+    move through chars of search word
+      move node to node of curr char
+      keep pushing the suggestions in the res array
+  */
+
   //  suggestions are given in lexicographical order
   products.sort();
 
   //  build a trie from the sorted products
   const trie = {};
   for (let p of products) {
-    let root = trie;
+    let node = trie;
     //  go through the characters
-    for (let i = 0; i < p.length; i++) {
-      if (!root[p[i]]) {
+    for (const char of p) {
+      if (!node[char]) {
         //  give suggestions for each character ending - prefix
-        root[p[i]] = { 'sug': [] };
+        node[char] = { 'sug': [] };
       }
-      if (root[p[i]]['sug'].length < 3) {
+      if (node[char]['sug'].length < 3) {
         //  this whole word p is a suggestion for a prefix ending at this char
-        root[p[i]]['sug'].push(p);
+        node[char]['sug'].push(p);
       }
-      root = root[p[i]];
+      node = node[char];
     }
   }
 
-  let root = trie, res = [];
+  let node = trie, res = [];
   for (let i = 0; i < searchWord.length; i++) {
-    if (root) {
-      root = root[searchWord[i]];
+    if (node) {
+      node = node[searchWord[i]];
     }
     //  condition is to consider each char
-    res.push(!root ? [] : root['sug']);
+    res.push(!node ? [] : node['sug']);
   }
 
   return res;
@@ -171,11 +173,20 @@ Trie.prototype.startsWith = function (prefix) {
   return true
 };
 
-/** 
+/**
  * Your Trie object will be instantiated and called as such:
  * var obj = new Trie()
  * obj.insert(word)
  * var param_2 = obj.search(word)
  * var param_3 = obj.startsWith(prefix)
  */
+
+// todo
+/* Longest Word With All Prefixes - Given an array of strings words, find the longest string in words such that every prefix of it is also in words.
+
+  Input: words = ["a", "banana", "app", "appl", "ap", "apple"]
+Output: "apple"
+Explanation:
+- "apple" is the longest word in words.
+- Every prefix of "apple" is also in words: ("a", "app", "appl", "ap"). */
 
