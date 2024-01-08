@@ -292,3 +292,90 @@ from Employee
 left join Bonus
 on Employee.empId = Bonus.empId
 where Bonus.bonus < 1000 or Bonus.bonus is NULL
+
+/* Table: Students
+
++---------------+---------+
+| Column Name   | Type    |
++---------------+---------+
+| student_id    | int     |
+| student_name  | varchar |
++---------------+---------+
+student_id is the primary key (column with unique values) for this table.
+Each row of this table contains the ID and the name of one student in the school.
+ 
+
+Table: Subjects
+
++--------------+---------+
+| Column Name  | Type    |
++--------------+---------+
+| subject_name | varchar |
++--------------+---------+
+subject_name is the primary key (column with unique values) for this table.
+Each row of this table contains the name of one subject in the school.
+ 
+
+Table: Examinations
+
++--------------+---------+
+| Column Name  | Type    |
++--------------+---------+
+| student_id   | int     |
+| subject_name | varchar |
++--------------+---------+
+There is no primary key (column with unique values) for this table. It may contain duplicates.
+Each student from the Students table takes every course from the Subjects table.
+Each row of this table indicates that a student with ID student_id attended the exam of subject_name.
+ 
+
+Write a solution to find the number of times each student attended each exam.
+
+Return the result table ordered by student_id and subject_name. */
+
+/* logic
+    cross join creates all possible combinations of students and subjects
+    left outer join ensures all rows from students and subjects table are included even when there is no match from Exam table
+ */
+
+# Write your MySQL query statement below
+select St.student_id, St.student_name, Sub.subject_name, count(E.subject_name) attended_exams
+from Students St
+cross join Subjects Sub
+left outer join Examinations E
+on St.student_id = E.student_id and Sub.subject_name = E.subject_name
+group by St.student_id, St.student_name, Sub.subject_name
+order by St.student_id, Sub.subject_name
+
+/* Table: Employee
+
++-------------+---------+
+| Column Name | Type    |
++-------------+---------+
+| id          | int     |
+| name        | varchar |
+| department  | varchar |
+| managerId   | int     |
++-------------+---------+
+id is the primary key (column with unique values) for this table.
+Each row of this table indicates the name of an employee, their department, and the id of their manager.
+If managerId is null, then the employee does not have a manager.
+No employee will be the manager of themself.
+ 
+
+Write a solution to find managers with at least five direct reports.
+
+Return the result table in any order. */
+
+/* logic
+    group the result
+    apply filter    
+*/
+
+# Write your MySQL query statement below
+select E1.name
+from Employee E1
+join Employee E2
+on E1.id = E2.managerId
+group by e1.name, e1.id
+having count(e2.id) >= 5
