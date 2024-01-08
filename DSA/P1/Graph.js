@@ -30,72 +30,21 @@ const findSmallestSetOfVertices = (n, edges) => {
   return res
 };
 
-/* Surrounded regions -Given an m x n matrix board containing 'X' and 'O', capture all regions that are 4-directionally surrounded by 'X'.
-
-A region is captured by flipping all 'O's into 'X's in that surrounded region.
-*/
-/**
- * @param {character[][]} board
- * @return {void} Do not return anything, modify board in-place instead.
- */
-const solve = (board) => {
-
-  /* pseudo code
-    go to each border cell
-      mark cell as visited which is O
-      repeat for neighbour cells which are not on border
-    
-    go to each cell
-      if it is marked visited
-        restore to O
-      else mark X
-  */
-
-  const dfs = (i, j) => {
-    if (i < 0 || i >= board.length || j < 0 || j >= board[i].length
-      || board[i][j] === 'V' || board[i][j] === 'X') {
-      return
-    }
-
-    board[i][j] = 'V';
-    dfs(i + 1, j);
-    dfs(i - 1, j);
-    dfs(i, j + 1);
-    dfs(i, j - 1);
-  }
-
-  for (let r = 0; r < board.length; r++) {
-    for (let c = 0; c < board[0].length; c++) {
-      if (board[r][c] === 'O' && (r === 0 || c === 0 || r === board.length - 1
-        || c === board[0].length - 1)) {
-        dfs(r, c);
-      }
-    }
-  }
-
-  for (let r = 0; r < board.length; r++) {
-    for (let c = 0; c < board[0].length; c++) {
-      if (board[r][c] === 'V') {
-        board[r][c] = 'O';
-      } else {
-        board[r][c] = 'X';
-      }
-    }
-  }
-};
-
 /* All Paths From Source to Target - Given a directed acyclic graph(DAG) of n nodes labeled from 0 to n - 1, find all possible paths from node 0 to node n - 1 and return them in any order.
 
 The graph is given as follows: graph[i] is a list of all nodes you can visit from node i(i.e., there is a directed edge from node i to node graph[i][j]).
+ */
+/**
+ * @param {number[][]} graph
+ * @return {number[][]}
  */
 const allPathsSourceTarget = (graph) => {
   /* pseudo code
     we will solve using dfs
     srcIndex = 0, targetIndex = graphsize - 1 
-    start DFS from 0
+    start DFS from source - 0
       keep tracking the nodes in curr path
       visit each neighbour of the curr node and do a DFS
-      maintain curr node in visited map
   */
 
   const src = 0
@@ -103,28 +52,18 @@ const allPathsSourceTarget = (graph) => {
 
   const allPaths = []
 
-  const dfs = (startNode, path, visitedMap) => {
-    path.push(startNode)
+  const dfs = (startNode, currPath) => {
     if (startNode === target) {
       //  reached the end
-      allPaths.push([...path])
+      allPaths.push([...currPath])
       return
     }
-    //  explore all the next nodes for current node
-    for (let neighbour of graph[startNode]) {
-      if (!visitedMap[neighbour]) {
-        visitedMap[neighbour] = true
-        //  call dfs with neighbour as a new start node
-        dfs(neighbour, path, visitedMap)
-        //  unmark for the other path
-        visitedMap[neighbour] = false
-        //  remove this neighbour also
-        path.pop()
-      }
+    for (const neighbour of graph[startNode]) {
+      dfs(neighbour, [...currPath, neighbour])
     }
   }
 
-  dfs(src, [], {})
+  dfs(src, [0])
   return allPaths
 };
 
@@ -142,12 +81,12 @@ const possibleBipartition = (n, dislikes) => {
   /* pseudo code 
     create a graph from dislikes array
       a -> b and b -> a
+    keep a color array for each node
     move through each node till n
-      maintain color
-      start a BFS 
+      start a BFS if this node is not colored
         go through neighbours of current node 
           color should not match
-          give a color
+          give opposite color
           push in the queue for next travel
   */
 
@@ -843,5 +782,59 @@ const countSubTrees = (n, edges, labels) => {
 
   // Return the result array
   return ans
+};
+
+/* Surrounded regions -Given an m x n matrix board containing 'X' and 'O', capture all regions that are 4-directionally surrounded by 'X'.
+
+A region is captured by flipping all 'O's into 'X's in that surrounded region.
+*/
+/**
+ * @param {character[][]} board
+ * @return {void} Do not return anything, modify board in-place instead.
+ */
+const solve = (board) => {
+
+  /* pseudo code
+    go to each border cell
+      mark cell as visited which is O
+      repeat for neighbour cells which are not on border
+    
+    go to each cell
+      if it is marked visited
+        restore to O
+      else mark X
+  */
+
+  const dfs = (i, j) => {
+    if (i < 0 || i >= board.length || j < 0 || j >= board[i].length
+      || board[i][j] === 'V' || board[i][j] === 'X') {
+      return
+    }
+
+    board[i][j] = 'V';
+    dfs(i + 1, j);
+    dfs(i - 1, j);
+    dfs(i, j + 1);
+    dfs(i, j - 1);
+  }
+
+  for (let r = 0; r < board.length; r++) {
+    for (let c = 0; c < board[0].length; c++) {
+      if (board[r][c] === 'O' && (r === 0 || c === 0 || r === board.length - 1
+        || c === board[0].length - 1)) {
+        dfs(r, c);
+      }
+    }
+  }
+
+  for (let r = 0; r < board.length; r++) {
+    for (let c = 0; c < board[0].length; c++) {
+      if (board[r][c] === 'V') {
+        board[r][c] = 'O';
+      } else {
+        board[r][c] = 'X';
+      }
+    }
+  }
 };
 
