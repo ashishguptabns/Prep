@@ -1,3 +1,84 @@
+/* Kth largest integer in an array - You are given an array of strings nums and an integer k. Each string in nums represents an integer without leading zeros.
+
+Return the string that represents the kth largest integer in nums.
+ */
+/**
+ * @param {string[]} nums
+ * @param {number} k
+ * @return {string}
+ */
+const kthLargestNumber = (nums, k) => {
+    const maxHeap = new MaxPriorityQueue({ compare: (a, b) => { return b - a } })
+
+    nums.forEach(num => maxHeap.enqueue(BigInt(num)))
+
+    while (k > 1) {
+        maxHeap.dequeue()
+        k--
+    }
+    return maxHeap.front().toString()
+};
+
+/* K closest points to origin - Given an array of points where points[i] = [xi, yi] represents a point on the X-Y plane and an integer k, return the k closest points to the origin (0, 0).
+
+The distance between two points on the X-Y plane is the Euclidean distance (i.e., √(x1 - x2)2 + (y1 - y2)2).
+
+You may return the answer in any order. The answer is guaranteed to be unique (except for the order that it is in). */
+
+/**
+ * @param {number[][]} points
+ * @param {number} k
+ * @return {number[][]}
+ */
+const kClosest = (points, k) => {
+    /* pseudo code
+        move through the points
+            push each point in a min pq against their distance from [0, 0] as sort key
+        remove k elements from min pq and return
+    */
+
+    const minHeap = new MinPriorityQueue()
+    points.forEach(([x, y]) => minHeap.enqueue([x, y], (x ** 2 + y ** 2)))
+
+    const res = []
+    while (res.length < k) {
+        res.push(minHeap.dequeue().element)
+    }
+
+    return res
+};
+
+/* Kth largest element in an array - Given an integer array nums and an integer k, return the kth largest element in the array.
+
+Note that it is the kth largest element in the sorted order, not the kth distinct element.
+
+Can you solve it without sorting?
+ */
+/**
+ * @param {number[]} nums
+ * @param {number} k
+ * @return {number}
+ */
+const findKthLargest = (nums, k) => {
+    const minHeap = new MinHeap()
+
+    //  push all items
+    for (const num of nums) {
+        minHeap.push(num)
+    }
+
+    for (let i = 0; i < nums.length; i++) {
+        //  keep popping
+        const element = minHeap.pop()
+        if (nums.length - i === k) {
+            //  kth largest
+            return element
+        }
+    }
+
+    return -1
+};
+
 /* Make Max Heap */
 
 class MaxHeap {
@@ -179,34 +260,25 @@ const minMeetingRoom = (intervals) => {
 
     /* pseudo code
         sort the given intervals by their start times
+        keep a min heap to store end times of currently occupied rooms
         move through the intervals
-            remove all the intervals from MinPQ whose end times are less or equal to curr interval's start time
-                cause we don't need another room
+            remove the top of MinPQ if its end time is less or equal to curr interval's start time
+                cause we don't need another room and curr meeting will occupy this room till its end time
             keep adding the interval end time in MinPQ
         return the size of MinPQ
     */
 
-    // Sort the intervals based on start time
     intervals.sort((a, b) => a[0] - b[0]);
 
-    // Min priority queue to store end times of meeting rooms
     const pq = new MinPriorityQueue();
 
     for (const [start, end] of intervals) {
-        // If the priority queue is not empty and the start time of the current interval
-        // is greater than or equal to the end time of the meeting at the front of the queue
         if (!pq.isEmpty && start >= pq.peek().value) {
-            // No extra meeting room needed as end time is less than the current one's start time
-            // Remove the time that ends earliest as this room will be blocked till curr end time
             pq.dequeue();
         }
-        //  Add the end time of the current meeting to the priority queue
-        //  this meeting room will be occupied till this time
         pq.enqueue({ value: end });
     }
 
-    //  The size of the priority queue represents the minimum number of meeting rooms required 
-    //  these many meetings are happening at the same time
     return pq.size;
 }
 
@@ -255,37 +327,6 @@ const topKFrequent = (nums, k) => {
     return res
 };
 
-/* Kth largest element in an array - Given an integer array nums and an integer k, return the kth largest element in the array.
-
-Note that it is the kth largest element in the sorted order, not the kth distinct element.
-
-Can you solve it without sorting?
- */
-/**
- * @param {number[]} nums
- * @param {number} k
- * @return {number}
- */
-const findKthLargest = (nums, k) => {
-    const minHeap = new MinHeap()
-
-    //  push all items
-    for (const num of nums) {
-        minHeap.push(num)
-    }
-
-    for (let i = 0; i < nums.length; i++) {
-        //  keep popping
-        const element = minHeap.pop()
-        if (nums.length - i === k) {
-            //  kth largest
-            return element
-        }
-    }
-
-    return -1
-};
-
 /* Maximum score from removing stones - You are playing a solitaire game with three piles of stones of sizes a​​​​​​, b,​​​​​​ and c​​​​​​ respectively. Each turn you choose two different non-empty piles, take one stone from each, and add 1 point to your score. The game stops when there are fewer than two non-empty piles (meaning there are no more available moves).
 
 Given three integers a​​​​​, b,​​​​​ and c​​​​​, return the maximum score you can get.
@@ -331,31 +372,6 @@ const maximumScore = (a, b, c) => {
     return score
 };
 
-/* K closest points to origin - Given an array of points where points[i] = [xi, yi] represents a point on the X-Y plane and an integer k, return the k closest points to the origin (0, 0).
-
-The distance between two points on the X-Y plane is the Euclidean distance (i.e., √(x1 - x2)2 + (y1 - y2)2).
-
-You may return the answer in any order. The answer is guaranteed to be unique (except for the order that it is in). */
-
-/**
- * @param {number[][]} points
- * @param {number} k
- * @return {number[][]}
- */
-const kClosest = (points, k) => {
-    //  use minHeap to keep the distance from origin for each point
-
-    const minHeap = new MinPriorityQueue()
-    points.forEach(([x, y]) => minHeap.enqueue([x, y], (x ** 2 + y ** 2)))
-
-    const res = []
-    while (res.length < k) {
-        res.push(minHeap.dequeue().element)
-    }
-
-    return res
-};
-
 /* Remove Stones to Minimize the Total - You are given a 0-indexed integer array piles, where piles[i] represents the number of stones in the ith pile, and an integer k. You should apply the following operation exactly k times:
 
 Choose any piles[i] and remove floor(piles[i] / 2) stones from it.
@@ -369,7 +385,13 @@ Return the minimum possible total number of stones remaining after applying the 
 * @return {number}
 */
 const minStoneSum = (piles, k) => {
-    //  heap is important because we want to find the pile with most stones after each operation
+    /* pseudo code
+        move through piles and keep pushing to a max heap
+        loop for k operations
+            remove the top pile, halve it then put it back
+            keep tracking stones which are left
+    */
+
     const maxHeap = new MaxPriorityQueue()
     let stones = 0
 
@@ -397,89 +419,14 @@ const minStoneSum = (piles, k) => {
     return stones
 };
 
-/* Kth largest integer in an array - You are given an array of strings nums and an integer k. Each string in nums represents an integer without leading zeros.
-
-Return the string that represents the kth largest integer in nums.
- */
-/**
- * @param {string[]} nums
- * @param {number} k
- * @return {string}
- */
-const kthLargestNumber = (nums, k) => {
-    const maxHeap = new MaxPriorityQueue({ compare: (a, b) => { return b - a } })
-
-    nums.forEach(num => maxHeap.enqueue(BigInt(num)))
-
-    while (k > 1) {
-        maxHeap.dequeue()
-        k--
-    }
-    return maxHeap.front().toString()
-};
-
-/* Find K Pairs with Smallest Sums - You are given two integer arrays nums1 and nums2 sorted in non-decreasing order and an integer k.
-
-Define a pair (u, v) which consists of one element from the first array and one element from the second array.
-
-Return the k pairs (u1, v1), (u2, v2), ..., (uk, vk) with the smallest sums.
- */
-
-/**
-* @param {number[]} nums1
-* @param {number[]} nums2
-* @param {number} k
-* @return {number[][]}
-*/
-const kSmallestPairs = (nums1, nums2, k) => {
-    // Check if either of the input arrays is empty
-    if (!nums1.length || !nums2.length) {
-        return [];
-    }
-
-    // Create a min-heap with priority based on the sum of pairs
-    const minHeap = new MinPriorityQueue({ priority: x => x[0] });
-
-    // Initialize the min-heap with pairs formed by taking elements from nums1
-    // and the first element from nums2
-    for (let i = 0; i < nums1.length; i++) {
-        const num1 = nums1[i];
-        const num2 = nums2[0];
-        minHeap.enqueue([num1 + num2, i, 0]); // Sum, index in nums1, index in nums2
-    }
-
-    const n = nums2.length;
-    const res = []; // Result array to store k smallest pairs
-
-    // Continue until either k pairs are found or the min-heap is empty
-    while (k > 0 && !minHeap.isEmpty()) {
-        // Dequeue the pair with the smallest sum
-        const [sum, idx1, idx2] = minHeap.dequeue().element;
-
-        // Add the pair to the result array
-        res.push([nums1[idx1], nums2[idx2]]);
-
-        // Decrement the remaining pairs to find
-        k--;
-
-        // If there are more elements in nums2, enqueue the next pair with the current element from nums1
-        if (idx2 < n - 1) {
-            minHeap.enqueue([nums1[idx1] + nums2[idx2 + 1], idx1, idx2 + 1]);
-        }
-    }
-
-    // Return the final array containing k smallest pairs
-    return res;
-};
-
 /* Meeting rooms - You are given an integer n. There are n rooms numbered from 0 to n - 1.
 
 You are given a 2D integer array meetings where meetings[i] = [starti, endi] means that a meeting will be held during the half-closed time interval [starti, endi). All the values of starti are unique.
 
 Meetings are allocated to rooms in the following manner:
-Each meeting will take place in the unused room with the lowest number.
-If there are no available rooms, the meeting will be delayed until a room becomes free. The delayed meeting should have the same duration as the original meeting.
-When a room becomes unused, meetings that have an earlier original start time should be given the room.
+- Each meeting will take place in the unused room with the lowest number.
+- If there are no available rooms, the meeting will be delayed until a room becomes free. The delayed meeting should have the same duration as the original meeting.
+- When a room becomes unused, meetings that have an earlier original start time should be given the room.
 
 Return the number of the room that held the most meetings. If there are multiple rooms, return the room with the lowest number.
 
@@ -544,6 +491,60 @@ const mostBooked = (n, meetings) => {
         }
     }
 
+    return res;
+};
+
+/* Find K Pairs with Smallest Sums - You are given two integer arrays nums1 and nums2 sorted in non-decreasing order and an integer k.
+
+Define a pair (u, v) which consists of one element from the first array and one element from the second array.
+
+Return the k pairs (u1, v1), (u2, v2), ..., (uk, vk) with the smallest sums.
+ */
+
+/**
+* @param {number[]} nums1
+* @param {number[]} nums2
+* @param {number} k
+* @return {number[][]}
+*/
+const kSmallestPairs = (nums1, nums2, k) => {
+    // Check if either of the input arrays is empty
+    if (!nums1.length || !nums2.length) {
+        return [];
+    }
+
+    // Create a min-heap with priority based on the sum of pairs
+    const minHeap = new MinPriorityQueue({ priority: x => x[0] });
+
+    // Initialize the min-heap with pairs formed by taking elements from nums1
+    // and the first element from nums2
+    for (let i = 0; i < nums1.length; i++) {
+        const num1 = nums1[i];
+        const num2 = nums2[0];
+        minHeap.enqueue([num1 + num2, i, 0]); // Sum, index in nums1, index in nums2
+    }
+
+    const n = nums2.length;
+    const res = []; // Result array to store k smallest pairs
+
+    // Continue until either k pairs are found or the min-heap is empty
+    while (k > 0 && !minHeap.isEmpty()) {
+        // Dequeue the pair with the smallest sum
+        const [sum, idx1, idx2] = minHeap.dequeue().element;
+
+        // Add the pair to the result array
+        res.push([nums1[idx1], nums2[idx2]]);
+
+        // Decrement the remaining pairs to find
+        k--;
+
+        // If there are more elements in nums2, enqueue the next pair with the current element from nums1
+        if (idx2 < n - 1) {
+            minHeap.enqueue([nums1[idx1] + nums2[idx2 + 1], idx1, idx2 + 1]);
+        }
+    }
+
+    // Return the final array containing k smallest pairs
     return res;
 };
 
