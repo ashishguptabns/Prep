@@ -754,30 +754,29 @@ const minSwaps = (arr) => {
     /* pseudo code
       
     */
-  
+
     // Count the number of 1's in the array
     const countOnes = arr.reduce((acc, val) => acc + val, 0);
-  
+
     // If there are no 1's or only one 1, no swaps are needed for grouping
     if (countOnes <= 1) {
-      return 0;
+        return 0;
     }
-  
+
     let windowSize = countOnes;
     let onesInWindow = arr
-      .slice(0, windowSize)
-      .reduce((acc, val) => acc + val, 0);
-  
+        .slice(0, windowSize)
+        .reduce((acc, val) => acc + val, 0);
+
     //  these swaps are needed for the left most window
     let minSwaps = countOnes - onesInWindow;
-  
+
     // Slide the window through the array and find the minimum number of swaps
     for (let i = windowSize; i < arr.length; i++) {
-      onesInWindow = onesInWindow + arr[i] - arr[i - windowSize];
-      minSwaps = Math.min(minSwaps, countOnes - onesInWindow);
+        onesInWindow = onesInWindow + arr[i] - arr[i - windowSize];
+        minSwaps = Math.min(minSwaps, countOnes - onesInWindow);
     }
-  
+
     return minSwaps;
-  };
-  
-  
+};
+
