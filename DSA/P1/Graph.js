@@ -435,138 +435,6 @@ const alienOrder = (words) => {
   return seen.size === charGraph.size ? result.join('') : '';
 }
 
-/* Dijkstra's algorithm for finding the shortest paths from a node to other nodes in a graph 
-
-Function signature: dijkstra(graph, start)
-Input: graph - a graph object with nodes, neighbors, and weights
-       start - the starting node for the algorithm
-*/
-
-const dijkstra = (graph, startNode) => {
-
-  /* pseudo code
-    keep distance and visited array
-      distance tracks ith item's distance from start node
-    move through nodes
-      find a node u at the min distance from unvisited nodes
-        go through each unvisited node and compare the distance
-      move v through adjacent nodes of u
-        update the min distance till node v
-  */
-
-  const numNodes = graph.length;
-
-  const distance = Array(numNodes).fill(Infinity);
-
-  const visited = Array(numNodes).fill(false);
-
-  distance[startNode] = 0;
-
-  const findMinDistNode = (distance, visited) => {
-    let min = Infinity;
-    let minNode = -1;
-
-    for (let v = 0; v < distance.length; v++) {
-      if (!visited[v] && distance[v] <= min) {
-        min = distance[v];
-        minNode = v;
-      }
-    }
-
-    return minNode;
-  };
-
-  for (let count = 0; count < numNodes - 1; count++) {
-    const u = findMinDistNode(distance, visited);
-
-    visited[u] = true;
-
-    for (let v = 0; v < numNodes; v++) {
-      if (
-        !visited[v] &&
-        graph[u][v] !== 0 &&
-        distance[u] !== Number.MAX_VALUE &&
-        distance[u] + graph[u][v] < distance[v]
-      ) {
-        distance[v] = distance[u] + graph[u][v];
-      }
-    }
-  }
-
-  return distance;
-};
-
-/* Number of Nodes in the Sub-Tree With the Same Label - You are given a tree (i.e. a connected, undirected graph that has no cycles) consisting of n nodes numbered from 0 to n - 1 and exactly n - 1 edges. The root of the tree is the node 0, and each node of the tree has a label which is a lower-case character given in the string labels (i.e. The node with the number i has the label labels[i]).
-
-The edges array is given on the form edges[i] = [ai, bi], which means there is an edge between nodes ai and bi in the tree.
-
-Return an array of size n where ans[i] is the number of nodes in the subtree of the ith node which have the same label as node i.
- */
-/**
- * @param {number} n
- * @param {number[][]} edges
- * @param {string} labels
- * @return {number[]}
- */
-const countSubTrees = (n, edges, labels) => {
-
-  /* pseudo code
-    build an undirected graph from the edges
-    start DFS from the root
-      do a DFS for each neighbour of curr node
-    increment the count of curr char
-    maintain count of same label in ans array
-    update the count of each label in parent arr
-  */
-
-  // Create an adjacency list to represent the undirected graph
-  const adjList = Array.from(Array(n), () => new Array())
-
-  // Create the undirected graph
-  for (const [from, to] of edges) {
-    adjList[from].push(to)
-    adjList[to].push(from)
-  }
-
-  // Initialize an array to store the result for each node
-  const ans = Array(n).fill(0)
-
-  // Initialize an array to count the occurrences of each character in the subtree
-  const count = Array(26).fill(0)
-
-  // Depth-first search (DFS) function to traverse the tree
-  const dfs = (node, parent, pcount) => {
-    // Initialize an array to count the occurrences of each character in the current subtree
-    const count = Array(26).fill(0)
-
-    // Traverse each neighbor of the current node
-    for (const neighbour of adjList[node]) {
-      // Skip the parent node to avoid revisiting it
-      if (neighbour === parent) {
-        continue
-      }
-
-      // Recursively call DFS for the current neighbor
-      dfs(neighbour, node, count)
-    }
-
-    // Increment the count for the character at the current node
-    count[labels.charCodeAt(node) - 97]++
-    ans[node] = count[labels.charCodeAt(node) - 97]
-
-    // Update the parent count array with the counts from the current subtree
-    for (let i = 0; i < 26; i++) {
-      pcount[i] += count[i]
-    }
-  }
-
-  // Start DFS from the root node (node 0) with a dummy parent (-1) and initial count array
-  dfs(0, -1, count)
-
-  // Return the result array
-  return ans
-};
-
 /* Surrounded regions -Given an m x n matrix board containing 'X' and 'O', capture all regions that are 4-directionally surrounded by 'X'.
 
 A region is captured by flipping all 'O's into 'X's in that surrounded region.
@@ -788,5 +656,125 @@ const minTime = (n, edges, hasApple) => {
 
   //  start with root
   return dfs(0, -1);
+};
+
+/* Dijkstra's algorithm for finding the shortest paths from a node to other nodes in a graph 
+
+Function signature: dijkstra(graph, start)
+Input: graph - a graph object with nodes, neighbors, and weights
+       start - the starting node for the algorithm
+*/
+
+const dijkstra = (graph, startNode) => {
+
+  /* pseudo code
+    keep distance and visited array
+      distance tracks ith item's distance from start node
+    move through nodes
+      find a node u at the min distance from unvisited nodes
+        go through each unvisited node and compare the distance
+      move v through adjacent nodes of u
+        update the min distance till node v
+  */
+
+  const numNodes = graph.length;
+
+  const distance = Array(numNodes).fill(Infinity);
+
+  const visited = Array(numNodes).fill(false);
+
+  distance[startNode] = 0;
+
+  const findMinDistNode = (distance, visited) => {
+    let min = Infinity;
+    let minNode = -1;
+
+    for (let v = 0; v < distance.length; v++) {
+      if (!visited[v] && distance[v] <= min) {
+        min = distance[v];
+        minNode = v;
+      }
+    }
+
+    return minNode;
+  };
+
+  for (let count = 0; count < numNodes - 1; count++) {
+    const u = findMinDistNode(distance, visited);
+
+    visited[u] = true;
+
+    for (let v = 0; v < numNodes; v++) {
+      if (
+        !visited[v] &&
+        graph[u][v] !== 0 &&
+        distance[u] !== Number.MAX_VALUE &&
+        distance[u] + graph[u][v] < distance[v]
+      ) {
+        distance[v] = distance[u] + graph[u][v];
+      }
+    }
+  }
+
+  return distance;
+};
+
+/* Number of Nodes in the Sub-Tree With the Same Label - You are given a tree (i.e. a connected, undirected graph that has no cycles) consisting of n nodes numbered from 0 to n - 1 and exactly n - 1 edges. The root of the tree is the node 0, and each node of the tree has a label which is a lower-case character given in the string labels (i.e. The node with the number i has the label labels[i]).
+
+The edges array is given on the form edges[i] = [ai, bi], which means there is an edge between nodes ai and bi in the tree.
+
+Return an array of size n where ans[i] is the number of nodes in the subtree of the ith node which have the same label as node i.
+ */
+/**
+ * @param {number} n
+ * @param {number[][]} edges
+ * @param {string} labels
+ * @return {number[]}
+ */
+const countSubTrees = (n, edges, labels) => {
+
+  /* pseudo code
+    build an undirected graph from the edges
+      a -> b, b -> a
+    start DFS from the root
+      do a DFS for each neighbour of curr node
+    increment the count of curr char
+    maintain count of same label in ans array
+    update the count of each label in parent arr
+  */
+
+  const adjList = Array(n).fill().map(() => [])
+
+  for (const [from, to] of edges) {
+    adjList[from].push(to)
+    adjList[to].push(from)
+  }
+
+  const ans = Array(n).fill(0)
+
+  const countArr = Array(26).fill(0)
+
+  const dfs = (node, parent, parentCountArr) => {
+    const countArr = Array(26).fill(0)
+
+    for (const neighbour of adjList[node]) {
+      if (neighbour === parent) {
+        continue
+      }
+
+      dfs(neighbour, node, countArr)
+    }
+
+    countArr[labels.charCodeAt(node) - 97]++
+    ans[node] = countArr[labels.charCodeAt(node) - 97]
+
+    for (let i = 0; i < 26; i++) {
+      parentCountArr[i] += countArr[i]
+    }
+  }
+
+  dfs(0, -1, countArr)
+
+  return ans
 };
 
