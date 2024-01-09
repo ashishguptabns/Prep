@@ -310,7 +310,7 @@ const minimumRecolors = (blocks, k) => {
         go through the blocks array
             track number of whites
             when found a subarray of length k
-                record the min of numWhites
+                track min whites so far
                 shrink the window from left
                     numWhites also if possible
     */
@@ -357,250 +357,21 @@ const maxVowels = (s, k) => {
     const vowel = ['a', "e", "i", "o", "u"]
     for (let i = 0; i < s.length; i++) {
         if (vowel.includes(s[i])) {
-            //  found a vowel
             count++
         }
 
         if (i >= k && vowel.includes(s[i - k])) {
-            //  removing the vowel from start of substring
             count--
         }
 
-        //  max possible number
+        //  max possible number of vowels
         if (count == k) {
             return k;
         }
 
-        //  update max
-        if (maxCount < count) {
-            maxCount = count
-        }
+        maxCount = Math.max(maxCount, count)
     }
     return maxCount
-};
-
-/* Sliding window maximum - You are given an array of integers nums, there is a sliding window of size k which is moving from the very left of the array to the very right. You can only see the k numbers in the window. Each time the sliding window moves right by one position.
-
-Return the max sliding window.
- */
-
-/**
- * @param {number[]} nums
- * @param {number} k
- * @return {number[]}
- */
-const maxSlidingWindow = (nums, k) => {
-
-    /* pseudo code
-        move through the array
-            maintain the max index of curr window using queue
-            keep pushing max of current window in res array
-    */
-
-    // Result array to store the maximum elements in each sliding window
-    const res = [];
-    // Variables to represent the left and right pointers of the sliding window
-    let left = 0;
-    let right = 0;
-    // Deque to store indices of elements in the array
-    const q = [];
-
-    // Iterate through the array elements using the sliding window approach
-    while (right < nums.length) {
-        // Remove elements from the back of the deque that are less than the current element
-        while (q.length > 0 && nums[right] > nums[q.at(-1)]) {
-            q.pop();
-        }
-        // Add the current index to the deque
-        q.push(right);
-
-        // Remove the front element of the deque if it's outside the current sliding window
-        if (left > q[0]) {
-            q.shift();
-        }
-
-        // If the window has reached the size of 'k' or more, add the maximum element to the result array
-        if (right + 1 >= k) {
-            res.push(nums[q[0]]);
-            // Move the left pointer to the next position within the window
-            left++;
-        }
-        // Move the right pointer to the next element in the array
-        right++;
-    }
-
-    // Return the result array containing maximum elements in each sliding window
-    return res;
-};
-
-/* Maximum Length of Subarray With Positive Product - Given an array of integers nums, find the maximum length of a subarray where the product of all its elements is positive.
-
-A subarray of an array is a consecutive sequence of zero or more values taken out of that array.
-
-Return the maximum length of a subarray with positive product.
-*/
-
-/**
- * @param {number[]} nums
- * @return {number}
- */
-const getMaxLen = (nums) => {
-    // Initialize variables to keep track of the result and counts of positive and negative numbers
-    let result = positive = negative = 0;
-
-    // Iterate through each element in the input array
-    for (const num of nums) {
-        // Check if the current element is zero
-        if (num === 0) {
-            // subarray is broken
-            // Reset positive and negative counts if the current element is zero
-            positive = negative = 0;
-        }
-        // Check if the current element is positive
-        else if (num > 0) {
-            // Increment the positive count
-            positive += 1;
-
-            // If negative count is non-zero, increment it as well
-            negative && (negative += 1);
-        }
-        // Check if the current element is negative
-        else {
-            // Swap positive and negative counts, and update negative count
-            const current = positive;
-            positive = negative ? negative + 1 : 0;
-            negative = current + 1;
-        }
-
-        // Update the result with the maximum positive count
-        result = Math.max(result, positive);
-    }
-
-    // Return the maximum length of subarrays with a product of positive integers
-    return result;
-};
-
-/* Find All Anagrams in a String - Given two strings s and p, return an array of all the start indices of p's anagrams in s. You may return the answer in any order.
- */
-/**
- * @param {string} s
- * @param {string} p
- * @return {number[]}
- */
-const findAnagrams = (s, p) => {
-    // Record characters and count in the small string
-    const targetCharArray = Array(26).fill(0);
-
-    // Count the frequency of each character in the pattern 'p'
-    for (const char of p) {
-        targetCharArray[char.charCodeAt(0) - 'a'.charCodeAt(0)]++;
-    }
-
-    // Initialize an array to represent the sliding window's character count
-    const windowArr = Array(26).fill(0);
-
-    // Initialize pointers for the sliding window
-    let left = 0;
-    let right = 0;
-
-    // Array to store the starting indices of anagrams
-    const resultList = [];
-
-    // Helper function to check if two arrays are equal
-    const arraysAreEqual = (arr1, arr2) => {
-        for (let i = 0; i < arr1.length; i++) {
-            if (arr1[i] !== arr2[i]) {
-                return false;
-            }
-        }
-        return true;
-    };
-
-    // Iterate through the characters in the string 's'
-    while (right < s.length) {
-        // Add the current character to the sliding window
-        const currChar = s[right];
-        windowArr[currChar.charCodeAt(0) - 'a'.charCodeAt(0)]++;
-
-        // Check if the window size is equal to the length of the pattern 'p'
-        if (right - left + 1 === p.length) {
-            // Check if the current window is an anagram
-            if (arraysAreEqual(windowArr, targetCharArray)) {
-                // Found an anagram, push the starting index to the result array
-                resultList.push(left);
-            }
-
-            // Reduce the count of the leftmost character to move the window forward
-            const charToDelete = s[left];
-            windowArr[charToDelete.charCodeAt(0) - 'a'.charCodeAt(0)]--;
-            left++;
-        }
-
-        // Move the right pointer to expand the window
-        right++;
-    }
-
-    // Return the array of starting indices of anagrams
-    return resultList;
-};
-
-/* Longest repeating character replacement - You are given a string s and an integer k. You can choose any character of the string and change it to any other uppercase English character. You can perform this operation at most k times.
-
-Return the length of the longest substring containing the same letter you can get after performing the above operations.
- */
-
-/**
- * @param {string} s
- * @param {number} k
- * @return {number}
- */
-const characterReplacement = (s, k) => {
-
-    /* pseudo code
-        go through the string chars
-            maintain frequency of the char
-            track max count of a char in current window
-            if max char count with k exceeds window size
-                shrink window from left with freq of left most char
-    */
-
-    // Initialize left and right pointers for the sliding window
-    let left = 0;
-    let right = 0;
-
-    // Initialize the maximum count of a character in the current window
-    let maxCharCount = 0;
-
-    // Create a dictionary to keep track of character frequencies in the current window
-    const freqMap = {};
-
-    // Iterate through the string using the sliding window
-    while (right < s.length) {
-        // Current character in the window
-        const char = s[right];
-
-        // Update the frequency of the current character in the visited dictionary
-        freqMap[char] = freqMap[char] ? freqMap[char] + 1 : 1;
-
-        // Update the maximum count of a character in the current window
-        if (freqMap[char] > maxCharCount) {
-            maxCharCount = freqMap[char];
-        }
-
-        // Check if the length of the window - maximum character count is greater than 'k'
-        //  we need to have a single char in the window
-        if (right - left + 1 - maxCharCount > k) {
-            // Move the left pointer to shrink the window
-            freqMap[s[left]]--;  // Reduce the frequency of the character at the left end
-            left++;
-        }
-
-        // Expand the window to the right
-        right++;
-    }
-
-    // The length of the longest substring with at most 'k' replacements
-    return right - left;
 };
 
 /* Longest Continuous Subarray With Absolute Diff Less Than or Equal to Limit - Given an array of integers nums and an integer limit, return the size of the longest non-empty subarray such that the absolute difference between any two elements of this subarray is less than or equal to limit.
@@ -622,38 +393,28 @@ const longestCSubarray = (nums, limit) => {
                 update max and min accordingly
     */
 
-    // Initialize an empty queue to store elements of the current subarray.
     const queue = [];
 
-    // Initialize pointers and variables to track the current subarray.
-    let left = -1;  // `left` represents the left boundary of the current subarray.
-    let max = min = nums[0];  // `max` and `min` represent the maximum and minimum values in the current subarray.
+    let left = -1;
+    let max = min = nums[0];
 
-    // Loop through each element in the input array.
     for (const num of nums) {
-        // Update the maximum and minimum values in the current subarray.
         max = Math.max(max, num);
         min = Math.min(min, num);
 
-        // Add the current element to the queue.
         queue.push(num);
 
-        // Check if the difference between max and min is within the limit.
         if (max - min <= limit) {
-            // If within limit, continue with the next element.
             continue;
         }
 
-        // If the difference exceeds the limit, remove elements from the left of the subarray.
-        const cut = queue.shift();  // Remove the leftmost element.
-        left += 1;  // Move the left boundary to the right.
+        const cut = queue.shift();
+        left += 1;
 
-        // Update max and min if the removed element was equal to the current max or min.
         max === cut && (max = Math.max(...queue));
         min === cut && (min = Math.min(...queue));
     }
 
-    // Return the length of the longest contiguous subarray.
     return nums.length - left - 1;
 };
 
@@ -794,5 +555,170 @@ const maxConsecutiveAnswers = (answerKey, k) => {
     }
 
     return Math.max(maxConsequtive('T'), maxConsequtive('F'))
+};
+
+/* Sliding window maximum - You are given an array of integers nums, there is a sliding window of size k which is moving from the very left of the array to the very right. You can only see the k numbers in the window. Each time the sliding window moves right by one position.
+
+Return the max sliding window.
+ */
+
+/**
+ * @param {number[]} nums
+ * @param {number} k
+ * @return {number[]}
+ */
+const maxSlidingWindow = (nums, k) => {
+
+    /* pseudo code
+        keep a queue to store indices
+        move through the array
+            maintain the max index of curr window using queue
+            keep shrinking the window and remove item from queue
+            keep pushing max of current window in res array
+    */
+
+    const q = [];
+    const res = [];
+    for (let i = 0; i < nums.length; i++) {
+        while (q && nums[q.at(-1)] <= nums[i]) {
+            q.pop();
+        }
+        q.push(i);
+        if (q[0] === i - k) {
+            q.shift();
+        }
+        if (i >= k - 1) {
+            res.push(nums[q[0]]);
+        }
+    }
+    return res;
+};
+
+/* Maximum Length of Subarray With Positive Product - Given an array of integers nums, find the maximum length of a subarray where the product of all its elements is positive.
+
+A subarray of an array is a consecutive sequence of zero or more values taken out of that array.
+
+Return the maximum length of a subarray with positive product.
+*/
+
+/**
+ * @param {number[]} nums
+ * @return {number}
+ */
+const getMaxLen = (nums) => {
+    let result = positive = negative = 0;
+
+    for (const num of nums) {
+        if (num === 0) {
+            positive = negative = 0;
+        }
+        else if (num > 0) {
+            positive += 1;
+            negative && (negative += 1);
+        }
+        else {
+            const current = positive;
+            positive = negative ? negative + 1 : 0;
+            negative = current + 1;
+        }
+
+        result = Math.max(result, positive);
+    }
+
+    return result;
+};
+
+/* Find All Anagrams in a String - Given two strings s and p, return an array of all the start indices of p's anagrams in s. You may return the answer in any order.
+ */
+/**
+ * @param {string} s
+ * @param {string} p
+ * @return {number[]}
+ */
+const findAnagrams = (s, p) => {
+    const targetCharArray = Array(26).fill(0);
+
+    for (const char of p) {
+        targetCharArray[char.charCodeAt(0) - 'a'.charCodeAt(0)]++;
+    }
+
+    const windowArr = Array(26).fill(0);
+
+    let left = 0;
+    let right = 0;
+
+    const resultList = [];
+
+    const arraysAreEqual = (arr1, arr2) => {
+        for (let i = 0; i < arr1.length; i++) {
+            if (arr1[i] !== arr2[i]) {
+                return false;
+            }
+        }
+        return true;
+    };
+
+    while (right < s.length) {
+        const currChar = s[right];
+        windowArr[currChar.charCodeAt(0) - 'a'.charCodeAt(0)]++;
+
+        if (right - left + 1 === p.length) {
+            if (arraysAreEqual(windowArr, targetCharArray)) {
+                resultList.push(left);
+            }
+
+            const charToDelete = s[left];
+            windowArr[charToDelete.charCodeAt(0) - 'a'.charCodeAt(0)]--;
+            left++;
+        }
+
+        right++;
+    }
+
+    return resultList;
+};
+
+/* Longest repeating character replacement - You are given a string s and an integer k. You can choose any character of the string and change it to any other uppercase English character. You can perform this operation at most k times.
+
+Return the length of the longest substring containing the same letter you can get after performing the above operations.
+ */
+
+/**
+ * @param {string} s
+ * @param {number} k
+ * @return {number}
+ */
+const characterReplacement = (s, k) => {
+
+    /* pseudo code
+        go through the string chars
+            maintain frequency of the char in curr window
+            track max count of a char in current window
+            if max char count with k exceeds window size
+                shrink window from left and maintain freq of left most char
+    */
+
+    let left = 0;
+    let right = 0;
+
+    let maxCharCount = 0;
+
+    const freqMap = {};
+
+    while (right < s.length) {
+        const char = s[right];
+
+        freqMap[char] = freqMap[char] ? freqMap[char] + 1 : 1;
+
+        maxCharCount = Math.max(freqMap[char], maxCharCount);
+
+        if (right - left + 1 - maxCharCount > k) {
+            freqMap[s[left]]--;
+            left++;
+        }
+        right++;
+    }
+
+    return right - left;
 };
 
