@@ -14,11 +14,11 @@ Given the integer array fruits, return the maximum number of fruits you can pick
  */
 const totalFruit = (fruits) => {
     /* pseudo code
-    we can choose max of 2 groups of fruits and can have unlimited fruits in each group 
-    move throught the array
+    we can choose max 2 groups of fruits and can have unlimited fruits in each group 
+    move through the array as we have to pick a fruit from each tree
         keep collecting the fruits
         maintain num groups
-            remove a fruit the left most group
+            remove a fruit from the left most group
             decrement fruits count
             remove the group if no fruits are left
             shrink the window from left
@@ -64,8 +64,8 @@ const longestSubarray = (nums) => {
         move through the arr
             track count of 0s
             if zero count is more than 1
-                decrease 0 count if the left most element is a 0
                 keep shrinking the window from left
+                decrease 0 count if the left most element is a 0
             keep tracking the max length of sub array
     */
 
@@ -123,7 +123,7 @@ const lengthOfLongestSubstring = (s) => {
     for (j = 0; j < s.length; j++) {
         const currChar = s[j]
         if (charIndexMap[currChar] !== undefined) {
-            //  found a repeat character
+            //  found a repeat character hence discard the left subarray
             subStringLeftIndex = Math.max(charIndexMap[currChar] + 1, subStringLeftIndex)
         }
 
