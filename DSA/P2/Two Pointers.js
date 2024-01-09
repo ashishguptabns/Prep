@@ -372,8 +372,7 @@ const removeDuplicates = (nums) => {
 };
 
 /* Minimize size subarray sum - Given an array of positive integers nums and a positive integer target, return the minimal length of a 
-subarray
- whose sum is greater than or equal to target. If there is no such subarray, return 0 instead. 
+subarray whose sum is greater than or equal to target. If there is no such subarray, return 0 instead. 
  */
 
 /**
@@ -382,7 +381,13 @@ subarray
  * @return {number}
  */
 const minSubArrayLen = (target, nums) => {
-  //  subarray is contiguous
+  /* pseudo code
+    move right through the nums array
+      update the sum
+      while sum >= target
+        update minLen
+        keep shring window from left
+  */
 
   let minLen = Infinity;
   let left = 0;
@@ -400,45 +405,6 @@ const minSubArrayLen = (target, nums) => {
   }
 
   return minLen === Infinity ? 0 : minLen;
-};
-
-/* Next Permutation - The next permutation of an array of integers is the next lexicographically greater permutation of its integer.
- */
-/**
- * @param {number[]} nums
- * @return {void} Do not return anything, modify nums in-place instead.
- */
-const nextPermutation = (nums) => {
-  //  consider 1, 5, 8, 4, 7, 6, 5, 3, 1
-
-  let first = nums.length - 2;
-
-  //  travel from right end and find a point firstPointer where [firstPointer + 1] element is higher than firstPointer element
-  while (first >= 0 && nums[first] >= nums[first + 1]) {
-    first--;
-  }
-
-  if (first >= 0) {
-    let second = nums.length - 1;
-    //  find a number which is greater than our firstPointer item
-    while (nums[second] <= nums[first]) {
-      second--;
-    }
-    //  swap 4 with 5 -> 1, 5, 8, 5, 7, 6, 4, 3, 1
-    [nums[first], nums[second]] = [nums[second], nums[first]];
-  }
-
-  const reverse = (nums, start) => {
-    let left = start;
-    let right = nums.length - 1;
-    while (left < right) {
-      [nums[left], nums[right]] = [nums[right], nums[left]];
-      left++;
-      right--;
-    }
-  };
-  //  to find the next larger number -> 1, 5, 8, 5, 1, 3, 4, 6, 7
-  reverse(nums, first + 1);
 };
 
 /* Water trap - Given n non-negative integers representing an elevation map where the width of each bar is 1, compute how much water it can trap after raining.
@@ -498,3 +464,50 @@ const trap = (heights) => {
 
   return res;
 };
+
+/* Next Permutation - The next permutation of an array of integers is the next lexicographically greater permutation of its integer.
+ */
+/**
+ * @param {number[]} nums
+ * @return {void} Do not return anything, modify nums in-place instead.
+ */
+const nextPermutation = (nums) => {
+
+  /* pseudo code
+    //  consider 1, 5, 8, 4, 7, 6, 5, 3, 1 
+    move i from right to left till [i + 1] item is higher than [i] item
+      found 4
+    move j from right to left till ith item is smaller than jth item
+      found 5
+    swap i and j
+    reverse elements starting at i + 1
+  */
+
+  let i = nums.length - 2;
+
+  while (i >= 0 && nums[i] >= nums[i + 1]) {
+    i--;
+  }
+
+  if (i >= 0) {
+    let j = nums.length - 1;
+    while (nums[j] <= nums[i]) {
+      j--;
+    }
+    //  swap 4 with 5 -> 1, 5, 8, 5, 7, 6, 4, 3, 1
+    [nums[i], nums[j]] = [nums[j], nums[i]];
+  }
+
+  const reverse = (nums, start) => {
+    let left = start;
+    let right = nums.length - 1;
+    while (left < right) {
+      [nums[left], nums[right]] = [nums[right], nums[left]];
+      left++;
+      right--;
+    }
+  };
+  //  to find the next larger number -> 1, 5, 8, 5, 1, 3, 4, 6, 7
+  reverse(nums, i + 1);
+};
+
