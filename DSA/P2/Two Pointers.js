@@ -1,61 +1,3 @@
-/* Water trap - Given n non-negative integers representing an elevation map where the width of each bar is 1, compute how much water it can trap after raining.
- */
-/**
- * @param {number[]} height
- * @return {number}
- */
-/**
- * @param {number[]} height
- * @return {number}
- */
-const trap = (heights) => {
-
-  /* pseudo code
-    notice that the width of each bar is given
-    keep two pointers starting at 0 and end of array
-    go through the heights
-      keep tracking max heights on left and right side
-      if left max height is bigger than right
-        if curr height is bigger than left max height
-          update
-        else
-          add the water at this index to res
-        move the left pointer
-      else 
-        repeat above logic for right side item
-  */
-
-  let leftMaxH = 0;
-  let rightMaxH = 0;
-  let left = 0;
-  let right = heights.length - 1;
-
-  let res = 0;
-
-  while (left <= right) {
-    //  find max height of water
-    if (leftMaxH <= rightMaxH) {
-      if (leftMaxH <= heights[left]) {
-        //  found a taller wall
-        leftMaxH = heights[left];
-      } else {
-        //  this much water can be held at this index
-        res += leftMaxH - heights[left]
-      }
-      left += 1;
-    } else {
-      if (rightMaxH <= heights[right]) {
-        rightMaxH = heights[right];
-      } else {
-        res += rightMaxH - heights[right]
-      }
-      right -= 1;
-    }
-  }
-
-  return res;
-};
-
 /* Container With Most Water - You are given an integer array height of length n. There are n vertical lines drawn such that the two endpoints of the ith line are (i, 0) and (i, height[i]).
 Find two lines that together with the x-axis form a container, such that the container contains the most water.
 Return the maximum amount of water a container can store.
@@ -102,6 +44,23 @@ Notice that the solution set must not contain duplicate triplets.
  * @return {number[][]}
  */
 const threeSum = (nums) => {
+
+  /* pseudo code
+    sort the nums array
+    move first till nums length - 2 leaving space for two more pointers
+      skip duplicates
+      keep sec pointer at first + 1 and third pointer at nums length - 1
+      loop until sec < third
+        curr sum = 0
+          record
+          skip duplicates of sec and third pointers
+          move sec and third towards each other
+        curr sum < 0
+          move sec pointer
+        curr sum > 0
+          move third pointer
+  */
+
   const res = []; // Array to store the result triplets
 
   // Sorting the input array to simplify the solution
@@ -156,6 +115,20 @@ Return the sum of the three integers.
  * @return {number}
  */
 const threeSumClosest = (nums, target) => {
+
+  /* pseudo code
+    sort the nums array
+    keep first pointer at 0
+    move through nums array
+      keep sec at first + 1 and third at nums length - 1
+      loop until sec < third
+        keep updating closest sum
+        sum < target
+          move sec pointer
+        else
+          move third pointer
+  */
+
   let diff = Infinity;
   const size = nums.length;
 
@@ -202,6 +175,7 @@ const sortColors = (nums) => {
   /* pseudo code
     keep pointers for 0s and 2s
     move through the array
+      skip duplicates
       keep putting the 0s and 2s at their respective pointers
   */
 
@@ -239,34 +213,47 @@ Return nums after the rearrangement.
  * @return {number[]}
  */
 const pivotArray = (nums, pivot) => {
-  //  we will use two pointers approach
+  /* pseudo code
+    keep two pointers start and end to move through items
+    keep low and high index to keep items as per pivot
+    loop through array till start < nums length
+      item at start index < pivot
+        put at low index
+        move low index to right
+      item at end index > pivot
+        put at high index
+        move high index to left
+      keep moving start and end
+    low index <= high index
+      put pivot element
+  */
 
   let len = nums.length;
   let output = [];
 
-  let i = 0;
-  let j = len - 1;
+  let start = 0;
+  let end = len - 1;
 
-  let lowElementsIndex = 0;
-  let highElementsIndex = len - 1;
+  let lowIndex = 0;
+  let highIndex = len - 1;
 
-  while (i < len) {
+  while (start < len) {
     //  fill small numbers to left
-    if (nums[i] < pivot) {
-      output[lowElementsIndex++] = nums[i];
+    if (nums[start] < pivot) {
+      output[lowIndex++] = nums[start];
     }
     //  fill large numbers to right
-    if (nums[j] > pivot) {
-      output[highElementsIndex--] = nums[j];
+    if (nums[end] > pivot) {
+      output[highIndex--] = nums[end];
     }
 
-    i++;
-    j--;
+    start++;
+    end--;
   }
 
   //  if there is some space left
-  while (lowElementsIndex <= highElementsIndex) {
-    output[lowElementsIndex++] = pivot;
+  while (lowIndex <= highIndex) {
+    output[lowIndex++] = pivot;
   }
 
   return output;
@@ -281,7 +268,17 @@ const pivotArray = (nums, pivot) => {
  * @return {number}
  */
 const twoSumLessThanK = (nums, k) => {
-  // Sort the array in ascending order
+  /* pseudo code
+    sort the nums array
+    keep left and right pointers
+    loop array until left < right
+      curr sum < k
+        update max sum as per condition
+        move left
+      else
+        move right
+  */
+
   nums.sort((a, b) => a - b);
 
   let left = 0;
@@ -496,3 +493,60 @@ const nextPermutation = (nums) => {
   reverse(nums, first + 1);
 };
 
+/* Water trap - Given n non-negative integers representing an elevation map where the width of each bar is 1, compute how much water it can trap after raining.
+ */
+/**
+ * @param {number[]} height
+ * @return {number}
+ */
+/**
+ * @param {number[]} height
+ * @return {number}
+ */
+const trap = (heights) => {
+
+  /* pseudo code
+    notice that the width of each bar is given
+    keep two pointers starting at 0 and end of array
+    go through the heights
+      keep tracking max heights on left and right side
+      if left max height is smaller than right max height means right max h can support water
+        if curr left height is bigger than left max height means no way to hold water
+          update
+        else water can be held here
+          add the water at this index to res
+        move the left pointer
+      else 
+        repeat above logic for right side item
+  */
+
+  let leftMaxH = 0;
+  let rightMaxH = 0;
+  let left = 0;
+  let right = heights.length - 1;
+
+  let res = 0;
+
+  while (left <= right) {
+    //  find max height of water
+    if (leftMaxH <= rightMaxH) {
+      if (leftMaxH <= heights[left]) {
+        //  found a taller wall
+        leftMaxH = heights[left];
+      } else {
+        //  this much water can be held at this index
+        res += leftMaxH - heights[left]
+      }
+      left += 1;
+    } else {
+      if (rightMaxH <= heights[right]) {
+        rightMaxH = heights[right];
+      } else {
+        res += rightMaxH - heights[right]
+      }
+      right -= 1;
+    }
+  }
+
+  return res;
+};
