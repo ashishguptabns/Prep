@@ -1,3 +1,37 @@
+/* Find k length substrings without repeat characters -
+ */
+/**
+ * @param {string} s
+ * @param {number} k
+ * @return {string[]}
+ */
+const findSubstrings = (s, k) => {
+    const hasRepeatCharacters = (str) => {
+        const set = new Set();
+
+        for (let char of str) {
+            if (set.has(char)) {
+                return true; // Repeat character found
+            }
+            set.add(char);
+        }
+
+        return false; // No repeat characters
+    }
+
+    const result = [];
+
+    for (let i = 0; i <= s.length - k; i++) {
+        const substring = s.substring(i, i + k);
+
+        if (!hasRepeatCharacters(substring)) {
+            result.push(substring);
+        }
+    }
+
+    return result;
+};
+
 /* Fruit Into Baskets - You are visiting a farm that has a single row of fruit trees arranged from left to right.The trees are represented by an integer array fruits where fruits[i] is the type of fruit the ith tree produces.
 
 You want to collect as much fruit as possible.However, the owner has some strict rules that you must follow:
@@ -135,59 +169,6 @@ const lengthOfLongestSubstring = (s) => {
     return maxLength
 };
 
-/* Count Subarrays With Fixed Bounds - You are given an integer array nums and two integers minK and maxK.
-
-A fixed-bound subarray of nums is a subarray that satisfies the following conditions:
-The minimum value in the subarray is equal to minK.
-The maximum value in the subarray is equal to maxK.
-Return the number of fixed-bound subarrays.
-
-A subarray is a contiguous part of an array.
- */
-/**
- * @param {number[]} nums
- * @param {number} minK
- * @param {number} maxK
- * @return {number}
- */
-const countSubarrays = (nums, minK, maxK) => {
-    /* pseudo code
-        move through the array
-            track index which is out of range
-            equal to min
-            equal to max
-            add the num of subarrays for this range 
-    */
-
-    let minPos = -1
-    let maxPos = -1
-
-    //  most recent index out of range    
-    let startIndex = -1
-
-    let numSubArrays = 0
-
-    for (let i = 0; i < nums.length; i++) {
-        //  update out of range index        
-        if (nums[i] < minK || nums[i] > maxK) {
-            startIndex = i
-        }
-
-        //  update recent positions if any
-        if (nums[i] === minK) {
-            minPos = i
-        }
-        if (nums[i] === maxK) {
-            maxPos = i
-        }
-
-        //  number of subarrays is number of elements between startIndex and smaller of two indices
-        numSubArrays += Math.max(0, Math.min(maxPos, minPos) - startIndex)
-    }
-
-    return numSubArrays
-};
-
 /* Number of Sub-arrays of Size K and Average Greater than or Equal to Threshold - Given an array of integers arr and two integers k and threshold, return the number of sub-arrays of size k and average greater than or equal to threshold.
  */
 /**
@@ -197,10 +178,19 @@ const countSubarrays = (nums, minK, maxK) => {
  * @return {number}
  */
 const numOfSubarrays = (arr, k, threshold) => {
+
+    /* pseudo code
+        find the sum of k length subarray
+        move i from k through arr
+            avg is as per condition
+                maintain count
+            shrink window from left and increase on right
+                maintain sum
+    */
+
     let count = 0
     let sum = 0
 
-    //  find the sum of the first k length subarray
     for (let i = 0; i < k; i++) {
         sum += arr[i]
     }
@@ -224,91 +214,6 @@ const numOfSubarrays = (arr, k, threshold) => {
     return count
 };
 
-/* Find k length substrings without repeat characters -
- */
-/**
- * @param {string} s
- * @param {number} k
- * @return {string[]}
- */
-const findSubstrings = (s, k) => {
-    const hasRepeatCharacters = (str) => {
-        const set = new Set();
-
-        for (let char of str) {
-            if (set.has(char)) {
-                return true; // Repeat character found
-            }
-            set.add(char);
-        }
-
-        return false; // No repeat characters
-    }
-
-    const result = [];
-
-    for (let i = 0; i <= s.length - k; i++) {
-        const substring = s.substring(i, i + k);
-
-        if (!hasRepeatCharacters(substring)) {
-            result.push(substring);
-        }
-    }
-
-    return result;
-};
-
-/* Maximize the confusion in exam - A teacher is writing a test with n true/false questions, with 'T' denoting true and 'F' denoting false. He wants to confuse the students by maximizing the number of consecutive questions with the same answer (multiple trues or multiple falses in a row).
-
-You are given a string answerKey, where answerKey[i] is the original answer to the ith question. In addition, you are given an integer k, the maximum number of times you may perform the following operation:
-
-Change the answer key for any question to 'T' or 'F' (i.e., set answerKey[i] to 'T' or 'F').
-Return the maximum number of consecutive 'T's or 'F's in the answer key after performing the operation at most k times.
- */
-
-/**
- * @param {string} answerKey
- * @param {number} k
- * @return {number}
- */
-const maxConsecutiveAnswers = (answerKey, k) => {
-
-    /* pseudo code
-        we will find max length of subseqs having max k Ts or Fs
-        run through the array
-            keep tracking the count of given char - T or F
-            more than k chars
-                shrink windown from left
-            keep tracking the max window length
-        return max length found so far
-    */
-
-    const maxConsequtive = (char) => {
-        let left = 0, charCount = 0, max = 0
-        //  Iterating over the answer key using right pointer
-        for (let right = 0; right < answerKey.length; right++) {
-            //  currentChar is the char that should be atmost k times
-            if (answerKey[right] === char) {
-                charCount++
-            }
-
-            //  we have more than k chars 
-            //  we have to shrink the window
-            while (charCount > k) {
-                if (answerKey[left] === char) {
-                    charCount--
-                }
-                left++
-            }
-            //  Current window has atmost k chars
-            max = Math.max(max, right - left + 1)
-        }
-        return max
-    }
-
-    return Math.max(maxConsequtive('T'), maxConsequtive('F'))
-};
-
 /* Max consecutive Ones - Given a binary array nums and an integer k, return the maximum number of consecutive 1's in the array if you can flip at most k 0's.
  */
 
@@ -318,7 +223,14 @@ const maxConsecutiveAnswers = (answerKey, k) => {
 * @return {number}
 */
 const longestOnes = (nums, k) => {
-    //  use sliding window
+    /* pseudo code
+        move through nums
+            track 0 count
+                decrease k
+            k < 0
+                track k if left index item is 0
+                shrink window from left
+    */
 
     let left = 0, right = 0
 
@@ -355,8 +267,8 @@ const sequentialDigits = (low, high) => {
 
     /* pseudo code
         run a size loop from minLen to maxLen
-            run another loop with starting points in digits string
-                take a substring from digits of length size with different starting points
+            run i through digits string
+                take a substring from digits of length size from i
                 compare and push to ans array
     */
 
@@ -778,5 +690,109 @@ const minSwaps = (arr) => {
     }
 
     return minSwaps;
+};
+
+/* Count Subarrays With Fixed Bounds - You are given an integer array nums and two integers minK and maxK.
+
+A fixed-bound subarray of nums is a subarray that satisfies the following conditions:
+- The minimum value in the subarray is equal to minK.
+- The maximum value in the subarray is equal to maxK.
+Return the number of fixed-bound subarrays.
+
+A subarray is a contiguous part of an array.
+ */
+/**
+ * @param {number[]} nums
+ * @param {number} minK
+ * @param {number} maxK
+ * @return {number}
+ */
+const countSubarrays = (nums, minK, maxK) => {
+    /* pseudo code
+        move through the array
+            track index which is out of range
+            equal to min
+            equal to max
+            add the num of subarrays for this range 
+    */
+
+    let minPos = -1
+    let maxPos = -1
+
+    //  most recent index out of range    
+    let startIndex = -1
+
+    let numSubArrays = 0
+
+    for (let i = 0; i < nums.length; i++) {
+        //  update out of range index        
+        if (nums[i] < minK || nums[i] > maxK) {
+            startIndex = i
+        }
+
+        //  update recent positions if any
+        if (nums[i] === minK) {
+            minPos = i
+        }
+        if (nums[i] === maxK) {
+            maxPos = i
+        }
+
+        //  number of subarrays is number of elements between startIndex and smaller of two indices
+        numSubArrays += Math.max(0, Math.min(maxPos, minPos) - startIndex)
+    }
+
+    return numSubArrays
+};
+
+/* Maximize the confusion in exam - A teacher is writing a test with n true/false questions, with 'T' denoting true and 'F' denoting false. He wants to confuse the students by maximizing the number of consecutive questions with the same answer (multiple trues or multiple falses in a row).
+
+You are given a string answerKey, where answerKey[i] is the original answer to the ith question. In addition, you are given an integer k, the maximum number of times you may perform the following operation:
+
+Change the answer key for any question to 'T' or 'F' (i.e., set answerKey[i] to 'T' or 'F').
+Return the maximum number of consecutive 'T's or 'F's in the answer key after performing the operation at most k times.
+ */
+
+/**
+ * @param {string} answerKey
+ * @param {number} k
+ * @return {number}
+ */
+const maxConsecutiveAnswers = (answerKey, k) => {
+
+    /* pseudo code
+        we will find max length of subseqs having max k Ts or Fs
+        run through the array
+            keep tracking the count of given char - T or F
+            more than k chars
+                shrink windown from left
+            keep tracking the max window length
+        return max length found so far
+    */
+
+    const maxConsequtive = (char) => {
+        let left = 0, charCount = 0, max = 0
+        //  Iterating over the answer key using right pointer
+        for (let right = 0; right < answerKey.length; right++) {
+            //  currentChar is the char that should be atmost k times
+            if (answerKey[right] === char) {
+                charCount++
+            }
+
+            //  we have more than k chars 
+            //  we have to shrink the window
+            while (charCount > k) {
+                if (answerKey[left] === char) {
+                    charCount--
+                }
+                left++
+            }
+            //  Current window has atmost k chars
+            max = Math.max(max, right - left + 1)
+        }
+        return max
+    }
+
+    return Math.max(maxConsequtive('T'), maxConsequtive('F'))
 };
 
