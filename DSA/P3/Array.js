@@ -344,3 +344,54 @@ const maxSubarraySumCircular = (nums) => {
   return Math.max(maxSum, sum - minSum);
 };
 
+/* String compression - Given an array of characters chars, compress it using the following algorithm:
+
+Begin with an empty string s. For each group of consecutive repeating characters in chars:
+
+If the group's length is 1, append the character to s.
+Otherwise, append the character followed by the group's length.
+The compressed string s should not be returned separately, but instead, be stored in the input character array chars. Note that group lengths that are 10 or longer will be split into multiple characters in chars.
+
+After you are done modifying the input array, return the new length of the array.
+
+You must write an algorithm that uses only constant extra space.
+ */
+
+/**
+ * @param {character[]} chars
+ * @return {number}
+ */
+const compress = (chars) => {
+
+  /* pseudo code
+      move i through chars
+        track length of curr group of same chars
+        place the curr char at newLen index
+        place chars of group length of curr char at newLen indices
+        move i by group length
+  */
+
+  let i = 0;
+  let newLen = 0;
+
+  while (i < chars.length) {
+    let groupLen = 1;
+
+    while (i + groupLen < chars.length && chars[i + groupLen] === chars[i]) {
+      groupLen++;
+    }
+
+    chars[newLen++] = chars[i];
+
+    if (groupLen > 1) {
+      for (const n of groupLen.toString()) {
+        chars[newLen++] = n;
+      }
+    }
+
+    i += groupLen;
+  }
+
+  return newLen;
+};
+
