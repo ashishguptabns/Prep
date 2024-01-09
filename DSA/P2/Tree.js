@@ -1,3 +1,65 @@
+/* Same tree - Given the roots of two binary trees p and q, write a function to check if they are the same or not.
+ */
+/**
+ * @param {TreeNode} p
+ * @param {TreeNode} q
+ * @return {boolean}
+ */
+const isSameTree = (p, q) => {
+    if (!p && !q) {
+        return true
+    }
+    if ((p && !q) || (!p && q) || (p.val !== q.val)) {
+        return false
+    }
+
+    return isSameTree(p.left, q.left) && isSameTree(p.right, q.right)
+};
+
+/* Inorder traversal - Given the root of a binary tree, return the inorder traversal of its nodes' values.
+ */
+const inorderTraversal = (root) => {
+    const inorderList = []
+
+    const travel = (node, inorderList) => {
+        if (node) {
+            travel(node.left, inorderList)
+            inorderList.push(node.val)
+            travel(node.right, inorderList)
+        }
+    }
+
+    travel(root, inorderList)
+
+    return inorderList
+};
+
+/* Convert a BST into a GST(greater sum tree) - Given the root of a Binary Search Tree(BST), convert it to a Greater Tree such that every key of the original BST is changed to the original key plus the sum of all keys greater than the original key in BST.
+ */
+/**
+ * @param {TreeNode} root
+ * @return {TreeNode}
+ */
+const bstToGst = (root) => {
+    //  we will do reverse inorder traversal and maintain the sum while coming from right
+
+    let sum = 0
+
+    const reverseInorder = (node) => {
+        if (node) {
+            reverseInorder(node.right)
+
+            sum += node.val
+            node.val = sum
+
+            reverseInorder(node.left)
+        }
+    }
+    reverseInorder(root)
+
+    return root
+};
+
 /* Inorder Successor in BST - Given the root of a binary search tree and a node p in it, return the in -order successor of that node in the BST.If the given node has no in -order successor in the tree, return null.
 
 The successor of a node p is the node with the smallest key greater than p.val.
@@ -573,9 +635,9 @@ const averageOfSubtree = (root) => {
 };
 
 /* Maximum binary tree - You are given an integer array nums with no duplicates.A maximum binary tree can be built recursively from nums using the following algorithm:
-Create a root node whose value is the maximum value in nums.
-Recursively build the left subtree on the subarray prefix to the left of the maximum value.
-Recursively build the right subtree on the subarray suffix to the right of the maximum value.
+- Create a root node whose value is the maximum value in nums.
+- Recursively build the left subtree on the subarray prefix to the left of the maximum value.
+- Recursively build the right subtree on the subarray suffix to the right of the maximum value.
 Return the maximum binary tree built from nums.
  */
 /**
@@ -587,6 +649,7 @@ const constructMaximumBinaryTree = (nums) => {
     /* pseudo code
         find the max item of the array and make it the root
         use left and right subarray to do this recursively
+        return curr root
     */
 
     if (nums.length === 0) {
@@ -602,45 +665,13 @@ const constructMaximumBinaryTree = (nums) => {
         }
         return maxIndex;
     }
-    // Find the index of the maximum value in the array
     const maxIndex = getMaxIndex(nums);
 
-    // Create a root node with the maximum value
     const root = new TreeNode(nums[maxIndex]);
-
-    // Recursively build the left subtree
     root.left = constructMaximumBinaryTree(nums.slice(0, maxIndex));
-
-    // Recursively build the right subtree
     root.right = constructMaximumBinaryTree(nums.slice(maxIndex + 1));
 
     return root;
-};
-
-/* Convert a BST into a GST(greater sum tree) - Given the root of a Binary Search Tree(BST), convert it to a Greater Tree such that every key of the original BST is changed to the original key plus the sum of all keys greater than the original key in BST.
- */
-/**
- * @param {TreeNode} root
- * @return {TreeNode}
- */
-const bstToGst = (root) => {
-    //  we will do reverse inorder traversal and maintain the sum while coming from right
-
-    let sum = 0
-
-    const reverseInorder = (node) => {
-        if (node) {
-            reverseInorder(node.right)
-
-            sum += node.val
-            node.val = sum
-
-            reverseInorder(node.left)
-        }
-    }
-    reverseInorder(root)
-
-    return root
 };
 
 /* Balance a BST - Given the root of a binary search tree, return a balanced binary search tree with the same node values.If there is more than one answer, return any of them.
@@ -651,8 +682,10 @@ const balanceBST = (root) => {
 
     /* pseudo code
         get the inorder array of given BST
-        use the mid for the root and left, right subarrays for children
-        do this recursively
+        create a new BST
+            handle cases of 0 and 1 node
+            use the mid item for the root and left, right subarrays for children
+            do this recursively
     */
 
     const toArray = (node) => {
@@ -791,24 +824,6 @@ const zigzagLevelOrder = (root) => {
     return res
 };
 
-/* Inorder traversal - Given the root of a binary tree, return the inorder traversal of its nodes' values.
- */
-const inorderTraversal = (root) => {
-    const inorderList = []
-
-    const findRecur = (node, inorderList) => {
-        if (node) {
-            findRecur(node.left, inorderList)
-            inorderList.push(node.val)
-            findRecur(node.right, inorderList)
-        }
-    }
-
-    findRecur(root, inorderList)
-
-    return inorderList
-};
-
 /* Boundary of binary tree */
 
 const printBoundary = (root) => {
@@ -865,24 +880,6 @@ const printBoundary = (root) => {
         printRightBoundary(root.right);
     }
 }
-
-/* Same tree - Given the roots of two binary trees p and q, write a function to check if they are the same or not.
- */
-/**
- * @param {TreeNode} p
- * @param {TreeNode} q
- * @return {boolean}
- */
-const isSameTree = (p, q) => {
-    if (!p && !q) {
-        return true
-    }
-    if ((p && !q) || (!p && q) || (p.val !== q.val)) {
-        return false
-    }
-
-    return isSameTree(p.left, q.left) && isSameTree(p.right, q.right)
-};
 
 /* Deepest leaves sum - Given the root of a binary tree, return the sum of values of its deepest leaves.
  */
