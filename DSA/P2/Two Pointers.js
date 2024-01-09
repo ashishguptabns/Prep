@@ -351,76 +351,24 @@ Do not allocate extra space for another array. You must do this by modifying the
  * @return {number}
  */
 const removeDuplicates = (nums) => {
-  // Initialize a variable 'j' to 2. 'j' will keep track of the position
-  // where unique elements will be stored in the array.
+
+  /* pseudo code
+      keep an index j to store max 2 duplicates
+      move i through nums
+        check if its a new group
+          put at jth index 
+          move j
+  */
+
   let j = 2;
 
-  // Loop through the array starting from the third element (index 2)
   for (let i = 2; i < nums.length; i++) {
-    // Check if the current element is different from the element two positions back
-    //  notice it is a sorted array
     if (nums[i] != nums[j - 2]) {
-      // If different, store the current element at position 'j' and increment 'j'
       nums[j++] = nums[i];
     }
-    // If the current element is the same as the element two positions back,
-    // it is a duplicate, and we skip adding it to the modified array.
   }
 
-  // 'j' now represents the length of the modified array with duplicates removed.
   return j;
-};
-
-/* String compression - Given an array of characters chars, compress it using the following algorithm:
-
-Begin with an empty string s. For each group of consecutive repeating characters in chars:
-
-If the group's length is 1, append the character to s.
-Otherwise, append the character followed by the group's length.
-The compressed string s should not be returned separately, but instead, be stored in the input character array chars. Note that group lengths that are 10 or longer will be split into multiple characters in chars.
-
-After you are done modifying the input array, return the new length of the array.
-
-You must write an algorithm that uses only constant extra space.
- */
-
-/**
- * @param {character[]} chars
- * @return {number}
- */
-const compress = (chars) => {
-  // Initialize two pointers: i for iterating over characters, and res for updating the result array
-  let i = 0;
-  let res = 0;
-
-  // Iterate over the characters array
-  while (i < chars.length) {
-    // Initialize a variable to track the length of the current character group
-    let groupLen = 1;
-
-    // Check if there are consecutive characters equal to chars[i]
-    while (i + groupLen < chars.length && chars[i + groupLen] === chars[i]) {
-      groupLen++;
-    }
-
-    // Update the result array with the current character
-    chars[res++] = chars[i];
-
-    // If the character group has length greater than 1, update the result array with the count
-    if (groupLen > 1) {
-      // Convert the count to a string and iterate over its digits
-      for (let n of groupLen.toString()) {
-        // Update the result array with each digit
-        chars[res++] = n;
-      }
-    }
-
-    // Move the pointer to the next character group
-    i += groupLen;
-  }
-
-  // Return the length of the compressed array
-  return res;
 };
 
 /* Minimize size subarray sum - Given an array of positive integers nums and a positive integer target, return the minimal length of a 
