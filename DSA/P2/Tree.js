@@ -1,3 +1,110 @@
+/* Deepest leaves sum - Given the root of a binary tree, return the sum of values of its deepest leaves.
+ */
+/**
+ * @param {TreeNode} root
+ * @return {number}
+ */
+const deepestLeavesSum = (root) => {
+
+    /* pseudo code
+        do a level order travel
+        keep tracking the sum of each level and return the last level's 
+    */
+
+    if (!root) {
+        return 0
+    }
+
+    const queue = [root]
+    let levelSum
+
+    while (queue.length > 0) {
+        const currLevelSize = queue.length
+        levelSum = 0
+
+        for (let i = 0; i < currLevelSize; i++) {
+            const node = queue.shift()
+            levelSum += node.val
+
+            if (node.left) {
+                queue.push(node.left)
+            }
+            if (node.right) {
+                queue.push(node.right)
+            }
+        }
+    }
+
+    return levelSum
+};
+
+/* Binary tree zigzag level order traversal - Given the root of a binary tree, return the zigzag level order traversal of its nodes' values. (i.e., from left to right, then right to left for the next level and alternate between).
+*/
+/**
+ * @param {TreeNode} root
+ * @return {number[][]}
+ */
+const zigzagLevelOrder = (root) => {
+
+    /* pseudo code
+        do a level order travel and keep level information in the queue
+            if the level is odd
+                push to the last of res[level]
+            else
+                push to start of res[level]
+    */
+
+    let res = []
+
+    if (root) {
+        const queue = [[root, 0]]
+        while (queue.length) {
+            const [node, level] = queue.shift()
+
+            //  init if null
+            res[level] ??= []
+
+            if (level % 2 == 1) {
+                //  travelling from left to right
+                res[level].push(node.val)
+            } else {
+                //  travelling from right to left
+                res[level].unshift(node.val)
+            }
+            if (node.right) {
+                queue.push([node.right, level + 1])
+            }
+            if (node.left) {
+                queue.push([node.left, level + 1])
+            }
+        }
+    }
+
+    return res
+};
+
+/* Binary tree right side view - Given the root of a binary tree, imagine yourself standing on the right side of it, return the values of the nodes you can see ordered from top to bottom.
+ */
+/**
+ * @param {TreeNode} root
+ * @return {number[]}
+ */
+const rightSideView = (root, ans = [], depth = 0) => {
+
+    /* pseudo code
+        visit each node from left to right with depth info
+        keep setting the value for a depth in an array/map
+    */
+
+    if (!root) {
+        return ans
+    }
+    ans[depth] = root.val
+
+    rightSideView(root.left, ans, depth + 1)
+    return rightSideView(root.right, ans, depth + 1)
+};
+
 /* Same tree - Given the roots of two binary trees p and q, write a function to check if they are the same or not.
  */
 /**
@@ -722,7 +829,14 @@ const balanceBST = (root) => {
 /* Reverse odd levels of binary tree - Given the root of a perfect binary tree, reverse the node values at each odd level of the tree.
  */
 const reverseOddLevels = (root) => {
-    //  do a BFS travel
+    /* pseudo code
+        do a BFS starting from root node
+            keep next level nodes in an array
+            if an odd level
+                go through curr nodes in the queue and reverse the values
+            assign next level nodes to the queue for next travel
+    */
+
     let queue = [root]
     let level = 0
     while (queue.length) {
@@ -755,77 +869,8 @@ const reverseOddLevels = (root) => {
     return root
 };
 
-/* Binary tree right side view - Given the root of a binary tree, imagine yourself standing on the right side of it, return the values of the nodes you can see ordered from top to bottom.
- */
-/**
- * @param {TreeNode} root
- * @return {number[]}
- */
-const rightSideView = (root, ans = [], depth = 0) => {
-
-    /* pseudo code
-        visit each node from left to right with depth info
-        keep setting the value for a depth in an array
-    */
-
-    if (!root) {
-        return ans
-    }
-    ans[depth] = root.val
-
-    //  keep putting values from left to right for a depth
-    rightSideView(root.left, ans, depth + 1)
-    //  right side values will always override the left ones
-    return rightSideView(root.right, ans, depth + 1)
-};
-
-/* Binary tree zigzag level order traversal - Given the root of a binary tree, return the zigzag level order traversal of its nodes' values. (i.e., from left to right, then right to left for the next level and alternate between).
+/* Boundary of binary tree 
 */
-/**
- * @param {TreeNode} root
- * @return {number[][]}
- */
-const zigzagLevelOrder = (root) => {
-
-    /* pseudo code
-        do a level order travel and keep level information in the queue
-            if the level is odd
-                push to the last of queue
-            else
-                push to start of queue
-    */
-
-    let res = []
-
-    if (root) {
-        const queue = [[root, 0]]
-        while (queue.length) {
-            const [node, level] = queue.shift()
-
-            //  init if null
-            res[level] ??= []
-
-            if (level % 2 == 1) {
-                //  travelling from left to right
-                res[level].push(node.val)
-            } else {
-                //  travelling from right to left
-                res[level].unshift(node.val)
-            }
-            if (node.right) {
-                queue.push([node.right, level + 1])
-            }
-            if (node.left) {
-                queue.push([node.left, level + 1])
-            }
-        }
-    }
-
-    return res
-};
-
-/* Boundary of binary tree */
-
 const printBoundary = (root) => {
     const printRightBoundary = (node) => {
         if (node) {
@@ -881,46 +926,6 @@ const printBoundary = (root) => {
     }
 }
 
-/* Deepest leaves sum - Given the root of a binary tree, return the sum of values of its deepest leaves.
- */
-/**
- * @param {TreeNode} root
- * @return {number}
- */
-const deepestLeavesSum = (root) => {
-
-    /* pseudo code
-        do a level order travel
-        keep tracking the sum of each level and return the last level's 
-    */
-
-    if (!root) {
-        return 0
-    }
-
-    const queue = [root]
-    let levelSum
-
-    while (queue.length > 0) {
-        const currLevelSize = queue.length
-        levelSum = 0
-
-        for (let i = 0; i < currLevelSize; i++) {
-            const node = queue.shift()
-            levelSum += node.val
-
-            if (node.left) {
-                queue.push(node.left)
-            }
-            if (node.right) {
-                queue.push(node.right)
-            }
-        }
-    }
-
-    return levelSum
-};
-
 /* BST from preorder - Given an array of integers preorder, which represents the preorder traversal of a BST(i.e., binary search tree), construct the tree and return its root.
  */
 /**
@@ -930,30 +935,136 @@ const deepestLeavesSum = (root) => {
 const bstFromPreorder = (preorder) => {
 
     /* pseudo code
-        keep a bound to check if curr item is right to be the root of curr subtree
-        first item will be the root of curr subtree
-        process the left sub tree then right subtree recursively
+        keep a function buildNode with lower and upper bound
+            take the first item
+                remove this item from preorder array
+                build left and right nodes recursively
+                return the node
+    */
+    const buildNode = (lower, upper) => {
+        if (preorder.length === 0) {
+            return null;
+        }
+        if (preorder[0] < lower || preorder[0] > upper) {
+            return null;
+        }
+        const node = new TreeNode(preorder.shift());
+        node.left = buildNode(lower, node.val);
+        node.right = buildNode(node.val, upper);
+        return node;
+    }
+    return buildNode(-Infinity, Infinity);
+};
+
+/* Sum root to leaf numbers - You are given the root of a binary tree containing digits from 0 to 9 only.
+
+Each root-to-leaf path in the tree represents a number.
+
+For example, the root-to-leaf path 1 -> 2 -> 3 represents the number 123.
+Return the total sum of all root-to-leaf numbers. Test cases are generated so that the answer will fit in a 32-bit integer.
+*/
+/**
+ * Definition for a binary tree node.
+ * function TreeNode(val, left, right) {
+ *     this.val = (val===undefined ? 0 : val)
+ *     this.left = (left===undefined ? null : left)
+ *     this.right = (right===undefined ? null : right)
+ * }
+ */
+/**
+ * @param {TreeNode} root
+ * @return {number}
+ */
+const sumNumbers = (root) => {
+
+    /* pseudo code
+        run a DFS from root with node and sum so far
+            leaf node
+                add to the total
+            else
+                explore left and right with modified sum
     */
 
-    let i = 0
-    const process = (bound) => {
-        if (i === preorder.length || preorder[i] > bound) {
-            return null
+    let total = 0;
+
+    const dfs = (node, sum) => {
+        if (!node.left && !node.right) {
+            total += sum * 10 + node.val;
+        } else {
+            if (node.left) {
+                dfs(node.left, sum * 10 + node.val);
+            }
+            if (node.right) {
+                dfs(node.right, sum * 10 + node.val);
+            }
         }
-
-        const num = preorder[i]
-        const node = new TreeNode(num)
-        i++
-
-        //  curr node is the bound for left subtree
-        node.left = process(node.val)
-        //  ancestor bound is the bound for right subtree
-        node.right = process(bound)
-
-        return node
     }
 
-    return process(Infinity)
+    dfs(root, 0);
+
+    return total;
+};
+
+/* Construct tree from inorder and postorder traversal */
+/**
+ * Definition for a binary tree node.
+ * function TreeNode(val, left, right) {
+ *     this.val = (val===undefined ? 0 : val)
+ *     this.left = (left===undefined ? null : left)
+ *     this.right = (right===undefined ? null : right)
+ * }
+ */
+/**
+ * @param {number[]} inorder
+ * @param {number[]} postorder
+ * @return {TreeNode}
+ */
+const buildTreeN = (inorder, postorder) => {
+    if (inorder.length == 0 || postorder.length == 0) {
+        return null;
+    }
+    const rootVal = postorder.at(-1);
+    const root = new TreeNode(rootVal);
+    const rootIndex = inorder.indexOf(rootVal);
+    const leftInorder = inorder.slice(0, rootIndex);
+    const rightInorder = inorder.slice(rootIndex + 1);
+    const leftPostorder = postorder.slice(0, leftInorder.length);
+    const rightPostorder = postorder.slice(leftInorder.length, postorder.length - 1);
+    root.left = buildTree(leftInorder, leftPostorder);
+    root.right = buildTree(rightInorder, rightPostorder);
+    return root;
+};
+
+/* Flatten tree to linked list - Given the root of a binary tree, flatten the tree into a "linked list":
+
+The "linked list" should use the same TreeNode class where the right child pointer points to the next node in the list and the left child pointer is always null.
+The "linked list" should be in the same order as a pre-order traversal of the binary tree.
+*/
+/**
+ * Definition for a binary tree node.
+ * function TreeNode(val, left, right) {
+ *     this.val = (val===undefined ? 0 : val)
+ *     this.left = (left===undefined ? null : left)
+ *     this.right = (right===undefined ? null : right)
+ * }
+ */
+/**
+ * @param {TreeNode} root
+ * @return {void} Do not return anything, modify root in-place instead.
+ */
+const flatten = (root) => {
+    let prev = null
+    const traverse = node => {
+        if (node === null) {
+            return
+        }
+        traverse(node.right)
+        traverse(node.left)
+        node.left = null
+        node.right = prev
+        prev = node
+    }
+    traverse(root)
 };
 
 /* Path In Zigzag Labelled Binary Tree - In an infinite binary tree where every node has two children, the nodes are labelled in row order.
@@ -1000,11 +1111,21 @@ Return the root of the Quad - Tree representing grid.
  * @return {Node}
  */
 const construct = (grid) => {
+
+    /* pseudo code
+        keep a function with rs, re, cs, ce as inputs
+            return a leaf node for a cell
+            recursively build 4 children - topLeft, topRight, bottomLeft, bottomRight
+            if all children are leaf nodes and have same value
+                return a leaf node with any child's value
+            return a normal node with four children and value as 1
+    */
+
     //  n * n grid
     let n = grid.length;
 
     //  rowStart, rowEnd, colStart, colEnd
-    const quadTree = (rs, re, cs, ce) => {
+    const buildQuadNode = (rs, re, cs, ce) => {
         const len = re - rs;
         if (len === 1) {
             //  leaf node
@@ -1013,10 +1134,10 @@ const construct = (grid) => {
         let mid = Math.floor(len / 2);
 
         //  find children
-        let topLeft = quadTree(rs, rs + mid, cs, cs + mid);
-        let topRight = quadTree(rs, rs + mid, cs + mid, ce);
-        let bottomLeft = quadTree(rs + mid, re, cs, cs + mid);
-        let bottomRight = quadTree(rs + mid, re, cs + mid, ce);
+        let topLeft = buildQuadNode(rs, rs + mid, cs, cs + mid);
+        let topRight = buildQuadNode(rs, rs + mid, cs + mid, ce);
+        let bottomLeft = buildQuadNode(rs + mid, re, cs, cs + mid);
+        let bottomRight = buildQuadNode(rs + mid, re, cs + mid, ce);
 
         const topLeftVal = topLeft.val
         //  all children are leafs
@@ -1031,40 +1152,40 @@ const construct = (grid) => {
         //  not a leaf node
         return new Node(1, 0, topLeft, topRight, bottomLeft, bottomRight);
     }
-    const head = quadTree(0, n, 0, n);
+    const head = buildQuadNode(0, n, 0, n);
     return head;
 };
 
-/* BST to sorted DLL */
-
+/* BST to sorted DLL 
+*/
 const bstToDoublyLinkedList = (root) => {
+
+    /* pseudo code
+        
+    */
+
     if (root === null) {
         return null;
     }
 
-    const convertBSTtoDLL = (root, prevNode) => {
-        if (root === null) {
+    const convert = (currNode, prevNode) => {
+        if (currNode === null) {
             return prevNode;
         }
 
-        // Recursively convert the left subtree
-        prevNode = convertBSTtoDLL(root.left, prevNode);
+        prevNode = convert(currNode.left, prevNode);
 
-        // Convert current node
-        const currentNode = new DoublyLinkedListNode(root.val);
+        const currentNode = new DoublyLinkedListNode(currNode.val);
         currentNode.prev = prevNode;
         if (prevNode) {
             prevNode.next = currentNode;
         }
 
-        // Recursively convert the right subtree
-        return convertBSTtoDLL(root.right, currentNode);
+        return convert(currNode.right, currentNode);
     };
 
-    // Start the in-order traversal
-    const head = convertBSTtoDLL(root, null);
+    const head = convert(root, null);
 
-    // Find the head of the doubly linked list
     while (head.prev !== null) {
         head = head.prev;
     }
@@ -1252,106 +1373,3 @@ class Quadtree {
     }
 }
 
-/* Sum root to leaf numbers - You are given the root of a binary tree containing digits from 0 to 9 only.
-
-Each root-to-leaf path in the tree represents a number.
-
-For example, the root-to-leaf path 1 -> 2 -> 3 represents the number 123.
-Return the total sum of all root-to-leaf numbers. Test cases are generated so that the answer will fit in a 32-bit integer.
-*/
-/**
- * Definition for a binary tree node.
- * function TreeNode(val, left, right) {
- *     this.val = (val===undefined ? 0 : val)
- *     this.left = (left===undefined ? null : left)
- *     this.right = (right===undefined ? null : right)
- * }
- */
-/**
- * @param {TreeNode} root
- * @return {number}
- */
-const sumNumbers = (root) => {
-    // Declare a total
-    let total = 0;
-
-    // DFS with node and sum
-    let dfs = (node, sum) => {
-        // If the node is a leaf, "shift", add, and sum to total
-        if (!node.left && !node.right) total += sum * 10 + node.val;
-        else { // If not a leaf...
-            // ...and has a left child,
-            // DFS on the left side after "shifting" by one place
-            if (node.left) dfs(node.left, sum * 10 + node.val);
-            // ...and has a right child,
-            // DFS on the right side after "shifting" by one place
-            if (node.right) dfs(node.right, sum * 10 + node.val);
-        }
-    }
-
-    // Call on root with current sum 0
-    dfs(root, 0);
-
-    // Return answer
-    return total;
-};
-
-/* Construct tree from inorder and postorder traversal */
-/**
- * Definition for a binary tree node.
- * function TreeNode(val, left, right) {
- *     this.val = (val===undefined ? 0 : val)
- *     this.left = (left===undefined ? null : left)
- *     this.right = (right===undefined ? null : right)
- * }
- */
-/**
- * @param {number[]} inorder
- * @param {number[]} postorder
- * @return {TreeNode}
- */
-const buildTreeN = (inorder, postorder) => {
-    if (inorder.length == 0 || postorder.length == 0) {
-        return null;
-    }
-    var rootVal = postorder[postorder.length - 1];
-    var root = new TreeNode(rootVal);
-    var rootIndex = inorder.indexOf(rootVal);
-    var leftInorder = inorder.slice(0, rootIndex);
-    var rightInorder = inorder.slice(rootIndex + 1);
-    var leftPostorder = postorder.slice(0, leftInorder.length);
-    var rightPostorder = postorder.slice(leftInorder.length, postorder.length - 1);
-    root.left = buildTree(leftInorder, leftPostorder);
-    root.right = buildTree(rightInorder, rightPostorder);
-    return root;
-};
-
-/* Flatten tree to linked list - Given the root of a binary tree, flatten the tree into a "linked list":
-
-The "linked list" should use the same TreeNode class where the right child pointer points to the next node in the list and the left child pointer is always null.
-The "linked list" should be in the same order as a pre-order traversal of the binary tree.
-*/
-/**
- * Definition for a binary tree node.
- * function TreeNode(val, left, right) {
- *     this.val = (val===undefined ? 0 : val)
- *     this.left = (left===undefined ? null : left)
- *     this.right = (right===undefined ? null : right)
- * }
- */
-/**
- * @param {TreeNode} root
- * @return {void} Do not return anything, modify root in-place instead.
- */
-const flatten = (root) => {
-    let prev = null
-    const traverse = node => {
-        if (node === null) return
-        traverse(node.right)
-        traverse(node.left)
-        node.left = null
-        node.right = prev
-        prev = node
-    }
-    traverse(root)
-};
