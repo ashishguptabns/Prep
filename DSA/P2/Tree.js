@@ -1,3 +1,91 @@
+/* Inorder Successor in BST - Given the root of a binary search tree and a node p in it, return the in -order successor of that node in the BST.If the given node has no in -order successor in the tree, return null.
+
+The successor of a node p is the node with the smallest key greater than p.val.
+ */
+
+const inorderSuccessor = (root, p) => {
+
+    /* pseudo code
+        loop through the nodes
+            if a node is greater than target node
+                go to left
+                also this node can be the successor
+            else go to right
+    */
+
+    let currNode = root
+    let successor
+
+    while (currNode != null) {
+        if (currNode.val > p.val) {
+            successor = currNode
+            //  we have to go towards left to find the successor
+            currNode = currNode.left
+        } else {
+            //  go towards the right
+            currNode = currNode.right
+        }
+    }
+
+    return successor
+};
+
+/* Binary Tree Level Order Traversal
+ */
+/**
+ * @param {TreeNode} root
+ * @return {number[][]}
+ */
+const levelOrder = (root) => {
+
+    const res = []
+
+    if (root) {
+        const queue = [root]
+
+        while (queue.length) {
+            const levelSize = queue.length
+            const currLevelNodes = []
+            for (let i = 0; i < levelSize; i++) {
+                const currNode = queue.shift()
+                if (currNode.left) {
+                    queue.push(currNode.left)
+                }
+                if (currNode.right) {
+                    queue.push(currNode.right)
+                }
+                currLevelNodes.push(currNode.val)
+            }
+            res.push([...currLevelNodes])
+        }
+    }
+    return res
+};
+
+/* Kth Smallest Element in a BST
+ */
+/**
+ * @param {TreeNode} root
+ * @param {number} k
+ * @return {number}
+ */
+const kthSmallest = (root, k) => {
+    const inorderArr = []
+
+    const inorder = (root) => {
+        if (root) {
+            inorder(root.left)
+            inorderArr.push(root.val)
+            inorder(root.right)
+        }
+    }
+
+    inorder(root)
+
+    //  k = 1 means 0th element
+    return inorderArr[k - 1]
+};
+
 /* All Nodes Distance K in Binary Tree - Given the root of a binary tree, the value of a target node target, and an integer k, return an array of the values of all nodes that have a distance k from the target node.
  */
 /**
@@ -9,7 +97,7 @@
 const distanceK = (root, target, k) => {
 
     /* pseudo code 
-        travel to the target node and assign parent to each node visited
+        travel to the target node and assign parent to each node visited till target node
         start DFS from target node with k distance
             do not do a repeat visit
             if distance k is covered
@@ -23,18 +111,18 @@ const distanceK = (root, target, k) => {
         return
     }
 
-    const assignParent = (node, parent, target) => {
+    const assignParentTillTarget = (node, parent, target) => {
         if (node) {
             node.parent = parent
             if (node == target) {
                 return node
             }
-            return assignParent(node.left, node, target) || assignParent(node.right, node, target)
+            return assignParentTillTarget(node.left, node, target) || assignParentTillTarget(node.right, node, target)
         }
     }
 
     //  find the target and assign a parent to each node
-    const targetNode = assignParent(root, null, target)
+    const targetNode = assignParentTillTarget(root, null, target)
 
     const res = []
 
@@ -92,9 +180,9 @@ const sumEvenGrandparent = (root) => {
 /* Validate Binary Search Tree - Given the root of a binary tree, determine if it is a valid binary search tree (BST).
 
 A valid BST is defined as follows:
-The left subtree of a node contains only nodes with keys less than the node's key.
-The right subtree of a node contains only nodes with keys greater than the node's key.
-Both the left and right subtrees must also be binary search trees.
+- The left subtree of a node contains only nodes with keys less than the node's key.
+- The right subtree of a node contains only nodes with keys greater than the node's key.
+- Both the left and right subtrees must also be binary search trees.
  */
 /**
  * @param {TreeNode} root
@@ -153,8 +241,11 @@ According to the definition of LCA on Wikipedia: “The lowest common ancestor i
 const lowestCommonAncestor = (root, p, q) => {
 
     /* pseudo code
-        visit each node and check if p or q is found
-        if both were found in either left or right subtree then this node is the LCA
+        visit each node 
+            check if p or q is found
+            visit left and right subtree recursively
+            if both were found in either left or right subtree then this node is the LCA
+            else return left or right whichever found p or q
     */
 
     if (!root || root === p || root === q) {
@@ -184,10 +275,13 @@ const lowestCommonAncestor = (root, p, q) => {
 const addOneRow = (root, val, depth) => {
 
     /* pseudo code
+        special case
+            depth = 1
+            make new node with root as left kid and return
         visit each node with its depth
-        just before the mentioned depth
-            add left node with curr node's left as left child
-            add right node with curr node's right as right child
+            just before the mentioned depth
+                add new left node with curr node's left as left child
+                add new right node with curr node's right as right child
     */
 
     if (!root) {
@@ -233,91 +327,29 @@ const maxPathSum = (root) => {
 
     /* pseudo code
         visit each node
-            find max sum from left and right subtrees
+            find max sum from left and right subtrees recursively
             keep tracking the max so far
             return either left or right max with curr node's value
     */
 
-    let max = -Infinity // Variable to store the maximum path sum
+    let max = -Infinity
 
-    // Recursive function to calculate the maximum path sum for a subtree
     const countGainFromSubtree = (node) => {
         if (!node) {
             return 0
         }
 
-        // Calculate the maximum path sum for the left and right subtrees
         const leftMax = Math.max(0, countGainFromSubtree(node.left))
         const rightMax = Math.max(0, countGainFromSubtree(node.right))
 
-        // Update the global maximum path sum by considering the current subtree
         max = Math.max(max, node.val + leftMax + rightMax)
 
-        // Return the maximum path sum that can be extended from the current node
         return node.val + Math.max(leftMax, rightMax)
     }
 
-    // Start the recursive calculation from the root of the tree
     countGainFromSubtree(root)
 
-    // Return the overall maximum path sum
     return max
-};
-
-/* Kth Smallest Element in a BST
- */
-/**
- * @param {TreeNode} root
- * @param {number} k
- * @return {number}
- */
-const kthSmallest = (root, k) => {
-    const inorderArr = []
-
-    const inorder = (root) => {
-        if (root) {
-            inorder(root.left)
-            inorderArr.push(root.val)
-            inorder(root.right)
-        }
-    }
-
-    inorder(root)
-
-    //  k = 1 means 0th element
-    return inorderArr[k - 1]
-};
-
-/* Binary Tree Level Order Traversal
- */
-/**
- * @param {TreeNode} root
- * @return {number[][]}
- */
-const levelOrder = (root) => {
-
-    const res = []
-
-    if (root) {
-        const queue = [root]
-
-        while (queue.length) {
-            const levelSize = queue.length
-            const currLevelNodes = []
-            for (let i = 0; i < levelSize; i++) {
-                const currNode = queue.shift()
-                if (currNode.left) {
-                    queue.push(currNode.left)
-                }
-                if (currNode.right) {
-                    queue.push(currNode.right)
-                }
-                currLevelNodes.push(currNode.val)
-            }
-            res.push([...currLevelNodes])
-        }
-    }
-    return res
 };
 
 /* Construct Binary Tree from Preorder and Inorder Traversal - Given two integer arrays preorder and inorder where preorder is the preorder traversal of a binary tree and inorder is the inorder traversal of the same tree, construct and return the binary tree.
@@ -328,6 +360,22 @@ const levelOrder = (root) => {
  * @return {TreeNode}
  */
 const buildTree = (preorder, inorder) => {
+
+    /* pseudo code
+        preorder
+            root is first, left subtree is after then right subtree
+        inorder
+            left subtree is first, then root then right subtree
+
+        find root from preorder
+        find root index in inorder
+
+        find preorder and inorder for left subtree and build
+        repeat for right and build
+
+        return curr root
+    */
+
     if (preorder.length) {
         const currRoot = new TreeNode(preorder[0])
 
@@ -350,38 +398,6 @@ const buildTree = (preorder, inorder) => {
     return null
 };
 
-/* Inorder Successor in BST - Given the root of a binary search tree and a node p in it, return the in -order successor of that node in the BST.If the given node has no in -order successor in the tree, return null.
-
-The successor of a node p is the node with the smallest key greater than p.val.
- */
-
-const inorderSuccessor = (root, p) => {
-
-    /* pseudo code
-        go through the nodes
-        if a node is greater than target node
-            go to left
-            also this node can be the successor
-        else go to right
-    */
-
-    let currNode = root
-    let successor
-
-    while (currNode != null) {
-        if (currNode.val > p.val) {
-            successor = currNode
-            //  we have to go towards left to find the successor
-            currNode = currNode.left
-        } else {
-            //  go towards the right
-            currNode = currNode.right
-        }
-    }
-
-    return successor
-};
-
 /* Populating Next Right Pointers in Each Node - You are given a perfect binary tree where all leaves are on the same level, and every parent has two children.Populate each next pointer to point to its next right node.If there is no next right node, the next pointer should be set to NULL.
  */
 /**
@@ -392,9 +408,11 @@ const connect = (root) => {
 
     /* pseudo code
         start from left most node at each level
-            move through the level
-                connect left to right
-                connect right to neighbour's left
+            keep a curr node to move through the level
+                connect left child to right
+                connect right child to neighbour's left
+                move curr node to next
+            move left most node to left kid
     */
 
     if (!root) {
@@ -436,7 +454,7 @@ const isCompleteTree = (root) => {
 
     /* pseudo code
         do a level order travel
-            track if a node was null and right side neighbours are not null
+            at each level, track if a node was null and right side neighbours are not null
                 not a complete tree
     */
 
@@ -472,6 +490,14 @@ Two trees are duplicate if they have the same structure with the same node value
  * @return {TreeNode[]}
  */
 const findDuplicateSubtrees = (root) => {
+
+    /* pseudo code
+        keep a map to store preorder vs freq
+        do a DFS through each node
+            store preorder of subtree with curr node as root
+            check the freq of this preorder and track duplicates
+    */
+
     const map = new Map()
     const result = []
 
@@ -509,6 +535,17 @@ Subtree includes the root
  * @return {number}
  */
 const averageOfSubtree = (root) => {
+
+    /* pseudo code
+        do a DFS at each node
+            DFS for left and right recursively
+            find curr subtree sum
+            curr subtree nodes count
+            find avg
+            track count as per condition
+            return [count, sum]
+    */
+
     let countAvgNodes = 0
     const dfs = (node) => {
         if (node) {
