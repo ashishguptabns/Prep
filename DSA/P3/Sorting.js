@@ -181,56 +181,6 @@ const bubbleSort = (nums) => {
 
 };
 
-/* Insertion sort */
-
-const insertionSort = (nums) => {
-  /* pseudo code
-    
-  */
-
-  for (let i = 1; i < nums.length; i++) {
-    const value = nums[i];
-    let hole = i;
-    while (hole > 0 && nums[hole - 1] > value) {
-      nums[hole] = nums[hole - 1];
-      hole = hole - 1
-    }
-    nums[hole] = value;
-  }
-  return nums;
-
-};
-
-/* Quick sort */
-
-const quickSort = (nums) => {
-  //  quick sort
-
-  function quickSortHelper(nums, start, end) {
-    if (start >= end) {
-      return nums
-    }
-
-    const pivotValue = nums[start]
-    let smaller = start
-    for (var i = start + 1; i <= end; i++) {
-      const bigger = i
-      if (nums[bigger] < pivotValue) {
-        smaller++
-        [nums[smaller], nums[bigger]] = [nums[bigger], nums[smaller]]
-      }
-    }
-    [nums[smaller], nums[start]] = [nums[start], nums[smaller]]
-
-    quickSortHelper(nums, start, smaller - 1)
-    quickSortHelper(nums, smaller + 1, end)
-    return nums
-  }
-
-  return quickSortHelper(nums, 0, nums.length - 1)
-
-};
-
 /* Merge intervals - Given an array of intervals where intervals[i] = [starti, endi], merge all overlapping intervals, and return an array of the non-overlapping intervals that cover all the intervals in the input.
 */
 
@@ -239,39 +189,40 @@ const quickSort = (nums) => {
  * @return {number[][]}
  */
 const merge = (intervals) => {
-  // Check if the input array is empty or undefined
+
+  /* pseudo code
+    sort the intervals by their start times
+    move through intervals
+      overlapping interval
+        update the end time
+      non overlapping interval
+        push last interval's [start, end] to merged array
+        reassign start and end to current interval
+    push last interval's [start, end] to merged array
+  */
+
   if (!intervals || !intervals.length) {
     return [];
   }
 
-  // Array to store the merged intervals
   let merged = [];
 
-  // Sort intervals based on the start value
   intervals.sort((a, b) => a[0] - b[0]);
 
-  // Initialize variables to track the last merged interval's start and end
   let [lastStart, lastEnd] = intervals[0];
 
-  // Iterate through each interval in the sorted array
   for (const [start, end] of intervals) {
-    // Check if the current interval overlaps with the last merged interval
     if (start <= lastEnd) {
-      // Merge overlapping intervals by updating lastEnd
       lastEnd = Math.max(end, lastEnd);
     } else {
-      // Add the merged interval to the result array
       merged.push([lastStart, lastEnd]);
-      // Update lastStart and lastEnd for the new interval
       lastStart = start;
       lastEnd = end;
     }
   }
 
-  // Add the last merged interval to the result array
   merged.push([lastStart, lastEnd]);
 
-  // Return the array of merged intervals
   return merged;
 };
 
@@ -348,5 +299,59 @@ const hIndex = (citations) => {
   }
 
   return hIndex;
+};
+
+/* Insertion sort */
+
+const insertionSort = (nums) => {
+  /* pseudo code
+    move i through nums
+      keep ith item in value and i in hole
+      move from hole to 0 till [hole - 1] > value
+        keep shifting item at hole - 1 to hole 
+        hole to hole - 1
+      assign held value to hole index
+  */
+
+  for (let i = 1; i < nums.length; i++) {
+    const value = nums[i];
+    let hole = i;
+    while (hole > 0 && nums[hole - 1] > value) {
+      nums[hole] = nums[hole - 1];
+      hole = hole - 1
+    }
+    nums[hole] = value;
+  }
+  return nums;
+
+};
+
+/* Quick sort */
+
+const quickSort = (nums) => {
+
+  function helper(nums, start, end) {
+    if (start >= end) {
+      return nums
+    }
+
+    const pivotValue = nums[start]
+    let smaller = start
+    for (var i = start + 1; i <= end; i++) {
+      const bigger = i
+      if (nums[bigger] < pivotValue) {
+        smaller++
+        [nums[smaller], nums[bigger]] = [nums[bigger], nums[smaller]]
+      }
+    }
+    [nums[smaller], nums[start]] = [nums[start], nums[smaller]]
+
+    helper(nums, start, smaller - 1)
+    helper(nums, smaller + 1, end)
+    return nums
+  }
+
+  return helper(nums, 0, nums.length - 1)
+
 };
 
