@@ -55,7 +55,7 @@ const removeDuplicates = (s, k) => {
             each element is [char, freq]
         move though chars of s
             check if found a duplicate
-                increase the freq
+                increase the freq of top of stack
                 freq matches k
                     remove the top of stack
             else keep pushing to the stack
@@ -115,10 +115,8 @@ const minAddToMakeValid = (s) => {
             stack.push(char)
         } else {
             if (stack.length > 0 && stack.at(-1) === '(') {
-                //  found a match
                 stack.pop()
             } else {
-                //  no match, add this parenthesis for calculation
                 stack.push(char)
             }
         }
@@ -266,14 +264,9 @@ const dailyTemperatures = (temps) => {
 
     for (let i = 0; i < temps.length; i++) {
         while (stack.length && temps[stack.at(-1)] < temps[i]) {
-            //  found a warmer temp
-
-            //  pop all the cold temp indexes and record the days
             const coldIndex = stack.pop()
             answer[coldIndex] = i - coldIndex
         }
-
-        //  add this index as cold
         stack.push(i)
     }
 
@@ -296,64 +289,20 @@ class StockSpanner {
         return span
     */
 
-    //  this stack will keep a price and its span
     stack = []
     next = (price) => {
         const { stack } = this
 
-        //  includes the current day by default
         let days = 1
 
-        //  find days when stock price was less than today to find total span for this price
-        //  notice that there can be multiple spans
         while (stack.length && stack.at(-1).price <= price) {
-            //  count prev lower days also
             days += stack.pop().days
         }
 
-        //  push the current one for future days
         stack.push({ price, days })
         return days
     }
 }
-
-/* Next Greater Element - Given a circular integer array nums (i.e., the next element of nums[nums.length - 1] is nums[0]), return the next greater number for every element in nums.
-
-The next greater number of a number x is the first greater number to its traversing-order next in the array, which means you could search circularly to find its next greater number. If it doesn't exist, return -1 for this number.
- */
-/**
- * @param {number[]} nums
- * @return {number[]}
- */
-const nextGreaterElements = (nums) => {
-
-    /* pseudo code
-            
-    */
-
-    const res = []
-    const stack = []
-
-    //  travel twice to avoid circular effect
-    for (let i = 2 * nums.length - 1; i >= 0; i--) {
-        //  find the index which has greater item than current item
-        while (stack.length && nums[stack.at(-1)] <= nums[i % nums.length]) {
-            stack.pop()
-        }
-
-        if (stack.length === 0) {
-            //  even after 2 rounds no greater item found
-            res[i % nums.length] = -1
-        } else {
-            //  top element of stack is the next greater item for current item
-            res[i % nums.length] = nums[stack.at(-1)]
-        }
-
-        stack.push(i % nums.length)
-    }
-
-    return res
-};
 
 /* Asteroid Collision - We are given an array asteroids of integers representing asteroids in a row.
 
@@ -384,34 +333,68 @@ const asteroidCollision = (asteroids) => {
     const stack = []
 
     for (const a of asteroids) {
-        // Check if the current asteroid is moving to the left (negative value)
         if (a < 0) {
-            // Handle collisions with asteroids moving to the right (positive values) in the stack
             while (stack.length > 0 && stack.at(-1) > 0 && stack.at(-1) < -a) {
-                // The current asteroid will destroy the asteroid at the top of the stack
                 stack.pop()
             }
 
-            // Check if the current asteroid annihilates the asteroid at the top of the stack
             if (stack.length > 0 && stack.at(-1) + a === 0) {
-                // If the top asteroid is completely destroyed, continue to the next iteration
                 stack.pop()
                 continue
             }
 
-            // Check if the current asteroid is smaller than the asteroid at the top of the stack
             if (stack.length > 0 && stack.at(-1) > 0 && stack.at(-1) > -a) {
-                // The current asteroid is destroyed, continue to the next iteration
                 continue
             }
         }
 
-        // If the current asteroid survives the collision checks, push it onto the stack
         stack.push(a)
     }
 
-    // Return the remaining asteroids after collisions
     return stack
+};
+
+/* Next Greater Element - Given a circular integer array nums (i.e., the next element of nums[nums.length - 1] is nums[0]), return the next greater number for every element in nums.
+
+The next greater number of a number x is the first greater number to its traversing-order next in the array, which means you could search circularly to find its next greater number. If it doesn't exist, return -1 for this number.
+ */
+/**
+ * @param {number[]} nums
+ * @return {number[]}
+ */
+const nextGreaterElements = (nums) => {
+
+    /* pseudo code
+        keep a stack to track next greater element
+        move i through twice the nums size
+            find the curr index
+            keep removing the items from stack till top element is greater than curr item
+            stack is empty
+                assign -1
+            else
+                found greater element for curr index
+            push curr index to stack
+    */
+
+    const res = []
+    const stack = []
+
+    for (let i = 2 * nums.length - 1; i >= 0; i--) {
+        const currIndex = i % nums.length
+        while (stack.length && nums[stack.at(-1)] <= nums[currIndex]) {
+            stack.pop()
+        }
+
+        if (stack.length === 0) {
+            res[currIndex] = -1
+        } else {
+            res[currIndex] = nums[stack.at(-1)]
+        }
+
+        stack.push(currIndex)
+    }
+
+    return res
 };
 
 /* Sum of Subarray Minimums - Given an array of integers arr, find the sum of min(b), where b ranges over every (contiguous) subarray of arr. Since the answer may be large, return the answer modulo 10**9 + 7.
