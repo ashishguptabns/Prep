@@ -1,8 +1,41 @@
+/* Group anagrams - Given an array of strings strs, group the anagrams together. You can return the answer in any order. */
+
+/**
+ * @param {string[]} strs
+ * @return {string[][]}
+ */
+const groupAnagrams = (strs) => {
+  //  sort the strings and maintain a map
+
+  const map = new Map();
+
+  const getHash = (str) => {
+    return str.split("").sort().join("");
+  };
+  strs.forEach((str) => {
+    const key = getHash(str);
+    if (map.has(key)) {
+      map.get(key).push(str);
+    } else {
+      map.set(key, [str]);
+    }
+  });
+
+  return [...map.values()];
+};
+
 /* Sort the matrix diagonally - Given an m x n matrix mat of integers, sort each matrix diagonal in ascending order and return the resulting matrix.
  */
 const diagonalSort = (mat) => {
 
-  // Note - First focus on upper half then lower half. Travel each diagonal, extract elements, sort them and place them back in the matrix
+  /* pseudo code
+    go through the cols
+      call sort function
+        keep diagonal cells in an array
+        sort
+        put them back
+    repeat for rows
+  */
 
   const numRows = mat.length;
   const numCols = mat[0].length;
@@ -38,6 +71,17 @@ const diagonalSort = (mat) => {
 /* Wiggle sort - Given an integer array nums, reorder it such that nums[0] < nums[1] > nums[2] < nums[3]....
  */
 const wiggleSort = (nums) => {
+
+  /* pseudo code
+    keep a copy of nums
+    sort the copy
+    move through nums
+      at each odd position in nums
+        place an item from copy array starting from end moving left
+      at each even pos in nums
+        place remaining items from copy array
+  */
+
   const copy = [...nums];
   copy.sort((a, b) => a - b);
 
@@ -56,99 +100,14 @@ const wiggleSort = (nums) => {
   }
 };
 
-/* Maximum ice cream bars - At the store, there are n ice cream bars. You are given an array costs of length n, where costs[i] is the price of the ith ice cream bar in coins. The boy initially has coins coins to spend, and he wants to buy as many ice cream bars as possible. 
-
-Note: The boy can buy the ice cream bars in any order.
-
-Return the maximum number of ice cream bars the boy can buy with coins coins.
-
-You must solve the problem by counting sort.
- */
-/**
- * @param {number[]} costs
- * @param {number} coins
- * @return {number}
- */
-const maxIceCream = (costs, coins) => {
-  //  track ice creams for each cost
-  const frequencies = Array(Math.max(...costs) + 1).fill(0);
-  for (const cost of costs) {
-    frequencies[cost] += 1;
-  }
-
-  let max = 0;
-  //  we are moving from low to high so count will be maximum
-  for (let cost = 1; cost <= coins && cost < frequencies.length; ++cost) {
-    //  either take all at this cost
-    //  or take what remaining coins can afford
-    const count = Math.min(frequencies[cost], Math.floor(coins / cost));
-
-    //  update left coins
-    coins -= cost * count;
-    max += count;
-  }
-  return max;
-};
-
-/* Group anagrams - Given an array of strings strs, group the anagrams together. You can return the answer in any order. */
-
-/**
- * @param {string[]} strs
- * @return {string[][]}
- */
-const groupAnagrams = (strs) => {
-  //  sort the strings and maintain a map
-
-  const map = new Map();
-
-  const getHash = (str) => {
-    return str.split("").sort().join("");
-  };
-  strs.forEach((str) => {
-    const key = getHash(str);
-    if (map.has(key)) {
-      map.get(key).push(str);
-    } else {
-      map.set(key, [str]);
-    }
-  });
-
-  return [...map.values()];
-};
-
-/* H-index - Given an array of integers citations where citations[i] is the number of citations a researcher received for their ith paper, return the researcher's h-index.
-
-According to the definition of h-index on Wikipedia: The h-index is defined as the maximum value of h such that the given researcher has published at least h papers that have each been cited at least h times.
- */
-
-/**
- * @param {number[]} citations
- * @return {number}
- */
-const hIndex = (citations) => {
-  //  sort the citations
-  //  travel through the array and keep finding the h index
-  citations.sort((a, b) => a - b);
-
-  let res = 0;
-  let n = citations.length;
-
-  for (let i = 0; i < n; i++) {
-    //  assume ith index has 6 citations but only 3 more papers have higher citation than 6
-    res = Math.max(res, Math.min(citations[i], n - i));
-  }
-
-  return res;
-};
-
 /* Explain merge sort */
 
 const mergeSort = (nums) => {
-  //  merge sort
-  //  divide the array in half recursively
-  //  sort both halves up the last recursion
-  //  merge both
-
+  /* pseudo code
+      divide the array in half recursively
+      sort both halves up the last recursion
+      merge both
+   */
   if (nums.length < 2) {
     return nums;
   }
@@ -178,9 +137,13 @@ const mergeSort = (nums) => {
 /* Selection Sort - O(n^2) */
 
 const selectionSort = (nums) => {
-  //  selection sort
-  //  at each index, find the smallest element in the right subarray and swap
-
+  /*  pseudo code
+        move i through nums
+          keep i as min index
+          move through right subarray
+            find index j which is smaller than ith item and the smallest in right subarray
+          swap items i and j
+ */
   const n = nums.length;
   for (let i = 0; i < n - 1; i++) {
     let min = i;
@@ -200,7 +163,12 @@ const selectionSort = (nums) => {
 /* Bubble sort */
 
 const bubbleSort = (nums) => {
-  //  bubble sort
+  /* pseudo code
+    move k from end of nums
+      move i from 0 till k
+        ith item is bigger than i + 1
+          swap
+  */
 
   for (let k = nums.length - 1; k >= 1; k--) {
     for (let i = 0; i < k; i++) {
@@ -216,7 +184,9 @@ const bubbleSort = (nums) => {
 /* Insertion sort */
 
 const insertionSort = (nums) => {
-  //  insertion sort
+  /* pseudo code
+    
+  */
 
   for (let i = 1; i < nums.length; i++) {
     const value = nums[i];
@@ -304,3 +274,79 @@ const merge = (intervals) => {
   // Return the array of merged intervals
   return merged;
 };
+
+/* Maximum ice cream bars - At the store, there are n ice cream bars. You are given an array costs of length n, where costs[i] is the price of the ith ice cream bar in coins. The boy initially has coins coins to spend, and he wants to buy as many ice cream bars as possible. 
+
+Note: The boy can buy the ice cream bars in any order.
+
+Return the maximum number of ice cream bars the boy can buy with coins coins.
+
+You must solve the problem by counting sort.
+ */
+/**
+ * @param {number[]} costs
+ * @param {number} coins
+ * @return {number}
+ */
+const maxIceCream = (costs, coins) => {
+
+  /* pseudo code
+    counting sort
+      keep a freq array to track freq of each cost in costs
+      move cost through coins from 1 till coins
+        track icecreams that can be bought with this cost
+        update coins and max incecreams
+  */
+
+  //  track ice creams for each cost
+  const frequencies = Array(Math.max(...costs) + 1).fill(0);
+  for (const cost of costs) {
+    frequencies[cost] += 1;
+  }
+
+  let max = 0;
+  //  we are moving from low to high so count will be maximum
+  for (let cost = 1; cost <= coins && cost < frequencies.length; ++cost) {
+    //  either take all at this cost
+    //  or take what remaining coins can afford
+    const count = Math.min(frequencies[cost], Math.floor(coins / cost));
+
+    //  update left coins
+    coins -= cost * count;
+    max += count;
+  }
+  return max;
+};
+
+/* H-index - Given an array of integers citations where citations[i] is the number of citations a researcher received for their ith paper, return the researcher's h-index.
+
+According to the definition of h-index on Wikipedia: The h-index is defined as the maximum value of h such that the given researcher has published at least h papers that have each been cited at least h times.
+ */
+
+/**
+ * @param {number[]} citations
+ * @return {number}
+ */
+const hIndex = (citations) => {
+
+  /* pseudo code
+    sort the citations
+    move through citations array
+      track max of hIndex so far and (min of curr citation and citations on the right)
+  */
+
+  //  sort the citations
+  //  travel through the array and keep finding the h index
+  citations.sort((a, b) => a - b);
+
+  let hIndex = 0;
+  let n = citations.length;
+
+  for (let i = 0; i < n; i++) {
+    //  assume ith index has 6 citations but only 3 more papers have higher citation than 6
+    hIndex = Math.max(hIndex, Math.min(citations[i], n - i));
+  }
+
+  return hIndex;
+};
+
