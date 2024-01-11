@@ -431,50 +431,6 @@ const minCost = (costs) => {
     return Math.min(...dp[n - 1]);
 };
 
-/* Word break - Given a string s and a dictionary of strings wordDict, return true if s can be segmented into a space-separated sequence of one or more dictionary words.
-
-Note that the same word in the dictionary may be reused multiple times in the segmentation.
- */
-/**
- * @param {string} s
- * @param {string[]} wordDict
- * @return {boolean}
- */
-const wordBreak = (s, wordDict) => {
-
-    /* pseudo code
-        keep a dp array
-            each ith item tells if substring till ith index can be broken into words from dictionary
-        move through the given string
-            go through each word of dictionary
-                see if current substring can be formed by combining curr word and (substring - word)
-    */
-
-    // Length of the input string
-    const n = s.length;
-    // dp[i] is true if the substring s[0...i-1] can be segmented into words from the dictionary
-    const dp = new Array(n + 1).fill(false);
-    // An empty string is considered segmented by default
-    dp[0] = true;
-
-    // Iterate through the characters of the string
-    for (let i = 1; i <= n; i++) {
-        // Iterate through words in the dictionary
-        for (const word of wordDict) {
-            // Check if the current substring can be formed by appending the current word
-            if (i - word.length >= 0 && dp[i - word.length]
-                && s.substring(i - word.length, i) === word) {
-                dp[i] = true;
-                // Break out of the inner loop since we found a valid word for substring till ith index
-                break;
-            }
-        }
-    }
-
-    // The final value of dp[n] indicates whether the entire string can be segmented
-    return dp[n];
-};
-
 /* Edit distance - Given two strings word1 and word2, return the minimum number of operations required to convert word1 to word2.
 
 You have the following three operations permitted on a word:
@@ -1131,5 +1087,41 @@ const longestIncreasingPath = (matrix) => {
 
     // Return the length of the longest increasing path
     return max;
+};
+
+/* Word break - Given a string s and a dictionary of strings wordDict, return true if s can be segmented into a space-separated sequence of one or more dictionary words.
+
+Note that the same word in the dictionary may be reused multiple times in the segmentation.
+ */
+/**
+ * @param {string} s
+ * @param {string[]} wordDict
+ * @return {boolean}
+ */
+const wordBreak = (s, wordDict) => {
+
+    /* pseudo code
+        keep a dp array
+            each ith item tells if substring till ith index can be broken into words from dictionary
+        move through the given string
+            go through each word of dictionary
+                see if current substring can be formed by combining curr word and (substring - word)
+    */
+
+    const n = s.length;
+    const dp = new Array(n + 1).fill(false);
+    dp[0] = true;
+
+    for (let i = 1; i <= n; i++) {
+        for (const word of wordDict) {
+            if (i >= word.length && dp[i - word.length]
+                && s.substring(i - word.length, i) === word) {
+                dp[i] = true;
+                break;
+            }
+        }
+    }
+
+    return dp[n];
 };
 
