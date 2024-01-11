@@ -1,3 +1,32 @@
+/* Longest Increasing Subsequence - Given an integer array nums, return the length of the longest strictly increasing subsequence
+ */
+/**
+ * @param {number[]} nums
+ * @return {number}
+ */
+const lengthOfLIS = (nums) => {
+
+    /* pseudo code
+        keep a 1D dp array  
+            ith item tells length of LIS till ith index
+        move end index from 1 to nums length
+            move i index from 0 to end subarray
+                keep checking if we find a longer subseq
+    */
+
+    const dp = Array(nums.length).fill(1);
+
+    for (let end = 1; end < nums.length; end++) {
+        for (let i = 0; i < end; i++) {
+            if (nums[end] > nums[i]) {
+                dp[end] = Math.max(dp[end], dp[i] + 1);
+            }
+        }
+    }
+
+    return Math.max(...dp);
+};
+
 /* Longest Palindromic substring - Given a string s, return the longest Palindromic substring in s. */
 /**
  * @param {string} s
@@ -297,41 +326,6 @@ const climbStairs = (n) => {
     return dp[n]
 };
 
-/* Longest Increasing Subsequence - Given an integer array nums, return the length of the longest strictly increasing subsequence
- */
-/**
- * @param {number[]} nums
- * @return {number}
- */
-const lengthOfLIS = (nums) => {
-
-    /* pseudo code
-        keep a dp array where ith item tells length of LIS till ith index
-        move end index from 1 to nums length
-            move i index from 0 to end subarray
-                keep checking if we find a longer subseq
-    */
-
-    // Initialize an array dp to store the length of LIS ending at each index
-    const dp = Array(nums.length).fill(1);
-
-    // Loop through each element in the array starting from index 1
-    for (let end = 1; end < nums.length; end++) {
-        // Nested loop to compare the current element with previous elements
-        for (let i = 0; i < end; i++) {
-            // Check if the current element is greater than the previous element
-            if (nums[end] > nums[i]) {
-                //  Update the length of LIS ending at the current index
-                //  either choose the array till j with current element or array till i
-                dp[end] = Math.max(dp[end], dp[i] + 1);
-            }
-        }
-    }
-
-    // Return the overall maximum length of LIS
-    return Math.max(...dp);
-};
-
 /* Count strictly increasing subarrays
  */
 const countIncreasingSubarraysDP = (arr) => {
@@ -346,21 +340,16 @@ const countIncreasingSubarraysDP = (arr) => {
     */
 
     const n = arr.length;
-    const dp = Array(n).fill(1); // Initialize dp array with all elements set to 1
+    const dp = Array(n).fill(1);
     let count = 0;
 
     for (let i = 1; i < n; i++) {
         if (arr[i] > arr[i - 1]) {
-            // If the current element is greater than the previous one,
-            // update dp[i] with dp[i-1] + 1
             dp[i] = dp[i - 1] + 1;
         } else {
-            // If the current element is not greater than the previous one,
-            // reset dp[i] to 1
             dp[i] = 1;
         }
 
-        // Add the length of the increasing subarray ending at index i to the count
         count += dp[i];
     }
 
