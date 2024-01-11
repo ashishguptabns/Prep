@@ -365,6 +365,7 @@ const countSquares = (matrix) => {
             each cell [i, j] will tell how many square submatrices with all 1s are there before this cell
         move through each row
             move through each col
+                ignore cells with 0
                 handle first row and col
                 keep tracking the count
                 handle normal cell
@@ -373,26 +374,19 @@ const countSquares = (matrix) => {
 
     let count = 0
 
-    //  dp array same as matrix
     const dp = new Array(matrix.length).fill().map(() => new Array(matrix[0].length).fill(0))
 
-    //  visit each cell of the matrix
     for (let row = 0; row < matrix.length; row++) {
         for (let col = 0; col < matrix[0].length; col++) {
             if (matrix[row][col] === 0) {
-                //  ignore 0s
             } else if (row === 0 || col === 0) {
-                //  only one sub matrix possible for each [i, j]
                 dp[row][col] = 1
                 count += dp[row][col]
             } else {
-                //  find the cell which has min submatrices in adjacent cells
                 const side = Math.min(dp[row - 1][col], dp[row - 1][col - 1], dp[row][col - 1])
 
-                //  include this cell in the count
                 dp[row][col] = side + 1
 
-                //  count all submatrices
                 count += dp[row][col]
             }
         }
@@ -426,21 +420,14 @@ const minCost = (costs) => {
     const n = costs.length;
     const dp = Array.from({ length: n }, () => Array(3).fill(0));
 
-    // base case - first row of the dp matrix - costs of painting the first house
     dp[0] = [...costs[0]];
 
-    // Iterate through the houses starting from the second one
     for (let house = 1; house < n; house++) {
-        //  painting ith house with the first color
-        //  prev house can't be of same color
         dp[house][0] = costs[house][0] + Math.min(dp[house - 1][1], dp[house - 1][2]);
-
         dp[house][1] = costs[house][1] + Math.min(dp[house - 1][0], dp[house - 1][2]);
-
         dp[house][2] = costs[house][2] + Math.min(dp[house - 1][0], dp[house - 1][1]);
     }
 
-    // The result is the minimum cost among the last row of the dp matrix
     return Math.min(...dp[n - 1]);
 };
 
