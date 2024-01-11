@@ -53,24 +53,24 @@ const findSubsequences = (nums) => {
 
     //  maintain a map of all subseqs found so far to avoid repeats
     const map = {}
-    const backtrack = (index, currSS) => {
-        if (map[currSS]) {
+    const backtrack = (index, currSeq) => {
+        if (map[currSeq]) {
             //  we already have this subseq
             return;
         }
         //  mark as found
-        map[currSS] = true;
+        map[currSeq] = true;
 
-        if (currSS.length >= 2) {
+        if (currSeq.length >= 2) {
             //  as per condition
-            res.push(currSS)
+            res.push(currSeq)
         }
         for (let i = index; i < nums.length; i++) {
-            if (currSS.at(-1) > nums[i]) {
+            if (currSeq.at(-1) > nums[i]) {
                 //  curr element is smaller than the last element of subseq
                 continue;
             }
-            backtrack(i + 1, [...currSS, nums[i]])
+            backtrack(i + 1, [...currSeq, nums[i]])
         }
     }
     backtrack(0, [])
@@ -104,11 +104,10 @@ const permute = (nums) => {
     return res
 };
 
-/* Combination Sum - Given a collection of candidate numbers (candidates) and a target number (target), find all unique combinations in candidates where the candidate numbers sum to target.
+/* Combination Sum - Given an array of distinct integers candidates and a target integer target, return a list of all unique combinations of candidates where the chosen numbers sum to target. You may return the combinations in any order.
 
-Each number in candidates may only be used once in the combination.
-
-Note: The solution set must not contain duplicate combinations.
+The same number may be chosen from candidates an unlimited number of times. Two combinations are unique if the 
+frequency of at least one of the chosen numbers is different.
  */
 /**
  * @param {number[]} candidates
@@ -126,7 +125,7 @@ const combinationSum = (candidates, target) => {
     const res = []
 
     const backTrack = (currIndex, currArr, targetLeft) => {
-        if (0 === targetLeft) {
+        if (targetLeft === 0) {
             res.push([...currArr])
             return
         }
@@ -153,7 +152,7 @@ const subsets = (nums) => {
     /* pseudo code
         backtrack with curr index and curr subset
             run through nums array from curr index
-                backtrack with new index and new subset
+                backtrack with new index and new subset with curr item
     */
 
     //  this will contain all the subsets    
@@ -249,3 +248,48 @@ const letterCombinations = (digits) => {
     return list
 };
 
+/* Combination Sum II - Given a collection of candidate numbers (candidates) and a target number (target), find all unique combinations in candidates where the candidate numbers sum to target.
+
+Each number in candidates may only be used once in the combination.
+
+Note: The solution set must not contain duplicate combinations.
+ */
+/**
+ * @param {number[]} candidates
+ * @param {number} target
+ * @return {number[][]}
+ */
+const combinationSum2 = (candidates, target) => {
+
+    /* pseudo code
+        sort the candidates array
+        backtrack with curr index, target left and curr seq
+            loop through candidates
+                backtrack
+    */
+
+    candidates.sort((a, b) => a - b)
+
+    let paths = []
+
+    const backtrack = (target, currPath, index, candidates, paths) => {
+        if (target === 0) {
+            paths.push([...currPath])
+            return
+        }
+
+        while (index < candidates.length && target - candidates[index] >= 0) {
+            backtrack(target - candidates[index], [...currPath, candidates[index]],
+                index + 1, candidates, paths)
+            index++
+
+            while (candidates[index - 1] === candidates[index]) {
+                index++
+            }
+        }
+    }
+
+    backtrack(target, [], 0, candidates, paths)
+
+    return paths
+};
