@@ -241,27 +241,25 @@ Given the two integers m and n, return the number of possible unique paths that 
  */
 const uniquePaths = (m, n) => {
     /* pseudo code
-        DP array's [i, j] contains number of ways to come to this coordinate
-            base cases - first row and first col
+        keep a 2D dp array
+            [i, j] contains number of ways to come to this coordinate
+        base cases - first row and first col
+            only one way
         go through all the cells
             add ways to come from top and left
     */
 
     const dp = Array.from({ length: m }, () => new Array(n).fill(0))
 
-    //  only one way to cover all rows in first column
     for (let row = 0; row < m; row++) {
         dp[row][0] = 1
     }
-    //  only one way to cover all columns in first row
     for (let col = 0; col < n; col++) {
         dp[0][col] = 1
     }
 
-    //  fill the remaining cells
     for (let row = 1; row < m; row++) {
         for (let col = 1; col < n; col++) {
-            //  can come from top or left
             dp[row][col] = dp[row - 1][col] + dp[row][col - 1]
         }
     }
@@ -280,6 +278,8 @@ const climbStairs = (n) => {
 
     /* pseudo code
         two ways to reach any level
+        base cases
+            1st and 2nd stairs
     */
 
     if (n == 1) {
@@ -287,9 +287,7 @@ const climbStairs = (n) => {
     }
     const dp = Array(n + 1)
 
-    //  one way to climb
     dp[1] = 1
-    //  two ways to climb
     dp[2] = 2
 
     for (let i = 3; i <= n; i++) {
