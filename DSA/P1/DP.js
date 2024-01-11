@@ -7,12 +7,12 @@ const longestPalindrome = (s) => {
 
     /* pseudo code
         we will keep a 2D dp array 
-            each [i, j] will have length of palindrome starting at i ending at j
-        think of substrings starting at i and ending at j
+            each [i, j] will have true/false for palindrome starting at i ending at j
         handle special cases of substrings of length 1 and 2
         move through lengths of 3 and more
             move i through the substring till (strLength - currLen)
                 fill the dp index        
+                track max length and start index
      */
 
     const strLength = s.length
@@ -76,33 +76,25 @@ const rob = (nums) => {
         at each ith house either take ith house and money till i-2 house or take money till i-1 house
     */
 
-    // Handle edge cases
     if (!nums || !nums.length) {
         return 0;
     }
 
     const n = nums.length;
 
-    // Special case for only one house
     if (n === 1) {
         return nums[0];
     }
 
-    // Initialize an array to store maximum amounts at each house
     const dp = Array(n);
 
-    // Base cases
     dp[0] = nums[0];
     dp[1] = Math.max(nums[0], nums[1]);
 
-    // Fill the dp array using the dynamic programming approach
     for (let i = 2; i < n; i++) {
-        // Maximum amount at the current house is the maximum of the previous house's amount
-        // and the sum of the amount two houses before and the current house's amount
         dp[i] = Math.max(dp[i - 1], dp[i - 2] + nums[i]);
     }
 
-    // The final answer is the maximum amount at the last house
     return dp[n - 1];
 };
 
@@ -117,34 +109,26 @@ const findLength = (nums1, nums2) => {
 
     /* pseudo code
         we will have 2D dp array 
-            track repeat subarray in strings ending at i in nums1 and j in nums2
+            each item [i, j] tells repeat subarray length in strings ending at i in nums1 and j in nums2
         move i through nums1
             move j through nums2
                 fill the dp[i+1][j+1]
+                track max len
     */
 
-    // Create a 2D array (dp) to store the lengths of common subarrays
-    // dp[i][j] represents the length of the common subarray ending at nums1[i-1] and nums2[j-1]
     const dp = Array(nums1.length + 1).fill().map(() => Array(nums2.length + 1).fill(0));
 
-    // Variable to keep track of the maximum length of common subarray
     let maxLen = 0;
 
-    // Iterate through each element in nums1
     for (let i = 0; i < nums1.length; i++) {
-        // Iterate through each element in nums2
         for (let j = 0; j < nums2.length; j++) {
-            // If the current elements in both arrays are equal
             if (nums1[i] === nums2[j]) {
-                // Update the length of the common subarray
                 dp[i + 1][j + 1] = dp[i][j] + 1;
-                // Update the maximum length if needed
                 maxLen = Math.max(maxLen, dp[i + 1][j + 1]);
             }
         }
     }
 
-    // Return the maximum length of the common subarray
     return maxLen;
 };
 
@@ -162,33 +146,24 @@ You may assume that you have an infinite number of each kind of coin.
 const coinChange = (coins, amount) => {
 
     /* pseudo code
-        keep a dp array
+        keep a 1D dp array
             ith index tells about min number of coins needed to make i amount
         Go through each coin 
-            try to make up each amount starting with this coin
-                either keep the (coin and the coins to make up amount - coin) or leave the number as it is
+            run i from coin till amount
+                either keep the (coin and the min coins to make up amount - coin) or leave the number as it is
     */
 
-    //  Initialize an array dp to store the minimum number of coins needed for each amount
-    //  default amount has been kept high
-    const dp = Array(amount + 1).fill(amount + 1);
+    const dp = Array(Infinity).fill(Infinity);
 
-    // Base case: 0 coins needed to make amount 0
     dp[0] = 0;
 
-    // Iterate through each coin
     for (const coin of coins) {
-        // Update dp array for each amount from coin to the target amount
         for (let i = coin; i <= amount; i++) {
-            // Update the minimum number of coins needed for the current amount
-            // by either keeping the existing value or using the current coin
             dp[i] = Math.min(dp[i], 1 + dp[i - coin]);
         }
     }
 
-    // If dp[amount] is still greater than the initial amount + 1, it means no valid combination exists
-    // Return -1 in this case, otherwise return the minimum number of coins needed for the target amount
-    return dp[amount] === amount + 1 ? -1 : dp[amount];
+    return dp[amount] === Infinity ? -1 : dp[amount];
 };
 
 /* Perfect Squares - Given an integer n, return the least number of perfect square numbers that sum to n.
@@ -200,29 +175,23 @@ const coinChange = (coins, amount) => {
 const numSquares = (n) => {
 
     /* pseudo code
-        keep a dp array
-            each ith index tells number of min squares to make i
+        keep a 1D dp array
+            each ith item tells number of min squares to make i
         move num from 1 to n
             try to find all the numbers k which square less than num
-                either keep (k and num - k**2) or leave the count as it is
+                either keep (k and dp[num - k**2]) or leave the count as it is
     */
 
-    // Create an array to store the minimum number of perfect squares needed for each number up to 'n'
     const dp = Array(n + 1).fill(Infinity);
 
-    // The number of perfect squares needed to get 0 is 0.
     dp[0] = 0;
 
-    // Iterate through each number up to 'n'
     for (let num = 1; num <= n; num++) {
-        // Try all perfect squares less than or equal to the current number
         for (let k = 1; k ** 2 <= num; k++) {
-            // Update the minimum number of perfect squares needed for the current number
             dp[num] = Math.min(dp[num], dp[num - (k ** 2)] + 1);
         }
     }
 
-    // The final result is the minimum number of perfect squares needed for the given 'n'
     return dp[n];
 };
 
@@ -249,7 +218,6 @@ const longestCommonSubsequence = (text1, text2) => {
     const dp = Array.from({ length: text1.length + 1 },
         () => Array(text2.length + 1).fill(0));
 
-    //  start from the end of both strings
     for (let i = text1.length - 1; i >= 0; i--) {
         for (let j = text2.length - 1; j >= 0; j--) {
             if (text1[i] === text2[j]) {
