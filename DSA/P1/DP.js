@@ -581,151 +581,28 @@ const jobScheduling = (startTime, endTime, profit) => {
     const numJobs = jobs.length
     const dpArr = Array(numJobs)
 
-    // Create an array to store the jobs as [start time, end time, profit]
     const jobs = []
     for (let i = 0; i < startTime.length; i++) {
         jobs.push([startTime[i], endTime[i], profit[i]])
     }
 
-    // Sort the jobs array based on start times in ascending order
     jobs.sort((a, b) => a[0] - b[0])
 
-    // Base case: Set the profit for the last job in the profitArr array
     dpArr[numJobs - 1] = jobs.at(-1)[2]
 
-    // Iterate through the jobs array in reverse order to fill the profitArr array
     for (let i = numJobs - 2; i >= 0; i--) {
         const [start, end, profit] = jobs[i]
         let next = i + 1
 
-        // Find the next job whose start time is greater than or equal to the current job's end time
         while (next < numJobs && jobs[next][0] < end) {
             next++
         }
 
-        // Calculate the maximum profit for the current job by considering two cases:
-        // 1. Include the current job and add its profit to the profit of the next compatible job
-        // 2. Exclude the current job and consider the profit of the next job
         dpArr[i] = Math.max(profit + (next < numJobs ? dpArr[next] : 0),
             dpArr[i + 1])
     }
 
-    // Return the maximum profit for scheduling jobs
     return dpArr[0]
-};
-
-/* Knight Dialer - Given an integer n, return how many distinct phone numbers of length n we can dial.
-
-You are allowed to place the knight on any numeric cell initially and then you should perform n - 1 jumps to dial a number of length n. All jumps should be valid knight jumps.
- */
-/**
- * @param {number} n
- * @return {number}
- */
-const knightDialer = (n) => {
-
-    /* pseudo code
-        keep a dp array 
-            ith item tells num of phone numbers we can dial of length i
-            base case is 1
-                can place the knight on any digit
-        move through diff lengths
-            keep a diff dp array to store counts till curr len
-                move through all digits till 10
-                    move through next possible digits for curr digit
-                        add count of nums till curr digit and next digit for prev length
-            reassign the dp arr for prev length
-    */
-
-    const mod = 10 ** 9 + 7
-
-    //  map of starting position vs next positions
-    const adjMap = {
-        1: [6, 8],
-        2: [7, 9],
-        3: [4, 8],
-        4: [3, 9, 0],
-        5: [],
-        6: [1, 7, 0],
-        7: [2, 6],
-        8: [1, 3],
-        9: [2, 4],
-        0: [4, 6],
-    }
-
-    //  base case is length 1 as can place on any digit
-    const currLenDpArr = new Array(10).fill(1)
-
-    //  start from length 2 till n
-    for (let currLen = 2; currLen <= n; currLen++) {
-        //  store counts for current length
-        const newLenDpArr = new Array(10).fill(0)
-        for (let digit = 0; digit < 10; digit++) {
-            for (const nextDigit of adjMap[digit]) {
-                //  Add the count from the previous length at the next move's position to newDpArr[digit].
-                newLenDpArr[digit] = (newLenDpArr[digit] + currLenDpArr[nextDigit]) % mod
-            }
-        }
-
-        currLenDpArr = newLenDpArr
-    }
-
-    //  sum is the accumulator
-    return currLenDpArr.reduce((sum, val) => (sum + val) % mod, 0)
-};
-
-/* Count sorted vowel strings - Given an integer n, return the number of strings of length n that consist only of vowels (a, e, i, o, u) and are lexicographically sorted.
- */
-const countVowelStrings = (n) => {
-
-    /* pseudo code
-        backtrack with curr index and curr str length
-            run i through the vowel string starting at curr index
-                backtrack with i and curr str length + 1 (choosing one vowel)
-            keep the count in memo for this index and str length
-    */
-
-    // Memoization object to store computed results and avoid redundant calculations
-    const memo = {}
-
-    // Backtracking function to explore all possible combinations of vowels
-    const backTrack = (index, strLength) => {
-        // Generate a unique key for the current state using index and string length
-        const key = index + '_' + strLength
-
-        // Check if the result for the current state is already memoized
-        if (memo[key]) {
-            return memo[key]
-        }
-
-        // Base case: if the string has reached the desired length, it is a valid vowel string
-        if (strLength === n) {
-            return 1
-        }
-
-        // If the string length exceeds n, it is not a valid string
-        if (strLength > n) {
-            return 0
-        }
-
-        // Initialize count for the current state
-        let count = 0
-
-        // Explore all possible vowel combinations starting from the current index
-        for (let i = index; i < 5; i++) {
-            // Recursively call the backTrack function for the next position
-            count += backTrack(i, strLength + 1)
-        }
-
-        // Memoize the count for the current state
-        memo[key] = count
-
-        // Return the count for the current state
-        return count
-    }
-
-    // Start exploring all possible combinations of vowels from the beginning (index 0) with an empty string
-    return backTrack(0, 0)
 };
 
 /* Maximal Square - Given an m x n binary matrix filled with 0's and 1's, find the largest square containing only 1's and return its area.
@@ -737,140 +614,31 @@ const countVowelStrings = (n) => {
  */
 const maximalSquare = (matrix) => {
 
-    // Extend each row by appending '0' to the end
-    for (let r = 0; r < matrix.length; r++) {
-        matrix[r].push('0');
+    /* pseudo code
+        keep a 2D dp array
+            [i, j] tells size of square with 1s
+        move r through rows
+            move c throughs cols
+                found a cell with 1
+                    find min of 3 cells and add 1
+                    track max
+        return max**2
+    */
+
+    if (!matrix.length) {
+        return 0;
     }
-
-    // Add a new row filled with '0' to the bottom of the matrix
-    matrix.push(Array(matrix[0].length).fill('0'));
-
-    // Variable to store the maximum square size
-    let maxSquare = 0;
-
-    // Loop through the matrix in reverse order
-    for (let r = matrix.length - 2; r >= 0; r--) {
-        for (let c = matrix[0].length - 2; c >= 0; c--) {
-            // If the current cell contains '1', update it with the size of the maximal square
-            if (matrix[r][c] === '1') {
-                // Compute the size of the maximal square at the current cell
-                matrix[r][c] = Math.min(
-                    parseInt(matrix[r + 1][c]),
-                    parseInt(matrix[r + 1][c + 1]),
-                    parseInt(matrix[r][c + 1])
-                ) + 1;
-
-                // Update the maximum square size if needed
-                maxSquare = Math.max(maxSquare, matrix[r][c] ** 2);
+    const dp = new Array(matrix.length + 1).fill(0).map(() => new Array(matrix[0].length + 1).fill(0));
+    let max = 0;
+    for (let r = 1; r < dp.length; r++) {
+        for (let c = 1; c < dp[0].length; c++) {
+            if (matrix[r - 1][c - 1] != 0) {
+                dp[r][c] = Math.min(dp[r][c - 1], dp[r - 1][c], dp[r - 1][c - 1]) + 1;
+                max = Math.max(dp[r][c], max);
             }
         }
     }
-
-    // Return the maximum square size found in the matrix
-    return maxSquare;
-};
-
-/* All possible full binary trees - Given an integer n, return a list of all possible full binary trees with n nodes. Each node of each tree in the answer must have Node.val == 0.
- */
-const allPossibleFBT = (n) => {
-    // we will use DP to keep precomputed trees
-    const memo = {}
-
-    const createFBT = (size) => {
-        //  FBT of one node can be created
-        if (size === 1) {
-            return [new TreeNode()]
-        }
-        //  can not form FBT with even number of nodes
-        if (size % 2 == 0) {
-            return []
-        }
-        //  we have already computed the result
-        if (memo[size]) {
-            return memo[size]
-        }
-
-        const trees = []
-
-        // iterate over all possible odd numbers
-        for (let left = 1; left < size; left += 2) {
-            //  get all possible left subtress
-            const leftTrees = createFBT(left)
-            //  get all possible right subtress
-            const rightTress = createFBT(size - left - 1)
-            if (leftTrees && rightTress) {
-                //  create combination of trees
-                for (const l of leftTrees) {
-                    for (r of rightTress) {
-                        const root = new TreeNode(0, l, r)
-                        //  track the root of all trees
-                        trees.push(root)
-                    }
-                }
-            }
-        }
-
-        //  keep for future use
-        memo[size] = trees
-        return trees
-    }
-
-    return createFBT(n)
-
-};
-
-/* Interleaving string - Given strings s1, s2, and s3, find whether s3 is formed by an interleaving of s1 and s2.
-
-An interleaving of two strings s and t is a configuration where s and t are divided into n and m 
-substrings
- respectively, such that:
-
-s = s1 + s2 + ... + sn
-t = t1 + t2 + ... + tm
-|n - m| <= 1
-The interleaving is s1 + t1 + s2 + t2 + s3 + t3 + ... or t1 + s1 + t2 + s2 + t3 + s3 + ...
-Note: a + b is the concatenation of strings a and b.
- */
-
-/**
- * @param {string} s1
- * @param {string} s2
- * @param {string} s3
- * @return {boolean}
- */
-const isInterleave = (s1, s2, s3) => {
-    // Check if the total length of s1 and s2 is equal to s3
-    if (s1.length + s2.length !== s3.length) {
-        return false;
-    }
-
-    // Initialize a 2D array to store intermediate results
-    const dp = [];
-
-    // Iterate over the lengths of s1 and s2
-    for (let i = 0; i <= s1.length; i++) {
-        dp[i] = [];
-        for (let j = 0; j <= s2.length; j++) {
-            // Base case: an empty s1 and s2 can form an empty s3
-            if (i === 0 && j === 0) {
-                dp[i][j] = true;
-            } else if (i === 0) {
-                // If s1 is empty, check if s2 and s3 match
-                dp[i][j] = dp[i][j - 1] && s2[j - 1] === s3[j - 1];
-            } else if (j === 0) {
-                // If s2 is empty, check if s1 and s3 match
-                dp[i][j] = dp[i - 1][j] && s1[i - 1] === s3[i - 1];
-            } else {
-                // General case: Check if s1 or s2 contributed to the current character of s3
-                dp[i][j] =
-                    (dp[i][j - 1] && s2[j - 1] === s3[i + j - 1]) ||
-                    (dp[i - 1][j] && s1[i - 1] === s3[i + j - 1]);
-            }
-        }
-    }
-
-    // The result is stored in the bottom-right corner of the dp array
-    return dp[s1.length][s2.length];
+    return max ** 2;
 };
 
 /* Minimum Path Sum - Given a m x n grid filled with non-negative numbers, find a path from top left to bottom right, which minimizes the sum of all numbers along its path.
@@ -882,28 +650,28 @@ Note: You can only move either down or right at any point in time.
  * @return {number}
  */
 const minPathSum = (grid) => {
-    // Iterate through each row of the grid
+
+    /* pseudo code
+        move r through rows
+            move c through cols
+                ignore [0, 0] cell
+                find path sum till top cell or left cell and add curr cell value
+    */
+
     for (let r = 0; r < grid.length; r++) {
-        // Iterate through each column of the grid
         for (let c = 0; c < grid[0].length; c++) {
-            // Skip the top-left corner (starting point) as it has no incoming paths
             if (r === 0 && c === 0) {
                 continue;
             }
 
-            // Calculate the minimum sum by considering the top and left neighboring values
-            // If there's a value to the left of the current cell, get its value; otherwise, use Infinity
             const left = c > 0 ? grid[r][c - 1] : Infinity;
 
-            // If there's a value above the current cell, get its value; otherwise, use Infinity
             const top = r > 0 ? grid[r - 1][c] : Infinity;
 
-            // Update the current cell with the minimum sum of the top and left values plus its own value
             grid[r][c] = Math.min(left, top) + grid[r][c];
         }
     }
 
-    // Return the minimum path sum found in the bottom-right corner of the grid
     return grid[grid.length - 1][grid[0].length - 1];
 };
 
@@ -1096,5 +864,214 @@ const numDecodings = (s) => {
     }
 
     return dp[n];
+};
+
+/* Knight Dialer - Given an integer n, return how many distinct phone numbers of length n we can dial.
+
+You are allowed to place the knight on any numeric cell initially and then you should perform n - 1 jumps to dial a number of length n. All jumps should be valid knight jumps.
+ */
+/**
+ * @param {number} n
+ * @return {number}
+ */
+const knightDialer = (n) => {
+
+    /* pseudo code
+        keep a dp array 
+            ith item tells num of phone numbers we can dial of length i
+            base case is 1
+                can place the knight on any digit
+        move through diff lengths
+            keep a diff dp array to store counts till curr len
+                move through all digits till 10
+                    move through next possible digits for curr digit
+                        add count of nums till curr digit and next digit for prev length
+            reassign the dp arr for prev length
+    */
+
+    const mod = 10 ** 9 + 7
+
+    //  map of starting position vs next positions
+    const adjMap = {
+        1: [6, 8],
+        2: [7, 9],
+        3: [4, 8],
+        4: [3, 9, 0],
+        5: [],
+        6: [1, 7, 0],
+        7: [2, 6],
+        8: [1, 3],
+        9: [2, 4],
+        0: [4, 6],
+    }
+
+    //  base case is length 1 as can place on any digit
+    const currLenDpArr = new Array(10).fill(1)
+
+    //  start from length 2 till n
+    for (let currLen = 2; currLen <= n; currLen++) {
+        //  store counts for current length
+        const newLenDpArr = new Array(10).fill(0)
+        for (let digit = 0; digit < 10; digit++) {
+            for (const nextDigit of adjMap[digit]) {
+                //  Add the count from the previous length at the next move's position to newDpArr[digit].
+                newLenDpArr[digit] = (newLenDpArr[digit] + currLenDpArr[nextDigit]) % mod
+            }
+        }
+
+        currLenDpArr = newLenDpArr
+    }
+
+    //  sum is the accumulator
+    return currLenDpArr.reduce((sum, val) => (sum + val) % mod, 0)
+};
+
+/* Count sorted vowel strings - Given an integer n, return the number of strings of length n that consist only of vowels (a, e, i, o, u) and are lexicographically sorted.
+ */
+const countVowelStrings = (n) => {
+
+    /* pseudo code
+        backtrack with curr index and curr str length
+            run i through the vowel string starting at curr index
+                backtrack with i and curr str length + 1 (choosing one vowel)
+            keep the count in memo for this index and str length
+    */
+
+    const memo = {}
+
+    const backTrack = (index, strLength) => {
+        const key = index + '_' + strLength
+
+        if (memo[key]) {
+            return memo[key]
+        }
+        if (strLength === n) {
+            return 1
+        }
+        if (strLength > n) {
+            return 0
+        }
+
+        let count = 0
+
+        for (let i = index; i < 5; i++) {
+            count += backTrack(i, strLength + 1)
+        }
+
+        memo[key] = count
+
+        return count
+    }
+
+    return backTrack(0, 0)
+};
+
+/* All possible full binary trees - Given an integer n, return a list of all possible full binary trees with n nodes. Each node of each tree in the answer must have Node.val == 0.
+ */
+const allPossibleFBT = (n) => {
+    // we will use DP to keep precomputed trees
+    const memo = {}
+
+    const createFBT = (size) => {
+        //  FBT of one node can be created
+        if (size === 1) {
+            return [new TreeNode()]
+        }
+        //  can not form FBT with even number of nodes
+        if (size % 2 == 0) {
+            return []
+        }
+        //  we have already computed the result
+        if (memo[size]) {
+            return memo[size]
+        }
+
+        const trees = []
+
+        // iterate over all possible odd numbers
+        for (let left = 1; left < size; left += 2) {
+            //  get all possible left subtress
+            const leftTrees = createFBT(left)
+            //  get all possible right subtress
+            const rightTress = createFBT(size - left - 1)
+            if (leftTrees && rightTress) {
+                //  create combination of trees
+                for (const l of leftTrees) {
+                    for (r of rightTress) {
+                        const root = new TreeNode(0, l, r)
+                        //  track the root of all trees
+                        trees.push(root)
+                    }
+                }
+            }
+        }
+
+        //  keep for future use
+        memo[size] = trees
+        return trees
+    }
+
+    return createFBT(n)
+
+};
+
+/* Interleaving string - Given strings s1, s2, and s3, find whether s3 is formed by an interleaving of s1 and s2.
+
+An interleaving of two strings s and t is a configuration where s and t are divided into n and m 
+substrings
+ respectively, such that:
+
+s = s1 + s2 + ... + sn
+t = t1 + t2 + ... + tm
+|n - m| <= 1
+The interleaving is s1 + t1 + s2 + t2 + s3 + t3 + ... or t1 + s1 + t2 + s2 + t3 + s3 + ...
+Note: a + b is the concatenation of strings a and b.
+ */
+
+/**
+ * @param {string} s1
+ * @param {string} s2
+ * @param {string} s3
+ * @return {boolean}
+ */
+const isInterleave = (s1, s2, s3) => {
+
+    /* pseudo code
+        keep a 2D dp array
+            [i, j] tells if (i + j) length of s3 can be made with i length of s1 and j length of s2
+        move i through s1
+            move j through s2
+                s1 is empty
+                    match chars of s2 and s3 at j - 1 plus dp[i][j-1] should be true
+                s2 is empty
+                    repeat for s2
+                else
+                    match end char of s3 with end char of s2 or s1
+    */
+
+    if (s1.length + s2.length !== s3.length) {
+        return false;
+    }
+
+    const dp = [];
+
+    for (let i = 0; i <= s1.length; i++) {
+        dp[i] = [];
+        for (let j = 0; j <= s2.length; j++) {
+            if (i === 0 && j === 0) {
+                dp[i][j] = true;
+            } else if (i === 0) {
+                dp[i][j] = dp[i][j - 1] && s2[j - 1] === s3[j - 1];
+            } else if (j === 0) {
+                dp[i][j] = dp[i - 1][j] && s1[i - 1] === s3[i - 1];
+            } else {
+                dp[i][j] =
+                    (dp[i][j - 1] && s2[j - 1] === s3[i + j - 1]) ||
+                    (dp[i - 1][j] && s1[i - 1] === s3[i + j - 1]);
+            }
+        }
+    }
+
+    return dp[s1.length][s2.length];
 };
 
