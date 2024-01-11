@@ -664,11 +664,10 @@ const minPathSum = (grid) => {
                 continue;
             }
 
-            const left = c > 0 ? grid[r][c - 1] : Infinity;
+            const leftMinSum = c > 0 ? grid[r][c - 1] : Infinity;
+            const topLeftSum = r > 0 ? grid[r - 1][c] : Infinity;
 
-            const top = r > 0 ? grid[r - 1][c] : Infinity;
-
-            grid[r][c] = Math.min(left, top) + grid[r][c];
+            grid[r][c] = Math.min(leftMinSum, topLeftSum) + grid[r][c];
         }
     }
 
@@ -682,37 +681,33 @@ const minPathSum = (grid) => {
  * @param {number[]} nums
  * @return {boolean}
  */
-// Define a function to check if it's possible to partition an array into two subsets with equal sums
 const canPartition = (nums) => {
     let sum = nums.reduce((prevVal, currValue) => prevVal + currValue, 0); // Calculate the sum of all values in the array
 
-    // If the sum is odd, it cannot be partitioned into two subsets with equal sums
     if (sum % 2 !== 0) {
         return false;
     }
 
-    let target = sum / 2; // Calculate the target sum for each subset
-    let dp = new Set(); // Use a set to keep track of unique sums
-    dp.add(0); // Initialize with 0 as an empty subset has a sum of 0
+    let target = sum / 2;
+    let dp = new Set();
+    dp.add(0);
 
-    // Iterate through the array in reverse order
     for (let i = nums.length - 1; i >= 0; i--) {
-        let nextDp = new Set(); // Create a new set for the next iteration
+        let nextDp = new Set();
 
-        // Iterate through the values in the current set
         for (const ele of dp.values()) {
-            let newVal = ele + nums[i]; // Calculate the new sum by adding the current element
+            let newVal = ele + nums[i];
             if (newVal === target) {
                 return true;
-            } // If the new sum is equal to the target, return true
+            }
 
-            nextDp.add(newVal); // Add the new sum to the next set
+            nextDp.add(newVal);
         }
 
-        dp = new Set([...dp, ...nextDp]); // Combine the current set and the next set for the next iteration
+        dp = new Set([...dp, ...nextDp]);
     }
 
-    return false; // If no subset with the target sum is found, return false
+    return false;
 };
 
 /* Longest Increasing Path in a Matrix - Given an m x n integers matrix, return the length of the longest increasing path in matrix.
