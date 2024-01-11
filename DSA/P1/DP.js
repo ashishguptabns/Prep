@@ -462,32 +462,22 @@ const minDistance = (word1, word2) => {
                     choose min of 3 possible combos and add 1 as mandatory edit
     */
 
-    // Create a 2D array to store the minimum edit distances
     const dp = Array(word1.length + 1).fill().map(() => Array(word2.length + 1));
 
-    // Initialize the first row and column of the array
     for (let r = 0; r <= word1.length; r++) {
         for (let c = 0; c <= word2.length; c++) {
-            // we need c edits to make word1 equal to word2
             if (r === 0) {
                 dp[r][c] = c;
-            }
-            // we need r edits to make word1 equal to word2
-            else if (c === 0) {
+            } else if (c === 0) {
                 dp[r][c] = r;
-            }
-            // If the letters at the current positions are the same, no additional cost
-            else if (word1[r - 1] === word2[c - 1]) {
+            } else if (word1[r - 1] === word2[c - 1]) {
                 dp[r][c] = dp[r - 1][c - 1];
-            }
-            // If letters are different, choose the minimum cost of insertion, deletion, or substitution
-            else {
+            } else {
                 dp[r][c] = Math.min(dp[r][c - 1], dp[r - 1][c - 1], dp[r - 1][c]) + 1;
             }
         }
     }
 
-    // Return the minimum edit distance for the entire words
     return dp[word1.length][word2.length];
 };
 
@@ -499,9 +489,10 @@ const minDistance = (word1, word2) => {
  */
 const numTrees = (numNodes) => {
     /* pseudo code
-        keep a dp array
+        keep a 1D dp array
             ith item tells num of BSTs with i nodes
         base case is 0 node
+            1 BST
         move i through num nodes
             move j from 1 till i
                 j is the root
@@ -510,89 +501,17 @@ const numTrees = (numNodes) => {
                 dp[i] = product of dp[j - 1] and dp[i - j]
     */
 
-    //  store number of unique BSTs for each number of nodes till numNodes
     const dpArr = new Array(numNodes + 1).fill(0)
 
-    //  only 1 BST for 0 nodes
     dpArr[0] = 1
 
-    //  find unique BSTs for number of nodes till numNodes
     for (let i = 1; i <= numNodes; i++) {
-        //  for each possible root node, find unique BSTs for left and right subtrees        
         for (let j = 1; j <= i; j++) {
-            //  number of unique BSTs for a given root is the product of number of unique BSTs for left and right subtrees
-            //  j is the root here            
             dpArr[i] += dpArr[j - 1] * dpArr[i - j]
         }
     }
 
     return dpArr[numNodes]
-};
-
-/* Decode Ways - A message containing letters from A-Z can be encoded into numbers using the following mapping:
-
-'A' -> "1"
-'B' -> "2"
-...
-'Z' -> "26"
-To decode an encoded message, all the digits must be grouped then mapped back into letters using the reverse of the mapping above (there may be multiple ways). For example, "11106" can be mapped into:
-
-"AAJF" with the grouping (1 1 10 6)
-"KJF" with the grouping (11 10 6)
-Note that the grouping (1 11 06) is invalid because "06" cannot be mapped into 'F' since "6" is different from "06".
-
-Given a string s containing only digits, return the number of ways to decode it.
-*/
-
-const numDecodings = (s) => {
-
-    /* pseudo code
-        keep a dp array
-            ith item tells number of ways to decode s till ith index
-        base cases
-            length 0 and 1
-        move through the string
-            find last one and two digits of this substring
-            last digit not 0
-                add dp[i - 1]
-            last two digits are between 10 and 26
-                add dp[i - 2]
-    */
-
-    // Check for edge cases: empty string or leading zero
-    if (!s || s[0] === '0') {
-        return 0;
-    }
-
-    // Get the length of the input string
-    const n = s.length;
-
-    // Initialize an array dp to store the number of ways to decode at each position
-    const dp = Array(n + 1).fill(0);
-
-    // There is one way to decode a string of length 0 and 1
-    dp[0] = 1;
-    dp[1] = 1;
-
-    // Iterate through the string starting from the third character
-    for (let i = 2; i <= n; ++i) {
-        // Extract one and two-digit numbers from the string
-        const lastDigit = parseInt(s[i - 1]);
-        const lastTwoDigits = parseInt(s.substring(i - 2, i));
-
-        // If the one-digit number is not zero, add the number of ways to decode at the previous position
-        if (lastDigit !== 0) {
-            dp[i] += dp[i - 1];
-        }
-
-        // If the two-digit number is between 10 and 26 (inclusive), add the number of ways to decode two positions back
-        if (10 <= lastTwoDigits && lastTwoDigits <= 26) {
-            dp[i] += dp[i - 2];
-        }
-    }
-
-    // The final result is stored in dp[n], representing the number of ways to decode the entire string
-    return dp[n];
 };
 
 /* Palindrome Partitioning - Given a string s, partition s such that every 
@@ -616,13 +535,10 @@ const partition = (s) => {
 
     const dfs = (currIndex, currList) => {
         if (currIndex == s.length) {
-            //  reached the end
             res.push([...currList])
         }
 
-        //  explore all substrings
         for (let end = currIndex; end < s.length; end++) {
-            //  found a palindrome
             if (s[currIndex] === s[end] && (end - currIndex <= 2 || dp[currIndex + 1][end - 1])) {
                 dp[currIndex][end] = true
                 dfs(end + 1, [...currList, s.slice(currIndex, end + 1)])
@@ -1119,6 +1035,63 @@ const wordBreak = (s, wordDict) => {
                 dp[i] = true;
                 break;
             }
+        }
+    }
+
+    return dp[n];
+};
+
+/* Decode Ways - A message containing letters from A-Z can be encoded into numbers using the following mapping:
+
+'A' -> "1"
+'B' -> "2"
+...
+'Z' -> "26"
+To decode an encoded message, all the digits must be grouped then mapped back into letters using the reverse of the mapping above (there may be multiple ways). For example, "11106" can be mapped into:
+
+"AAJF" with the grouping (1 1 10 6)
+"KJF" with the grouping (11 10 6)
+Note that the grouping (1 11 06) is invalid because "06" cannot be mapped into 'F' since "6" is different from "06".
+
+Given a string s containing only digits, return the number of ways to decode it.
+*/
+
+const numDecodings = (s) => {
+
+    /* pseudo code
+        keep a dp array
+            ith item tells number of ways to decode s till ith index
+        base cases
+            length 0 and 1 -> only 1 way
+        move through the string
+            find last one and two digits of this substring
+            last digit not 0
+                add dp[i - 1]
+            last two digits are between 10 and 26
+                add dp[i - 2]
+    */
+
+    if (!s || s[0] === '0') {
+        return 0;
+    }
+
+    const n = s.length;
+
+    const dp = Array(n + 1).fill(0);
+
+    dp[0] = 1;
+    dp[1] = 1;
+
+    for (let i = 2; i <= n; ++i) {
+        const lastDigit = parseInt(s[i - 1]);
+        const lastTwoDigits = parseInt(s.substring(i - 2, i));
+
+        if (lastDigit !== 0) {
+            dp[i] += dp[i - 1];
+        }
+
+        if (10 <= lastTwoDigits && lastTwoDigits <= 26) {
+            dp[i] += dp[i - 2];
         }
     }
 
