@@ -207,28 +207,27 @@ const longestCommonSubsequence = (text1, text2) => {
         keep a 2D dp array
             [i, j] tells longest common subseq in text1 till ith index and text2 till jth index
             Don't have to be contiguous 
-        move i through text1 in reverse
-            move j through text2 in reverse
+        move i through text1 
+            move j through text2 
                 if i and j are same
                     increase the count
                 else
-                    max of [i + 1, j] or [i, j + 1]
+                    max of dp[i - 1, j] or dp[i, j - 1]
     */
 
-    const dp = Array.from({ length: text1.length + 1 },
-        () => Array(text2.length + 1).fill(0));
+    const dp = Array(text1.length + 1).fill().map(() => Array(text2.length + 1).fill(0))
 
-    for (let i = text1.length - 1; i >= 0; i--) {
-        for (let j = text2.length - 1; j >= 0; j--) {
-            if (text1[i] === text2[j]) {
-                dp[i][j] = 1 + dp[i + 1][j + 1];
+    for (let i = 1; i <= text1.length; i++) {
+        for (let j = 1; j <= text2.length; j++) {
+            if (text1[i - 1] === text2[j - 1]) {
+                dp[i][j] = 1 + dp[i - 1][j - 1];
             } else {
-                dp[i][j] = Math.max(dp[i + 1][j], dp[i][j + 1]);
+                dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1]);
             }
         }
     }
 
-    return dp[0][0];
+    return dp[text1.length][text2.length];
 };
 
 /* Unique Paths - There is a robot on an m x n grid. The robot is initially located at the top-left corner (i.e., grid[0][0]). The robot tries to move to the bottom-right corner (i.e., grid[m - 1][n - 1]). The robot can only move either down or right at any point in time.
