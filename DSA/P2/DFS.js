@@ -7,11 +7,12 @@
 const numIslands = (grid) => {
 
     /* pseudo code
-        move through each cell
-            if found a land
-                increment the count
-                run a DFS to mark each connected 1 as 0
-                    connected 1s are part of same island
+        move r through rows
+            move c through cols
+                if found a land
+                    increment the count
+                    run a DFS to mark each connected 1 as 0
+                        connected 1s are part of same island
     */
 
     let ans = 0
@@ -24,10 +25,8 @@ const numIslands = (grid) => {
             return
         }
 
-        //  mark as visited if there is a connecting 1 because that's the part of the same island
         grid[row][col] = '0'
 
-        //  find other 1s and mark them visited
         dfs(grid, row, col - 1)
         dfs(grid, row, col + 1)
         dfs(grid, row + 1, col)
@@ -41,10 +40,6 @@ const numIslands = (grid) => {
         for (let row = 0; row < rows; row++) {
             for (let col = 0; col < cols; col++) {
                 if (grid[row][col] === '1') {
-                    //  the moment we find a '1' automatically there is atleast one island
-                    //  because other connecting 1s are marked as 0 or visited. 
-                    //  Connected 1s are
-                    //  counted as 1 island
                     ans++
                     dfs(grid, row, col)
                 }
@@ -53,6 +48,119 @@ const numIslands = (grid) => {
     }
 
     return ans
+};
+
+/* Battleships in a board - Given an m x n matrix board where each cell is a battleship 'X' or empty '.', return the number of the battleships on board.
+
+Battleships can only be placed horizontally or vertically on board.In other words, they can only be made of the shape 1 x k(1 row, k columns) or k x 1(k rows, 1 column), where k can be of any size. At least one horizontal or vertical cell separates between two battleships(i.e., there are no adjacent battleships).
+ */
+/**
+ * @param {character[][]} board
+ * @return {number}
+ */
+const countBattleships = (board) => {
+
+    /* pseudo code
+        visit each cell of the matrix
+            if a new ship X is found
+                increase the count
+                do a DFS from the cell to mark adjacent cells as empty
+    */
+
+    let ships = 0
+
+    const clearAdjacent = (board, row, col) => {
+        if (row < 0 || row >= board.length || col < 0 || col >= board[row].length
+            || board[row][col] === '.') {
+            return
+        }
+
+        board[row][col] = '.'
+
+        clearAdjacent(board, row + 1, col)
+        clearAdjacent(board, row - 1, col)
+        clearAdjacent(board, row, col + 1)
+        clearAdjacent(board, row, col - 1)
+    }
+
+    for (let row = 0; row < board.length; row++) {
+        for (let col = 0; col < board[row].length; col++) {
+            if (board[row][col] === 'X') {
+                ships++
+                clearAdjacent(board, row, col)
+            }
+        }
+    }
+
+    return ships
+};
+
+/* Rotting oranges - You are given an m x n grid where each cell can have one of three values:
+
+- 0 representing an empty cell,
+- 1 representing a fresh orange, or
+- 2 representing a rotten orange.
+
+Every minute, any fresh orange that is 4-directionally adjacent to a rotten orange becomes rotten.
+
+Return the minimum number of minutes that must elapse until no cell has a fresh orange. If this is impossible, return -1.
+ */
+
+/**
+ * @param {number[][]} grid
+ * @return {number}
+ */
+const orangesRotting = (grid) => {
+
+    /* pseudo code
+        visit each cell
+            find a rotten orange
+                do a DFS
+                    keep putting the time on cells with fresh oranges
+                    avoid cycles
+                    repeat DFS for adjacent cells
+        visit each cell
+            find max time
+            check if any fresh orange is left
+    */
+
+    const ROWS = grid.length
+    const COLS = grid[0].length
+
+    const dfs = (r, c, grid, mins) => {
+        if (r < 0 || r >= ROWS || c < 0 || c >= COLS
+            || grid[r][c] === 0 || (grid[r][c] > 1 && grid[r][c] < mins)) {
+            return
+        }
+
+        grid[r][c] = mins
+
+        dfs(r + 1, c, grid, mins + 1)
+        dfs(r - 1, c, grid, mins + 1)
+        dfs(r, c + 1, grid, mins + 1)
+        dfs(r, c - 1, grid, mins + 1)
+    }
+
+    let mins = 2
+
+    for (let r = 0; r < ROWS; r++) {
+        for (let c = 0; c < COLS; c++) {
+            if (grid[r][c] === 2) {
+                dfs(r, c, grid, mins)
+            }
+        }
+    }
+
+    for (let r = 0; r < ROWS; r++) {
+        for (let c = 0; c < COLS; c++) {
+            if (grid[r][c] === 1) {
+                return -1
+            }
+            mins = Math.max(mins, grid[r][c])
+        }
+    }
+
+    return mins - 2
 };
 
 /* Most Stones Removed with Same Row or Column - On a 2D plane, we place n stones at some integer coordinate points.Each coordinate point may have at most one stone.
@@ -98,53 +206,6 @@ const removeStones = (stones) => {
     return stones.length - newStoneGroups
 };
 
-/* Battleships in a board - Given an m x n matrix board where each cell is a battleship 'X' or empty '.', return the number of the battleships on board.
-
-Battleships can only be placed horizontally or vertically on board.In other words, they can only be made of the shape 1 x k(1 row, k columns) or k x 1(k rows, 1 column), where k can be of any size. At least one horizontal or vertical cell separates between two battleships(i.e., there are no adjacent battleships).
- */
-/**
- * @param {character[][]} board
- * @return {number}
- */
-const countBattleships = (board) => {
-
-    /* pseudo code
-        visit each cell of the matrix
-            if a new ship X is found
-                increase the count
-                do a DFS from the cell to mark adjacent cells as .
-    */
-
-    let ships = 0
-
-    const clearAdjacent = (board, row, col) => {
-        if (row < 0 || row >= board.length || col < 0 || col >= board[row].length
-            || board[row][col] === '.') {
-            return
-        }
-
-        board[row][col] = '.'
-
-        clearAdjacent(board, row + 1, col)
-        clearAdjacent(board, row - 1, col)
-        clearAdjacent(board, row, col + 1)
-        clearAdjacent(board, row, col - 1)
-    }
-
-    //  visit each cell and mark adjacent cells
-    for (let row = 0; row < board.length; row++) {
-        for (let col = 0; col < board[row].length; col++) {
-            if (board[row][col] === 'X') {
-                //  found a ship as per def
-                ships++
-                clearAdjacent(board, row, col)
-            }
-        }
-    }
-
-    return ships
-};
-
 /* Max area of island - You are given an m x n binary matrix grid. An island is a group of 1's (representing land) connected 4-directionally (horizontal or vertical.) You may assume all four edges of the grid are surrounded by water.
 
 The area of an island is the number of cells with a value 1 in the island.
@@ -161,55 +222,25 @@ const maxAreaOfIsland = (grid) => {
         visit each cell of the matrix
             if an island is found
                 run a DFS to find the area  
-                    start a stack with this point
-                    loop through the stack elements
-                        keep tracking the area
-                        mark visited cell as 2
-                        keep pushing adjacent cells in the stack
+                    mark cell as water
+                        return 1 + DFS areas in 4 dirs
                 keep tracking the max area
     */
 
-    const ROWS = grid.length
-    const COLUMNS = grid[0].length
-
-    const DFS = (row, column) => {
-        //  we will store indices in this stack
-        const stack = [[row, column]];
-        let currRow, currColumn, resultArea = 0;
-        while (stack.length !== 0) {
-            [currRow, currColumn] = stack.pop();
-            if (grid[currRow][currColumn] !== 1)
-                continue;
-
-            //  stop duplication
-            grid[currRow][currColumn] = 2;
-
-            //  found further land
-            resultArea++;
-
-            //  explore 4 directions
-            if (currRow + 1 < ROWS)
-                stack.push([currRow + 1, currColumn]);
-            if (currRow - 1 >= 0)
-                stack.push([currRow - 1, currColumn]);
-            if (currColumn + 1 < COLUMNS)
-                stack.push([currRow, currColumn + 1]);
-            if (currColumn - 1 >= 0)
-                stack.push([currRow, currColumn - 1]);
-        }
-        return resultArea;
-    };
-
     let maxArea = 0
-
-    //  visit each cell
-    for (let r = 0; r < ROWS; r++) {
-        for (let c = 0; c < COLUMNS; c++) {
-            if (grid[r][c] === 1) {
+    const n = grid.length, m = grid[0].length
+    const DFS = (r, c) => {
+        if (r < 0 || c < 0 || r >= n || c >= m || !grid[r][c]) {
+            return 0
+        }
+        grid[r][c] = 0
+        return 1 + DFS(r - 1, c) + DFS(r, c - 1) + DFS(r + 1, c) + DFS(r, c + 1)
+    }
+    for (let r = 0; r < n; r++)
+        for (let c = 0; c < m; c++)
+            if (grid[r][c]) {
                 maxArea = Math.max(maxArea, DFS(r, c))
             }
-        }
-    }
     return maxArea
 };
 
@@ -222,6 +253,7 @@ const hasPath = (maze, start, destination) => {
     /* pseudo code
         start a DFS from starting cell
             keep doing DFS in adjacent cells till we find the destination cell
+            keep a visited map to avoid cycles
     */
 
     const [startRow, startCol] = start;
@@ -233,20 +265,16 @@ const hasPath = (maze, start, destination) => {
     const directions = [[-1, 0], [1, 0], [0, -1], [0, 1]];
 
     const dfs = (row, col) => {
-        // Check if the current position is the destination
         if (row === destRow && col === destCol) {
             return true;
         }
 
-        // Mark the current position as visited
         visited[row][col] = true;
 
-        // Explore in all directions
         for (const [dr, dc] of directions) {
             let newRow = row;
             let newCol = col;
 
-            // Keep rolling until hitting a wall
             while (
                 newRow + dr >= 0 &&
                 newRow + dr < ROWS &&
@@ -258,9 +286,7 @@ const hasPath = (maze, start, destination) => {
                 newCol += dc;
             }
 
-            // Check if the new position has not been visited
             if (!visited[newRow][newCol]) {
-                // Recursively explore the new position
                 if (dfs(newRow, newCol)) {
                     return true;
                 }
@@ -270,84 +296,6 @@ const hasPath = (maze, start, destination) => {
         return false;
     };
 
-    // Start DFS from the given start position
     return dfs(startRow, startCol);
-};
-
-/* Rotting oranges - You are given an m x n grid where each cell can have one of three values:
-
-- 0 representing an empty cell,
-- 1 representing a fresh orange, or
-- 2 representing a rotten orange.
-
-Every minute, any fresh orange that is 4-directionally adjacent to a rotten orange becomes rotten.
-
-Return the minimum number of minutes that must elapse until no cell has a fresh orange. If this is impossible, return -1.
- */
-
-/**
- * @param {number[][]} grid
- * @return {number}
- */
-const orangesRotting = (grid) => {
-
-    /* pseudo code
-        visit each cell
-            find a rotten orange
-                do a DFS
-                    keep putting the time on cells with fresh oranges
-                    repeat DFS for adjacent cells
-        visit each cell
-            find max time
-            check if any fresh orange is left
-    */
-
-    const ROWS = grid.length
-    const COLS = grid[0].length
-
-    // Depth First Search (DFS) function to explore adjacent cells
-    const dfs = (r, c, grid, mins) => {
-        // Base cases to stop recursion
-        if (r < 0 || r >= ROWS || c < 0 || c >= COLS
-            || grid[r][c] === 0 || (grid[r][c] > 1 && grid[r][c] < mins)) {
-            return
-        }
-
-        // Mark the cell with the current time (minutes)
-        grid[r][c] = mins
-
-        // Explore adjacent cells in four directions
-        dfs(r + 1, c, grid, mins + 1)
-        dfs(r - 1, c, grid, mins + 1)
-        dfs(r, c + 1, grid, mins + 1)
-        dfs(r, c - 1, grid, mins + 1)
-    }
-
-    // Starting time for rotten oranges
-    let mins = 2
-
-    // Iterate over the grid to find initially rotten oranges and start DFS
-    for (let r = 0; r < ROWS; r++) {
-        for (let c = 0; c < COLS; c++) {
-            if (grid[r][c] === 2) {
-                dfs(r, c, grid, mins)
-            }
-        }
-    }
-
-    // Check if there are any fresh oranges left or find the maximum time for all cells
-    for (let r = 0; r < ROWS; r++) {
-        for (let c = 0; c < COLS; c++) {
-            if (grid[r][c] === 1) {
-                // If there are fresh oranges left, return -1 (impossible to rot all oranges)
-                return -1
-            }
-            // Update the maximum time encountered so far
-            mins = Math.max(mins, grid[r][c])
-        }
-    }
-
-    // Return the time taken to rot all oranges (subtract 2 to get the actual time)
-    return mins - 2
 };
 
