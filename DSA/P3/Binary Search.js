@@ -1,3 +1,51 @@
+/* Find First and Last Position of Element in Sorted Array - Given an array of integers nums sorted in non-decreasing order, find the starting and ending position of a given target value.
+
+If target is not found in the array, return [-1, -1].
+
+You must write an algorithm with O(log n) runtime complexity.
+*/
+
+/**
+ * @param {number[]} nums
+ * @param {number} target
+ * @return {number[]}
+ */
+const searchRange = (nums, target) => {
+    let start = -1
+    let end = -1
+
+    let left = 0
+    let right = nums.length - 1
+
+    while (left <= right) {
+        let mid = Math.floor((left + right) / 2)
+        if (nums[mid] === target) {
+            start = mid
+            right = mid - 1
+        } else if (nums[mid] < target) {
+            left = mid + 1
+        } else {
+            right = mid - 1
+        }
+    }
+
+    left = 0
+    right = nums.length - 1
+
+    while (left <= right) {
+        let mid = Math.floor((left + right) / 2)
+        if (nums[mid] === target) {
+            end = mid
+            left = mid + 1
+        } else if (nums[mid] < target) {
+            left = mid + 1
+        } else {
+            right = mid - 1
+        }
+    }
+    return [start, end]
+};
+
 /* Single Element in a Sorted Array - You are given a sorted array consisting of only integers where every element appears exactly twice, except for one element which appears exactly once. Return the single element that appears only once. Your solution must run in O(log n) time and O(1) space.
  */
 /**
@@ -345,54 +393,6 @@ const maxLength = (ribbons, k) => {
     return right;
 };
 
-/* Find First and Last Position of Element in Sorted Array - Given an array of integers nums sorted in non-decreasing order, find the starting and ending position of a given target value.
-
-If target is not found in the array, return [-1, -1].
-
-You must write an algorithm with O(log n) runtime complexity.
-*/
-
-/**
- * @param {number[]} nums
- * @param {number} target
- * @return {number[]}
- */
-const searchRange = (nums, target) => {
-    let start = -1
-    let end = -1
-
-    let left = 0
-    let right = nums.length - 1
-
-    while (left <= right) {
-        let mid = Math.floor((left + right) / 2)
-        if (nums[mid] === target) {
-            start = mid
-            right = mid - 1
-        } else if (nums[mid] < target) {
-            left = mid + 1
-        } else {
-            right = mid - 1
-        }
-    }
-
-    left = 0
-    right = nums.length - 1
-
-    while (left <= right) {
-        let mid = Math.floor((left + right) / 2)
-        if (nums[mid] === target) {
-            end = mid
-            left = mid + 1
-        } else if (nums[mid] < target) {
-            left = mid + 1
-        } else {
-            right = mid - 1
-        }
-    }
-    return [start, end]
-};
-
 /* Median of two sorted arrays - Given two sorted arrays nums1 and nums2 of size m and n respectively, return the median of the two sorted arrays.
 
 The overall run time complexity should be O(log (m+n)).
@@ -402,48 +402,43 @@ The overall run time complexity should be O(log (m+n)).
  * @param {number[]} nums2
  * @return {number}
  */
-var findMedianSortedArrays = function (nums1, nums2) {
-    // Ensure nums1 is the smaller array
-    if (nums1.length > nums2.length) {
-        [nums1, nums2] = [nums2, nums1];
-    }
+const findMedianSortedArrays = (nums1, nums2) => {
 
-    const m = nums1.length;
-    const n = nums2.length;
-    const totalLength = m + n;
+    /* pseudo code
+        keep an array to merge both arrays
+        move i through nums1 and j through nums2
+            nums1[i] < nums2[j]
+                push ith item of nums1
+            else
+                push jth item of nums2
+        push remaining items of nums1 and nums2
+        find the median of merged array
+    */
 
-    let low = 0;
-    let high = m;
+    const merged = [];
+    let i = 0, j = 0;
 
-    while (low <= high) {
-        const partitionX = Math.floor((low + high) / 2);
-        const partitionY = Math.floor((totalLength + 1) / 2) - partitionX;
-
-        const maxX = (partitionX === 0) ? Number.NEGATIVE_INFINITY : nums1[partitionX - 1];
-        const minX = (partitionX === m) ? Number.POSITIVE_INFINITY : nums1[partitionX];
-
-        const maxY = (partitionY === 0) ? Number.NEGATIVE_INFINITY : nums2[partitionY - 1];
-        const minY = (partitionY === n) ? Number.POSITIVE_INFINITY : nums2[partitionY];
-
-        if (maxX <= minY && maxY <= minX) {
-            // Found the correct partition
-            if (totalLength % 2 === 0) {
-                // Even total length, take the average of the middle elements
-                return (Math.max(maxX, maxY) + Math.min(minX, minY)) / 2;
-            } else {
-                // Odd total length, return the middle element
-                return Math.max(maxX, maxY);
-            }
-        } else if (maxX > minY) {
-            // Move left in nums1
-            high = partitionX - 1;
+    while (i < nums1.length && j < nums2.length) {
+        if (nums1[i] < nums2[j]) {
+            merged.push(nums1[i++]);
         } else {
-            // Move right in nums1
-            low = partitionX + 1;
+            merged.push(nums2[j++]);
         }
     }
 
-    return -1
+    while (i < nums1.length) {
+        merged.push(nums1[i++]);
+    }
+    while (j < nums2.length) {
+        merged.push(nums2[j++]);
+    }
+
+    let mid = Math.floor(merged.length / 2);
+    if (merged.length % 2 === 0) {
+        return (merged[mid - 1] + merged[mid]) / 2;
+    } else {
+        return merged[mid];
+    }
 };
 
 /* Koko Eating Bananas - Koko loves to eat bananas. There are n piles of bananas, the ith pile has piles[i] bananas. The guards have gone and will come back in h hours.
