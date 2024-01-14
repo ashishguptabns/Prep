@@ -37,92 +37,6 @@ const jump = (nums) => {
   return numJumps;
 };
 
-/* Gas Station - There are n gas stations along a circular route, where the amount of gas at the ith station is gas[i].
-You have a car with an unlimited gas tank and it costs cost[i] of gas to travel from the ith station to its next (i + 1)th station. You begin the journey with an empty tank at one of the gas stations.
-Given two integer arrays gas and cost, return the starting gas station's index if you can travel around the circuit once in the clockwise direction, otherwise return -1. If there exists a solution, it is guaranteed to be unique
-*/
-
-/**
- * @param {number[]} gas
- * @param {number[]} cost
- * @return {number}
- */
-const canCompleteCircuit = (gases, costs) => {
-
-  /* pseudo code
-    
-  */
-
-  let startStation = 0;
-  let currGasLeft = 0;
-  let totalGasLeft = 0;
-
-  for (let i = 0; i < gases.length; i++) {
-    const gas = gases[i];
-    const cost = costs[i];
-
-    currGasLeft += gas - cost;
-    totalGasLeft += gas - cost;
-
-    if (currGasLeft < 0) {
-      currGasLeft = 0;
-      startStation = i + 1;
-    }
-  }
-
-  if (totalGasLeft < 0) {
-    return -1;
-  } else {
-    return startStation;
-  }
-};
-
-/*
-Find Original Array From Doubled Array - An integer array original is transformed into a doubled array changed by appending twice the value of every element in original, and then randomly shuffling the resulting array.
-
-Given an array changed, return original if changed is a doubled array. If changed is not a doubled array, return an empty array. The elements in original may be returned in any order.
-*/
-
-/**
- * @param {number[]} changed
- * @return {number[]}
- */
-const findOriginalArray = (changed) => {
-  if (changed.length % 2 === 1) {
-    return [];
-  }
-  const res = [];
-  const map = new Map();
-
-  changed.sort((a, b) => a - b);
-
-  for (let i = 0; i < changed.length; i++) {
-    const curr = changed[i];
-
-    if (map.has(curr)) {
-      const currValFreq = map.get(curr);
-
-      if (currValFreq === 1) {
-        map.delete(curr);
-      } else {
-        map.set(curr, currValFreq - 1);
-      }
-    } else {
-      const double = curr * 2;
-
-      if (map.has(double)) {
-        map.set(double, map.get(double) + 1);
-      } else {
-        map.set(double, 1);
-      }
-
-      res.push(curr);
-    }
-  }
-
-  return map.size > 0 ? [] : res;
-};
-
 /* Jump Game - You are given an integer array nums. You are initially positioned at the array's first index, and each element in the array represents your maximum jump length at that position.
 
 Return true if you can reach the last index, or false otherwise.
@@ -132,19 +46,19 @@ Return true if you can reach the last index, or false otherwise.
  * @return {boolean}
  */
 const canJump = (nums) => {
-  //  we have to see whether we can reach the end or not from the starting point
-  //  start from the last position
+
+  /* pseudo code
+      
+  */
+
   let lastPos = nums.length - 1;
 
-  //  go backwards and change lastPos to the index where we can reach from previous index
   for (let i = nums.length - 2; i >= 0; i--) {
     if (i + nums[i] >= lastPos) {
-      //  we can reach the lastPos from index
       lastPos = i;
     }
   }
 
-  //  we should be able to reach 0th index
   return lastPos === 0;
 };
 
@@ -632,3 +546,111 @@ const breakPalindrome = (palindrome) => {
   //  we have all a chars
   return palindrome.substring(0, len - 1) + "b";
 };
+
+/* Gas Station - There are n gas stations along a circular route, where the amount of gas at the ith station is gas[i].
+You have a car with an unlimited gas tank and it costs cost[i] of gas to travel from the ith station to its next (i + 1)th station. You begin the journey with an empty tank at one of the gas stations.
+Given two integer arrays gas and cost, return the starting gas station's index if you can travel around the circuit once in the clockwise direction, otherwise return -1. If there exists a solution, it is guaranteed to be unique
+*/
+
+/**
+ * @param {number[]} gas
+ * @param {number[]} cost
+ * @return {number}
+ */
+const canCompleteCircuit = (gases, costs) => {
+
+  /* pseudo code
+    move i through stations
+      track gas left in curr trip and overall
+      ran out of gas
+        reset curr gas to 0
+        change station to i + 1
+    check if overall gas left was >=0
+  */
+
+  let startStation = 0;
+  let currGasLeft = 0;
+  let totalGasLeft = 0;
+
+  for (let i = 0; i < gases.length; i++) {
+    const gas = gases[i];
+    const cost = costs[i];
+
+    currGasLeft += gas - cost;
+    totalGasLeft += gas - cost;
+
+    if (currGasLeft < 0) {
+      currGasLeft = 0;
+      startStation = i + 1;
+    }
+  }
+
+  if (totalGasLeft < 0) {
+    return -1;
+  } else {
+    return startStation;
+  }
+};
+
+/* Find Original Array From Doubled Array - An integer array original is transformed into a doubled array changed by appending twice the value of every element in original, and then randomly shuffling the resulting array.
+
+Given an array changed, return original if changed is a doubled array. If changed is not a doubled array, return an empty array. The elements in original may be returned in any order.
+*/
+
+/**
+ * @param {number[]} changed
+ * @return {number[]}
+ */
+const findOriginalArray = (changed) => {
+
+  /* pseudo code
+    keep a map to keep double of items we find with freq
+    sort the array
+    move curr through changed arr
+      curr is a double of some item
+        freq is 1
+          remove from the map
+        else 
+          decrease the freq by 1
+      else
+        map already has its double
+          increase the freq of double
+        else
+          put the double in the map
+        push to res array
+    check if items are still left in the map
+  */
+
+  if (changed.length % 2 === 1) {
+    return [];
+  }
+  const res = [];
+  const map = new Map();
+
+  changed.sort((a, b) => a - b);
+
+  for (const curr of changed) {
+    if (map.has(curr)) {
+      const currValFreq = map.get(curr);
+
+      if (currValFreq === 1) {
+        map.delete(curr);
+      } else {
+        map.set(curr, currValFreq - 1);
+      }
+    } else {
+      const double = curr * 2;
+
+      if (map.has(double)) {
+        map.set(double, map.get(double) + 1);
+      } else {
+        map.set(double, 1);
+      }
+
+      res.push(curr);
+    }
+  }
+
+  return map.size > 0 ? [] : res;
+};
+
