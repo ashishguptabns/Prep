@@ -297,95 +297,6 @@ const search = (nums, target) => {
     return -1
 };
 
-/* Smallest common number sorted rows - Given a matrix mat where every row is sorted in increasing order, return the smallest common element in all rows.
- */
-const smallestCommonElement = (mat) => {
-    const rows = mat.length;
-    const cols = mat[0].length;
-
-    const isPresentInAllRows = (value) => {
-        for (let i = 0; i < rows; i++) {
-            if (binarySearch(mat[i], value) === -1) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    const binarySearch = (arr, target) => {
-        let low = 0;
-        let high = arr.length - 1;
-
-        while (low <= high) {
-            const mid = Math.floor((low + high) / 2);
-
-            if (arr[mid] === target) {
-                return mid;
-            } else if (arr[mid] < target) {
-                low = mid + 1;
-            } else {
-                high = mid - 1;
-            }
-        }
-
-        return -1;
-    }
-
-    let low = mat[0][0];
-    let high = mat[0][cols - 1];
-
-    while (low <= high) {
-        const mid = Math.floor((low + high) / 2);
-
-        if (isPresentInAllRows(mid)) {
-            high = mid - 1;
-        } else {
-            low = mid + 1;
-        }
-    }
-
-    return low;
-}
-
-/* Kth Smallest Subarray Sum - Given an integer array nums of length n and an integer k, return the kth smallest subarray sum.
- */
-const kthSmallestSubarraySum = (nums, k) => {
-    const countSubarrays = (maxSum) => {
-        let count = 0;
-        let sum = 0;
-        let left = 0;
-
-        for (let right = 0; right < nums.length; right++) {
-            sum += nums[right];
-
-            while (sum > maxSum) {
-                sum -= nums[left];
-                left++;
-            }
-
-            count += right - left + 1;
-        }
-
-        return count;
-    }
-
-    let left = Math.min(...nums);
-    let right = Math.max(...nums);
-
-    while (left < right) {
-        const mid = Math.floor((left + right) / 2);
-        const count = countSubarrays(mid);
-
-        if (count < k) {
-            left = mid + 1;
-        } else {
-            right = mid;
-        }
-    }
-
-    return left;
-}
-
 /* Cutting Ribbons 
 - You're given an array ribbons where ribbons[i] represents the length of the i-th ribbon.
 - You're also given an integer k.
@@ -400,6 +311,16 @@ Return the maximum possible positive integer length of those k ribbons, or 0 if 
 * @return {number} - Maximum valid ribbon length
 */
 const maxLength = (ribbons, k) => {
+
+    /* pseudo code
+        keep left at 1 and max at max of ribbons
+            find the mid length
+            if k ribbons can be cut with this length
+                discard left half
+            else
+                discard right half
+    */
+
     const canCut = (length) => {
         let count = 0;
         for (const ribbon of ribbons) {
@@ -412,12 +333,12 @@ const maxLength = (ribbons, k) => {
     let right = Math.max(...ribbons);
 
     while (left <= right) {
-        const mid = Math.floor((left + right) / 2);
+        const midLen = Math.floor((left + right) / 2);
 
-        if (canCut(mid)) {
-            left = mid + 1;
+        if (canCut(midLen)) {
+            left = midLen + 1;
         } else {
-            right = mid - 1;
+            right = midLen - 1;
         }
     }
 
@@ -658,4 +579,98 @@ const kthSmallest = (matrix, k) => {
 
     return left
 };
+
+/* Smallest common number sorted rows - Given a matrix mat where every row is sorted in increasing order, return the smallest common element in all rows.
+ */
+const smallestCommonElement = (mat) => {
+
+    /* pseudo code
+        
+    */
+
+    const rows = mat.length;
+    const cols = mat[0].length;
+
+    const isPresentInAllRows = (value) => {
+        for (let i = 0; i < rows; i++) {
+            if (binarySearch(mat[i], value) === -1) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    const binarySearch = (arr, target) => {
+        let low = 0;
+        let high = arr.length - 1;
+
+        while (low <= high) {
+            const mid = Math.floor((low + high) / 2);
+
+            if (arr[mid] === target) {
+                return mid;
+            } else if (arr[mid] < target) {
+                low = mid + 1;
+            } else {
+                high = mid - 1;
+            }
+        }
+
+        return -1;
+    }
+
+    let low = mat[0][0];
+    let high = mat[0][cols - 1];
+
+    while (low <= high) {
+        const mid = Math.floor((low + high) / 2);
+
+        if (isPresentInAllRows(mid)) {
+            high = mid - 1;
+        } else {
+            low = mid + 1;
+        }
+    }
+
+    return low;
+}
+
+/* Kth Smallest Subarray Sum - Given an integer array nums of length n and an integer k, return the kth smallest subarray sum.
+ */
+const kthSmallestSubarraySum = (nums, k) => {
+    const countSubarrays = (maxSum) => {
+        let count = 0;
+        let sum = 0;
+        let left = 0;
+
+        for (let right = 0; right < nums.length; right++) {
+            sum += nums[right];
+
+            while (sum > maxSum) {
+                sum -= nums[left];
+                left++;
+            }
+
+            count += right - left + 1;
+        }
+
+        return count;
+    }
+
+    let left = Math.min(...nums);
+    let right = Math.max(...nums);
+
+    while (left < right) {
+        const mid = Math.floor((left + right) / 2);
+        const count = countSubarrays(mid);
+
+        if (count < k) {
+            left = mid + 1;
+        } else {
+            right = mid;
+        }
+    }
+
+    return left;
+}
 
