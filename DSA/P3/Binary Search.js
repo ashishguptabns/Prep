@@ -390,7 +390,6 @@ const searchRange = (nums, target) => {
             right = mid - 1
         }
     }
-
     return [start, end]
 };
 

@@ -1,8 +1,9 @@
 /*
 Jump Game || - You are given a 0-indexed array of integers nums of length n. You are initially positioned at nums[0].
-Each element nums[i] represents the maximum length of a forward jump from index i. In other words, if you are at nums[i], you can jump to any nums[i + j] where:
-0 <= j <= nums[i] and
-i + j < n
+Each element nums[i] represents the maximum length of a forward jump from index i. In other words, if you are at nums[i], 
+you can jump to any nums[i + j] where:
+  0 <= j <= nums[i] and
+  i + j < n
 Return the minimum number of jumps to reach nums[n - 1]. The test cases are generated such that you can reach nums[n - 1]
 */
 
@@ -11,20 +12,21 @@ Return the minimum number of jumps to reach nums[n - 1]. The test cases are gene
  * @return {number}
  */
 const jump = (nums) => {
+
+  /* pseudo code
+    
+  */
+
   let numJumps = 0;
   let currJumpEnd = 0;
   let farthest = 0;
 
-  //  last index is left because if the last jump reaches there or beyond then that is already calculated
   for (let i = 0; i < nums.length - 1; i++) {
-    //  how far can we go from current index i
     farthest = Math.max(farthest, i + nums[i]);
 
-    //  when we reach the next jump point it means one jump is needed at min even though it might not be the jump point
     if (i === currJumpEnd) {
       numJumps++;
 
-      //  this means that we will not be jumping from index i but the index which has given us the farthest index
       currJumpEnd = farthest;
     }
   }
