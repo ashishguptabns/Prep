@@ -247,47 +247,6 @@ const findClosestElements = (arr, k, x) => {
     return resultList;
 };
 
-/* Kth Smallest Element in a Sorted Matrix - Given an n x n matrix where each of the rows and columns is sorted in ascending order, return the kth smallest element in the matrix.
-
-Note that it is the kth smallest element in the sorted order, not the kth distinct element.
-
-You must find a solution with a memory complexity better than O(n**2).
- */
-/**
- * @param {number[][]} matrix
- * @param {number} k
- * @return {number}
- */
-const kthSmallest = (matrix, k) => {
-    /* pseudo code
-        
-    */
-
-    let left = matrix[0][0]
-    let right = matrix[matrix.length - 1][matrix.length - 1]
-
-    while (left < right) {
-        const mid = Math.floor((left + right) / 2)
-        let numElements = 0
-        let currCol = matrix.length - 1
-
-        for (let currRow = 0; currRow < matrix.length; currRow++) {
-            while (currCol >= 0 && matrix[currRow][currCol] > mid) {
-                currCol--
-            }
-            numElements += currCol + 1
-        }
-
-        if (numElements < k) {
-            left = mid + 1
-        } else {
-            right = mid
-        }
-    }
-
-    return left
-};
-
 /* Search in rotated array - Given the array nums after the possible rotation and an integer target, return the index of target if it is in nums, or -1 if it is not in nums.
 
 You must write an algorithm with O(log n) runtime complexity.
@@ -369,7 +328,7 @@ const smallestCommonElement = (mat) => {
             }
         }
 
-        return -1; 
+        return -1;
     }
 
     let low = mat[0][0];
@@ -450,7 +409,7 @@ const maxLength = (ribbons, k) => {
     };
 
     let left = 1;
-    let right = Math.max(...ribbons); 
+    let right = Math.max(...ribbons);
 
     while (left <= right) {
         const mid = Math.floor((left + right) / 2);
@@ -650,6 +609,50 @@ const minimumTime = (time, totalTrips) => {
             right = mid
         } else {
             left = mid + 1
+        }
+    }
+
+    return left
+};
+
+/* Kth Smallest Element in a Sorted Matrix - Given an n x n matrix where each of the rows and columns is sorted in ascending order, return the kth smallest element in the matrix.
+
+Note that it is the kth smallest element in the sorted order, not the kth distinct element.
+
+You must find a solution with a memory complexity better than O(n**2).
+ */
+/**
+ * @param {number[][]} matrix
+ * @param {number} k
+ * @return {number}
+ */
+const kthSmallest = (matrix, k) => {
+    /* pseudo code
+        start left at top left and right at right bottom
+        loop till left < right
+            find the mid
+
+    */
+
+    let left = matrix[0][0]
+    let right = matrix[matrix.length - 1][matrix.length - 1]
+
+    while (left < right) {
+        const mid = Math.floor((left + right) / 2)
+        let numElements = 0
+        let c = matrix.length - 1
+
+        for (let r = 0; r < matrix.length; r++) {
+            while (c >= 0 && matrix[r][c] > mid) {
+                c--
+            }
+            numElements += c + 1
+        }
+
+        if (numElements < k) {
+            left = mid + 1
+        } else {
+            right = mid
         }
     }
 
