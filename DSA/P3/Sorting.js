@@ -137,7 +137,7 @@ const mergeSort = (nums) => {
 /* Selection Sort - O(n^2) */
 
 const selectionSort = (nums) => {
-  /*  pseudo code
+  /* pseudo code
         move i through nums
           keep i as min index
           move through right subarray
