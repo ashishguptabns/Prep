@@ -1,5 +1,4 @@
-/*
-Jump Game || - You are given a 0-indexed array of integers nums of length n. You are initially positioned at nums[0].
+/* Jump Game || - You are given a 0-indexed array of integers nums of length n. You are initially positioned at nums[0].
 Each element nums[i] represents the maximum length of a forward jump from index i. In other words, if you are at nums[i], 
 you can jump to any nums[i + j] where:
   0 <= j <= nums[i] and
@@ -14,28 +13,31 @@ Return the minimum number of jumps to reach nums[n - 1]. The test cases are gene
 const jump = (nums) => {
 
   /* pseudo code
-    
+    move i through nums
+      keep finding the biggest possible next index
+      reached end of curr jump
+        increase num of jumps
+        update currJumpEnd
   */
 
   let numJumps = 0;
   let currJumpEnd = 0;
-  let farthest = 0;
+  let nextIndex = 0;
 
   for (let i = 0; i < nums.length - 1; i++) {
-    farthest = Math.max(farthest, i + nums[i]);
+    nextIndex = Math.max(nextIndex, i + nums[i]);
 
     if (i === currJumpEnd) {
       numJumps++;
 
-      currJumpEnd = farthest;
+      currJumpEnd = nextIndex;
     }
   }
 
   return numJumps;
 };
 
-/*
-Gas Station - There are n gas stations along a circular route, where the amount of gas at the ith station is gas[i].
+/* Gas Station - There are n gas stations along a circular route, where the amount of gas at the ith station is gas[i].
 You have a car with an unlimited gas tank and it costs cost[i] of gas to travel from the ith station to its next (i + 1)th station. You begin the journey with an empty tank at one of the gas stations.
 Given two integer arrays gas and cost, return the starting gas station's index if you can travel around the circuit once in the clockwise direction, otherwise return -1. If there exists a solution, it is guaranteed to be unique
 */
@@ -46,33 +48,31 @@ Given two integer arrays gas and cost, return the starting gas station's index i
  * @return {number}
  */
 const canCompleteCircuit = (gases, costs) => {
-  // Initialize variables
-  let startStation = 0; // Starting gas station index
-  let currGasLeft = 0; // Current gas left in the tank while traversing
-  let totalGasLeft = 0; // Total gas left after completing the circuit
 
-  // Iterate through the gas stations
+  /* pseudo code
+    
+  */
+
+  let startStation = 0;
+  let currGasLeft = 0;
+  let totalGasLeft = 0;
+
   for (let i = 0; i < gases.length; i++) {
     const gas = gases[i];
     const cost = costs[i];
 
-    // Update current gas left and total gas left
     currGasLeft += gas - cost;
     totalGasLeft += gas - cost;
 
-    // If current gas left becomes negative, update the start station
     if (currGasLeft < 0) {
-      currGasLeft = 0; // Reset current gas left
-      startStation = i + 1; // Update the start station to the next station
+      currGasLeft = 0;
+      startStation = i + 1;
     }
   }
 
-  // Check if it's possible to complete the circuit
   if (totalGasLeft < 0) {
-    // If total gas left is negative, it means there is no solution
     return -1;
   } else {
-    // If total gas left is non-negative, return the starting gas station index
     return startStation;
   }
 };
