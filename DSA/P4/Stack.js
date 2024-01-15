@@ -174,57 +174,6 @@ const minRemoveToMakeValid = (s) => {
     return s.join('')
 };
 
-/* Decode String - Given an encoded string, return its decoded string.
-
-The encoding rule is: k[encoded_string], where the encoded_string inside the square brackets is being repeated exactly k times. Note that k is guaranteed to be a positive integer.
- */
-/**
- * @param {string} s
- * @return {string}
- */
-const decodeString = (s) => {
-
-    /* pseudo code
-        move thorugh chars of s
-            not a closing bracket
-                push to stack
-            closing bracket
-                pop from stack till opening bracket and make the string
-                pop from stack till the top element is a num
-            decode the string and push back to the stack for further travel
-        join all elements of the stack
-    */
-
-    const stack = []
-    for (const char of s) {
-        if (char !== ']') {
-            stack.push(char)
-            continue
-        }
-
-        let stackTop = stack.pop()
-        let currStr = ''
-
-        while (stackTop !== '[') {
-            currStr = stackTop + currStr
-            stackTop = stack.pop()
-        }
-        stackTop = stack.pop()
-
-        let num = ''
-        while (!Number.isNaN(Number(stackTop))) {
-            num = stackTop + num
-            stackTop = stack.pop()
-        }
-
-        stack.push(stackTop)
-
-        stack.push(currStr.repeat(Number(num)))
-    }
-
-    return stack.join('')
-};
-
 /* Daily Temperatures - Given an array of integers temperatures represents the daily temperatures, return an array answer such that answer[i] is the number of days you have to wait after the ith day to get a warmer temperature. If there is no future day for which this is possible, keep answer[i] == 0 instead.
  */
 /**
@@ -337,6 +286,57 @@ const asteroidCollision = (asteroids) => {
     return stack
 };
 
+/* Decode String - Given an encoded string, return its decoded string.
+
+The encoding rule is: k[encoded_string], where the encoded_string inside the square brackets is being repeated exactly k times. Note that k is guaranteed to be a positive integer.
+ */
+/**
+ * @param {string} s
+ * @return {string}
+ */
+const decodeString = (s) => {
+
+    /* pseudo code
+        move thorugh chars of s
+            not a closing bracket
+                push to stack
+            closing bracket
+                pop from stack till opening bracket and make the string
+                pop from stack till the top element is a num
+            decode the string and push back to the stack for further travel
+        join all elements of the stack
+    */
+
+    const stack = []
+    for (const char of s) {
+        if (char !== ']') {
+            stack.push(char)
+            continue
+        }
+
+        let stackTop = stack.pop()
+        let currStr = ''
+
+        while (stackTop !== '[') {
+            currStr = stackTop + currStr
+            stackTop = stack.pop()
+        }
+        stackTop = stack.pop()
+
+        let num = ''
+        while (!Number.isNaN(Number(stackTop))) {
+            num = stackTop + num
+            stackTop = stack.pop()
+        }
+
+        stack.push(stackTop)
+
+        stack.push(currStr.repeat(Number(num)))
+    }
+
+    return stack.join('')
+};
+
 /* Next Greater Element - Given a circular integer array nums (i.e., the next element of nums[nums.length - 1] is nums[0]), return the next greater number for every element in nums.
 
 The next greater number of a number x is the first greater number to its traversing-order next in the array, which means you could search circularly to find its next greater number. If it doesn't exist, return -1 for this number.
@@ -348,7 +348,7 @@ The next greater number of a number x is the first greater number to its travers
 const nextGreaterElements = (nums) => {
 
     /* pseudo code
-        keep a stack to track next greater element
+        keep a stack to track next greater element's index
         move i through twice the nums size
             find the curr index
             keep removing the items from stack till top element is greater than curr item
