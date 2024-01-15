@@ -1,3 +1,49 @@
+/* Bubble sort */
+
+const bubbleSort = (nums) => {
+  /* pseudo code
+    idea is to move the biggest item to the right and lock it
+    move k from end of nums
+      move i from 0 till k
+        ith item is bigger than i + 1
+          swap
+  */
+
+  for (let k = nums.length - 1; k >= 1; k--) {
+    for (let i = 0; i < k; i++) {
+      if (nums[i] > nums[i + 1]) {
+        [nums[i], nums[i + 1]] = [nums[i + 1], nums[i]]
+      }
+    }
+  }
+  return nums;
+
+};
+
+/* Selection Sort - O(n^2) */
+
+const selectionSort = (nums) => {
+  /* pseudo code
+        move i through nums
+          keep i as min index
+          move through right subarray
+            find index j which is smaller than ith item and the smallest in right subarray
+          swap items i and j
+ */
+  const n = nums.length;
+  for (let i = 0; i < n - 1; i++) {
+    let min = i;
+    for (let j = i + 1; j < n; j++) {
+      if (nums[j] < nums[min]) {
+        min = j;
+      }
+    }
+    [nums[i], nums[min]] = [nums[min], nums[i]];
+  }
+  return nums;
+
+};
+
 /* Group anagrams - Given an array of strings strs, group the anagrams together. You can return the answer in any order. */
 
 /**
@@ -95,83 +141,6 @@ const wiggleSort = (nums) => {
   }
 };
 
-/* Explain merge sort */
-
-const mergeSort = (nums) => {
-  /* pseudo code
-      divide the array in half recursively
-      sort both halves up the last recursion
-      merge both
-   */
-  if (nums.length < 2) {
-    return nums;
-  }
-
-  const sortNMerge = (left, right) => {
-    const sortedArr = [];
-    while (left.length && right.length) {
-      if (left[0] <= right[0]) {
-        sortedArr.push(left.shift());
-      } else {
-        sortedArr.push(right.shift());
-      }
-    }
-
-    return [...sortedArr, ...left, ...right];
-  };
-
-  const mid = Math.floor(nums.length / 2);
-  const left = nums.slice(0, mid);
-  const right = nums.slice(mid);
-
-  return sortNMerge(mergeSort(left), mergeSort(right));
-};
-
-/* Selection Sort - O(n^2) */
-
-const selectionSort = (nums) => {
-  /* pseudo code
-        move i through nums
-          keep i as min index
-          move through right subarray
-            find index j which is smaller than ith item and the smallest in right subarray
-          swap items i and j
- */
-  const n = nums.length;
-  for (let i = 0; i < n - 1; i++) {
-    let min = i;
-    for (let j = i + 1; j < n; j++) {
-      if (nums[j] < nums[min]) {
-        min = j;
-      }
-    }
-    [nums[i], nums[min]] = [nums[min], nums[i]];
-  }
-  return nums;
-
-};
-
-/* Bubble sort */
-
-const bubbleSort = (nums) => {
-  /* pseudo code
-    move k from end of nums
-      move i from 0 till k
-        ith item is bigger than i + 1
-          swap
-  */
-
-  for (let k = nums.length - 1; k >= 1; k--) {
-    for (let i = 0; i < k; i++) {
-      if (nums[i] > nums[i + 1]) {
-        [nums[i], nums[i + 1]] = [nums[i + 1], nums[i]]
-      }
-    }
-  }
-  return nums;
-
-};
-
 /* Merge intervals - Given an array of intervals where intervals[i] = [starti, endi], merge all overlapping intervals, and return an array of the non-overlapping intervals that cover all the intervals in the input.
 */
 
@@ -184,8 +153,8 @@ const merge = (intervals) => {
   /* pseudo code
     sort the intervals by their start times
     move through intervals
-      overlapping interval
-        update the end time
+      overlapping interval with last one
+        update the end time of last interval
       non overlapping interval
         push last interval's [start, end] to merged array
         reassign start and end to current interval
@@ -336,5 +305,41 @@ const quickSort = (nums) => {
 
   return helper(nums, 0, nums.length - 1)
 
+};
+
+/* Explain merge sort */
+
+const mergeSort = (nums) => {
+  /* pseudo code
+      divide the array in half and call merge sort for both halves recursively
+        sort both halves up the last recursion
+        merge both
+          have a new array
+            loop until both arrays are not empty
+              compare and push
+          return new array and left overs from both halves
+   */
+  if (nums.length < 2) {
+    return nums;
+  }
+
+  const sortNMerge = (left, right) => {
+    const sortedArr = [];
+    while (left.length && right.length) {
+      if (left[0] <= right[0]) {
+        sortedArr.push(left.shift());
+      } else {
+        sortedArr.push(right.shift());
+      }
+    }
+
+    return [...sortedArr, ...left, ...right];
+  };
+
+  const mid = Math.floor(nums.length / 2);
+  const left = nums.slice(0, mid);
+  const right = nums.slice(mid);
+
+  return sortNMerge(mergeSort(left), mergeSort(right));
 };
 
