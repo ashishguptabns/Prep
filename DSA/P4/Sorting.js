@@ -50,18 +50,15 @@ const diagonalSort = (mat) => {
     diagonal.sort((a, b) => a - b);
 
     while (row > 0 && col > 0) {
-      //  put the elements back
       mat[--row][--col] = diagonal.pop();
     }
   };
 
   for (let col = 0; col < numCols; col++) {
-    //  sort the upper half
     sort(mat, 0, col);
   }
 
   for (let row = 1; row < numRows; row++) {
-    //  sort the lower half
     sort(mat, row, 0);
   }
 
@@ -88,13 +85,11 @@ const wiggleSort = (nums) => {
   let index = copy.length - 1;
 
   for (let i = 1; i < nums.length; i += 2) {
-    //  put big numbers at odd positions
     nums[i] = copy[index];
     index--;
   }
 
   for (let i = 0; i < nums.length; i += 2) {
-    //  put remaining in even positions
     nums[i] = copy[index];
     index--;
   }
@@ -114,7 +109,6 @@ const mergeSort = (nums) => {
 
   const sortNMerge = (left, right) => {
     const sortedArr = [];
-    //  notice that left and right arrays are already sorted
     while (left.length && right.length) {
       if (left[0] <= right[0]) {
         sortedArr.push(left.shift());
@@ -123,7 +117,6 @@ const mergeSort = (nums) => {
       }
     }
 
-    //  include whatever is left of both arrays
     return [...sortedArr, ...left, ...right];
   };
 
@@ -147,13 +140,11 @@ const selectionSort = (nums) => {
   const n = nums.length;
   for (let i = 0; i < n - 1; i++) {
     let min = i;
-    //  find the smallest index in right subarray which is smaller than i also
     for (let j = i + 1; j < n; j++) {
       if (nums[j] < nums[min]) {
         min = j;
       }
     }
-    //  bring small item to left side
     [nums[i], nums[min]] = [nums[min], nums[i]];
   }
   return nums;
@@ -249,20 +240,15 @@ const maxIceCream = (costs, coins) => {
         update coins and max incecreams
   */
 
-  //  track ice creams for each cost
   const frequencies = Array(Math.max(...costs) + 1).fill(0);
   for (const cost of costs) {
     frequencies[cost] += 1;
   }
 
   let max = 0;
-  //  we are moving from low to high so count will be maximum
   for (let cost = 1; cost <= coins && cost < frequencies.length; ++cost) {
-    //  either take all at this cost
-    //  or take what remaining coins can afford
     const count = Math.min(frequencies[cost], Math.floor(coins / cost));
 
-    //  update left coins
     coins -= cost * count;
     max += count;
   }
@@ -286,15 +272,12 @@ const hIndex = (citations) => {
       track max of hIndex so far and (min of curr citation and citations on the right)
   */
 
-  //  sort the citations
-  //  travel through the array and keep finding the h index
   citations.sort((a, b) => a - b);
 
   let hIndex = 0;
   let n = citations.length;
 
   for (let i = 0; i < n; i++) {
-    //  assume ith index has 6 citations but only 3 more papers have higher citation than 6
     hIndex = Math.max(hIndex, Math.min(citations[i], n - i));
   }
 
