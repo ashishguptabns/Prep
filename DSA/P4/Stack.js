@@ -23,13 +23,11 @@ const isValid = (s) => {
 
     for (const currentBracket of s) {
         if (bracketMap[currentBracket]) {
-            // If it's a closing bracket
             const topElement = stack.length === 0 ? '#' : stack.pop();
             if (bracketMap[currentBracket] !== topElement) {
                 return false;
             }
         } else {
-            // If it's an opening bracket
             stack.push(currentBracket);
         }
     }
@@ -66,15 +64,12 @@ const removeDuplicates = (s, k) => {
         return s
     }
 
-    //  keep char and freq
     const stack = []
 
     for (const char of s) {
         if (stack.length && char === stack.at(-1)[0]) {
-            //  last char is same, increase the freq
             stack.at(-1)[1]++
 
-            //  remove as per condition
             if (stack.at(-1)[1] === k) {
                 stack.pop()
             }
@@ -83,7 +78,6 @@ const removeDuplicates = (s, k) => {
         }
     }
 
-    //  find leftover chars
     let res = ''
     for (const [char, count] of stack) {
         res += char.repeat(count)
@@ -122,7 +116,6 @@ const minAddToMakeValid = (s) => {
         }
     }
 
-    //  unmatched parentheses are still in stack
     return stack.length
 };
 
@@ -164,20 +157,17 @@ const minRemoveToMakeValid = (s) => {
 
     for (let i = 0; i < s.length; i++) {
         if (s[i] === '(') {
-            //  keep the position 
             stack.push(i)
         } else if (s[i] === ')') {
             if (stack.length) {
                 stack.pop()
             } else {
-                //  remove the invalid closing bracket
                 s[i] = ''
             }
         }
     }
 
     for (let position of stack) {
-        //  remove the invalid opening bracket
         s[position] = ''
     }
 
@@ -208,34 +198,27 @@ const decodeString = (s) => {
     const stack = []
     for (const char of s) {
         if (char !== ']') {
-            //  keep pushing till the closing brakcet
             stack.push(char)
             continue
         }
-        //  found a closing bracket
 
         let stackTop = stack.pop()
         let currStr = ''
 
-        //  find string till the last open bracket
         while (stackTop !== '[') {
             currStr = stackTop + currStr
             stackTop = stack.pop()
         }
-        //  remove the opening bracket
         stackTop = stack.pop()
 
-        //  find the number
         let num = ''
         while (!Number.isNaN(Number(stackTop))) {
             num = stackTop + num
             stackTop = stack.pop()
         }
 
-        //  notice we popped an extra element
         stack.push(stackTop)
 
-        //  push for futher travel
         stack.push(currStr.repeat(Number(num)))
     }
 
@@ -410,44 +393,30 @@ const sumSubarrayMins = (arr) => {
     const left = new Array(n);
     const right = new Array(n);
 
-    // Calculate the nearest smaller element on the left
     for (let i = 0; i < n; i++) {
-        // Keep popping elements from the stack while the current element is smaller
         while (stack.length > 0 && arr[i] <= arr[stack.at(-1)]) {
             stack.pop();
         }
-        // If the stack is empty, there is no smaller element on the left
-        // Otherwise, the nearest smaller element is the one at the top of the stack
         left[i] = stack.length === 0 ? -1 : stack.at(-1);
-        // Push the current element's index onto the stack
         stack.push(i);
     }
 
-    // Clear the stack for reuse
     stack.length = 0;
 
-    // Calculate the nearest smaller element on the right
     for (let i = n - 1; i >= 0; i--) {
-        // Keep popping elements from the stack while the current element is smaller
         while (stack.length > 0 && arr[i] < arr[stack.at(-1)]) {
             stack.pop();
         }
-        // If the stack is empty, there is no smaller element on the right
-        // Otherwise, the nearest smaller element is the one at the top of the stack
         right[i] = stack.length === 0 ? n : stack.at(-1);
-        // Push the current element's index onto the stack
         stack.push(i);
     }
 
     let result = 0;
 
-    // Calculate the contribution of each element to the final result
     for (let i = 0; i < n; i++) {
-        // Add the product of the current element, its left, and right distances to the result
         result = (result + arr[i] * (i - left[i]) * (right[i] - i)) % mod;
     }
 
-    // Return the final result
     return result;
 }
 
