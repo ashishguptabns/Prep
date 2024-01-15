@@ -186,44 +186,6 @@ const merge = (intervals) => {
   return merged;
 };
 
-/* Maximum ice cream bars - At the store, there are n ice cream bars. You are given an array costs of length n, where costs[i] is the price of the ith ice cream bar in coins. The boy initially has coins coins to spend, and he wants to buy as many ice cream bars as possible. 
-
-Note: The boy can buy the ice cream bars in any order.
-
-Return the maximum number of ice cream bars the boy can buy with coins coins.
-
-You must solve the problem by counting sort.
- */
-/**
- * @param {number[]} costs
- * @param {number} coins
- * @return {number}
- */
-const maxIceCream = (costs, coins) => {
-
-  /* pseudo code
-    counting sort
-      keep a freq array to track freq of each cost in costs
-      move cost through coins from 1 till coins
-        track icecreams that can be bought with this cost
-        update coins and max incecreams
-  */
-
-  const frequencies = Array(Math.max(...costs) + 1).fill(0);
-  for (const cost of costs) {
-    frequencies[cost] += 1;
-  }
-
-  let max = 0;
-  for (let cost = 1; cost <= coins && cost < frequencies.length; ++cost) {
-    const count = Math.min(frequencies[cost], Math.floor(coins / cost));
-
-    coins -= cost * count;
-    max += count;
-  }
-  return max;
-};
-
 /* H-index - Given an array of integers citations where citations[i] is the number of citations a researcher received for their ith paper, return the researcher's h-index.
 
 According to the definition of h-index on Wikipedia: The h-index is defined as the maximum value of h such that the given researcher has published at least h papers that have each been cited at least h times.
@@ -258,21 +220,21 @@ const hIndex = (citations) => {
 const insertionSort = (nums) => {
   /* pseudo code
     move i through nums
-      keep ith item in value and i in hole
-      move from hole to 0 till [hole - 1] > value
-        keep shifting item at hole - 1 to hole 
-        hole to hole - 1
-      assign held value to hole index
+      keep ith item in value and i in blank
+      move from blank to 0 till nums[blank - 1] > value
+        keep shifting item at blank - 1 to blank 
+        blank to blank - 1
+      assign held value to blank index
   */
 
   for (let i = 1; i < nums.length; i++) {
     const value = nums[i];
-    let hole = i;
-    while (hole > 0 && nums[hole - 1] > value) {
-      nums[hole] = nums[hole - 1];
-      hole = hole - 1
+    let blank = i;
+    while (blank > 0 && nums[blank - 1] > value) {
+      nums[blank] = nums[blank - 1];
+      blank = blank - 1
     }
-    nums[hole] = value;
+    nums[blank] = value;
   }
   return nums;
 
@@ -341,5 +303,43 @@ const mergeSort = (nums) => {
   const right = nums.slice(mid);
 
   return sortNMerge(mergeSort(left), mergeSort(right));
+};
+
+/* Maximum ice cream bars - At the store, there are n ice cream bars. You are given an array costs of length n, where costs[i] is the price of the ith ice cream bar in coins. The boy initially has coins coins to spend, and he wants to buy as many ice cream bars as possible. 
+
+Note: The boy can buy the ice cream bars in any order.
+
+Return the maximum number of ice cream bars the boy can buy with coins coins.
+
+You must solve the problem by counting sort.
+ */
+/**
+ * @param {number[]} costsArr
+ * @param {number} amount
+ * @return {number}
+ */
+const maxIceCream = (costsArr, amount) => {
+
+  /* pseudo code
+    counting sort
+      keep a freq array to track freq of each cost in costsArr
+      move cost from 1 till amount
+        track num icecreams that can be bought with this cost
+        update coins and max incecreams
+  */
+
+  const frequencies = Array(Math.max(...costsArr) + 1).fill(0);
+  for (const cost of costsArr) {
+    frequencies[cost] += 1;
+  }
+
+  let max = 0;
+  for (let cost = 1; cost <= amount && cost < frequencies.length; ++cost) {
+    const count = Math.min(frequencies[cost], Math.floor(amount / cost));
+
+    amount -= cost * count;
+    max += count;
+  }
+  return max;
 };
 
