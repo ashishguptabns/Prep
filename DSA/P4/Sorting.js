@@ -240,35 +240,6 @@ const insertionSort = (nums) => {
 
 };
 
-/* Quick sort */
-
-const quickSort = (nums) => {
-
-  function helper(nums, start, end) {
-    if (start >= end) {
-      return nums
-    }
-
-    const pivotValue = nums[start]
-    let smaller = start
-    for (var i = start + 1; i <= end; i++) {
-      const bigger = i
-      if (nums[bigger] < pivotValue) {
-        smaller++
-        [nums[smaller], nums[bigger]] = [nums[bigger], nums[smaller]]
-      }
-    }
-    [nums[smaller], nums[start]] = [nums[start], nums[smaller]]
-
-    helper(nums, start, smaller - 1)
-    helper(nums, smaller + 1, end)
-    return nums
-  }
-
-  return helper(nums, 0, nums.length - 1)
-
-};
-
 /* Explain merge sort */
 
 const mergeSort = (nums) => {
@@ -341,5 +312,46 @@ const maxIceCream = (costsArr, amount) => {
     max += count;
   }
   return max;
+};
+
+/* Quick sort */
+
+const quickSort = (nums) => {
+
+  /* pseudo code
+      keep a helper function with start and end indices
+        choose the start index item as pivot value
+        keep an index smaller to keep small values than pivot
+        move i from start + 1 to end
+          ith item is less than pivot value
+            swap with item at smaller index
+            increment smaller index
+        swap items at smaller and start indices
+
+        repeat for start to smaller - 1 and smaller + 1 to end
+  */
+
+  function helper(nums, start, end) {
+    if (start >= end) {
+      return nums
+    }
+
+    const pivotValue = nums[start]
+    let smaller = start
+    for (var i = start + 1; i <= end; i++) {
+      if (nums[i] < pivotValue) {
+        smaller++
+        [nums[smaller], nums[i]] = [nums[i], nums[smaller]]
+      }
+    }
+    [nums[smaller], nums[start]] = [nums[start], nums[smaller]]
+
+    helper(nums, start, smaller - 1)
+    helper(nums, smaller + 1, end)
+    return nums
+  }
+
+  return helper(nums, 0, nums.length - 1)
+
 };
 
