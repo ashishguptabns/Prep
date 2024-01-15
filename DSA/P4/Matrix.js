@@ -80,63 +80,6 @@ const setZeroes = (matrix) => {
     }
 };
 
-/* Game of life - The board is made up of an m x n grid of cells, where each cell has an initial state: live (represented by a 1) or dead (represented by a 0). Each cell interacts with its eight neighbors (horizontal, vertical, diagonal) using the following four rules (taken from the above Wikipedia article):
-
-Any live cell with fewer than two live neighbors dies as if caused by under-population.
-Any live cell with two or three live neighbors lives on to the next generation.
-Any live cell with more than three live neighbors dies, as if by over-population.
-Any dead cell with exactly three live neighbors becomes a live cell, as if by reproduction.
-The next state is created by applying the above rules simultaneously to every cell in the current state, where births and deaths occur simultaneously. Given the current state of the m x n grid board, return the next state.
- */
-/**
- * @param {number[][]} board
- * @return {void} Do not return anything, modify board in-place instead.
- */
-const gameOfLife = (board) => {
-    // Define the eight possible directions to check for neighbors
-    const dirs = [[0, 1], [1, 0], [-1, 0], [0, -1], [1, 1], [1, -1], [-1, -1], [-1, 1]];
-
-    // Iterate through each cell in the board
-    for (let r = 0; r < board.length; r++) {
-        for (let c = 0; c < board[0].length; c++) {
-            let neighbours = 0;
-
-            // Check each neighbor around the current cell
-            for (const [x, y] of dirs) {
-                // Get the value of the neighboring cell (considering boundaries)
-                const cell = board[r + x] ? board[r + x][c + y] : 0;
-
-                // Count live cells (1) and dying cells (3) as neighbors
-                if (cell === 1 || cell == 3) {
-                    neighbours++;
-                }
-            }
-
-            // Rules for live and dead cells based on the number of neighbors
-            if (board[r][c] === 0 || board[r][c] === 3) {
-                // If a dead cell has exactly 3 live neighbors, mark it as a newborn cell
-                if (neighbours === 3) {
-                    board[r][c] = -1;
-                }
-            } else {
-                // If a live cell has fewer than 2 or more than 3 live neighbors, mark it as dying
-                if (neighbours < 2 || neighbours > 3) {
-                    board[r][c] = 3;
-                }
-            }
-        }
-    }
-
-    // Convert the marked cells to their final state
-    for (var i = 0; i < board.length; i++) {
-        for (var j = 0; j < board[0].length; j++) {
-            // Change newborn cells (-1) to live cells (1) and dying cells (3) to dead cells (0)
-            if (board[i][j] == 3) board[i][j] = 0;
-            if (board[i][j] == -1) board[i][j] = 1;
-        }
-    }
-};
-
 /* Search a 2D Matrix - You are given an m x n integer matrix matrix with the following two properties:
 
 Each row is sorted in non-decreasing order.
@@ -149,19 +92,28 @@ Given an integer target, return true if target is in matrix or false otherwise.
  * @return {boolean}
  */
 const searchMatrix = (matrix, target) => {
-    //  start from bottom left 
-    let cols = 0,
-        rows = matrix.length - 1
 
-    while (cols <= matrix[0].length - 1 && rows >= 0) {
-        if (matrix[rows][cols] === target) {
+    /* pseudo code
+        start from bottom left
+        loop till row and col are within bounds
+            found a target
+            more than target
+                move up
+            les than target
+                move right
+    */
+
+    let col = 0, row = matrix.length - 1
+
+    while (col <= matrix[0].length - 1 && row >= 0) {
+        if (matrix[row][col] === target) {
             return true
         }
-        else if (matrix[rows][cols] > target) {
-            rows--
+        else if (matrix[row][col] > target) {
+            row--
         }
-        else if (matrix[rows][cols] < target) {
-            cols++
+        else if (matrix[row][col] < target) {
+            col++
         }
     }
     return false
@@ -209,3 +161,51 @@ const spiralOrder = (matrix) => {
 
     return res
 };
+
+/* Game of life - The board is made up of an m x n grid of cells, where each cell has an initial state: live (represented by a 1) or dead (represented by a 0). Each cell interacts with its eight neighbors (horizontal, vertical, diagonal) using the following four rules (taken from the above Wikipedia article):
+
+Any live cell with fewer than two live neighbors dies as if caused by under-population.
+Any live cell with two or three live neighbors lives on to the next generation.
+Any live cell with more than three live neighbors dies, as if by over-population.
+Any dead cell with exactly three live neighbors becomes a live cell, as if by reproduction.
+The next state is created by applying the above rules simultaneously to every cell in the current state, where births and deaths occur simultaneously. Given the current state of the m x n grid board, return the next state.
+ */
+/**
+ * @param {number[][]} board
+ * @return {void} Do not return anything, modify board in-place instead.
+ */
+const gameOfLife = (board) => {
+    const dirs = [[0, 1], [1, 0], [-1, 0], [0, -1], [1, 1], [1, -1], [-1, -1], [-1, 1]];
+
+    for (let r = 0; r < board.length; r++) {
+        for (let c = 0; c < board[0].length; c++) {
+            let neighbours = 0;
+
+            for (const [x, y] of dirs) {
+                const cell = board[r + x] ? board[r + x][c + y] : 0;
+
+                if (cell === 1 || cell == 3) {
+                    neighbours++;
+                }
+            }
+
+            if (board[r][c] === 0 || board[r][c] === 3) {
+                if (neighbours === 3) {
+                    board[r][c] = -1;
+                }
+            } else {
+                if (neighbours < 2 || neighbours > 3) {
+                    board[r][c] = 3;
+                }
+            }
+        }
+    }
+
+    for (var i = 0; i < board.length; i++) {
+        for (var j = 0; j < board[0].length; j++) {
+            if (board[i][j] == 3) board[i][j] = 0;
+            if (board[i][j] == -1) board[i][j] = 1;
+        }
+    }
+};
+
