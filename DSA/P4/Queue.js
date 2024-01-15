@@ -1,3 +1,42 @@
+/* Moving average from data stream - Given a stream of integers and a window size, calculate the moving average of all integers in the sliding window.
+ */
+class MovingAverage {
+
+  /* pseudo code
+    add data
+      push to the queue
+      track sum
+      queue size exceeds window length
+        remove from queue
+        track sum 
+    find moving avg
+      sum / queue length
+  */
+
+  constructor(windowSize) {
+    this.windowSize = windowSize;
+    this.queue = [];
+    this.sum = 0;
+  }
+
+  addDataPoint(value) {
+    this.queue.push(value);
+    this.sum += value;
+
+    if (this.queue.length > this.windowSize) {
+      const removedValue = this.queue.shift();
+      this.sum -= removedValue;
+    }
+  }
+
+  getMovingAverage() {
+    if (this.queue.length === 0) {
+      return null;
+    }
+    return this.sum / this.queue.length;
+  }
+}
+
 /* Implement stack using 2 queues - Implement a last-in-first-out (LIFO) stack using only two queues */
 class MyStack {
 
@@ -26,15 +65,12 @@ class MyStack {
   };
 
   pop = () => {
-    //  move all elements from queue1 to queue2 except the last element
     while (this.queue1.length > 1) {
-      //  follow FIFO
       this.queue2.push(this.queue1.shift())
     }
 
     const poppedItem = this.queue1.shift()
 
-    // Swap the names of queue1 and queue2 using a temporary variable
     const temp = this.queue1;
     this.queue1 = this.queue2;
     this.queue2 = temp;
@@ -44,23 +80,18 @@ class MyStack {
   };
 
   top = () => {
-    // Similar to pop, move all elements from queue1 to queue2 except the last one
     while (this.queue1.length > 1) {
       this.queue2.push(this.queue1.shift());
     }
 
-    // The last element in queue1 is the top of the stack
     const topItem = this.queue1[0];
 
-    // Move it to queue2
     this.queue2.push(this.queue1.shift());
 
-    // Swap the names of queue1 and queue2 using a temporary variable
     const temp = this.queue1;
     this.queue1 = this.queue2;
     this.queue2 = temp;
 
-    // Return the top item
     return topItem;
   }
 
@@ -69,45 +100,104 @@ class MyStack {
   };
 };
 
-/* Moving average from data stream - Given a stream of integers and a window size, calculate the moving average of all integers in the sliding window.
+/* Design Circular Queue
+
+MyCircularQueue(k) Initializes the object with the size of the queue to be k.
+int Front() Gets the front item from the queue. If the queue is empty, return -1.
+int Rear() Gets the last item from the queue. If the queue is empty, return -1.
+boolean enQueue(int value) Inserts an element into the circular queue. Return true if the operation is successful.
+boolean deQueue() Deletes an element from the circular queue. Return true if the operation is successful.
+boolean isEmpty() Checks whether the circular queue is empty or not.
+boolean isFull() Checks whether the circular queue is full or not.
  */
-class MovingAverage {
+
+class MyCircularQueue {
 
   /* pseudo code
-    
+      enqueue
+        increase the rear index
+        put in the queue at rear index
+        increase the size
+      dequeue
+        increase the front index
+        decrease the size
+      notice use of modulo
   */
 
-  constructor(windowSize) {
-    this.windowSize = windowSize;
-    this.queue = [];
-    this.sum = 0;
+  constructor(capacity) {
+    this.capacity = capacity;
+    this.queue = new Array(capacity);
+    this.frontIndex = 0;
+    this.rearIndex = -1;
+    this.size = 0;
   }
 
-  addDataPoint(value) {
-    this.queue.push(value);
-    this.sum += value;
-
-    if (this.queue.length > this.windowSize) {
-      //  follow FIFO
-      const removedValue = this.queue.shift();
-      //  maintain sum of values in the queue
-      this.sum -= removedValue;
+  enQueue(item) {
+    if (this.isFull()) {
+      return false;
     }
+
+    this.rearIndex = (this.rearIndex + 1) % this.capacity;
+    this.queue[this.rearIndex] = item;
+    this.size++;
+    return true
   }
 
-  getMovingAverage() {
-    if (this.data.length === 0) {
-      // No data available
-      return null;
+  deQueue() {
+    if (this.isEmpty()) {
+      return false;
     }
 
-    return this.sum / this.data.length;
+    this.frontIndex = (this.frontIndex + 1) % this.capacity;
+    this.size--;
+    return true
+  }
+
+  Front() {
+    if (this.isEmpty()) {
+      return -1;
+    }
+
+    return this.queue[this.frontIndex];
+  }
+
+  Rear() {
+    if (this.isEmpty()) {
+      return -1;
+    }
+
+    return this.queue[this.rearIndex];
+  }
+
+  isEmpty() {
+    return this.size === 0;
+  }
+
+  isFull() {
+    return this.size === this.capacity;
   }
 }
 
 /* Design most recently used queue */
 
 class MRUQueue {
+
+  /* pseudo code
+      enqueue
+        queue length > capacity
+          remove from queue and map
+        push to the queue
+        store index of this item in the map
+      fetch item at index
+        find the element from queue array
+        remove from the queue
+        remove from the map
+        enqueue this element
+        return this element
+      get MRU
+        return the last element of the queue
+  */
+
   constructor(capacity) {
     this.capacity = capacity;
     this.queue = [];
@@ -133,8 +223,7 @@ class MRUQueue {
     this.queue.splice(index, 1);
     delete this.map[element];
 
-    this.queue.push(element);
-    this.map[element] = this.queue.length - 1;
+    this.enqueue(element)
 
     return element;
   }
@@ -144,68 +233,3 @@ class MRUQueue {
   }
 }
 
-/* Design Circular Queue
-
-MyCircularQueue(k) Initializes the object with the size of the queue to be k.
-int Front() Gets the front item from the queue. If the queue is empty, return -1.
-int Rear() Gets the last item from the queue. If the queue is empty, return -1.
-boolean enQueue(int value) Inserts an element into the circular queue. Return true if the operation is successful.
-boolean deQueue() Deletes an element from the circular queue. Return true if the operation is successful.
-boolean isEmpty() Checks whether the circular queue is empty or not.
-boolean isFull() Checks whether the circular queue is full or not.
- */
-
-class MyCircularQueue {
-  constructor(capacity) {
-    this.capacity = capacity;
-    this.queue = new Array(capacity);
-    this.front = 0;
-    this.rear = -1;
-    this.size = 0;
-  }
-
-  enQueue(item) {
-    if (this.isFull()) {
-      return false;
-    }
-
-    this.rear = (this.rear + 1) % this.capacity;
-    this.queue[this.rear] = item;
-    this.size++;
-    return true
-  }
-
-  deQueue() {
-    if (this.isEmpty()) {
-      return false;
-    }
-
-    this.front = (this.front + 1) % this.capacity;
-    this.size--;
-    return true
-  }
-
-  Front() {
-    if (this.isEmpty()) {
-      return -1;
-    }
-
-    return this.queue[this.front];
-  }
-
-  Rear() {
-    if (this.isEmpty()) {
-      return -1;
-    }
-
-    return this.queue[this.rear];
-  }
-
-  isEmpty() {
-    return this.size === 0;
-  }
-
-  isFull() {
-    return this.size === this.capacity;
-  }
-}
