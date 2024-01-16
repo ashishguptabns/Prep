@@ -1,3 +1,5 @@
+/* LC - https://leetcode.com/problemset/?topicSlugs=dynamic-programming&page=1&sorting=W3t9XQ%3D%3D&status=NOT_STARTED&difficulty=MEDIUM */
+
 /* Longest Increasing Subsequence - Given an integer array nums, return the length of the longest strictly increasing subsequence
  */
 /**
@@ -1070,3 +1072,112 @@ const isInterleave = (s1, s2, s3) => {
     return dp[s1.length][s2.length];
 };
 
+/* Unique Paths 2 - You are given an m x n integer array grid. There is a robot initially located at the top-left corner (i.e., grid[0][0]). The robot tries to move to the bottom-right corner (i.e., grid[m - 1][n - 1]). The robot can only move either down or right at any point in time.
+
+An obstacle and space are marked as 1 or 0 respectively in grid. A path that the robot takes cannot include any square that is an obstacle.
+
+Return the number of possible unique paths that the robot can take to reach the bottom-right corner.
+ */
+/**
+ * @param {number[][]} obstacleGrid
+ * @return {number}
+ */
+const uniquePathsWithObstacles = (obstacleGrid) => {
+    let m = obstacleGrid.length;
+
+    let n = obstacleGrid[0].length;
+
+    if (obstacleGrid[0][0] === 1) {
+        return 0;
+    }
+
+    let dp = new Array(m).fill(0).map(() => new Array(n).fill(0));
+    dp[0][0] = 1;
+
+    for (let i = 1; i < m; i++) {
+        dp[i][0] = (obstacleGrid[i][0] === 0 && dp[i - 1][0] === 1) ? 1 : 0;
+    }
+
+    for (let j = 1; j < n; j++) {
+        dp[0][j] = (obstacleGrid[0][j] === 0 && dp[0][j - 1] === 1) ? 1 : 0;
+    }
+
+    for (let i = 1; i < m; i++) {
+        for (let j = 1; j < n; j++) {
+            if (obstacleGrid[i][j] === 0) {
+                dp[i][j] = dp[i - 1][j] + dp[i][j - 1];
+            }
+        }
+    }
+    return dp[m - 1][n - 1];
+};
+
+/* Triangle - Given a triangle array, return the minimum path sum from top to bottom.
+
+For each step, you may move to an adjacent number of the row below. More formally, if you are on index i on the current row, you may move to either index i or index i + 1 on the next row.
+ */
+/**
+ * @param {number[][]} triangle
+ * @return {number}
+ */
+const minimumTotal = (triangle) => {
+    for (let i = triangle.length - 2; i >= 0; i--) {
+        for (let j = 0; j < triangle[i].length; j++) {
+            triangle[i][j] += Math.min(triangle[i + 1][j], triangle[i + 1][j + 1])
+        }
+    }
+    return triangle[0][0]
+};
+
+/* House robber 2 - You are a professional robber planning to rob houses along a street. Each house has a certain amount of money stashed. All houses at this place are arranged in a circle. That means the first house is the neighbor of the last one. Meanwhile, adjacent houses have a security system connected, and it will automatically contact the police if two adjacent houses were broken into on the same night.
+
+Given an integer array nums representing the amount of money of each house, return the maximum amount of money you can rob tonight without alerting the police.
+ */
+/**
+ * @param {number[]} nums
+ * @return {number}
+ */
+const rob2 = (nums) => {
+    if (nums.length < 2) {
+        return nums[0] || 0;
+    }
+
+    const dp1 = [nums[0]];
+    const dp2 = [0, nums[1]];
+
+    for (let i = 1; i < nums.length - 1; i++) {
+        dp1[i] = Math.max(nums[i] + (dp1[i - 2] || 0), dp1[i - 1]);
+    }
+
+    for (let i = 2; i < nums.length; i++) {
+        dp2[i] = Math.max(nums[i] + dp2[i - 2], dp2[i - 1]);
+    }
+
+    return Math.max(dp1.pop(), dp2.pop());
+};
+
+/* Ugly number - An ugly number is a positive integer whose prime factors are limited to 2, 3, and 5.
+
+Given an integer n, return the nth ugly number.
+ */
+/**
+ * @param {number} n
+ * @return {number}
+ */
+const nthUglyNumber = (n) => {
+    let dp = [1]
+    let c2 = c3 = c5 = 0
+    for (let i = 1; i < n; i++) {
+        dp[i] = Math.min(2 * dp[c2], 3 * dp[c3], 5 * dp[c5])
+        if (2 * dp[c2] === dp[i]) {
+            c2++
+        }
+        if (3 * dp[c3] === dp[i]) {
+            c3++
+        }
+        if (5 * dp[c5] === dp[i]) {
+            c5++
+        }
+    }
+    return dp[n - 1]
+};
