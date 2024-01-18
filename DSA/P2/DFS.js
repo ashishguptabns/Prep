@@ -1,3 +1,100 @@
+/* Number of islands - Given an m x n 2D binary grid which represents a map of '1's (land) and '0's (water), return the number of islands. An island is surrounded by water and is formed by connecting adjacent lands horizontally or vertically. You may assume all four edges of the grid are all surrounded by water.
+ */
+/**
+ * @param {character[][]} grid
+ * @return {number}
+ */
+const numIslands = (grid) => {
+
+    /* pseudo code
+        move r through rows
+            move c through cols
+                if found a land
+                    increment the count
+                    run a DFS to mark each connected 1 as 0
+                        connected 1s are part of same island
+    */
+
+    let ans = 0
+
+    const dfs = (grid, row, col) => {
+        const rows = grid.length
+        const cols = grid[0].length
+
+        if (row < 0 || row >= rows || col < 0 || col >= cols || grid[row][col] === '0') {
+            return
+        }
+
+        grid[row][col] = '0'
+
+        dfs(grid, row, col - 1)
+        dfs(grid, row, col + 1)
+        dfs(grid, row + 1, col)
+        dfs(grid, row - 1, col)
+    }
+
+    if (grid && grid.length) {
+        const rows = grid.length
+        const cols = grid[0].length
+
+        for (let row = 0; row < rows; row++) {
+            for (let col = 0; col < cols; col++) {
+                if (grid[row][col] === '1') {
+                    ans++
+                    dfs(grid, row, col)
+                }
+            }
+        }
+    }
+
+    return ans
+};
+
+/* Battleships in a board - Given an m x n matrix board where each cell is a battleship 'X' or empty '.', return the number of the battleships on board.
+
+Battleships can only be placed horizontally or vertically on board.In other words, they can only be made of the shape 1 x k(1 row, k columns) or k x 1(k rows, 1 column), where k can be of any size. At least one horizontal or vertical cell separates between two battleships(i.e., there are no adjacent battleships).
+ */
+/**
+ * @param {character[][]} board
+ * @return {number}
+ */
+const countBattleships = (board) => {
+
+    /* pseudo code
+        visit each cell of the matrix
+            if a new ship X is found
+                increase the count
+                do a DFS from the cell to mark adjacent cells as empty
+    */
+
+    let ships = 0
+
+    const clearAdjacent = (board, row, col) => {
+        if (row < 0 || row >= board.length || col < 0 || col >= board[row].length
+            || board[row][col] === '.') {
+            return
+        }
+
+        board[row][col] = '.'
+
+        clearAdjacent(board, row + 1, col)
+        clearAdjacent(board, row - 1, col)
+        clearAdjacent(board, row, col + 1)
+        clearAdjacent(board, row, col - 1)
+    }
+
+    for (let row = 0; row < board.length; row++) {
+        for (let col = 0; col < board[row].length; col++) {
+            if (board[row][col] === 'X') {
+                ships++
+                clearAdjacent(board, row, col)
+            }
+        }
+    }
+
+    return ships
+};
+
 /* Most Stones Removed with Same Row or Column - On a 2D plane, we place n stones at some integer coordinate points.Each coordinate point may have at most one stone.
 A stone can be removed if it shares either the same row or the same column as another stone that has not been removed.
 Given an array stones of length n where stones[i] = [xi, yi] represents the location of the ith stone, return the largest possible number of stones that can be removed.
@@ -132,102 +229,5 @@ const hasPath = (maze, start, destination) => {
     };
 
     return dfs(startRow, startCol);
-};
-
-/* Number of islands - Given an m x n 2D binary grid which represents a map of '1's (land) and '0's (water), return the number of islands. An island is surrounded by water and is formed by connecting adjacent lands horizontally or vertically. You may assume all four edges of the grid are all surrounded by water.
- */
-/**
- * @param {character[][]} grid
- * @return {number}
- */
-const numIslands = (grid) => {
-
-    /* pseudo code
-        move r through rows
-            move c through cols
-                if found a land
-                    increment the count
-                    run a DFS to mark each connected 1 as 0
-                        connected 1s are part of same island
-    */
-
-    let ans = 0
-
-    const dfs = (grid, row, col) => {
-        const rows = grid.length
-        const cols = grid[0].length
-
-        if (row < 0 || row >= rows || col < 0 || col >= cols || grid[row][col] === '0') {
-            return
-        }
-
-        grid[row][col] = '0'
-
-        dfs(grid, row, col - 1)
-        dfs(grid, row, col + 1)
-        dfs(grid, row + 1, col)
-        dfs(grid, row - 1, col)
-    }
-
-    if (grid && grid.length) {
-        const rows = grid.length
-        const cols = grid[0].length
-
-        for (let row = 0; row < rows; row++) {
-            for (let col = 0; col < cols; col++) {
-                if (grid[row][col] === '1') {
-                    ans++
-                    dfs(grid, row, col)
-                }
-            }
-        }
-    }
-
-    return ans
-};
-
-/* Battleships in a board - Given an m x n matrix board where each cell is a battleship 'X' or empty '.', return the number of the battleships on board.
-
-Battleships can only be placed horizontally or vertically on board.In other words, they can only be made of the shape 1 x k(1 row, k columns) or k x 1(k rows, 1 column), where k can be of any size. At least one horizontal or vertical cell separates between two battleships(i.e., there are no adjacent battleships).
- */
-/**
- * @param {character[][]} board
- * @return {number}
- */
-const countBattleships = (board) => {
-
-    /* pseudo code
-        visit each cell of the matrix
-            if a new ship X is found
-                increase the count
-                do a DFS from the cell to mark adjacent cells as empty
-    */
-
-    let ships = 0
-
-    const clearAdjacent = (board, row, col) => {
-        if (row < 0 || row >= board.length || col < 0 || col >= board[row].length
-            || board[row][col] === '.') {
-            return
-        }
-
-        board[row][col] = '.'
-
-        clearAdjacent(board, row + 1, col)
-        clearAdjacent(board, row - 1, col)
-        clearAdjacent(board, row, col + 1)
-        clearAdjacent(board, row, col - 1)
-    }
-
-    for (let row = 0; row < board.length; row++) {
-        for (let col = 0; col < board[row].length; col++) {
-            if (board[row][col] === 'X') {
-                ships++
-                clearAdjacent(board, row, col)
-            }
-        }
-    }
-
-    return ships
 };
 
