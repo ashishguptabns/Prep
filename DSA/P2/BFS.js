@@ -1,59 +1,3 @@
-/* Minimum Knight Moves - In an infinite chess board with coordinates from -infinity to +infinity, you have a knight at square [0, 0].
-A knight has 8 possible moves it can make, as illustrated below. Each move is two squares in a cardinal direction, then one square in an orthogonal direction.
-Return the minimum number of steps needed to move the knight to the square [x, y]. It is guaranteed the answer exists.
- */
-const minKnightMoves = (x, y) => {
-
-    /* pseudo code
-        we have to do BFS travel from start point to end point
-            start the queue with [0, 0]
-            loop through queue items
-                loop through curr items
-                    add neighbour points for next travel
-                        we do not want to deal with -ve coords
-                            consider [302, 302] as [0, 0]
-                increment num steps
-    */
-
-    let minSteps = 0;
-
-    const offsets = [
-        [1, 2], [-1, 2], [-2, 1], [-2, -1],
-        [2, 1], [2, -1], [1, -2], [-1, -2]
-    ];
-
-    const visitedArr = Array(607).fill(null).map(() => Array(607).fill(false));
-
-    const queue = [];
-    queue.push([0, 0]);
-
-    while (queue.length > 0) {
-        const queueSize = queue.length;
-
-        for (let counter = 0; counter < queueSize; counter++) {
-            const currPair = queue.shift();
-
-            if (currPair[0] === x && currPair[1] === y) {
-                return minSteps;
-            }
-
-            for (const [dx, dy] of offsets) {
-                const nextX = currPair[0] + dx;
-                const nextY = currPair[1] + dy;
-
-                if (!visitedArr[nextX + 302][nextY + 302]) {
-                    queue.push([nextX, nextY]);
-                    visitedArr[nextX + 302][nextY + 302] = true;
-                }
-            }
-        }
-
-        minSteps++;
-    }
-
-    return -1;
-}
-
 /* Word Ladder - A transformation sequence from word beginWord to word endWord using a dictionary wordList is a sequence of words beginWord -> s1 -> s2 -> ... -> sk such that:
 Every adjacent pair of words differs by a single letter.
 Every si for 1 <= i <= k is in wordList.Note that beginWord does not need to be in wordList.
@@ -151,10 +95,10 @@ const minMutation = (startGene, endGene, bank) => {
     visitedGenes.add(startGene);
 
     while (queue.length > 0) {
-        const [currGene, mutations] = queue.shift();
+        const [currGene, numMutations] = queue.shift();
 
         if (currGene === endGene) {
-            return mutations;
+            return numMutations;
         }
 
         for (let i = 0; i < currGene.length; i++) {
@@ -166,7 +110,7 @@ const minMutation = (startGene, endGene, bank) => {
                 const newGene = currGene.slice(0, i) + mutationChar + currGene.slice(i + 1);
 
                 if (geneSet.has(newGene) && !visitedGenes.has(newGene)) {
-                    queue.push([newGene, mutations + 1]);
+                    queue.push([newGene, numMutations + 1]);
                     visitedGenes.add(newGene);
                 }
             }
@@ -175,13 +119,24 @@ const minMutation = (startGene, endGene, bank) => {
     return -1;
 };
 
-/* Shortest Path to Get Food */
+/* Shortest Path to Get Food - You are starving and you want to eat food as quickly as possible. You want to find the shortest path to arrive at any food cell.
+
+You are given an m x n character matrix, grid, of these different types of cells:
+
+'*' is your location. There is exactly one '*' cell.
+'#' is a food cell. There may be multiple food cells.
+'O' is free space, and you can travel through these cells.
+'X' is an obstacle, and you cannot travel through these cells.
+You can travel to any adjacent cell north, east, south, or west of your current location if there is not an obstacle.
+
+Return the length of the shortest path for you to reach any food cell. If there is no path for you to reach food, return -1.
+ */
 
 const getFood = grid => {
 
     /* pseudo code
-        find the pos of the person in the matrix
-        start BFS with the person's pos
+        find the curr pos in the matrix
+        start BFS with the curr pos
             loop through the queue
                 check if neighbours can be pushed in the queue for next travel
     */
@@ -204,7 +159,7 @@ const getFood = grid => {
 
     const visited = new Set();
 
-    const isValid = (x, y) => x >= 0 && x < ROWS && y >= 0 && y < COLS;
+    const isValidCell = (x, y) => x >= 0 && x < ROWS && y >= 0 && y < COLS
 
     const queue = [[startX, startY, 0]];
 
@@ -219,7 +174,7 @@ const getFood = grid => {
             const newX = x + dx;
             const newY = y + dy;
 
-            if (isValid(newX, newY) && grid[newX][newY] !== 'X' && !visited.has(`${newX}-${newY}`)) {
+            if (isValidCell(newX, newY) && grid[newX][newY] !== 'X' && !visited.has(`${newX}-${newY}`)) {
                 visited.add(`${newX}-${newY}`);
                 queue.push([newX, newY, steps + 1]);
             }
@@ -227,3 +182,60 @@ const getFood = grid => {
     }
     return -1;
 };
+
+/* Minimum Knight Moves - In an infinite chess board with coordinates from -infinity to +infinity, you have a knight at square [0, 0].
+A knight has 8 possible moves it can make, as illustrated below. Each move is two squares in a cardinal direction, then one square in an orthogonal direction.
+Return the minimum number of steps needed to move the knight to the square [x, y]. It is guaranteed the answer exists.
+ */
+const minKnightMoves = (x, y) => {
+
+    /* pseudo code
+        we have to do BFS travel from start point to end point
+            start the queue with [0, 0]
+            loop through queue items
+                loop through curr items
+                    add neighbour points for next travel
+                        we do not want to deal with -ve coords
+                            consider [302, 302] as [0, 0]
+                increment num steps
+    */
+
+    let minSteps = 0;
+
+    const offsets = [
+        [1, 2], [-1, 2], [-2, 1], [-2, -1],
+        [2, 1], [2, -1], [1, -2], [-1, -2]
+    ];
+
+    const visitedArr = Array(607).fill(null).map(() => Array(607).fill(false));
+
+    const queue = [];
+    queue.push([0, 0]);
+
+    while (queue.length > 0) {
+        const queueSize = queue.length;
+
+        for (let counter = 0; counter < queueSize; counter++) {
+            const currPair = queue.shift();
+
+            if (currPair[0] === x && currPair[1] === y) {
+                return minSteps;
+            }
+
+            for (const [dx, dy] of offsets) {
+                const nextX = currPair[0] + dx;
+                const nextY = currPair[1] + dy;
+
+                if (!visitedArr[nextX + 302][nextY + 302]) {
+                    queue.push([nextX, nextY]);
+                    visitedArr[nextX + 302][nextY + 302] = true;
+                }
+            }
+        }
+
+        minSteps++;
+    }
+
+    return -1;
+}
+
