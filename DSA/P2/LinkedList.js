@@ -779,40 +779,38 @@ You may not modify the values in the list's nodes. Only nodes themselves may be 
  * @return {void} Do not return anything, modify head in-place instead.
  */
 const reorderList = (head) => {
-    // Initialize a stack to store nodes
-    const stack = [];
-    // Initialize a variable 'node' to the head of the linked list
-    let node = head;
 
-    // Check if the linked list is empty
-    if (!node) {
-        return;
+    /* pseudo code
+        find the slow pointer pointing to second half of list
+        reverse the second half
+        
+    */
+
+    let slow = head
+    let fast = head
+    while (fast.next && fast.next.next) {
+        slow = slow.next
+        fast = fast.next.next
     }
 
-    // Traverse the linked list and push each node onto the stack
-    while (node) {
-        stack.push(node);
-        node = node.next;
+    let prev = null
+    let cur = slow.next
+    while (cur) {
+        let temp = cur.next
+        cur.next = prev
+        prev = cur
+        cur = temp
     }
 
-    // Get the length of the stack (number of nodes in the linked list)
-    const length = stack.length;
-    // Reset 'node' to the head of the linked list
-    node = head;
+    slow.next = null
 
-    // Reorder the linked list by alternating between popping and shifting nodes
-    for (let i = 0; i < length; i++) {
-        // If the current index is even, connect the current node to the node at the front of the stack
-        if (i % 2 === 0) {
-            node.next = stack.shift();
-        } else {
-            // If the current index is odd, connect the current node to the node at the end of the stack
-            node.next = stack.pop();
-        }
-        // Move to the next node in the linked list
-        node = node.next;
+    let h1 = head
+    let h2 = prev
+
+    while (h2) {
+        let temp = h1.next
+        h1.next = h2
+        h1 = h2
+        h2 = temp
     }
-
-    // Set the 'next' pointer of the last node to null to terminate the reordered list
-    node.next = null;
 };
