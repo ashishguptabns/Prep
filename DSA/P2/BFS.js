@@ -239,3 +239,67 @@ const minKnightMoves = (x, y) => {
     return -1;
 }
 
+/* Rotting oranges - You are given an m x n grid where each cell can have one of three values:
+
+- 0 representing an empty cell,
+- 1 representing a fresh orange, or
+- 2 representing a rotten orange.
+
+Every minute, any fresh orange that is 4-directionally adjacent to a rotten orange becomes rotten.
+
+Return the minimum number of minutes that must elapse until no cell has a fresh orange. If this is impossible, return -1.
+ */
+
+/**
+ * @param {number[][]} grid
+ * @return {number}
+ */
+const orangesRotting = (grid) => {
+    const qu = [];
+    let noOfFreshOranges = 0;
+    let time = 0;
+    for (let i = 0; i < grid.length; i++) {
+        for (let j = 0; j < grid[i].length; j++) {
+            if (grid[i][j] === 2) qu.push([i, j]);
+            if (grid[i][j] === 1) noOfFreshOranges++;
+        }
+    }
+
+    while (qu.length) {
+        const n = qu.length;
+
+        let freshOrngCount = 0;
+        for (let i = 0; i < n; i++) {
+            const [x, y] = qu.shift();
+            // right
+            if ((y < grid[x].length - 1) && (grid[x][y + 1] === 1)) {
+                freshOrngCount++;
+                grid[x][y + 1] = 2
+                qu.push([x, y + 1]);
+            }
+            // bottom
+            if ((x < grid.length - 1) && (grid[x + 1][y] === 1)) {
+                freshOrngCount++;
+                grid[x + 1][y] = 2
+                qu.push([x + 1, y]);
+            }
+            // top
+            if ((x >= 1) && (grid[x - 1][y] === 1)) {
+                freshOrngCount++;
+                grid[x - 1][y] = 2
+                qu.push([x - 1, y]);
+            }
+            // left
+            if ((y >= 1) && (grid[x][y - 1] === 1)) {
+                freshOrngCount++;
+                grid[x][y - 1] = 2
+                qu.push([x, y - 1]);
+            }
+        }
+        if (freshOrngCount) time++;
+        noOfFreshOranges -= freshOrngCount;
+    }
+
+    // if any fresh orange remains
+    return noOfFreshOranges === 0 ? time : -1;
+};
