@@ -510,6 +510,12 @@ Generate an m x n matrix that contains the integers in the linked list presented
 Return the generated matrix.
  */
 const spiralMatrix = (m, n, head) => {
+
+    /* pseudo code
+        keep curr row and col
+        maintain direction of movement in the matrix
+    */
+
     let currRow = 0
     let currCol = 0
 
@@ -517,35 +523,28 @@ const spiralMatrix = (m, n, head) => {
 
     let direction = 'r'
 
-    //  -1 by default
     const mat = Array(m).fill().map(() => Array(n).fill(-1))
 
-    //  iterate till linked list finishes
     while (head) {
         mat[currRow][currCol] = head.val
 
-        //  reached right
         if (currCol === right && direction === 'r') {
             right--
             direction = 'd'
         }
-        //  reached bottom
         if (currRow === bottom && direction === 'd') {
             bottom--
             direction = 'l'
         }
-        //  reached left
         if (currCol === left && direction === 'l') {
             left++
             direction = 'u'
         }
-        //  reached top
         if (currRow === top && direction === 'u') {
             top++
             direction = 'r'
         }
 
-        //  handle moving pointers
         if (direction === 'r') {
             currCol++
         }
