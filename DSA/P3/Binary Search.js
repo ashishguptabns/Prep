@@ -1,3 +1,166 @@
+/* Median of two sorted arrays - Given two sorted arrays nums1 and nums2 of size m and n respectively, return the median of the two sorted arrays.
+
+The overall run time complexity should be O(log (m+n)).
+ */
+/**
+ * @param {number[]} nums1
+ * @param {number[]} nums2
+ * @return {number}
+ */
+const findMedianSortedArrays = (nums1, nums2) => {
+
+    /* pseudo code
+        keep an array to merge both arrays
+        move i through nums1 and j through nums2
+            nums1[i] < nums2[j]
+                push ith item of nums1
+            else
+                push jth item of nums2
+        push remaining items of nums1 and nums2
+        find the median of merged array
+    */
+
+    const merged = [];
+    let i = 0, j = 0;
+
+    while (i < nums1.length && j < nums2.length) {
+        if (nums1[i] < nums2[j]) {
+            merged.push(nums1[i++]);
+        } else {
+            merged.push(nums2[j++]);
+        }
+    }
+
+    while (i < nums1.length) {
+        merged.push(nums1[i++]);
+    }
+    while (j < nums2.length) {
+        merged.push(nums2[j++]);
+    }
+
+    let mid = Math.floor(merged.length / 2);
+    if (merged.length % 2 === 0) {
+        return (merged[mid - 1] + merged[mid]) / 2;
+    } else {
+        return merged[mid];
+    }
+};
+
+/* Minimum Time to Complete Trips - You are given an array time where time[i] denotes the time taken by the ith bus to complete one trip.
+
+Each bus can make multiple trips successively; that is, the next trip can start immediately after completing the current trip. Also, each bus operates independently; that is, the trips of one bus do not influence the trips of any other bus.
+
+You are also given an integer totalTrips, which denotes the number of trips all buses should make in total. Return the minimum time required for all buses to complete at least totalTrips trips.
+ */
+/**
+ * @param {number[]} busTimes
+ * @param {number} totalTrips
+ * @return {number}
+ */
+const minimumTime = (busTimes, totalTrips) => {
+
+    /* pseudo code
+        find min time
+        keep left at 1 and right at min * totalTrips
+        loop until left < right
+            find the mid
+            find if all trips can be completed in this time
+                move busTime through busTimes
+                    track sum of all trips
+                    true if more than totalTrips needed to complete
+            yes
+                discard right half
+            else
+                discard left half
+    */
+
+    let min = Infinity
+
+    for (const t of busTimes) {
+        min = Math.min(min, t)
+    }
+
+    let left = 1
+    let right = min * totalTrips
+
+    const canComplete = (possibleTime) => {
+        let numTrips = 0
+
+        for (const busTime of busTimes) {
+            numTrips += Math.floor(possibleTime / busTime)
+            if (numTrips >= totalTrips) {
+                return true
+            }
+        }
+
+        return false
+    }
+
+    while (left < right) {
+        let mid = Math.floor((left + right) / 2)
+
+        const isPossible = canComplete(mid)
+
+        if (isPossible) {
+            right = mid
+        } else {
+            left = mid + 1
+        }
+    }
+
+    return left
+};
+
+/* Kth Smallest Element in a Sorted Matrix - Given an n x n matrix where each of the rows and columns is sorted in ascending order, return the kth smallest element in the matrix.
+
+Note that it is the kth smallest element in the sorted order, not the kth distinct element.
+
+You must find a solution with a memory complexity better than O(n**2).
+ */
+/**
+ * @param {number[][]} matrix
+ * @param {number} k
+ * @return {number}
+ */
+const kthSmallest = (matrix, k) => {
+    /* pseudo code
+        start left at top left and right at right bottom
+        loop till left < right
+            find the mid
+            move r through rows
+                move c left through cols till curr cell > mid
+                track smaller num items in this row
+            num items > k
+                discard right half
+            else
+                discard left half
+    */
+
+    let left = matrix[0][0]
+    let right = matrix[matrix.length - 1][matrix.length - 1]
+
+    while (left < right) {
+        const mid = Math.floor((left + right) / 2)
+        let numElements = 0
+        let c = matrix.length - 1
+
+        for (let r = 0; r < matrix.length; r++) {
+            while (c >= 0 && matrix[r][c] > mid) {
+                c--
+            }
+            numElements += c + 1
+        }
+
+        if (numElements < k) {
+            left = mid + 1
+        } else {
+            right = mid
+        }
+    }
+
+    return left
+};
+
 /* Kth Smallest Subarray Sum - Given an integer array nums of length n and an integer k, return the kth smallest subarray sum.
  */
 const kthSmallestSubarraySum = (nums, k) => {
@@ -450,54 +613,6 @@ const maxLength = (ribbons, k) => {
     return right;
 };
 
-/* Median of two sorted arrays - Given two sorted arrays nums1 and nums2 of size m and n respectively, return the median of the two sorted arrays.
-
-The overall run time complexity should be O(log (m+n)).
- */
-/**
- * @param {number[]} nums1
- * @param {number[]} nums2
- * @return {number}
- */
-const findMedianSortedArrays = (nums1, nums2) => {
-
-    /* pseudo code
-        keep an array to merge both arrays
-        move i through nums1 and j through nums2
-            nums1[i] < nums2[j]
-                push ith item of nums1
-            else
-                push jth item of nums2
-        push remaining items of nums1 and nums2
-        find the median of merged array
-    */
-
-    const merged = [];
-    let i = 0, j = 0;
-
-    while (i < nums1.length && j < nums2.length) {
-        if (nums1[i] < nums2[j]) {
-            merged.push(nums1[i++]);
-        } else {
-            merged.push(nums2[j++]);
-        }
-    }
-
-    while (i < nums1.length) {
-        merged.push(nums1[i++]);
-    }
-    while (j < nums2.length) {
-        merged.push(nums2[j++]);
-    }
-
-    let mid = Math.floor(merged.length / 2);
-    if (merged.length % 2 === 0) {
-        return (merged[mid - 1] + merged[mid]) / 2;
-    } else {
-        return merged[mid];
-    }
-};
-
 /* Koko Eating Bananas - Koko loves to eat bananas. There are n piles of bananas, the ith pile has piles[i] bananas. The guards have gone and will come back in h hours.
 
 Koko can decide her bananas-per-hour eating speed of k. Each hour, she chooses some pile of bananas and eats k bananas from that pile. If the pile has less than k bananas, she eats all of them instead and will not eat any more bananas during this hour.
@@ -512,6 +627,10 @@ Return the minimum integer k such that she can eat all the bananas within h hour
  * @return {number}
  */
 const minEatingSpeed = (piles, h) => {
+
+    /* pseudo code
+
+    */
 
     let minSpeed = 1
     let maxSpeed = 1
@@ -535,100 +654,6 @@ const minEatingSpeed = (piles, h) => {
     }
 
     return minSpeed
-};
-
-/* Minimum Time to Complete Trips - You are given an array time where time[i] denotes the time taken by the ith bus to complete one trip.
-
-Each bus can make multiple trips successively; that is, the next trip can start immediately after completing the current trip. Also, each bus operates independently; that is, the trips of one bus do not influence the trips of any other bus.
-
-You are also given an integer totalTrips, which denotes the number of trips all buses should make in total. Return the minimum time required for all buses to complete at least totalTrips trips.
- */
-/**
- * @param {number[]} time
- * @param {number} totalTrips
- * @return {number}
- */
-const minimumTime = (time, totalTrips) => {
-
-    let min = Infinity
-
-    for (const t of time) {
-        min = Math.min(min, t)
-    }
-
-    let left = 1
-    let right = min * totalTrips
-
-    const canComplete = (possibleTime) => {
-        let numTrips = 0
-
-        for (const busTime of time) {
-            numTrips += Math.floor(possibleTime / busTime)
-            if (numTrips >= totalTrips) {
-                return true
-            }
-        }
-
-        return false
-    }
-
-    while (left < right) {
-        let mid = Math.floor((left + right) / 2)
-
-        const isPossible = canComplete(mid)
-
-        if (isPossible) {
-            right = mid
-        } else {
-            left = mid + 1
-        }
-    }
-
-    return left
-};
-
-/* Kth Smallest Element in a Sorted Matrix - Given an n x n matrix where each of the rows and columns is sorted in ascending order, return the kth smallest element in the matrix.
-
-Note that it is the kth smallest element in the sorted order, not the kth distinct element.
-
-You must find a solution with a memory complexity better than O(n**2).
- */
-/**
- * @param {number[][]} matrix
- * @param {number} k
- * @return {number}
- */
-const kthSmallest = (matrix, k) => {
-    /* pseudo code
-        start left at top left and right at right bottom
-        loop till left < right
-            find the mid
-
-    */
-
-    let left = matrix[0][0]
-    let right = matrix[matrix.length - 1][matrix.length - 1]
-
-    while (left < right) {
-        const mid = Math.floor((left + right) / 2)
-        let numElements = 0
-        let c = matrix.length - 1
-
-        for (let r = 0; r < matrix.length; r++) {
-            while (c >= 0 && matrix[r][c] > mid) {
-                c--
-            }
-            numElements += c + 1
-        }
-
-        if (numElements < k) {
-            left = mid + 1
-        } else {
-            right = mid
-        }
-    }
-
-    return left
 };
 
 /* Smallest common number sorted rows - Given a matrix mat where every row is sorted in increasing order, return the smallest common element in all rows.
