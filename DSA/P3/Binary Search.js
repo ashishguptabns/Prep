@@ -1,3 +1,60 @@
+/* Kth Smallest Subarray Sum - Given an integer array nums of length n and an integer k, return the kth smallest subarray sum.
+ */
+const kthSmallestSubarraySum = (nums, k) => {
+
+    /* pseudo code
+        smallest could be the min or max of sums and anything in between
+        keep left at min and right at max
+        loop till left < right
+            find the mid
+            count subarrays with max sum capped at mid
+                move right through nums
+                    track sum
+                    sum > maxSum
+                        shrink window from left
+                    find subarrays ending at right and add to count
+            count > k
+                discard right half
+            else
+                discard left half
+    */
+
+    const countSubarrays = (maxSum) => {
+        let count = 0;
+        let sum = 0;
+        let left = 0;
+
+        for (let right = 0; right < nums.length; right++) {
+            sum += nums[right];
+
+            while (sum > maxSum) {
+                sum -= nums[left];
+                left++;
+            }
+
+            count += right - left + 1;
+        }
+
+        return count;
+    }
+
+    let left = Math.min(...nums);
+    let right = Math.max(...nums);
+
+    while (left < right) {
+        const mid = Math.floor((left + right) / 2);
+        const count = countSubarrays(mid);
+
+        if (count < k) {
+            left = mid + 1;
+        } else {
+            right = mid;
+        }
+    }
+
+    return left;
+}
+
 /* Find First and Last Position of Element in Sorted Array - Given an array of integers nums sorted in non-decreasing order, find the starting and ending position of a given target value.
 
 If target is not found in the array, return [-1, -1].
@@ -579,7 +636,13 @@ const kthSmallest = (matrix, k) => {
 const smallestCommonElement = (mat) => {
 
     /* pseudo code
-        
+        keep left at smallest and right at highest item
+        loop till left <= right
+            find the mid
+            check if it is present in all rows
+                discard the right
+            else
+                discard the left
     */
 
     const rows = mat.length;
@@ -613,55 +676,16 @@ const smallestCommonElement = (mat) => {
         return -1;
     }
 
-    let low = mat[0][0];
-    let high = mat[0][cols - 1];
+    let left = mat[0][0];
+    let right = mat[0][cols - 1];
 
-    while (low <= high) {
-        const mid = Math.floor((low + high) / 2);
+    while (left <= right) {
+        const mid = Math.floor((left + right) / 2);
 
         if (isPresentInAllRows(mid)) {
-            high = mid - 1;
+            right = mid - 1;
         } else {
-            low = mid + 1;
-        }
-    }
-
-    return low;
-}
-
-/* Kth Smallest Subarray Sum - Given an integer array nums of length n and an integer k, return the kth smallest subarray sum.
- */
-const kthSmallestSubarraySum = (nums, k) => {
-    const countSubarrays = (maxSum) => {
-        let count = 0;
-        let sum = 0;
-        let left = 0;
-
-        for (let right = 0; right < nums.length; right++) {
-            sum += nums[right];
-
-            while (sum > maxSum) {
-                sum -= nums[left];
-                left++;
-            }
-
-            count += right - left + 1;
-        }
-
-        return count;
-    }
-
-    let left = Math.min(...nums);
-    let right = Math.max(...nums);
-
-    while (left < right) {
-        const mid = Math.floor((left + right) / 2);
-        const count = countSubarrays(mid);
-
-        if (count < k) {
             left = mid + 1;
-        } else {
-            right = mid;
         }
     }
 
