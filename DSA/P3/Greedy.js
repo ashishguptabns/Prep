@@ -1,3 +1,109 @@
+/* Max chunks to make sorted - You are given an integer array arr of length n that represents a permutation of the integers in the range [0, n - 1].
+
+We split arr into some number of chunks (i.e., partitions), and individually sort each chunk. After concatenating them, the result should equal the sorted array.
+
+Return the largest number of chunks we can make to sort the array.
+ */
+
+const maxChunksToSorted = (arr) => {
+
+  /* pseudo code
+    notice nums are from 0 till n - 1
+    move through arr
+      keep tracking max num found so far
+      max = index
+        one sorted chunk can end at this index
+        increase the count
+  */
+
+  let count = 0;
+  let max = -Infinity;
+
+  arr.forEach((num, index) => {
+    max = Math.max(num, max);
+
+    if (max === index) {
+      count++;
+    }
+  });
+
+  return count;
+};
+
+/* Break a palindrome - Given a palindromic string of lowercase English letters palindrome, replace exactly one character with any lowercase English letter so that the resulting string is not a palindrome and that it is the lexicographically smallest one possible.
+
+Return the resulting string. If there is no way to replace a character to make it not a palindrome, return an empty string.
+ */
+/**
+ * @param {string} palindrome
+ * @return {string}
+ */
+const breakPalindrome = (palindrome) => {
+
+  /* pseudo code
+    move i till half length of palindrome
+      curr char is not a
+        put a and return
+    put b at the last index and return
+  */
+
+  const len = palindrome.length;
+  if (len === 1) {
+    return "";
+  }
+
+  for (let i = 0; i < Math.floor(len / 2); i++) {
+    if (palindrome[i] !== "a") {
+      return palindrome.substring(0, i) + "a" + palindrome.substring(i + 1);
+    }
+  }
+  return palindrome.substring(0, len - 1) + "b";
+};
+
+/* Gas Station - There are n gas stations along a circular route, where the amount of gas at the ith station is gas[i].
+You have a car with an unlimited gas tank and it costs cost[i] of gas to travel from the ith station to its next (i + 1)th station. You begin the journey with an empty tank at one of the gas stations.
+Given two integer arrays gas and cost, return the starting gas station's index if you can travel around the circuit once in the clockwise direction, otherwise return -1. If there exists a solution, it is guaranteed to be unique
+*/
+/**
+ * @param {number[]} gas
+ * @param {number[]} cost
+ * @return {number}
+ */
+const canCompleteCircuit = (gases, costs) => {
+
+  /* pseudo code
+    move i through stations
+      track gas left after curr trip and overall
+      ran out of gas
+        reset curr gas to 0
+        change station to i + 1
+    check if overall gas left was >=0
+  */
+
+  let startStation = 0;
+  let currGasLeft = 0;
+  let totalGasLeft = 0;
+
+  for (let i = 0; i < gases.length; i++) {
+    const gas = gases[i];
+    const cost = costs[i];
+
+    currGasLeft += gas - cost;
+    totalGasLeft += gas - cost;
+
+    if (currGasLeft < 0) {
+      currGasLeft = 0;
+      startStation = i + 1;
+    }
+  }
+
+  if (totalGasLeft < 0) {
+    return -1;
+  } else {
+    return startStation;
+  }
+};
+
 /* Jump Game || - You are given a 0-indexed array of integers nums of length n. You are initially positioned at nums[0].
 Each element nums[i] represents the maximum length of a forward jump from index i. In other words, if you are at nums[i], 
 you can jump to any nums[i + j] where:
@@ -495,101 +601,6 @@ const findBuildingsWithOceanView = (heights) => {
 
   // Return indices of buildings with ocean view
   return result;
-};
-
-/* Max chunks to make sorted - You are given an integer array arr of length n that represents a permutation of the integers in the range [0, n - 1].
-
-We split arr into some number of chunks (i.e., partitions), and individually sort each chunk. After concatenating them, the result should equal the sorted array.
-
-Return the largest number of chunks we can make to sort the array.
- */
-
-const maxChunksToSorted = (arr) => {
-  let count = 0;
-  let max = -Infinity;
-
-  arr.forEach((num, index) => {
-    // Update the maximum value encountered so far
-    max = Math.max(num, max);
-
-    // If the maximum value equals the current index, it indicates that
-    // all elements before this index are smaller or equal to the index.
-    // Hence, a chunk can end here.
-    if (max === index) {
-      count++;
-    }
-  });
-
-  return count;
-};
-
-/* Break a palindrome - Given a palindromic string of lowercase English letters palindrome, replace exactly one character with any lowercase English letter so that the resulting string is not a palindrome and that it is the lexicographically smallest one possible.
-
-Return the resulting string. If there is no way to replace a character to make it not a palindrome, return an empty string.
- */
-
-/**
- * @param {string} palindrome
- * @return {string}
- */
-const breakPalindrome = (palindrome) => {
-  const len = palindrome.length;
-  if (len === 1) {
-    return "";
-  }
-
-  for (let i = 0; i < Math.floor(len / 2); i++) {
-    if (palindrome[i] !== "a") {
-      return palindrome.substring(0, i) + "a" + palindrome.substring(i + 1);
-    }
-  }
-  //  we have all a chars
-  return palindrome.substring(0, len - 1) + "b";
-};
-
-/* Gas Station - There are n gas stations along a circular route, where the amount of gas at the ith station is gas[i].
-You have a car with an unlimited gas tank and it costs cost[i] of gas to travel from the ith station to its next (i + 1)th station. You begin the journey with an empty tank at one of the gas stations.
-Given two integer arrays gas and cost, return the starting gas station's index if you can travel around the circuit once in the clockwise direction, otherwise return -1. If there exists a solution, it is guaranteed to be unique
-*/
-
-/**
- * @param {number[]} gas
- * @param {number[]} cost
- * @return {number}
- */
-const canCompleteCircuit = (gases, costs) => {
-
-  /* pseudo code
-    move i through stations
-      track gas left in curr trip and overall
-      ran out of gas
-        reset curr gas to 0
-        change station to i + 1
-    check if overall gas left was >=0
-  */
-
-  let startStation = 0;
-  let currGasLeft = 0;
-  let totalGasLeft = 0;
-
-  for (let i = 0; i < gases.length; i++) {
-    const gas = gases[i];
-    const cost = costs[i];
-
-    currGasLeft += gas - cost;
-    totalGasLeft += gas - cost;
-
-    if (currGasLeft < 0) {
-      currGasLeft = 0;
-      startStation = i + 1;
-    }
-  }
-
-  if (totalGasLeft < 0) {
-    return -1;
-  } else {
-    return startStation;
-  }
 };
 
 /* Find Original Array From Doubled Array - An integer array original is transformed into a doubled array changed by appending twice the value of every element in original, and then randomly shuffling the resulting array.
