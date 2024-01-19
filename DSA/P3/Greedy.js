@@ -1,3 +1,21 @@
+/* Buildings With an Ocean View - Find the indices of buildings that have an unobstructed view of the ocean, assuming buildings to the right can block the view.
+ */
+const findBuildingsWithOceanView = (heights) => {
+  const result = [];
+  let maxRightHeight = -1;
+
+  for (let i = heights.length - 1; i >= 0; i--) {
+    const currentHeight = heights[i];
+
+    if (currentHeight > maxRightHeight) {
+      result.push(i);
+      maxRightHeight = currentHeight;
+    }
+  }
+
+  return result;
+};
+
 /* Max chunks to make sorted - You are given an integer array arr of length n that represents a permutation of the integers in the range [0, n - 1].
 
 We split arr into some number of chunks (i.e., partitions), and individually sort each chunk. After concatenating them, the result should equal the sorted array.
@@ -558,49 +576,26 @@ const partitionString = (s) => {
 Find any matrix of non-negative integers of size rowSum.length x colSum.length that satisfies the rowSum and colSum requirements.
  */
 const restoreMatrix = (rowSum, colSum) => {
-  //  use greedy
+
+  /* pseudo code
+      
+  */
 
   const m = rowSum.length;
   const n = colSum.length;
-  const matrix = Array(m)
-    .fill(0)
-    .map((_) => Array(n).fill(0));
+  const matrix = Array(m).fill().map(() => Array(n).fill(0));
 
   for (let row = 0; row < m; row++) {
     for (let col = 0; col < n; col++) {
-      //  take the min of two sums
       const min = Math.min(rowSum[row], colSum[col]);
 
       matrix[row][col] = min;
 
-      //  deduct for further iterations
       rowSum[row] -= min;
       colSum[col] -= min;
     }
   }
   return matrix;
-};
-
-/* Buildings With an Ocean View - Find the indices of buildings that have an unobstructed view of the ocean, assuming buildings to the right can block the view.
- */
-const findBuildingsWithOceanView = (heights) => {
-  const result = [];
-  let maxRightHeight = -1;
-
-  // Iterate from right to left
-  for (let i = heights.length - 1; i >= 0; i--) {
-    const currentHeight = heights[i];
-
-    // Check if current building is taller than the maximum height seen so far
-    if (currentHeight > maxRightHeight) {
-      // Unobstructed ocean view! Add index to result
-      result.push(i);
-      maxRightHeight = currentHeight;
-    }
-  }
-
-  // Return indices of buildings with ocean view
-  return result;
 };
 
 /* Find Original Array From Doubled Array - An integer array original is transformed into a doubled array changed by appending twice the value of every element in original, and then randomly shuffling the resulting array.
