@@ -355,3 +355,4 @@ const quickSort = (nums) => {
 
 };
 
+/* Given a string and sort order, sort the string based on the sort order. */

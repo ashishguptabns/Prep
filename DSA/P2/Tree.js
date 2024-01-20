@@ -1406,3 +1406,5 @@ const generateTrees = (end, start = 1) => {
     }
     return trees;
 };
+
+/* Find lowest common ancestor in 'n' ary tree */

@@ -1181,3 +1181,8 @@ const nthUglyNumber = (n) => {
     }
     return dp[n - 1]
 };
+
+/* find Number of rectangle in matrix which have equal number of A& B
+ */
+
+/* if string can be made palindrome by removing at most 1 character */
