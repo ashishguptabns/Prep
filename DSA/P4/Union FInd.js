@@ -19,15 +19,13 @@ const countUniqueCategoriesWithUnionFind = (data) => {
         record in the map
         track category count
       repeat category
-        find the root of curr index
-        find the root of its category
+        find the root index for curr index
+        find the root index for curr category
         apply a union
   */
 
-  //  this map associates each category with the index of first occurrence of this category
   const categoryIndexMap = new Map();
 
-  // number of unique categories
   let count = 0;
 
   const unionFind = new UnionFind(data.length);
@@ -35,13 +33,9 @@ const countUniqueCategoriesWithUnionFind = (data) => {
   data.forEach((item, index) => {
     if (item.category) {
       if (!categoryIndexMap.has(item.category)) {
-        //  found a new category
-        //  record the first occurence
         categoryIndexMap.set(item.category, index);
         count++;
       } else {
-        // group with the same category
-        // perform the union operation between roots of current index and first occurrence index of this category
         const root1 = unionFind.find(index);
         const root2 = unionFind.find(categoryIndexMap.get(item.category));
 
@@ -59,6 +53,7 @@ const countUniqueCategoriesWithUnionFind = (data) => {
 class UnionFind {
 
   /* pseudo code
+    keep a parent array where each index is its own parent in the staring
     find the root of set to which x belongs
       keep moving up the parent array till ith item is its own parent and assign the same to parent of x
       return parent of x
@@ -70,25 +65,19 @@ class UnionFind {
   */
 
   constructor(size) {
-    //  store the parent of each element
     this.parent = new Array(size);
     for (let i = 0; i < size; i++) {
-      //  each element is its own parent - individual disjoint sets
       this.parent[i] = i;
     }
   }
 
-  //  find the root of the set to which x element belongs
   find(x) {
     if (this.parent[x] !== x) {
-      //  move up the ancestors and keep updating the parent
       this.parent[x] = this.find(this.parent[x]);
     }
-    //  found the root of this set
     return this.parent[x];
   }
 
-  //  unites the sets to which x and y belong by making the root of one set the parent of root of other set
   union(x, y) {
     const rootX = this.find(x);
     const rootY = this.find(y);
