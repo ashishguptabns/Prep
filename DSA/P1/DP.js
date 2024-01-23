@@ -1,3 +1,99 @@
+/* Triangle - Given a triangle array, return the minimum path sum from top to bottom.
+
+For each step, you may move to an adjacent number of the row below. More formally, if you are on index i on the current row, you may move to either index i or index i + 1 on the next row.
+ */
+/**
+ * @param {number[][]} triangle
+ * @return {number}
+ */
+const minimumTotal = (triangle) => {
+
+    /* pseudo code
+        move i from bottom second
+            move j through columns
+                find the min of j or j + 1 item on row i + 1 and add to curr cell [i, j]
+    */
+
+    for (let i = triangle.length - 2; i >= 0; i--) {
+        for (let j = 0; j < triangle[i].length; j++) {
+            triangle[i][j] += Math.min(triangle[i + 1][j], triangle[i + 1][j + 1])
+        }
+    }
+    return triangle[0][0]
+};
+
+/* House robber 2 - You are a professional robber planning to rob houses along a street. Each house has a certain amount of money stashed. All houses at this place are arranged in a circle. That means the first house is the neighbor of the last one. Meanwhile, adjacent houses have a security system connected, and it will automatically contact the police if two adjacent houses were broken into on the same night.
+
+Given an integer array nums representing the amount of money of each house, return the maximum amount of money you can rob tonight without alerting the police.
+ */
+/**
+ * @param {number[]} nums
+ * @return {number}
+ */
+const rob2 = (nums) => {
+
+    /* pseudo code
+        keep two dp arrays
+            one robs first house, second robs second house
+            notice the cicular nature
+        fill both the dp arrays
+        return max of the two 
+    */
+
+    if (nums.length < 2) {
+        return nums[0] || 0;
+    }
+
+    const dp1 = [nums[0]];
+    const dp2 = [0, nums[1]];
+
+    for (let i = 1; i < nums.length - 1; i++) {
+        dp1[i] = Math.max(nums[i] + (dp1[i - 2] || 0), dp1[i - 1]);
+    }
+
+    for (let i = 2; i < nums.length; i++) {
+        dp2[i] = Math.max(nums[i] + dp2[i - 2], dp2[i - 1]);
+    }
+
+    return Math.max(dp1.pop(), dp2.pop());
+};
+
+/* Ugly number - An ugly number is a positive integer whose prime factors are limited to 2, 3, and 5.
+
+Given an integer n, return the nth ugly number.
+ */
+/**
+ * @param {number} n
+ * @return {number}
+ */
+const nthUglyNumber = (n) => {
+
+    /* pseudo code
+        we will keep a dp array 
+            ith item is ith ugly number
+        keep tracking counts of 2, 3 and 5 we have considered so far
+        move i till n
+            find min of three possible numbers
+            increase the count of chosen num accordingly
+    */
+
+    let dp = [1]
+    let c2 = c3 = c5 = 0
+    for (let i = 1; i < n; i++) {
+        dp[i] = Math.min(2 * dp[c2], 3 * dp[c3], 5 * dp[c5])
+        if (2 * dp[c2] === dp[i]) {
+            c2++
+        }
+        if (3 * dp[c3] === dp[i]) {
+            c3++
+        }
+        if (5 * dp[c5] === dp[i]) {
+            c5++
+        }
+    }
+    return dp[n - 1]
+};
+
 /* LC - https://leetcode.com/problemset/?topicSlugs=dynamic-programming&page=1&sorting=W3t9XQ%3D%3D&status=NOT_STARTED&difficulty=MEDIUM */
 
 /* Longest Increasing Subsequence - Given an integer array nums, return the length of the longest strictly increasing subsequence
@@ -1083,15 +1179,24 @@ Return the number of possible unique paths that the robot can take to reach the 
  * @return {number}
  */
 const uniquePathsWithObstacles = (obstacleGrid) => {
-    let m = obstacleGrid.length;
 
-    let n = obstacleGrid[0].length;
+    /* pseudo code
+        keep a 2D dp array
+            [i, j] tells unique paths to come to this point
+        handle first col and row as base cases
+        visit each cell
+            not an obstacle
+                sum of paths
+    */
+
+    const m = obstacleGrid.length;
+    const n = obstacleGrid[0].length;
 
     if (obstacleGrid[0][0] === 1) {
         return 0;
     }
 
-    let dp = new Array(m).fill(0).map(() => new Array(n).fill(0));
+    const dp = Array(m).fill(0).map(() => Array(n).fill(0));
     dp[0][0] = 1;
 
     for (let i = 1; i < m; i++) {
@@ -1112,77 +1217,43 @@ const uniquePathsWithObstacles = (obstacleGrid) => {
     return dp[m - 1][n - 1];
 };
 
-/* Triangle - Given a triangle array, return the minimum path sum from top to bottom.
+/* Find number of rectangles in a matrix which have equal number of A& B
+ */
+function countRectanglesWithEqualAB(matrix, A, B) {
+    const rowCount = matrix.length;
+    const colCount = matrix[0].length;
 
-For each step, you may move to an adjacent number of the row below. More formally, if you are on index i on the current row, you may move to either index i or index i + 1 on the next row.
- */
-/**
- * @param {number[][]} triangle
- * @return {number}
- */
-const minimumTotal = (triangle) => {
-    for (let i = triangle.length - 2; i >= 0; i--) {
-        for (let j = 0; j < triangle[i].length; j++) {
-            triangle[i][j] += Math.min(triangle[i + 1][j], triangle[i + 1][j + 1])
+    // Create a 3D DP array to store cumulative counts
+    const dp = Array.from({ length: rowCount + 1 }, () =>
+        Array.from({ length: colCount + 1 }, () => ({ a: 0, b: 0 }))
+    );
+
+    // Compute the cumulative counts
+    for (let i = 1; i <= rowCount; i++) {
+        for (let j = 1; j <= colCount; j++) {
+            dp[i][j].a = dp[i - 1][j].a + dp[i][j - 1].a - dp[i - 1][j - 1].a + (matrix[i - 1][j - 1] === A ? 1 : 0);
+            dp[i][j].b = dp[i - 1][j].b + dp[i][j - 1].b - dp[i - 1][j - 1].b + (matrix[i - 1][j - 1] === B ? 1 : 0);
         }
     }
-    return triangle[0][0]
-};
 
-/* House robber 2 - You are a professional robber planning to rob houses along a street. Each house has a certain amount of money stashed. All houses at this place are arranged in a circle. That means the first house is the neighbor of the last one. Meanwhile, adjacent houses have a security system connected, and it will automatically contact the police if two adjacent houses were broken into on the same night.
+    let count = 0;
 
-Given an integer array nums representing the amount of money of each house, return the maximum amount of money you can rob tonight without alerting the police.
- */
-/**
- * @param {number[]} nums
- * @return {number}
- */
-const rob2 = (nums) => {
-    if (nums.length < 2) {
-        return nums[0] || 0;
-    }
+    // Iterate through all rectangles and count those with equal A and B elements
+    for (let topRow = 0; topRow < rowCount; topRow++) {
+        for (let bottomRow = topRow; bottomRow < rowCount; bottomRow++) {
+            for (let leftCol = 0; leftCol < colCount; leftCol++) {
+                for (let rightCol = leftCol; rightCol < colCount; rightCol++) {
+                    const aCount = dp[bottomRow + 1][rightCol + 1].a - dp[bottomRow + 1][leftCol].a - dp[topRow][rightCol + 1].a + dp[topRow][leftCol].a;
+                    const bCount = dp[bottomRow + 1][rightCol + 1].b - dp[bottomRow + 1][leftCol].b - dp[topRow][rightCol + 1].b + dp[topRow][leftCol].b;
 
-    const dp1 = [nums[0]];
-    const dp2 = [0, nums[1]];
-
-    for (let i = 1; i < nums.length - 1; i++) {
-        dp1[i] = Math.max(nums[i] + (dp1[i - 2] || 0), dp1[i - 1]);
-    }
-
-    for (let i = 2; i < nums.length; i++) {
-        dp2[i] = Math.max(nums[i] + dp2[i - 2], dp2[i - 1]);
-    }
-
-    return Math.max(dp1.pop(), dp2.pop());
-};
-
-/* Ugly number - An ugly number is a positive integer whose prime factors are limited to 2, 3, and 5.
-
-Given an integer n, return the nth ugly number.
- */
-/**
- * @param {number} n
- * @return {number}
- */
-const nthUglyNumber = (n) => {
-    let dp = [1]
-    let c2 = c3 = c5 = 0
-    for (let i = 1; i < n; i++) {
-        dp[i] = Math.min(2 * dp[c2], 3 * dp[c3], 5 * dp[c5])
-        if (2 * dp[c2] === dp[i]) {
-            c2++
-        }
-        if (3 * dp[c3] === dp[i]) {
-            c3++
-        }
-        if (5 * dp[c5] === dp[i]) {
-            c5++
+                    if (aCount === bCount) {
+                        count++;
+                    }
+                }
+            }
         }
     }
-    return dp[n - 1]
-};
 
-/* find Number of rectangle in matrix which have equal number of A& B
- */
+    return count;
+}
 
-/* if string can be made palindrome by removing at most 1 character */

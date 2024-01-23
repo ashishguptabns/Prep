@@ -1,5 +1,45 @@
+/* Find falling indices */
+const findFallingIndices = () => {
+    const m = [
+        [1, 1, 1],
+        [1, 0, 1],
+        [0, 0, 1]
+    ]
+
+    const markAdjacent = (r, c) => {
+        const isValidCell = r >= 0 && r < m.length && c >= 0 && c < m[0].length
+
+        if (isValidCell && m[r][c]) {
+            m[r][c] = 0
+            markAdjacent(r - 1, c)
+            markAdjacent(r + 1, c)
+            markAdjacent(r, c + 1)
+            markAdjacent(r, c - 1)
+        }
+    }
+    for (let c = 0; c < m[0].length; c++) {
+        if (m[m.length - 1][c] === 1) {
+            markAdjacent(m.length - 1, c)
+        }
+    }
+
+    const res = []
+
+    for (let c = 0; c < m[0].length; c++) {
+        let willFall = false
+        for (let r = m.length - 1; r >= 0; r--) {
+            if (m[r][c] === 0) {
+                willFall = true
+            }
+            if (willFall && m[r][c] === 1) {
+                res.push([r, c]);
+            }
+        }
+    }
+}
+
 /* Number of islands - Given an m x n 2D binary grid which represents a map of '1's (land) and '0's (water), return the number of islands. An island is surrounded by water and is formed by connecting adjacent lands horizontally or vertically. You may assume all four edges of the grid are all surrounded by water.
- */
+*/
 /**
  * @param {character[][]} grid
  * @return {number}
