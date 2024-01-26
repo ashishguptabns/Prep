@@ -1,3 +1,34 @@
+/* Find valid matrix given row sum and col sum - You are given two arrays rowSum and colSum of non-negative integers where rowSum[i] is the sum of the elements in the ith row and colSum[j] is the sum of the elements of the jth column of a 2D matrix. In other words, you do not know the elements of the matrix, but you do know the sums of each row and column.
+
+Find any matrix of non-negative integers of size rowSum.length x colSum.length that satisfies the rowSum and colSum requirements.
+ */
+const restoreMatrix = (rowSum, colSum) => {
+
+    /* pseudo code
+        move row through rows
+          move col through cols
+            find min of rowSum[row] and colSum[col]
+            assign to matrix[row][col]
+            deduct from rowSum and colSum
+    */
+
+    const m = rowSum.length;
+    const n = colSum.length;
+    const matrix = Array(m).fill().map(() => Array(n).fill(0));
+
+    for (let row = 0; row < m; row++) {
+        for (let col = 0; col < n; col++) {
+            const min = Math.min(rowSum[row], colSum[col]);
+
+            matrix[row][col] = min;
+
+            rowSum[row] -= min;
+            colSum[col] -= min;
+        }
+    }
+    return matrix;
+};
+
 /* Rotate Image - You are given an n x n 2D matrix representing an image, rotate the image by 90 degrees (clockwise).
 
 You have to rotate the image in-place, which means you have to modify the input 2D matrix directly. DO NOT allocate another 2D matrix and do the rotation. */

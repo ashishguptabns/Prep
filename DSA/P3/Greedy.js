@@ -1,3 +1,65 @@
+/* Find Original Array From Doubled Array - An integer array original is transformed into a doubled array changed by appending twice the value of every element in original, and then randomly shuffling the resulting array.
+
+Given an array changed, return original if changed is a doubled array. If changed is not a doubled array, return an empty array. The elements in original may be returned in any order.
+*/
+
+/**
+ * @param {number[]} changed
+ * @return {number[]}
+ */
+const findOriginalArray = (changed) => {
+
+  /* pseudo code
+    keep a map to keep double of items we find with freq
+    sort the array
+    move curr through changed arr
+      curr is a double of some item
+        freq is 1
+          remove from the map
+        else 
+          decrease the freq by 1
+      else
+        map already has its double
+          increase the freq of double
+        else
+          put the double in the map
+        push to res array
+    check if items are still left in the map
+  */
+
+  if (changed.length % 2 === 1) {
+    return [];
+  }
+  const res = [];
+  const map = new Map();
+
+  changed.sort((a, b) => a - b);
+
+  for (const curr of changed) {
+    if (map.has(curr)) {
+      const currValFreq = map.get(curr);
+
+      if (currValFreq === 1) {
+        map.delete(curr);
+      } else {
+        map.set(curr, currValFreq - 1);
+      }
+    } else {
+      const double = curr * 2;
+
+      if (map.has(double)) {
+        map.set(double, map.get(double) + 1);
+      } else {
+        map.set(double, 1);
+      }
+
+      res.push(curr);
+    }
+  }
+
+  return map.size > 0 ? [] : res;
+};
+
 /* Buildings With an Ocean View - Find the indices of buildings that have an unobstructed view of the ocean, assuming buildings to the right can block the view.
  */
 const findBuildingsWithOceanView = (heights) => {
@@ -569,94 +631,5 @@ const partitionString = (s) => {
   }
 
   return count;
-};
-
-/* Find valid matrix given row sum and col sum - You are given two arrays rowSum and colSum of non-negative integers where rowSum[i] is the sum of the elements in the ith row and colSum[j] is the sum of the elements of the jth column of a 2D matrix. In other words, you do not know the elements of the matrix, but you do know the sums of each row and column.
-
-Find any matrix of non-negative integers of size rowSum.length x colSum.length that satisfies the rowSum and colSum requirements.
- */
-const restoreMatrix = (rowSum, colSum) => {
-
-  /* pseudo code
-      
-  */
-
-  const m = rowSum.length;
-  const n = colSum.length;
-  const matrix = Array(m).fill().map(() => Array(n).fill(0));
-
-  for (let row = 0; row < m; row++) {
-    for (let col = 0; col < n; col++) {
-      const min = Math.min(rowSum[row], colSum[col]);
-
-      matrix[row][col] = min;
-
-      rowSum[row] -= min;
-      colSum[col] -= min;
-    }
-  }
-  return matrix;
-};
-
-/* Find Original Array From Doubled Array - An integer array original is transformed into a doubled array changed by appending twice the value of every element in original, and then randomly shuffling the resulting array.
-
-Given an array changed, return original if changed is a doubled array. If changed is not a doubled array, return an empty array. The elements in original may be returned in any order.
-*/
-
-/**
- * @param {number[]} changed
- * @return {number[]}
- */
-const findOriginalArray = (changed) => {
-
-  /* pseudo code
-    keep a map to keep double of items we find with freq
-    sort the array
-    move curr through changed arr
-      curr is a double of some item
-        freq is 1
-          remove from the map
-        else 
-          decrease the freq by 1
-      else
-        map already has its double
-          increase the freq of double
-        else
-          put the double in the map
-        push to res array
-    check if items are still left in the map
-  */
-
-  if (changed.length % 2 === 1) {
-    return [];
-  }
-  const res = [];
-  const map = new Map();
-
-  changed.sort((a, b) => a - b);
-
-  for (const curr of changed) {
-    if (map.has(curr)) {
-      const currValFreq = map.get(curr);
-
-      if (currValFreq === 1) {
-        map.delete(curr);
-      } else {
-        map.set(curr, currValFreq - 1);
-      }
-    } else {
-      const double = curr * 2;
-
-      if (map.has(double)) {
-        map.set(double, map.get(double) + 1);
-      } else {
-        map.set(double, 1);
-      }
-
-      res.push(curr);
-    }
-  }
-
-  return map.size > 0 ? [] : res;
 };
 
