@@ -1,3 +1,114 @@
+/* Koko Eating Bananas - Koko loves to eat bananas. There are n piles of bananas, the ith pile has piles[i] bananas. The guards have gone and will come back in h hours.
+
+Koko can decide her bananas-per-hour eating speed of k. Each hour, she chooses some pile of bananas and eats k bananas from that pile. If the pile has less than k bananas, she eats all of them instead and will not eat any more bananas during this hour.
+
+Koko likes to eat slowly but still wants to finish eating all the bananas before the guards return.
+
+Return the minimum integer k such that she can eat all the bananas within h hours.
+ */
+/**
+ * @param {number[]} piles
+ * @param {number} h
+ * @return {number}
+ */
+const minEatingSpeed = (piles, h) => {
+
+    /* pseudo code
+        find min and max bananas that can be eaten in an hour
+        loop till min < max
+            find the mid
+            find num hours to eat all the piles
+            more than h
+                discard left
+            else
+                discard right
+    */
+
+    let minSpeed = 1
+    let maxSpeed = 1
+
+    for (const num of piles) {
+        maxSpeed = Math.max(num, maxSpeed)
+    }
+
+    while (minSpeed < maxSpeed) {
+        const mid = Math.floor((minSpeed + maxSpeed) / 2)
+        let hoursNeeded = 0
+        for (const num of piles) {
+            hoursNeeded += Math.ceil(num / mid)
+        }
+
+        if (hoursNeeded > h) {
+            minSpeed = mid + 1
+        } else {
+            maxSpeed = mid
+        }
+    }
+
+    return minSpeed
+};
+
+/* Smallest common number sorted rows - Given a matrix mat where every row is sorted in increasing order, return the smallest common element in all rows.
+ */
+const smallestCommonElement = (mat) => {
+
+    /* pseudo code
+        keep left at smallest and right at highest item
+        loop till left <= right
+            find the mid
+            check if it is present in all rows
+                discard the right
+            else
+                discard the left
+    */
+
+    const rows = mat.length;
+    const cols = mat[0].length;
+
+    const isPresentInAllRows = (value) => {
+        for (let i = 0; i < rows; i++) {
+            if (binarySearch(mat[i], value) === -1) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    const binarySearch = (arr, target) => {
+        let low = 0;
+        let high = arr.length - 1;
+
+        while (low <= high) {
+            const mid = Math.floor((low + high) / 2);
+
+            if (arr[mid] === target) {
+                return mid;
+            } else if (arr[mid] < target) {
+                low = mid + 1;
+            } else {
+                high = mid - 1;
+            }
+        }
+
+        return -1;
+    }
+
+    let left = mat[0][0];
+    let right = mat[0][cols - 1];
+
+    while (left <= right) {
+        const mid = Math.floor((left + right) / 2);
+
+        if (isPresentInAllRows(mid)) {
+            right = mid - 1;
+        } else {
+            left = mid + 1;
+        }
+    }
+
+    return left;
+}
+
 /* Median of two sorted arrays - Given two sorted arrays nums1 and nums2 of size m and n respectively, return the median of the two sorted arrays.
 
 The overall run time complexity should be O(log (m+n)).
@@ -612,108 +723,4 @@ const maxLength = (ribbons, k) => {
 
     return right;
 };
-
-/* Koko Eating Bananas - Koko loves to eat bananas. There are n piles of bananas, the ith pile has piles[i] bananas. The guards have gone and will come back in h hours.
-
-Koko can decide her bananas-per-hour eating speed of k. Each hour, she chooses some pile of bananas and eats k bananas from that pile. If the pile has less than k bananas, she eats all of them instead and will not eat any more bananas during this hour.
-
-Koko likes to eat slowly but still wants to finish eating all the bananas before the guards return.
-
-Return the minimum integer k such that she can eat all the bananas within h hours.
- */
-/**
- * @param {number[]} piles
- * @param {number} h
- * @return {number}
- */
-const minEatingSpeed = (piles, h) => {
-
-    /* pseudo code
-
-    */
-
-    let minSpeed = 1
-    let maxSpeed = 1
-
-    for (const num of piles) {
-        maxSpeed = Math.max(num, maxSpeed)
-    }
-
-    while (minSpeed < maxSpeed) {
-        const mid = Math.floor((minSpeed + maxSpeed) / 2)
-        let hoursNeeded = 0
-        for (const num of piles) {
-            hoursNeeded += Math.ceil(num / mid)
-        }
-
-        if (hoursNeeded > h) {
-            minSpeed = mid + 1
-        } else {
-            maxSpeed = mid
-        }
-    }
-
-    return minSpeed
-};
-
-/* Smallest common number sorted rows - Given a matrix mat where every row is sorted in increasing order, return the smallest common element in all rows.
- */
-const smallestCommonElement = (mat) => {
-
-    /* pseudo code
-        keep left at smallest and right at highest item
-        loop till left <= right
-            find the mid
-            check if it is present in all rows
-                discard the right
-            else
-                discard the left
-    */
-
-    const rows = mat.length;
-    const cols = mat[0].length;
-
-    const isPresentInAllRows = (value) => {
-        for (let i = 0; i < rows; i++) {
-            if (binarySearch(mat[i], value) === -1) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    const binarySearch = (arr, target) => {
-        let low = 0;
-        let high = arr.length - 1;
-
-        while (low <= high) {
-            const mid = Math.floor((low + high) / 2);
-
-            if (arr[mid] === target) {
-                return mid;
-            } else if (arr[mid] < target) {
-                low = mid + 1;
-            } else {
-                high = mid - 1;
-            }
-        }
-
-        return -1;
-    }
-
-    let left = mat[0][0];
-    let right = mat[0][cols - 1];
-
-    while (left <= right) {
-        const mid = Math.floor((left + right) / 2);
-
-        if (isPresentInAllRows(mid)) {
-            right = mid - 1;
-        } else {
-            left = mid + 1;
-        }
-    }
-
-    return left;
-}
 
