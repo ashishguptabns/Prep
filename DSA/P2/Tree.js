@@ -1408,3 +1408,33 @@ const generateTrees = (end, start = 1) => {
 };
 
 /* Find lowest common ancestor in 'n' ary tree */
+const findLCA = (root, node1, node2) => {
+
+    /* pseudo code
+        
+    */
+
+    if (!root) {
+        return null;
+    }
+
+    if (root === node1 || root === node2) {
+        return root;
+    }
+
+    let commonAncestor = null;
+
+    for (const child of root.children) {
+        const childLCA = findLCA(child, node1, node2);
+
+        if (childLCA) {
+            if (!commonAncestor) {
+                commonAncestor = childLCA;
+            } else {
+                return root;
+            }
+        }
+    }
+
+    return commonAncestor;
+}
