@@ -1,3 +1,36 @@
+/* Optimal partition of string - Given a string s, partition the string into one or more substrings such that the characters in each substring are unique. That is, no letter appears in a single substring more than once.
+
+Return the minimum number of substrings in such a partition.
+ */
+const partitionString = (s) => {
+
+  /* pseudo code
+    keep an arr to track chars in curr window
+    move through chars of s
+      found a repeat char
+        make the partition and track count
+        update curr chars window
+      else
+        keep pushing to curr window
+  */
+
+  let count = 1;
+  let currChars = [];
+  for (const char of s) {
+    if (currChars.includes(char)) {
+      //  found a repeat char
+      //  break this substring
+      count++;
+      //  update for next substring
+      currChars = [char];
+    } else {
+      currChars.push(char);
+    }
+  }
+
+  return count;
+};
+
 /* Find Original Array From Doubled Array - An integer array original is transformed into a doubled array changed by appending twice the value of every element in original, and then randomly shuffling the resulting array.
 
 Given an array changed, return original if changed is a doubled array. If changed is not a doubled array, return an empty array. The elements in original may be returned in any order.
@@ -609,27 +642,5 @@ const partitionLabels = (s) => {
   }
 
   return res;
-};
-
-/* Optimal partition of string - Given a string s, partition the string into one or more substrings such that the characters in each substring are unique. That is, no letter appears in a single substring more than once.
-
-Return the minimum number of substrings in such a partition.
- */
-const partitionString = (s) => {
-  let count = 1;
-  let currChars = [];
-  for (const char of s) {
-    if (currChars.includes(char)) {
-      //  found a repeat char
-      //  break this substring
-      count++;
-      //  update for next substring
-      currChars = [char];
-    } else {
-      currChars.push(char);
-    }
-  }
-
-  return count;
 };
 
