@@ -1,3 +1,117 @@
+/* Maximum Subarray - Given an integer array nums, find the subarray with the largest sum, and return its sum.
+ */
+/**
+ * @param {number[]} nums
+ * @return {number}
+ */
+const maxSubArray = (nums) => {
+
+  /* pseudo code
+    move through nums 
+      keep tracking the sum of curr sub array and max found so far
+      ditch the subarray when the sum becomes negative
+  */
+
+  let max = -Infinity;
+  let currSubSum = 0;
+
+  for (const num of nums) {
+    currSubSum += num;
+    max = Math.max(max, currSubSum);
+    currSubSum = Math.max(currSubSum, 0);
+  }
+
+  return max;
+};
+
+/* Longest consecutive sequence - Given an unsorted array of integers nums, return the length of the longest consecutive elements sequence.
+
+You must write an algorithm that runs in O(n) time.
+ */
+
+/**
+ * @param {number[]} nums
+ * @return {number}
+ */
+const longestConsecutive = (nums) => {
+
+  /* pseudo code
+    move through nums
+      check if curr num is the end of a sequence
+        loop through the set with decreasing num
+          track the count
+      else 
+        continue
+      track the max length of increasing seq
+  */
+
+  const set = new Set(nums);
+
+  let max = 0;
+
+  for (const num of nums) {
+    if (set.has(num + 1)) {
+      continue;
+    }
+
+    let counter = 1;
+    let curr = num;
+
+    while (set.has(--curr)) {
+      counter++;
+    }
+
+    max = Math.max(max, counter);
+  }
+
+  return max;
+};
+
+/* Maximum Product Subarray - Given an integer array nums, find a subarray that has the largest product, and return the product
+ */
+/**
+ * @param {number[]} nums
+ * @return {number}
+ */
+const maxProductSubarray = (nums) => {
+
+  /* pseudo code
+    keep variables to track max and min products found so far
+    move i through the nums array
+      check if curr num increases max or min product or we should discard the prev subarray
+      keep tracking the max
+  */
+
+  if (!nums.length) {
+    return 0;
+  }
+
+  let maxProductSoFar = nums[0];
+  let minProductSoFar = nums[0];
+
+  let max = maxProductSoFar;
+
+  for (let i = 1; i < nums.length; i++) {
+    const curr = nums[i];
+
+    const tempMax = Math.max(
+      curr,
+      Math.max(curr * maxProductSoFar, curr * minProductSoFar)
+    );
+
+    minProductSoFar = Math.min(
+      curr,
+      Math.min(curr * maxProductSoFar, curr * minProductSoFar)
+    );
+
+    maxProductSoFar = tempMax;
+
+    max = Math.max(max, maxProductSoFar);
+  }
+
+  return max;
+};
+
 /* Insert Interval - You are given an array of non-overlapping intervals intervals where intervals[i] = [starti, endi] represent the start and the end of the ith interval and intervals is sorted in ascending order by starti. You are also given an interval newInterval = [start, end] that represents the start and end of another interval.
 
 Insert newInterval into intervals such that intervals is still sorted in ascending order by starti and intervals still does not have any overlapping intervals (merge overlapping intervals if necessary).
@@ -269,118 +383,6 @@ const compress = (chars) => {
   return newLen;
 };
 
-/* Maximum Subarray - Given an integer array nums, find the subarray with the largest sum, and return its sum.
- */
-/**
- * @param {number[]} nums
- * @return {number}
- */
-const maxSubArray = (nums) => {
-
-  /* pseudo code
-    move through nums 
-      keep tracking the sum of curr sub array and max found so far
-      ditch the subarray when the sum becomes negative
-  */
-
-  let max = -Infinity;
-  let currSubSum = 0;
-
-  for (const num of nums) {
-    currSubSum += num;
-    max = Math.max(max, currSubSum);
-    currSubSum = Math.max(currSubSum, 0);
-  }
-
-  return max;
-};
-
-/* Longest consecutive sequence - Given an unsorted array of integers nums, return the length of the longest consecutive elements sequence.
-
-You must write an algorithm that runs in O(n) time.
- */
-
-/**
- * @param {number[]} nums
- * @return {number}
- */
-const longestConsecutive = (nums) => {
-
-  /* pseudo code
-    move through nums
-      check if curr num is the end of a sequence
-        loop through the set with decreasing num
-          track the count
-      track the max length of increasing seq
-  */
-
-  const set = new Set(nums);
-
-  let max = 0;
-
-  for (const num of nums) {
-    if (set.has(num + 1)) {
-      continue;
-    }
-
-    let counter = 1;
-    let curr = num;
-
-    while (set.has(--curr)) {
-      counter++;
-    }
-
-    max = Math.max(max, counter);
-  }
-
-  return max;
-};
-
-/* Maximum Product Subarray - Given an integer array nums, find a subarray that has the largest product, and return the product
- */
-/**
- * @param {number[]} nums
- * @return {number}
- */
-const maxProductS = (nums) => {
-
-  /* pseudo code
-    track max and min products found so far
-    move i through the nums array
-      check if curr num increase max or min product or we should discard the prev subarray
-      keep tracking the max
-  */
-
-  if (!nums.length) {
-    return 0;
-  }
-
-  let maxProductSoFar = nums[0];
-  let minProductSoFar = nums[0];
-
-  let max = maxProductSoFar;
-
-  for (let i = 1; i < nums.length; i++) {
-    const curr = nums[i];
-
-    const tempMax = Math.max(
-      curr,
-      Math.max(curr * maxProductSoFar, curr * minProductSoFar)
-    );
-
-    minProductSoFar = Math.min(
-      curr,
-      Math.min(curr * maxProductSoFar, curr * minProductSoFar)
-    );
-
-    maxProductSoFar = tempMax;
-
-    max = Math.max(max, maxProductSoFar);
-  }
-
-  return max;
-};
-
 /* Max sum circular subarray - Given a circular integer array nums of length n, return the maximum possible sum of a non-empty subarray of nums.
 
 A circular array means the end of the array connects to the beginning of the array. Formally, the next element of nums[i] is nums[(i + 1) % n] and the previous element of nums[i] is nums[(i - 1 + n) % n].
@@ -395,8 +397,7 @@ A subarray may only include each element of the fixed buffer nums at most once. 
 const maxSubarraySumCircular = (nums) => {
 
   /* pseudo code
-    move through nums
-      track curr subarray max sum, max sum, curr subarray min sum, min sum so far
+    
   */
 
   let curMax = 0,
