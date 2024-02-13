@@ -1,3 +1,49 @@
+/* Insert Interval - You are given an array of non-overlapping intervals intervals where intervals[i] = [starti, endi] represent the start and the end of the ith interval and intervals is sorted in ascending order by starti. You are also given an interval newInterval = [start, end] that represents the start and end of another interval.
+
+Insert newInterval into intervals such that intervals is still sorted in ascending order by starti and intervals still does not have any overlapping intervals (merge overlapping intervals if necessary).
+
+Return intervals after the insertion. */
+
+/**
+ * @param {number[][]} intervals
+ * @param {number[]} newInterval
+ * @return {number[][]}
+ */
+const insert = (intervals, newInterval) => {
+
+  /* pseudo code
+    keep two left and right arrays for intervals on both sides
+    move through the intervals
+      end of curr interval is less than start of given interval
+        push to left
+      start of curr interval is more than end of given interval
+        push to right
+      else found an overlap
+        keep min of starts and max of ends to find the merged interval
+  */
+
+  let [start, end] = newInterval;
+  const left = [];
+  const right = [];
+
+  for (const interval of intervals) {
+    const [first, last] = interval;
+
+    if (last < start) {
+      left.push(interval);
+    }
+    else if (first > end) {
+      right.push(interval);
+    }
+    else {
+      start = Math.min(start, first);
+      end = Math.max(end, last);
+    }
+  }
+
+  return [...left, [start, end], ...right];
+};
+
 /* Longest Common Prefix - Write a function to find the longest common prefix string amongst an array of strings.
 If there is no common prefix, return an empty string ""
  */
@@ -376,8 +422,3 @@ const maxSubarraySumCircular = (nums) => {
   return Math.max(maxSum, sum - minSum);
 };
 
-/* Insert Interval - You are given an array of non-overlapping intervals intervals where intervals[i] = [starti, endi] represent the start and the end of the ith interval and intervals is sorted in ascending order by starti. You are also given an interval newInterval = [start, end] that represents the start and end of another interval.
-
-Insert newInterval into intervals such that intervals is still sorted in ascending order by starti and intervals still does not have any overlapping intervals (merge overlapping intervals if necessary).
-
-Return intervals after the insertion. */
