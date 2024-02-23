@@ -12,13 +12,11 @@ new Promise((res) => {
 console.log(5);
 
 //output -> 
-
-0
-2
-3
-5
-1
-
+// 0
+// 2
+// 3
+// 5
+// 1
 
 // /////////Output based questions//////////
 // ////////Promise Chaining////////////////
@@ -35,22 +33,20 @@ Promise.resolve()
     .then((c) => console.log(c));
 
 //output -> 
-
-1
-undefined
-3
+// 1
+// undefined
+// 3
 
 // /////////Output based questions//////////
 // //////////////////////Event Propogation////////////////////
 
-outerDiv ->
-    innerDiv ->
-    button
+// outerDiv ->
+//     innerDiv ->
+//          button
 
 
 const outerDiv = document.getElementById("outer");
 const innerDiv = document.getElementById("inner");
-
 
 outerDiv.addEventListener("click", () => console.log("outerDiv -> bubble"));
 outerDiv.addEventListener("click", () => console.log("outerDiv -> capture"), { capture: true, });
@@ -59,16 +55,7 @@ outerDiv.addEventListener("click", () => console.log("outerDiv -> bubble 2"));
 innerDiv.addEventListener("click", () => console.log("innerDiv -> bubble 3"));
 innerDiv.addEventListener("click", () => console.log("innerDiv -> capture 2"), { capture: true, })
 
-
-const promise1 = new Promise((res) => res("promise1 resolved"));
-const promise2 = Promise.resolve(`promise2 resolved`);
-const promise3 = new Promise((res) => {
-    setTimeout(function () {
-        res("promise3 resolved");
-    }, 1000);
-});
-
-
+/* design custom promise all */
 
 const promiseAllCustom = (promises) => {
     return new Promise((resolve, rej) => {
@@ -99,3 +86,60 @@ const promises = [
     Promise.resolve(`promise2 resolved`),]
 
 promiseAllCustom(promises).then(res => console.log(res)).catch(err => console.log(err))
+
+/* Print output of below */
+setTimeout(() => console.log(1), 0);
+console.log(2);
+new Promise(res => {
+    console.log(3)
+    res();
+}).then(() => console.log(4));
+console.log(5);
+
+// 2 -> 3 -> 4 -> 5 -> 1
+
+/* Event loop */
+
+console.log('Start');
+setTimeout(function () {
+    console.log('First setTimeout');
+}, 0);
+Promise.resolve().then(function () {
+    console.log('Promise 1');
+});
+Promise.resolve().then(function () {
+    console.log('Promise 2');
+});
+console.log('End');
+
+// Start
+// End
+// Promise 1
+// Promise 2
+// First setTimeout
+
+/* event propogation */
+
+<div id="outer">
+    <div id="middle">
+        <div id="inner">Click me</div>
+    </div>
+</div>
+
+document.getElementById('outer').addEventListener('click', function () {
+    console.log('Outer div clicked');
+}, true); // true for capturing phase
+
+document.getElementById('middle').addEventListener('click', function () {
+    console.log('Middle div clicked');
+}, true); // true for capturing phase
+
+document.getElementById('inner').addEventListener('click', function () {
+    console.log('Inner div clicked');
+}); // No capture phase specified, defaults to bubbling phase
+
+// Outer div clicked
+// Middle div clicked
+// Inner div clicked
+// Middle div clicked
+// Outer div clicked
