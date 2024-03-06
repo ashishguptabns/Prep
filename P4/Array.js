@@ -199,7 +199,7 @@ const productExceptSelf = (nums) => {
       keep track of leftProduct
     now at ith index in res we have product of items on left
     move i from end to start of nums
-      multiply rightProduct to res[i]
+      multiply rightProduct to res[i] and assign to res[i]
       track rightProduct
     now at ith index in res we have product of left and right items
   */
