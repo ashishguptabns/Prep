@@ -7,7 +7,11 @@ function findTextBetweenComments(inputString) {
     let match;
 
     while ((match = regex.exec(inputString)) !== null) {
-        !match[1].includes('pseudo') && matches.push(match[1].trim());
+        if (!match[1].includes('pseudo') && !match[1].includes('@param')) {
+            matches.push(match[1].trim());
+        } else {
+            // console.log(match[1].trim())
+        }
     }
 
     return matches;

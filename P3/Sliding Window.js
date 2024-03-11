@@ -725,3 +725,9 @@ const characterReplacement = (s, k) => {
 /* Longest Substring with At Least K Repeating Characters - Given a string s and an integer k, return the length of the longest substring of s such that the frequency of each character in this substring is greater than or equal to k.
 
 if no such substring exists, return 0. */
+
+/* Minimum Swaps to Group All 1's Together II - A swap is defined as taking two distinct positions in an array and swapping the values in them.
+
+A circular array is defined as an array where we consider the first element and the last element to be adjacent.
+
+Given a binary circular array nums, return the minimum number of swaps required to group all 1's present in the array together at any location. */
