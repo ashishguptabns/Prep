@@ -94,8 +94,6 @@ const nthUglyNumber = (n) => {
     return dp[n - 1]
 };
 
-/* LC - https://leetcode.com/problemset/?topicSlugs=dynamic-programming&page=1&sorting=W3t9XQ%3D%3D&status=NOT_STARTED&difficulty=MEDIUM */
-
 /* Longest Increasing Subsequence - Given an integer array nums, return the length of the longest strictly increasing subsequence
  */
 /**

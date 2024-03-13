@@ -546,23 +546,13 @@ const buildTree = (preorder, inorder) => {
     */
 
     if (preorder.length) {
-        const currRoot = new TreeNode(preorder[0])
-
-        const currRootIndexInInorder = inorder.indexOf(currRoot.val)
-
-        //  preorder is root, left, right
-        const preOrderForLeftTree = preorder.slice(1, currRootIndexInInorder + 1)
-        //  inorder is left, root, right
-        const inOrderForLeftTree = inorder.slice(0, currRootIndexInInorder)
-
-        currRoot.left = buildTree(preOrderForLeftTree, inOrderForLeftTree)
-
-        const preOrderForRightTree = preorder.slice(currRootIndexInInorder + 1)
-        const inOrderForRightTree = inorder.slice(currRootIndexInInorder + 1)
-
-        currRoot.right = buildTree(preOrderForRightTree, inOrderForRightTree)
-
-        return currRoot
+        const root = new TreeNode(preorder[0])
+        const rootIndexInInorder = inorder.indexOf(root.val)
+        root.left = buildTree(preorder.slice(1, rootIndexInInorder + 1),
+            inorder.slice(0, rootIndexInInorder))
+        root.right = buildTree(preorder.slice(rootIndexInInorder + 1),
+            inorder.slice(rootIndexInInorder + 1))
+        return root
     }
     return null
 };

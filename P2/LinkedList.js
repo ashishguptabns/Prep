@@ -51,29 +51,26 @@ const mergeKLists = (lists) => {
         return dummy's next 
     */
 
-    const minHeap = new MinHeap()
+    const minHeap = new MinPriorityQueue({ priority: node => node.val })
 
     for (const head of lists) {
-        if (head) {
-            minHeap.push(head)
-        }
+        head && minHeap.enqueue(head)
     }
 
-    const dummy = new ListNode()
-    let currNode = dummy
+    let result = new ListNode()
+    const head = result
 
     while (!minHeap.isEmpty()) {
-        const node = minHeap.pop()
+        const { val, next } = minHeap.dequeue().element
+        result.next = new ListNode(val)
+        result = result.next
 
-        currNode.next = node
-        currNode = currNode.next
-
-        if (node.next) {
-            minHeap.push(node.next)
+        if (next) {
+            minHeap.enqueue(next)
         }
     }
 
-    return dummy.next
+    return head.next
 };
 
 /* Max twin sum of a linked list - Given the head of a linked list with even length, return the maximum twin sum of the linked list.
