@@ -14,21 +14,18 @@ const partitionString = (s) => {
         keep pushing to curr window
   */
 
-  let count = 1;
-  let currChars = [];
-  for (const char of s) {
-    if (currChars.includes(char)) {
-      //  found a repeat char
-      //  break this substring
-      count++;
-      //  update for next substring
-      currChars = [char];
-    } else {
-      currChars.push(char);
+  let count = 1
+  let map = {}
+
+  for (const c of s) {
+    if (map[c]) {
+      count++
+      map = {}
     }
+    map[c] = 1
   }
 
-  return count;
+  return count
 };
 
 /* Find Original Array From Doubled Array - An integer array original is transformed into a doubled array changed by appending twice the value of every element in original, and then randomly shuffling the resulting array.

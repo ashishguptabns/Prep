@@ -58,42 +58,6 @@ const rob2 = (nums) => {
     return Math.max(dp1.pop(), dp2.pop());
 };
 
-/* Ugly number - An ugly number is a positive integer whose prime factors are limited to 2, 3, and 5.
-
-Given an integer n, return the nth ugly number.
- */
-/**
- * @param {number} n
- * @return {number}
- */
-const nthUglyNumber = (n) => {
-
-    /* pseudo code
-        we will keep a dp array 
-            ith item is ith ugly number
-        keep tracking counts of 2, 3 and 5 we have considered so far
-        move i till n
-            find min of three possible numbers
-            increase the count of chosen num accordingly
-    */
-
-    let dp = [1]
-    let c2 = c3 = c5 = 0
-    for (let i = 1; i < n; i++) {
-        dp[i] = Math.min(2 * dp[c2], 3 * dp[c3], 5 * dp[c5])
-        if (2 * dp[c2] === dp[i]) {
-            c2++
-        }
-        if (3 * dp[c3] === dp[i]) {
-            c3++
-        }
-        if (5 * dp[c5] === dp[i]) {
-            c5++
-        }
-    }
-    return dp[n - 1]
-};
-
 /* Longest Increasing Subsequence - Given an integer array nums, return the length of the longest strictly increasing subsequence
  */
 /**
@@ -1288,3 +1252,40 @@ Given the root of the binary tree, return the maximum amount of money the thief 
 Return the minimized largest sum of the split.
 
 A subarray is a contiguous part of the array. */
+
+/* Ugly number - An ugly number is a positive integer whose prime factors are limited to 2, 3, and 5.
+
+Given an integer n, return the nth ugly number.
+ */
+/**
+ * @param {number} n
+ * @return {number}
+ */
+const nthUglyNumber = (n) => {
+
+    /* pseudo code
+        we will keep a dp array 
+            ith item is ith ugly number
+        keep tracking counts of 2, 3 and 5 we have considered so far
+        move i till n
+            find min of three possible numbers
+            increase the count of chosen num accordingly
+    */
+
+    let dp = [1]
+    let c2 = c3 = c5 = 0
+    for (let i = 1; i < n; i++) {
+        dp[i] = Math.min(2 * dp[c2], 3 * dp[c3], 5 * dp[c5])
+        if (2 * dp[c2] === dp[i]) {
+            c2++
+        }
+        if (3 * dp[c3] === dp[i]) {
+            c3++
+        }
+        if (5 * dp[c5] === dp[i]) {
+            c5++
+        }
+    }
+    return dp[n - 1]
+};
+

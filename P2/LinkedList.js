@@ -611,17 +611,6 @@ const mergeNodes = (head) => {
 
 /* Sort list - Given the head of a linked list, return the list after sorting it in ascending order.
  */
-/**
- * Definition for singly-linked list.
- * function ListNode(val, next) {
- *     this.val = (val===undefined ? 0 : val)
- *     this.next = (next===undefined ? null : next)
- * }
- */
-/**
- * @param {ListNode} head
- * @return {ListNode}
- */
 const sortList = (head) => {
 
     /* pseudo code
@@ -669,18 +658,6 @@ const sortList = (head) => {
 
 /* Rotate list - Given the head of a linked list, rotate the list to the right by k places.
 */
-/**
- * Definition for singly-linked list.
- * function ListNode(val, next) {
- *     this.val = (val===undefined ? 0 : val)
- *     this.next = (next===undefined ? null : next)
- * }
- */
-/**
- * @param {ListNode} head
- * @param {number} k
- * @return {ListNode}
- */
 const rotateRight = (head, k) => {
 
     /* pseudo code
@@ -724,17 +701,6 @@ Reorder the list to be on the following form:
 
 L0 → Ln → L1 → Ln - 1 → L2 → Ln - 2 → …
 You may not modify the values in the list's nodes. Only nodes themselves may be changed.
- */
-/**
- * Definition for singly-linked list.
- * function ListNode(val, next) {
- *     this.val = (val===undefined ? 0 : val)
- *     this.next = (next===undefined ? null : next)
- * }
- */
-/**
- * @param {ListNode} head
- * @return {void} Do not return anything, modify head in-place instead.
  */
 const reorderList = (head) => {
 
