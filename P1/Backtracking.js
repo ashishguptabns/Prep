@@ -200,54 +200,6 @@ const numTilePossibilities = (tiles) => {
     return set.size
 };
 
-/* Letter Combinations of a Phone Number - Given a string containing digits from 2-9 inclusive, return all possible letter combinations that the number could represent. Return the answer in any order.
- */
-/**
- * @param {string} digits
- * @return {string[]}
- */
-const letterCombinations = (digits) => {
-
-    /* pseudo code
-        notice that we are given digits
-        backtrack with curr digit index
-            run through chars of this digit
-                append curr char to curr string and backtrack
-    */
-
-    const letterMap = {
-        '2': 'abc',
-        '3': 'def',
-        '4': 'ghi',
-        '5': 'jkl',
-        '6': 'mno',
-        '7': 'pqrs',
-        '8': 'tuv',
-        '9': 'wxyz'
-    }
-    const list = []
-
-    const backtrack = (currDigitIndex, currString, digits, list, letterMap) => {
-        if (currDigitIndex == digits.length) {
-            //  considered all the characters
-            list.push(currString)
-        } else {
-            const currDigit = digits[currDigitIndex]
-            const currChars = letterMap[currDigit]
-            for (const c of currChars) {
-                //  run the backtracking for each character for each digit
-                backtrack(currDigitIndex + 1, currString + c, digits, list, letterMap)
-            }
-        }
-    }
-
-    if (digits.length > 0) {
-        backtrack(0, '', digits, list, letterMap)
-    }
-
-    return list
-};
-
 /* Combination Sum II - Given a collection of candidate numbers (candidates) and a target number (target), find all unique combinations in candidates where the candidate numbers sum to target.
 
 Each number in candidates may only be used once in the combination.
@@ -299,3 +251,52 @@ const combinationSum2 = (candidates, target) => {
 For example, "0.1.2.201" and "192.168.1.1" are valid IP addresses, but "0.011.255.245", "192.168.1.312" and "192.168@1.1" are invalid IP addresses.
 Given a string s containing only digits, return all possible valid IP addresses that can be formed by inserting dots into s. You are not allowed to reorder or remove any digits in s. You may return the valid IP addresses in any order.
  */
+
+/* Letter Combinations of a Phone Number - Given a string containing digits from 2-9 inclusive, return all possible letter combinations that the number could represent. Return the answer in any order.
+ */
+/**
+ * @param {string} digits
+ * @return {string[]}
+ */
+const letterCombinations = (digits) => {
+
+    /* pseudo code
+        notice that we are given digits
+        backtrack with curr digit index
+            run through chars of this digit
+                append curr char to curr string and backtrack
+    */
+
+    const letterMap = {
+        '2': 'abc',
+        '3': 'def',
+        '4': 'ghi',
+        '5': 'jkl',
+        '6': 'mno',
+        '7': 'pqrs',
+        '8': 'tuv',
+        '9': 'wxyz'
+    }
+    const list = []
+
+    const backtrack = (currDigitIndex, currString) => {
+        if (currDigitIndex == digits.length) {
+            //  considered all the characters
+            list.push(currString)
+        } else {
+            const currDigit = digits[currDigitIndex]
+            const currChars = letterMap[currDigit]
+            for (const c of currChars) {
+                //  run the backtracking for each character for each digit
+                backtrack(currDigitIndex + 1, currString + c)
+            }
+        }
+    }
+
+    if (digits.length > 0) {
+        backtrack(0, '')
+    }
+
+    return list
+};
+
