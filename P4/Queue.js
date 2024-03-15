@@ -183,19 +183,20 @@ class MyCircularQueue {
 class MRUQueue {
 
   /* pseudo code
+      keep an array, capacity and a map of node vs index
       enqueue
-        queue length > capacity
-          remove from queue and map
-        push to the queue
+        array length > capacity
+          remove first item from array and map
+        push the item to the array
         store index of this item in the map
       fetch item at index
         find the element from queue array
-        remove from the queue
+        remove from the array
         remove from the map
         enqueue this element
         return this element
       get MRU
-        return the last element of the queue
+        return the last element of the array
   */
 
   constructor(capacity) {

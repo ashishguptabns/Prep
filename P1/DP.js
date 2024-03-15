@@ -71,7 +71,7 @@ const lengthOfLIS = (nums) => {
             ith item tells length of LIS till ith index
         move end index from 1 to nums length
             move i index from 0 to end subarray
-                keep checking if we find a longer subseq
+                record the length of the subseq with curr item and items till ith index
     */
 
     const dp = Array(nums.length).fill(1);

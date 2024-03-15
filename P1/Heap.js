@@ -128,10 +128,7 @@ class MaxHeap {
 
             if (this.heap[currentIdx] > this.heap[parentIdx]) {
                 //  child is bigger than parent hence swap
-                [this.heap[currentIdx], this.heap[parentIdx]] = [
-                    this.heap[parentIdx],
-                    this.heap[currentIdx],
-                ];
+                [this.heap[currentIdx], this.heap[parentIdx]] = [this.heap[parentIdx], this.heap[currentIdx]];
                 //  move up
                 currentIdx = parentIdx;
             } else {

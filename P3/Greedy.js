@@ -409,18 +409,22 @@ Find and return the maximum profit you can achieve.
  * @return {number}
  */
 const maxProfit = function (prices) {
-  //  use greedy
+  let profit = 0
 
-  let maxProfit = 0;
-
-  for (let i = 1; i < prices.length; i++) {
-    if (prices[i] > prices[i - 1]) {
-      //  capture the incremental profit each day
-      maxProfit += prices[i] - prices[i - 1];
+  let min = prices[0]
+  let max = prices[0]
+  for (const price of prices) {
+    if (price < min) {
+      min = price
+      max = price
+    } else {
+      max = Math.max(max, price)
     }
+
+    profit = Math.max(profit, max - min)
   }
 
-  return maxProfit;
+  return profit
 };
 
 /* Largest Number - Given a list of non-negative integers nums, arrange them such that they form the largest number and return it.
@@ -523,18 +527,12 @@ const minimizeProductSum = (arr1, arr2) => {
 const dotProduct = (sparseVector1, sparseVector2) => {
   let result = 0;
 
-  // Iterate over keys in the first sparse vector
   for (let key in sparseVector1) {
-    // Check if the same key exists in the second sparse vector
     if (sparseVector2.hasOwnProperty(key)) {
-      // Multiply corresponding values and add to the result
       result += sparseVector1[key] * sparseVector2[key];
     }
   }
-
   return result;
-
-  // Note: If sparse vectors are given in array format then convert into a map (index, value) ignoring the indices with zero values
 };
 
 /* Partitioning Into Minimum Number Of Deci-Binary Numbers - Given a string n that represents a positive decimal integer, return the minimum number of positive deci-binary numbers needed so that they sum up to n.

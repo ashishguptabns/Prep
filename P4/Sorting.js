@@ -26,7 +26,7 @@ const selectionSort = (nums) => {
   /* pseudo code
         move i through nums
           keep i as min index
-          move through right subarray
+          move j through right subarray
             find index j which is smaller than ith item and the smallest in right subarray
           swap items i and j
  */
