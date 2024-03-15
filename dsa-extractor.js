@@ -17,7 +17,7 @@ function findTextBetweenComments(inputString) {
     return matches;
 }
 
-const directoryPath = './P4';
+const directoryPath = './DSA';
 
 fs.readdir(directoryPath, (err, files) => {
     if (err) {
@@ -38,10 +38,10 @@ fs.readdir(directoryPath, (err, files) => {
                     filesProcessed++
                     const textBetweenComments = findTextBetweenComments(data);
                     problems.push(...textBetweenComments)
-                    if (filesProcessed === 7) {
+                    if (filesProcessed === 19) {
                         res(problems)
                     }
-                    // console.log(`File: ${file}`);
+                    console.log(`File: ${file}`);
                     // console.log('Text between comments:', textBetweenComments);
                 });
             }
