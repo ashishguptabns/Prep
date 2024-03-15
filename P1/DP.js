@@ -574,43 +574,6 @@ const numTrees = (numNodes) => {
     return dpArr[numNodes]
 };
 
-/* Palindrome Partitioning - Given a string s, partition s such that every 
-substring of the partition is a palindrome. Return all possible palindrome partitioning of s.
- */
-/**
- * @param {string} s
- * @return {string[][]}
- */
-const partition = (s) => {
-
-    /* pseudo code
-        Keep a 2D DP array 
-            store palindrome true/false for every substring starting at i and ending at j
-        do a DFS and explore all possible substrings
-    */
-
-    const dp = Array.from({ length: s.length }, () => Array(s.length).fill(false))
-
-    const res = []
-
-    const dfs = (currIndex, currList) => {
-        if (currIndex == s.length) {
-            res.push([...currList])
-        }
-
-        for (let end = currIndex; end < s.length; end++) {
-            if (s[currIndex] === s[end] && (end - currIndex <= 2 || dp[currIndex + 1][end - 1])) {
-                dp[currIndex][end] = true
-                dfs(end + 1, [...currList, s.slice(currIndex, end + 1)])
-            }
-        }
-    }
-
-    dfs(0, [])
-
-    return res
-};
-
 /* Maximum Profit in Job Scheduling - We have n jobs, where every job is scheduled to be done from startTime[i] to endTime[i], obtaining a profit of profit[i].
 
 You're given the startTime, endTime and profit arrays, return the maximum profit you can take such that there are no two jobs in the subset with overlapping time range.
@@ -1287,5 +1250,42 @@ const nthUglyNumber = (n) => {
         }
     }
     return dp[n - 1]
+};
+
+/* Palindrome Partitioning - Given a string s, partition s such that every 
+substring of the partition is a palindrome. Return all possible palindrome partitioning of s.
+ */
+/**
+ * @param {string} s
+ * @return {string[][]}
+ */
+const partition = (s) => {
+
+    /* pseudo code
+        Keep a 2D DP array 
+            store palindrome true/false for every substring starting at i and ending at j
+        do a DFS and explore all possible substrings
+    */
+
+    const dp = Array.from({ length: s.length }, () => Array(s.length).fill(false))
+
+    const res = []
+
+    const dfs = (currIndex, currList) => {
+        if (currIndex == s.length) {
+            res.push([...currList])
+        }
+
+        for (let end = currIndex; end < s.length; end++) {
+            if (s[currIndex] === s[end] && (end - currIndex <= 2 || dp[currIndex + 1][end - 1])) {
+                dp[currIndex][end] = true
+                dfs(end + 1, [...currList, s.slice(currIndex, end + 1)])
+            }
+        }
+    }
+
+    dfs(0, [])
+
+    return res
 };
 

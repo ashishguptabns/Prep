@@ -782,3 +782,12 @@ const countSubTrees = (n, edges, labels) => {
   return ans
 };
 
+/* Prim's Algorithm */
+
+/* Bellman-Ford Algorithm */
+
+/* Floyd-Warshall Algorithm */
+
+/* Minimum Spanning Tree  */
+
+/* Minimum Cut Algorithm */

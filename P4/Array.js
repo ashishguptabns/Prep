@@ -286,7 +286,11 @@ const minFlipsMonoIncr = (s) => {
     if (c === '1') {
       numOfOnesSoFar++
     } else {
-      numFlips = Math.min(numOfOnesSoFar, numFlips + 1)
+      if (numOnes < numFlips + 1) {
+        numFlips = numOnes
+      } else {
+        numFlips++
+      }
     }
   }
 

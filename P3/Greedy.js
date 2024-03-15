@@ -317,34 +317,6 @@ const minimumRounds = (tasks) => {
   return minRounds;
 };
 
-/* Two City Scheduling - A company is planning to interview 2n people. Given the array costs where costs[i] = [aCosti, bCosti], the cost of flying the ith person to city a is aCosti, and the cost of flying the ith person to city b is bCosti.
-
-Return the minimum cost to fly every person to a city such that exactly n people arrive in each city.
- */
-/**
- * @param {number[][]} costs
- * @return {number}
- */
-const twoCitySchedCost = (costs) => {
-  //  people with lower cost difference will come first
-  //  preferable to the first city
-  costs.sort((a, b) => a[0] - a[1] - (b[0] - b[1]));
-
-  //  equal number of people in both cities
-  let n = costs.length / 2;
-
-  let minCost = 0;
-  let count = 0;
-
-  for (const cost of costs) {
-    //  fill the first city then second
-    minCost += count < n ? cost[0] : cost[1];
-    count++;
-  }
-
-  return minCost;
-};
-
 /* Increasing Triplet Subsequence - Given an integer array nums, return true if there exists a triple of indices (i, j, k) such that i < j < k and nums[i] < nums[j] < nums[k]. If no such indices exists, return false.
  */
 /**
@@ -637,5 +609,33 @@ const partitionLabels = (s) => {
   }
 
   return res;
+};
+
+/* Two City Scheduling - A company is planning to interview 2n people. Given the array costs where costs[i] = [aCosti, bCosti], the cost of flying the ith person to city a is aCosti, and the cost of flying the ith person to city b is bCosti.
+
+Return the minimum cost to fly every person to a city such that exactly n people arrive in each city.
+ */
+/**
+ * @param {number[][]} costs
+ * @return {number}
+ */
+const twoCitySchedCost = (costs) => {
+  //  people with lower cost difference will come first
+  //  preferable to the first city
+  costs.sort((a, b) => a[0] - a[1] - (b[0] - b[1]));
+
+  //  equal number of people in both cities
+  let n = costs.length / 2;
+
+  let minCost = 0;
+  let count = 0;
+
+  for (const cost of costs) {
+    //  fill the first city then second
+    minCost += count < n ? cost[0] : cost[1];
+    count++;
+  }
+
+  return minCost;
 };
 

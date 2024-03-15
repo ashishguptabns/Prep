@@ -349,7 +349,7 @@ const nextGreaterElements = (nums) => {
 
     /* pseudo code
         keep a stack to track next greater element's index
-        move i through twice the nums size
+        move i through twice the nums size in reverse
             find the curr index
             keep removing the items from stack till top element is greater than curr item
             stack is empty
