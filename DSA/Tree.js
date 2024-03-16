@@ -785,35 +785,29 @@ const balanceBST = (root) => {
             do this recursively
     */
 
-    const toArray = (node) => {
-        if (node) {
-            return [...toArray(node.left), node.val, ...toArray(node.right)]
-        } else {
-            return []
+    const inorder = []
+
+    const findInOrder = (root) => {
+        if (root) {
+            findInOrder(root.left)
+            inorder.push(root.val)
+            findInOrder(root.right)
         }
     }
+    findInOrder(root)
 
-    //  get node values in inorder
-    const nodesInOrder = toArray(root)
-
-    const toBST = (nodesInOrder) => {
-        if (nodesInOrder.length === 0) {
-            return null
+    const makeBST = (inorder) => {
+        if (!inorder.length) {
+            return
         }
-        if (nodesInOrder.length === 1) {
-            return new TreeNode(nodesInOrder[0])
-        }
+        const mid = Math.floor(inorder.length / 2)
+        const root = new TreeNode(inorder[mid],
+            makeBST(inorder.slice(0, mid)),
+            makeBST(inorder.slice(mid + 1)))
 
-        // divide the array by half
-        const mid = Math.floor(nodesInOrder.length / 2)
-
-        const leftSub = toBST(nodesInOrder.slice(0, mid))
-        const rightSub = toBST(nodesInOrder.slice(mid + 1))
-
-        return new TreeNode(nodesInOrder[mid], leftSub, rightSub)
+        return root
     }
-
-    return toBST(nodesInOrder)
+    return makeBST(inorder)
 };
 
 /* Reverse odd levels of binary tree - Given the root of a perfect binary tree, reverse the node values at each odd level of the tree.

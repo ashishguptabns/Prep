@@ -1033,66 +1033,6 @@ const allPossibleFBT = (n) => {
 
 };
 
-/* Interleaving string - Given strings s1, s2, and s3, find whether s3 is formed by an interleaving of s1 and s2.
-
-An interleaving of two strings s and t is a configuration where s and t are divided into n and m 
-substrings
- respectively, such that:
-
-s = s1 + s2 + ... + sn
-t = t1 + t2 + ... + tm
-|n - m| <= 1
-The interleaving is s1 + t1 + s2 + t2 + s3 + t3 + ... or t1 + s1 + t2 + s2 + t3 + s3 + ...
-Note: a + b is the concatenation of strings a and b.
- */
-
-/**
- * @param {string} s1
- * @param {string} s2
- * @param {string} s3
- * @return {boolean}
- */
-const isInterleave = (s1, s2, s3) => {
-
-    /* pseudo code
-        keep a 2D dp array
-            [i, j] tells if (i + j) length of s3 can be made with i length of s1 and j length of s2
-        move i through s1
-            move j through s2
-                s1 is empty
-                    match chars of s2 and s3 at j - 1 plus dp[i][j-1] should be true
-                s2 is empty
-                    repeat for s2
-                else
-                    match end char of s3 with end char of s2 or s1
-    */
-
-    if (s1.length + s2.length !== s3.length) {
-        return false;
-    }
-
-    const dp = [];
-
-    for (let i = 0; i <= s1.length; i++) {
-        dp[i] = [];
-        for (let j = 0; j <= s2.length; j++) {
-            if (i === 0 && j === 0) {
-                dp[i][j] = true;
-            } else if (i === 0) {
-                dp[i][j] = dp[i][j - 1] && s2[j - 1] === s3[j - 1];
-            } else if (j === 0) {
-                dp[i][j] = dp[i - 1][j] && s1[i - 1] === s3[i - 1];
-            } else {
-                dp[i][j] =
-                    (dp[i][j - 1] && s2[j - 1] === s3[i + j - 1]) ||
-                    (dp[i - 1][j] && s1[i - 1] === s3[i + j - 1]);
-            }
-        }
-    }
-
-    return dp[s1.length][s2.length];
-};
-
 /* Unique Paths 2 - You are given an m x n integer array grid. There is a robot initially located at the top-left corner (i.e., grid[0][0]). The robot tries to move to the bottom-right corner (i.e., grid[m - 1][n - 1]). The robot can only move either down or right at any point in time.
 
 An obstacle and space are marked as 1 or 0 respectively in grid. A path that the robot takes cannot include any square that is an obstacle.
@@ -1287,5 +1227,65 @@ const partition = (s) => {
     dfs(0, [])
 
     return res
+};
+
+/* Interleaving string - Given strings s1, s2, and s3, find whether s3 is formed by an interleaving of s1 and s2.
+
+An interleaving of two strings s and t is a configuration where s and t are divided into n and m 
+substrings
+ respectively, such that:
+
+s = s1 + s2 + ... + sn
+t = t1 + t2 + ... + tm
+|n - m| <= 1
+The interleaving is s1 + t1 + s2 + t2 + s3 + t3 + ... or t1 + s1 + t2 + s2 + t3 + s3 + ...
+Note: a + b is the concatenation of strings a and b.
+ */
+
+/**
+ * @param {string} s1
+ * @param {string} s2
+ * @param {string} s3
+ * @return {boolean}
+ */
+const isInterleave = (s1, s2, s3) => {
+
+    /* pseudo code
+        keep a 2D dp array
+            [i, j] tells if (i + j) length of s3 can be made with i length of s1 and j length of s2
+        move i through s1
+            move j through s2
+                s1 is empty
+                    match chars of s2 and s3 at j - 1 plus dp[i][j-1] should be true
+                s2 is empty
+                    repeat for s2
+                else
+                    match end char of s3 with end char of s2 or s1
+    */
+
+    if (s1.length + s2.length !== s3.length) {
+        return false;
+    }
+
+    const dp = [];
+
+    for (let i = 0; i <= s1.length; i++) {
+        dp[i] = [];
+        for (let j = 0; j <= s2.length; j++) {
+            if (i === 0 && j === 0) {
+                dp[i][j] = true;
+            } else if (i === 0) {
+                dp[i][j] = dp[i][j - 1] && s2[j - 1] === s3[j - 1];
+            } else if (j === 0) {
+                dp[i][j] = dp[i - 1][j] && s1[i - 1] === s3[i - 1];
+            } else {
+                dp[i][j] =
+                    (dp[i][j - 1] && s2[j - 1] === s3[i + j - 1]) ||
+                    (dp[i - 1][j] && s1[i - 1] === s3[i + j - 1]);
+            }
+        }
+    }
+
+    return dp[s1.length][s2.length];
 };
 
