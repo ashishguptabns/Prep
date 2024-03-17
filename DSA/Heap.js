@@ -62,16 +62,13 @@ Can you solve it without sorting?
 const findKthLargest = (nums, k) => {
     const minHeap = new MinHeap()
 
-    //  push all items
     for (const num of nums) {
         minHeap.push(num)
     }
 
     for (let i = 0; i < nums.length; i++) {
-        //  keep popping
         const element = minHeap.pop()
         if (nums.length - i === k) {
-            //  kth largest
             return element
         }
     }
