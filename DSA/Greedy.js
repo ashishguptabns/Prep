@@ -1,3 +1,18 @@
+/* Minimize product sum of two arrays
+ */
+const minimizeProductSum = (arr1, arr2) => {
+  arr1.sort((a, b) => a - b);
+
+  arr2.sort((a, b) => b - a);
+
+  let productSum = 0;
+  for (let i = 0; i < arr1.length; i++) {
+    productSum += arr1[i] * arr2[i];
+  }
+
+  return productSum;
+};
+
 /* Optimal partition of string - Given a string s, partition the string into one or more substrings such that the characters in each substring are unique. That is, no letter appears in a single substring more than once.
 
 Return the minimum number of substrings in such a partition.
@@ -474,24 +489,6 @@ const minFlips = (target) => {
   }
 
   return flipCount;
-};
-
-/* Minimize product sum of two arrays
- */
-const minimizeProductSum = (arr1, arr2) => {
-  // Sort one array in ascending order
-  arr1.sort((a, b) => a - b);
-
-  // Sort the other array in descending order
-  arr2.sort((a, b) => b - a);
-
-  // Calculate the product sum
-  let productSum = 0;
-  for (let i = 0; i < arr1.length; i++) {
-    productSum += arr1[i] * arr2[i];
-  }
-
-  return productSum;
 };
 
 /* Dot product of two sparse vectors - Given two sparse vectors, compute their dot product.

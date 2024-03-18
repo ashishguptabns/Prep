@@ -70,8 +70,6 @@ const totalFruit = (fruits) => {
         totalNum++
 
         if (Object.keys(map).length > 2) {
-            //  found a new group of fruit
-
             map[fruits[left]] = map[fruits[left]] - 1
             totalNum--
             if (map[fruits[left]] === 0) {
@@ -453,110 +451,6 @@ const minSwaps = (arr) => {
     return minSwaps;
 };
 
-/* Count Subarrays With Fixed Bounds - You are given an integer array nums and two integers minK and maxK.
-
-A fixed-bound subarray of nums is a subarray that satisfies the following conditions:
-- The minimum value in the subarray is equal to minK.
-- The maximum value in the subarray is equal to maxK.
-Return the number of fixed-bound subarrays.
-
-A subarray is a contiguous part of an array.
- */
-/**
- * @param {number[]} nums
- * @param {number} minK
- * @param {number} maxK
- * @return {number}
- */
-const countSubarrays = (nums, minK, maxK) => {
-    /* pseudo code
-        move through the array
-            track index which is out of range
-            equal to min
-            equal to max
-            add the num of subarrays for this range 
-    */
-
-    let minPos = -1
-    let maxPos = -1
-
-    //  most recent index out of range    
-    let startIndex = -1
-
-    let numSubArrays = 0
-
-    for (let i = 0; i < nums.length; i++) {
-        //  update out of range index        
-        if (nums[i] < minK || nums[i] > maxK) {
-            startIndex = i
-        }
-
-        //  update recent positions if any
-        if (nums[i] === minK) {
-            minPos = i
-        }
-        if (nums[i] === maxK) {
-            maxPos = i
-        }
-
-        //  number of subarrays is number of elements between startIndex and smaller of two indices
-        numSubArrays += Math.max(0, Math.min(maxPos, minPos) - startIndex)
-    }
-
-    return numSubArrays
-};
-
-/* Maximize the confusion in exam - A teacher is writing a test with n true/false questions, with 'T' denoting true and 'F' denoting false. He wants to confuse the students by maximizing the number of consecutive questions with the same answer (multiple trues or multiple falses in a row).
-
-You are given a string answerKey, where answerKey[i] is the original answer to the ith question. In addition, you are given an integer k, the maximum number of times you may perform the following operation:
-
-Change the answer key for any question to 'T' or 'F' (i.e., set answerKey[i] to 'T' or 'F').
-Return the maximum number of consecutive 'T's or 'F's in the answer key after performing the operation at most k times.
- */
-
-/**
- * @param {string} answerKey
- * @param {number} k
- * @return {number}
- */
-const maxConsecutiveAnswers = (answerKey, k) => {
-
-    /* pseudo code
-        we will find max length of subseqs having max k Ts or Fs
-        run through the array
-            keep tracking the count of given char - T or F
-            more than k chars
-                shrink windown from left
-            keep tracking the max window length
-        return max length found so far
-    */
-
-    const maxConsequtive = (char) => {
-        let left = 0, charCount = 0, max = 0
-        //  Iterating over the answer key using right pointer
-        for (let right = 0; right < answerKey.length; right++) {
-            //  currentChar is the char that should be atmost k times
-            if (answerKey[right] === char) {
-                charCount++
-            }
-
-            //  we have more than k chars 
-            //  we have to shrink the window
-            while (charCount > k) {
-                if (answerKey[left] === char) {
-                    charCount--
-                }
-                left++
-            }
-            //  Current window has atmost k chars
-            max = Math.max(max, right - left + 1)
-        }
-        return max
-    }
-
-    return Math.max(maxConsequtive('T'), maxConsequtive('F'))
-};
-
 /* Sliding window maximum - You are given an array of integers nums, there is a sliding window of size k which is moving from the very left of the array to the very right. You can only see the k numbers in the window. Each time the sliding window moves right by one position.
 
 Return the max sliding window.
@@ -731,3 +625,103 @@ if no such substring exists, return 0. */
 A circular array is defined as an array where we consider the first element and the last element to be adjacent.
 
 Given a binary circular array nums, return the minimum number of swaps required to group all 1's present in the array together at any location. */
+
+/* Maximize the confusion in exam - A teacher is writing a test with n true/false questions, with 'T' denoting true and 'F' denoting false. He wants to confuse the students by maximizing the number of consecutive questions with the same answer (multiple trues or multiple falses in a row).
+
+You are given a string answerKey, where answerKey[i] is the original answer to the ith question. In addition, you are given an integer k, the maximum number of times you may perform the following operation:
+
+Change the answer key for any question to 'T' or 'F' (i.e., set answerKey[i] to 'T' or 'F').
+Return the maximum number of consecutive 'T's or 'F's in the answer key after performing the operation at most k times.
+ */
+
+/**
+ * @param {string} answerKey
+ * @param {number} k
+ * @return {number}
+ */
+const maxConsecutiveAnswers = (answerKey, k) => {
+
+    /* pseudo code
+        we will find max length of subseqs having max k Ts or Fs
+        run through the array
+            keep tracking the count of given char - T or F
+            more than k chars
+                shrink windown from left
+            keep tracking the max window length
+        return max length found so far
+    */
+
+    const maxConsequtive = (char) => {
+        let left = 0, charCount = 0, max = 0
+        for (let right = 0; right < answerKey.length; right++) {
+            if (answerKey[right] === char) {
+                charCount++
+            }
+
+            while (charCount > k) {
+                if (answerKey[left] === char) {
+                    charCount--
+                }
+                left++
+            }
+            max = Math.max(max, right - left + 1)
+        }
+        return max
+    }
+
+    return Math.max(maxConsequtive('T'), maxConsequtive('F'))
+};
+
+/* Count Subarrays With Fixed Bounds - You are given an integer array nums and two integers minK and maxK.
+
+A fixed-bound subarray of nums is a subarray that satisfies the following conditions:
+- The minimum value in the subarray is equal to minK.
+- The maximum value in the subarray is equal to maxK.
+Return the number of fixed-bound subarrays.
+
+A subarray is a contiguous part of an array.
+ */
+/**
+ * @param {number[]} nums
+ * @param {number} minK
+ * @param {number} maxK
+ * @return {number}
+ */
+const countSubarrays = (nums, minK, maxK) => {
+    /* pseudo code
+        move through the array
+            track index which is out of range
+            equal to min
+            equal to max
+            add the num of subarrays for this range 
+    */
+
+    let minPos = -1
+    let maxPos = -1
+
+    //  most recent index out of range    
+    let startIndex = -1
+
+    let numSubArrays = 0
+
+    for (let i = 0; i < nums.length; i++) {
+        //  update out of range index        
+        if (nums[i] < minK || nums[i] > maxK) {
+            startIndex = i
+        }
+
+        //  update recent positions if any
+        if (nums[i] === minK) {
+            minPos = i
+        }
+        if (nums[i] === maxK) {
+            maxPos = i
+        }
+
+        //  number of subarrays is number of elements between startIndex and smaller of two indices
+        numSubArrays += Math.max(0, Math.min(maxPos, minPos) - startIndex)
+    }
+
+    return numSubArrays
+};
+

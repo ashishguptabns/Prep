@@ -304,45 +304,33 @@ const findOrder = (numCourses, prerequisites) => {
     check if all the courses have been taken
   */
 
-  // Array to store the in-degrees of each course
   const inDegrees = Array(numCourses).fill(0);
 
-  // Count the in-degrees for each course based on prerequisites
   for (const [to, from] of prerequisites) {
     inDegrees[to]++;
   }
 
-  // Queue to store courses with in-degree 0 (can be taken first)
   const q = [];
 
-  // Add courses with in-degree 0 to the queue
   for (let i = 0; i < inDegrees.length; i++) {
     if (inDegrees[i] === 0) {
       q.push(i);
     }
   }
 
-  // Array to store the final result (order of courses)
   const res = [];
 
-  // Process courses in topological order
   while (q.length) {
-    // Take a course with in-degree 0 from the queue
     const currCourse = q.shift();
 
-    // Add the course to the result
     res.push(currCourse);
 
-    // Decrement the total number of courses remaining
     numCourses--;
 
-    // Update in-degrees for courses dependent on the current course
     for (const [v, u] of prerequisites) {
       if (u === currCourse) {
-        //  course v got one prereq unlock
         inDegrees[v]--;
 
-        // If the in-degree becomes 0, add the course to the queue as we can take this course now
         if (inDegrees[v] === 0) {
           q.push(v);
         }
@@ -350,7 +338,6 @@ const findOrder = (numCourses, prerequisites) => {
     }
   }
 
-  // If all courses can be taken, return the result; otherwise, return an empty array
   return numCourses === 0 ? res : [];
 };
 
@@ -672,54 +659,37 @@ const dijkstra = (graph, start) => {
       distance tracks ith item's distance from start node
   */
 
-  // Create an object to store the shortest distance from the start node to every other node
   const distances = {};
-
-  // A set to keep track of all visited nodes
   const visited = new Set();
-
-  // Get all the nodes of the graph
   const nodes = Object.keys(graph);
 
-  // Initially, set the shortest distance to every node as Infinity
   for (const node of nodes) {
     distances[node] = Infinity;
   }
 
-  // The distance from the start node to itself is 0
   distances[start] = 0;
 
-  // Loop until all nodes are visited
   while (nodes.length) {
-    // Sort nodes by distance and pick the closest unvisited node
     nodes.sort((a, b) => distances[a] - distances[b]);
     const closestNode = nodes.shift();
 
-    // If the shortest distance to the closest node is still Infinity, then remaining nodes are unreachable and we can break
     if (distances[closestNode] === Infinity) {
       break;
     }
 
-    // Mark the chosen node as visited
     visited.add(closestNode);
 
-    // For each neighboring node of the current node
     for (const neighbor in graph[closestNode]) {
-      // If the neighbor hasn't been visited yet
       if (!visited.has(neighbor)) {
-        // Calculate tentative distance to the neighboring node
         const newDistance = distances[closestNode] + graph[closestNode][neighbor];
 
-        // If the newly calculated distance is shorter than the previously known distance to this neighbor
         if (newDistance < distances[neighbor]) {
-          // Update the shortest distance to this neighbor
           distances[neighbor] = newDistance;
         }
       }
     }
   }
 
-  // Return the shortest distance from the start node to all nodes
   return distances;
 };
 
@@ -791,3 +761,6 @@ const countSubTrees = (n, edges, labels) => {
 /* Minimum Spanning Tree  */
 
 /* Minimum Cut Algorithm */
+
+/* Shortest Path Visiting All Nodes */
+

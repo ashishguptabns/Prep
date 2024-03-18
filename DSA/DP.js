@@ -395,7 +395,9 @@ const countIncreasingSubarraysDP = (arr) => {
             ith item tells num of increasing subarrays till ith index
         move through the array
             if curr item is more than last one
-                dp[i - 1] + 1
+                dp[i] = dp[i - 1] + 1
+            else 
+                dp[i] = 1
             keep adding the count of subarrays
     */
 

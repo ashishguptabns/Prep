@@ -172,31 +172,18 @@ We will use the integers 0, 1, and 2 to represent the color red, white, and blue
  */
 const sortColors = (nums) => {
 
-  /* pseudo code
-    keep pointers for 0s and 2s
-    move through the array
-      skip duplicates
-      keep putting the 0s and 2s at their respective pointers
-  */
-
-  let zero = 0;
-  let two = nums.length - 1;
+  let left = 0
 
   for (let i = 0; i < nums.length; i++) {
-    while (nums[zero] === 0) {
-      zero++;
+    if (nums[i] == 0) {
+      [nums[i], nums[left]] = [nums[left], nums[i]]
+      left++
     }
-    while (nums[two] === 2) {
-      two--;
-    }
-    const currNum = nums[i];
-    if (currNum === 0 && i > zero) {
-      [nums[zero], nums[i]] = [nums[i], nums[zero]];
-      i--;
-    }
-    if (currNum === 2 && i < two) {
-      [nums[two], nums[i]] = [nums[i], nums[two]];
-      i--;
+  }
+  for (let i = left; i < nums.length; i++) {
+    if (nums[i] == 1) {
+      [nums[i], nums[left]] = [nums[left], nums[i]]
+      left++
     }
   }
 };
@@ -213,50 +200,25 @@ Return nums after the rearrangement.
  * @return {number[]}
  */
 const pivotArray = (nums, pivot) => {
-  /* pseudo code
-    keep two pointers start and end to move through items
-    keep low and high index to keep items as per pivot
-    loop through array till start < nums length
-      item at start index < pivot
-        put at low index
-        move low index to right
-      item at end index > pivot
-        put at high index
-        move high index to left
-      keep moving start and end
-    low index <= high index
-      put pivot element
-  */
-
-  let len = nums.length;
-  let output = [];
-
-  let start = 0;
-  let end = len - 1;
-
-  let lowIndex = 0;
-  let highIndex = len - 1;
-
-  while (start < len) {
-    //  fill small numbers to left
-    if (nums[start] < pivot) {
-      output[lowIndex++] = nums[start];
+  const arr = Array(nums.length).fill(pivot)
+  let left = 0
+  let pivotCount = 0
+  for (const num of nums) {
+    if (num < pivot) {
+      arr[left++] = num
     }
-    //  fill large numbers to right
-    if (nums[end] > pivot) {
-      output[highIndex--] = nums[end];
+    if (num === pivot) {
+      pivotCount++
     }
-
-    start++;
-    end--;
+  }
+  left += pivotCount
+  for (const num of nums) {
+    if (num > pivot) {
+      arr[left++] = num
+    }
   }
 
-  //  if there is some space left
-  while (lowIndex <= highIndex) {
-    output[lowIndex++] = pivot;
-  }
-
-  return output;
+  return arr
 };
 
 /* Two Sum Less Than K - 
