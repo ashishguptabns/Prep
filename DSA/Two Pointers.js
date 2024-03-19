@@ -1,3 +1,44 @@
+/* Valid Palindrome II - Given a string s, return true if the s can be palindrome after deleting at most one character from it.
+ */
+/**
+ * @param {string} s
+ * @return {boolean}
+ */
+const validPalindrome = (str) => {
+  function isPalindromeRange(start, end) {
+    while (start < end) {
+      if (str[start] !== str[end]) {
+        return false;
+      }
+      start++;
+      end--;
+    }
+    return true;
+  }
+
+  let left = 0;
+  let right = str.length - 1;
+
+  while (left < right) {
+    if (str[left] !== str[right]) {
+      if (isPalindromeRange(left + 1, right)) {
+        return true;
+      }
+
+      if (isPalindromeRange(left, right - 1)) {
+        return true;
+      }
+
+      return false;
+    }
+
+    left++;
+    right--;
+  }
+
+  return true;
+};
+
 /* Container With Most Water - You are given an integer array height of length n. There are n vertical lines drawn such that the two endpoints of the ith line are (i, 0) and (i, height[i]).
 Find two lines that together with the x-axis form a container, such that the container contains the most water.
 Return the maximum amount of water a container can store.
@@ -473,43 +514,3 @@ const nextPermutation = (nums) => {
   reverse(nums, i + 1);
 };
 
-/* find if string can be made palindrome by removing at most 1 character */
-function canBePalindromeWithOneRemoval(str) {
-  function isPalindromeRange(start, end) {
-    while (start < end) {
-      if (str[start] !== str[end]) {
-        return false;
-      }
-      start++;
-      end--;
-    }
-    return true;
-  }
-
-  let left = 0;
-  let right = str.length - 1;
-
-  while (left < right) {
-    if (str[left] !== str[right]) {
-      // Try removing the character at left
-      if (isPalindromeRange(left + 1, right)) {
-        return true;
-      }
-
-      // Try removing the character at right
-      if (isPalindromeRange(left, right - 1)) {
-        return true;
-      }
-
-      // If both removals didn't result in a palindrome, the string can't be made a palindrome
-      return false;
-    }
-
-    // Move pointers towards the center
-    left++;
-    right--;
-  }
-
-  // The string is already a palindrome or has an odd length with a middle character that can be ignored
-  return true;
-}

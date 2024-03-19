@@ -90,50 +90,37 @@ const possibleBipartition = (n, dislikes) => {
           push in the queue for next travel
   */
 
-  //  Create the adjacency list graph
-  //  notice label is from 1 to n
   const adjList = Array(n + 1).fill(null).map(() => []);
   for (const [a, b] of dislikes) {
-    // Add edges to the adjacency list
     adjList[a].push(b);
     adjList[b].push(a);
   }
 
-  // Initialize an array to store the color of each node
   const color = new Array(n + 1).fill(0);
-  // 0: not colored, 1: color 1, -1: color 2
 
   for (let node = 1; node <= n; node++) {
-    // Iterate through the nodes
 
     if (color[node] !== 0) {
-      // Found a colored node; skip it as it is already processed
       continue;
     }
 
-    // We will do BFS from this node
     const queue = [node];
     color[node] = 1;
 
     while (queue.length) {
       const currNode = queue.shift();
 
-      // Check the neighbors and color them
       for (const neighbor of adjList[currNode]) {
         if (color[neighbor] === color[currNode]) {
-          // Condition is broken - hateful neighbors
           return false;
         }
         if (color[neighbor] === 0) {
-          // Color the neighbor with the opposite color
           color[neighbor] = -color[currNode];
-          // Add in the queue for BFS
           queue.push(neighbor);
         }
       }
     }
   }
-  // All nodes are colored without conflicts, so the graph can be bipartitioned
   return true;
 };
 

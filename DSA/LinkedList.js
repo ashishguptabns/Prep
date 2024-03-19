@@ -144,41 +144,6 @@ const swapPairs = (head) => {
     return head
 };
 
-/* Remove Nth Node From End of List - Given the head of a linked list, remove the nth node from the end of the list and return its head.
- */
-/**
- * @param {ListNode} head
- * @param {number} n
- * @return {ListNode}
- */
-const removeNthFromEnd = (head, n) => {
-
-    /* pseudo code
-        move fast pointer by k
-        move fast and slow till fast reaches then end
-        skip the next node of slow
-    */
-
-    let fast = head, slow = head;
-
-    for (let i = 0; i < n; i++) {
-        fast = fast.next;
-    }
-
-    if (!fast) {
-        return head.next;
-    }
-
-    while (fast.next) {
-        fast = fast.next;
-        slow = slow.next;
-    }
-
-    slow.next = slow.next.next;
-
-    return head;
-};
-
 /* LRUCache - Design a data structure that follows the constraints of a Least Recently Used(LRU) cache.
  */
 class DLLNode {
@@ -743,3 +708,39 @@ const reorderList = (head) => {
 };
 
 /* Convert Sorted List to Binary Search Tree - Given the head of a singly linked list where elements are sorted in ascending order, convert it to a height-balanced binary search tree. */
+
+/* Remove Nth Node From End of List - Given the head of a linked list, remove the nth node from the end of the list and return its head.
+ */
+/**
+ * @param {ListNode} head
+ * @param {number} n
+ * @return {ListNode}
+ */
+const removeNthFromEnd = (head, n) => {
+
+    /* pseudo code
+        move fast pointer by k
+        move fast and slow till fast reaches then end
+        skip the next node of slow
+    */
+
+    let fast = head, slow = head;
+
+    for (let i = 0; i < n; i++) {
+        fast = fast.next;
+    }
+
+    if (!fast) {
+        return head.next;
+    }
+
+    while (fast.next) {
+        fast = fast.next;
+        slow = slow.next;
+    }
+
+    slow.next = slow.next.next;
+
+    return head;
+};
+
