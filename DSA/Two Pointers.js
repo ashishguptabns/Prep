@@ -177,7 +177,6 @@ const threeSumClosest = (nums, target) => {
 
   let first = 0;
   while (first <= size - 3 && diff !== 0) {
-    //  we want closest not exact
 
     let sec = first + 1;
     let third = size - 1;
@@ -185,7 +184,6 @@ const threeSumClosest = (nums, target) => {
     while (sec < third) {
       const sum = nums[first] + nums[sec] + nums[third];
       if (Math.abs(target - sum) < Math.abs(diff)) {
-        //  found a closer one
         diff = target - sum;
       }
       if (sum < target) {

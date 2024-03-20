@@ -1152,12 +1152,6 @@ Besides the root, each house has one and only one parent house. After a tour, th
 
 Given the root of the binary tree, return the maximum amount of money the thief can rob without alerting the police. */
 
-/* Split Array Largest Sum - Given an integer array nums and an integer k, split nums into k non-empty subarrays such that the largest sum of any subarray is minimized.
-
-Return the minimized largest sum of the split.
-
-A subarray is a contiguous part of the array. */
-
 /* Ugly number - An ugly number is a positive integer whose prime factors are limited to 2, 3, and 5.
 
 Given an integer n, return the nth ugly number.

@@ -219,7 +219,6 @@ const getAncestors = (n, edges) => {
         keep pushing current node as an ancestor of the node being visited in BFS
   */
 
-  // Build a graph
   const graph = Array(n);
   for (let i = 0; i < graph.length; i++) {
     graph[i] = [];
@@ -230,31 +229,21 @@ const getAncestors = (n, edges) => {
 
   const ancestors = new Array(n).fill().map(() => []);
 
-  // Process all ancestors from 0 to n. This will ensure sorted order in the output.
   for (let originNode = 0; originNode < n; originNode++) {
-    //  we can go to neighbours from this ancestor
     const neighbors = graph[originNode];
 
-    // Use BFS to traverse the entire path from any ancestor
     let queue = neighbors;
 
-    // A given node can be reached from an ancestor by different paths
-    // We only want to record the ancestor once, so the first time you reach a node
-    // mark that node as seen
     const seen = new Set();
     while (queue.length) {
       const nextQueue = [];
 
       for (let i = 0; i < queue.length; i++) {
         const currNode = queue[i];
-
-        // Only record the ancestor if we haven't seen this node yet
         if (!seen.has(currNode)) {
           seen.add(currNode);
           ancestors[currNode].push(originNode);
 
-          // The first time we reach the node, we populate the queue with the neighbors of current node
-          // to continue the BFS
           for (const nextNode of graph[currNode]) {
             nextQueue.push(nextNode);
           }

@@ -85,21 +85,16 @@ const suggestedProducts = (products, searchWord) => {
       keep pushing the suggestions in the res array
   */
 
-  //  suggestions are given in lexicographical order
   products.sort();
 
-  //  build a trie from the sorted products
   const trie = {};
   for (let p of products) {
     let node = trie;
-    //  go through the characters
     for (const char of p) {
       if (!node[char]) {
-        //  give suggestions for each character ending - prefix
         node[char] = { 'sug': [] };
       }
       if (node[char]['sug'].length < 3) {
-        //  this whole word p is a suggestion for a prefix ending at this char
         node[char]['sug'].push(p);
       }
       node = node[char];
@@ -111,7 +106,6 @@ const suggestedProducts = (products, searchWord) => {
     if (node) {
       node = node[searchWord[i]];
     }
-    //  condition is to consider each char
     res.push(!node ? [] : node['sug']);
   }
 
