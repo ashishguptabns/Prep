@@ -456,11 +456,6 @@ const minSwaps = (arr) => {
 Return the max sliding window.
  */
 
-/**
- * @param {number[]} nums
- * @param {number} k
- * @return {number[]}
- */
 const maxSlidingWindow = (nums, k) => {
 
     /* pseudo code
@@ -495,10 +490,6 @@ A subarray of an array is a consecutive sequence of zero or more values taken ou
 Return the maximum length of a subarray with positive product.
 */
 
-/**
- * @param {number[]} nums
- * @return {number}
- */
 const getMaxLen = (nums) => {
     let result = positive = negative = 0;
 

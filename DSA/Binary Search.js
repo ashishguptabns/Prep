@@ -120,41 +120,38 @@ The overall run time complexity should be O(log (m+n)).
  */
 const findMedianSortedArrays = (nums1, nums2) => {
 
-    /* pseudo code
-        keep an array to merge both arrays
-        move i through nums1 and j through nums2
-            nums1[i] < nums2[j]
-                push ith item of nums1
-            else
-                push jth item of nums2
-        push remaining items of nums1 and nums2
-        find the median of merged array
-    */
+    if (nums1.length > nums2.length) {
+        [nums1, nums2] = [nums2, nums1];
+    }
 
-    const merged = [];
-    let i = 0, j = 0;
+    const m = nums1.length;
+    const n = nums2.length;
+    let low = 0, high = m;
 
-    while (i < nums1.length && j < nums2.length) {
-        if (nums1[i] < nums2[j]) {
-            merged.push(nums1[i++]);
+    while (low <= high) {
+        const partitionX = Math.floor((low + high) / 2);
+        const partitionY = Math.floor((m + n + 1) / 2) - partitionX;
+
+        const maxX = (partitionX === 0) ? Number.MIN_SAFE_INTEGER : nums1[partitionX - 1];
+        const maxY = (partitionY === 0) ? Number.MIN_SAFE_INTEGER : nums2[partitionY - 1];
+
+        const minX = (partitionX === m) ? Number.MAX_SAFE_INTEGER : nums1[partitionX];
+        const minY = (partitionY === n) ? Number.MAX_SAFE_INTEGER : nums2[partitionY];
+
+        if (maxX <= minY && maxY <= minX) {
+            if ((m + n) % 2 === 0) {
+                return (Math.max(maxX, maxY) + Math.min(minX, minY)) / 2;
+            } else {
+                return Math.max(maxX, maxY);
+            }
+        } else if (maxX > minY) {
+            high = partitionX - 1;
         } else {
-            merged.push(nums2[j++]);
+            low = partitionX + 1;
         }
     }
 
-    while (i < nums1.length) {
-        merged.push(nums1[i++]);
-    }
-    while (j < nums2.length) {
-        merged.push(nums2[j++]);
-    }
-
-    let mid = Math.floor(merged.length / 2);
-    if (merged.length % 2 === 0) {
-        return (merged[mid - 1] + merged[mid]) / 2;
-    } else {
-        return merged[mid];
-    }
+    throw new Error("Input arrays are not sorted.");
 };
 
 /* Minimum Time to Complete Trips - You are given an array time where time[i] denotes the time taken by the ith bus to complete one trip.

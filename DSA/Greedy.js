@@ -445,20 +445,15 @@ Return the minimum number of moves to make every value in nums unique.
  * @return {number}
  */
 const minIncrementForUnique = (nums) => {
-  //  we will use greedy approach
 
-  //  sort the array in increasing order
   nums.sort((a, b) => a - b);
 
   let count = 0;
 
   for (let i = 0; i < nums.length; i++) {
     if (nums[i] <= nums[i - 1]) {
-      //  this less check might come because of in place changes to the items
-      //  increment to make it unique
       const diff = nums[i - 1] - nums[i];
       nums[i] += diff + 1;
-      //  as per definition
       count += diff + 1;
     }
   }
@@ -475,14 +470,12 @@ Return the minimum number of operations needed to make s equal to target.
  * @return {number}
  */
 const minFlips = (target) => {
-  //  we will solve this with greedy
 
   let flipCount = 0;
   let currChar = "0";
 
   for (let i = 0; i < target.length; i++) {
     if (target[i] != currChar) {
-      //  this we are doing because we have a range to flip
       currChar = target[i];
       flipCount++;
     }
@@ -582,24 +575,19 @@ Return a list of integers representing the size of these parts.
 const partitionLabels = (s) => {
   const lastIndex = {};
 
-  //  maintain the lastIndex of a char
   for (let i = 0; i < s.length; i++) {
     lastIndex[s[i]] = i;
   }
 
   const res = [];
 
-  //  start index of curr partition
   let currPartitionStart = 0;
-  //  end index of curr partition
   let currPartitionEnd = 0;
 
   for (let i = 0; i < s.length; i++) {
     currPartitionEnd = Math.max(lastIndex[s[i]], currPartitionEnd);
 
-    //  reached the end of curr repeat char
     if (i === currPartitionEnd) {
-      //  curr partition size
       res.push(i + 1 - currPartitionStart);
       currPartitionStart = i + 1;
     }

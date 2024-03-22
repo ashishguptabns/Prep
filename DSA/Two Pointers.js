@@ -102,28 +102,24 @@ const threeSum = (nums) => {
           move third pointer
   */
 
-  const res = []; // Array to store the result triplets
+  const res = [];
 
-  // Sorting the input array to simplify the solution
   nums.sort((a, b) => a - b);
 
   for (let first = 0; first < nums.length - 2; first++) {
-    // Skip duplicates of the first element
     if (first > 0 && nums[first] === nums[first - 1]) {
       continue;
     }
 
-    let sec = first + 1; // Pointer for the second element
-    let third = nums.length - 1; // Pointer for the third element
+    let sec = first + 1;
+    let third = nums.length - 1;
 
     while (sec < third) {
       const currSum = nums[first] + nums[sec] + nums[third];
 
       if (currSum === 0) {
-        // Found a triplet with a sum of zero
         res.push([nums[first], nums[sec], nums[third]]);
 
-        // Skip duplicates of the second and third elements
         while (sec < third && nums[sec] === nums[sec + 1]) {
           sec++;
         }
@@ -131,20 +127,17 @@ const threeSum = (nums) => {
           third--;
         }
 
-        // Move the pointers towards each other
         sec++;
         third--;
       } else if (currSum < 0) {
-        // If the sum is less than zero, move the second pointer to the right
         sec++;
       } else {
-        // If the sum is greater than zero, move the third pointer to the left
         third--;
       }
     }
   }
 
-  return res; // Return the array of unique triplets with a sum of zero
+  return res;
 };
 
 /* 3Sum Closest - Given an integer array nums of length n and an integer target, find three integers in nums such that the sum is closest to target.

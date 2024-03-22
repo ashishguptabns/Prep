@@ -280,43 +280,33 @@ const distanceK = (root, target, k) => {
         return
     }
 
-    const assignParentTillTarget = (node, parent, target) => {
-        if (node) {
-            node.parent = parent
-            if (node == target) {
-                return node
-            }
-            return assignParentTillTarget(node.left, node, target) || assignParentTillTarget(node.right, node, target)
-        }
-    }
-
-    //  find the target and assign a parent to each node
-    const targetNode = assignParentTillTarget(root, null, target)
-
     const res = []
 
-    const findAllKApart = (node, k, res) => {
-        if (!node || node.visited) {
-            return
+    const findNode = (node, k) => {
+        if (node && !node.visited) {
+            node.visited = true
+            if (k === 0) {
+                res.push(node.val)
+            } else {
+                findNode(node.left, k - 1)
+                findNode(node.right, k - 1)
+                findNode(node.parent, k - 1)
+            }
         }
-
-        if (k === 0) {
-            //  reached the end
-            res.push(node.val)
-            return
-        }
-
-        //  mark
-        node.visited = true
-
-        //  travel in all directions
-        findAllKApart(node.left, k - 1, res)
-        findAllKApart(node.right, k - 1, res)
-        findAllKApart(node.parent, k - 1, res)
     }
 
-    //  start the travel from target node and keep marking visited
-    findAllKApart(targetNode, k, res)
+    const travel = (node, parent) => {
+        if (node) {
+            node.parent = parent
+            if (node.val === target.val) {
+                findNode(node, k)
+            } else {
+                travel(node.left, node)
+                travel(node.right, node)
+            }
+        }
+    }
+    travel(root, null)
 
     return res
 };
@@ -503,20 +493,18 @@ const maxPathSum = (root) => {
 
     let max = -Infinity
 
-    const countGainFromSubtree = (node) => {
-        if (!node) {
-            return 0
+    const travel = (node) => {
+        let sum = 0
+        if (node) {
+            const left = travel(node.left)
+            const right = travel(node.right)
+            sum = node.val + left + right
+            max = Math.max(sum, max)
+            return Math.max(0, node.val + Math.max(left, right))
         }
-
-        const leftMax = Math.max(0, countGainFromSubtree(node.left))
-        const rightMax = Math.max(0, countGainFromSubtree(node.right))
-
-        max = Math.max(max, node.val + leftMax + rightMax)
-
-        return node.val + Math.max(leftMax, rightMax)
+        return sum
     }
-
-    countGainFromSubtree(root)
+    travel(root)
 
     return max
 };

@@ -147,17 +147,13 @@ const minSemesters = (n, prerequisites, k) => {
 
   for (const [course, prereq] of prerequisites) {
     if (!graph.has(prereq)) {
-      //  maintain the courses which will be unlocked with this prereq
       graph.set(prereq, []);
     }
     graph.get(prereq).push(course);
 
-    //  indegree tells you how many prereqs are needed for this course
     indegree[course]++;
   }
 
-  //  start the BFS from courses which have zero prereqs or are unlocked
-  //  queue will have only unlocked courses
   const queue = [];
   for (let i = 1; i <= n; i++) {
     if (indegree[i] === 0) {
@@ -167,18 +163,14 @@ const minSemesters = (n, prerequisites, k) => {
 
   let semesters = 0;
   while (queue.length > 0) {
-    //  max number of courses we can take in one semester
     const size = Math.min(queue.length, k);
     for (let i = 0; i < size; i++) {
       const course = queue.shift();
       if (graph.has(course)) {
-        //  find all the courses which will be unlocked having done this course
         for (const nextCourse of graph.get(course)) {
-          //  decrease the indegree cause one prereq is done in this semester
           indegree[nextCourse]--;
 
           if (indegree[nextCourse] === 0) {
-            //  this course is unlocked now
             queue.push(nextCourse);
           }
         }
@@ -189,7 +181,6 @@ const minSemesters = (n, prerequisites, k) => {
 
   for (const deg of indegree) {
     if (deg > 0) {
-      // If there are still courses with prerequisites, it's impossible to complete all courses
       return -1;
     }
   }
@@ -478,18 +469,12 @@ const eventualSafeNodes = (graph) => {
     if (map.has(node)) {
       return map.get(node);
     }
-    //  this will help find circular or unsafe nodes
     map.set(node, false);
-
-    //  check all the neighbors
     for (let nei of graph[node]) {
       if (!dfs(graph, nei, map)) {
-        //  this neighbor is not safe
         return false;
       }
     }
-
-    //  all the neighbors are safe
     map.set(node, true);
     return true;
   }
