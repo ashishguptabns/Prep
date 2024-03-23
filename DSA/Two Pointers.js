@@ -401,15 +401,7 @@ const minSubArrayLen = (target, nums) => {
   return minLen === Infinity ? 0 : minLen;
 };
 
-/* Water trap - Given n non-negative integers representing an elevation map where the width of each bar is 1, compute how much water it can trap after raining.
- */
-/**
- * @param {number[]} height
- * @return {number}
- */
-/**
- * @param {number[]} height
- * @return {number}
+/* Trapping Rain Water - Given n non-negative integers representing an elevation map where the width of each bar is 1, compute how much water it can trap after raining.
  */
 const trap = (heights) => {
 
@@ -436,13 +428,10 @@ const trap = (heights) => {
   let res = 0;
 
   while (left <= right) {
-    //  find max height of water
     if (leftMaxH <= rightMaxH) {
       if (leftMaxH <= heights[left]) {
-        //  found a taller wall
         leftMaxH = heights[left];
       } else {
-        //  this much water can be held at this index
         res += leftMaxH - heights[left]
       }
       left += 1;

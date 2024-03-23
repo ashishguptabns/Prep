@@ -136,26 +136,26 @@ const insert = (intervals, newInterval) => {
         keep min of starts and max of ends to find the merged interval
   */
 
-  let [start, end] = newInterval;
+  let [newS, newE] = newInterval;
   const left = [];
   const right = [];
 
   for (const interval of intervals) {
-    const [first, last] = interval;
+    const [start, end] = interval;
 
-    if (last < start) {
+    if (end < newS) {
       left.push(interval);
     }
-    else if (first > end) {
+    else if (start > newE) {
       right.push(interval);
     }
     else {
-      start = Math.min(start, first);
-      end = Math.max(end, last);
+      newS = Math.min(newS, start);
+      newE = Math.max(newE, end);
     }
   }
 
-  return [...left, [start, end], ...right];
+  return [...left, [newS, newE], ...right];
 };
 
 /* Longest Common Prefix - Write a function to find the longest common prefix string amongst an array of strings.
@@ -309,31 +309,16 @@ Return the minimum time Bob needs to make the rope colorful.
  * @param {number[]} neededTime
  * @return {number}
  */
-const minCostRope = (colors, neededTime) => {
-
-  /* pseudo code
-    move i through colors
-      same color to prev color
-        curr color needs more time
-          keep the prev color
-        else
-          keep curr color
-      keep tracking time needed
-  */
-
-  let time = 0;
-
+var minCost = function (colors, neededTime) {
+  let time = 0
   for (let i = 1; i < colors.length; i++) {
     if (colors[i] === colors[i - 1]) {
-      if (neededTime[i] > neededTime[i - 1]) {
-        time += neededTime[i - 1];
-      } else {
-        time += neededTime[i];
-      }
+      time += Math.min(neededTime[i], neededTime[i - 1])
+      neededTime[i] = Math.max(neededTime[i], neededTime[i - 1])
     }
   }
 
-  return time;
+  return time
 };
 
 /* String compression - Given an array of characters chars, compress it using the following algorithm:

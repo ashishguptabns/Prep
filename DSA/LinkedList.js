@@ -707,8 +707,6 @@ const reorderList = (head) => {
     }
 };
 
-/* Convert Sorted List to Binary Search Tree - Given the head of a singly linked list where elements are sorted in ascending order, convert it to a height-balanced binary search tree. */
-
 /* Remove Nth Node From End of List - Given the head of a linked list, remove the nth node from the end of the list and return its head.
  */
 /**
@@ -743,4 +741,6 @@ const removeNthFromEnd = (head, n) => {
 
     return head;
 };
+
+/* Convert Sorted List to Binary Search Tree - Given the head of a singly linked list where elements are sorted in ascending order, convert it to a height-balanced binary search tree. */
 
