@@ -1285,3 +1285,66 @@ const isInterleave = (s1, s2, s3) => {
     return dp[s1.length][s2.length];
 };
 
+/* Sum of Distances in Tree - There is an undirected connected tree with n nodes labeled from 0 to n - 1 and n - 1 edges.
+
+You are given the integer n and the array edges where edges[i] = [ai, bi] indicates that there is an edge between nodes ai and bi in the tree.
+
+Return an array answer of length n where answer[i] is the sum of the distances between the ith node in the tree and all other nodes. */
+
+/* Minimum Number of Refueling Stops - A car travels from a starting position to a destination which is target miles east of the starting position.
+
+There are gas stations along the way. The gas stations are represented as an array stations where stations[i] = [positioni, fueli] indicates that the ith gas station is positioni miles east of the starting position and has fueli liters of gas.
+
+The car starts with an infinite tank of gas, which initially has startFuel liters of fuel in it. It uses one liter of gas per one mile that it drives. When the car reaches a gas station, it may stop and refuel, transferring all the gas from the station into the car.
+
+Return the minimum number of refueling stops the car must make in order to reach its destination. If it cannot reach the destination, return -1.
+
+Note that if the car reaches a gas station with 0 fuel left, the car can still refuel there. If the car reaches the destination with 0 fuel left, it is still considered to have arrived. */
+
+/* Reducing Dishes - A chef has collected data on the satisfaction level of his n dishes. Chef can cook any dish in 1 unit of time.
+
+Like-time coefficient of a dish is defined as the time taken to cook that dish including previous dishes multiplied by its satisfaction level i.e. time[i] * satisfaction[i].
+
+Return the maximum sum of like-time coefficient that the chef can obtain after preparing some amount of dishes.
+
+Dishes can be prepared in any order and the chef can discard some dishes to get this maximum value. */
+
+/*  Minimum One Bit Operations to Make Integers Zero - Given an integer n, you must transform it into 0 using the following operations any number of times:
+
+Change the rightmost (0th) bit in the binary representation of n.
+Change the ith bit in the binary representation of n if the (i-1)th bit is set to 1 and the (i-2)th through 0th bits are set to 0.
+Return the minimum number of operations to transform n into 0. */
+
+/* Maximum Score Words Formed by Letters - Given a list of words, list of  single letters (might be repeating) and score of every character.
+
+Return the maximum score of any valid set of words formed by using the given letters (words[i] cannot be used two or more times).
+
+It is not necessary to use all characters in letters and each letter can only be used once. Score of letters 'a', 'b', 'c', ... ,'z' is given by score[0], score[1], ... , score[25] respectively. */
+
+/*  Cherry Pickup II - You are given a rows x cols matrix grid representing a field of cherries where grid[i][j] represents the number of cherries that you can collect from the (i, j) cell.
+
+You have two robots that can collect cherries for you:
+
+Robot #1 is located at the top-left corner (0, 0), and
+Robot #2 is located at the top-right corner (0, cols - 1).
+Return the maximum number of cherries collection using both robots by following the rules below:
+
+From a cell (i, j), robots can move to cell (i + 1, j - 1), (i + 1, j), or (i + 1, j + 1).
+When any robot passes through a cell, It picks up all cherries, and the cell becomes an empty cell.
+When both robots stay in the same cell, only one takes the cherries.
+Both robots cannot move outside of the grid at any moment.
+Both robots should reach the bottom row in grid. */
+
+/* Minimum Insertion Steps to Make a String Palindrome - Given a string s. In one step you can insert any character at any index of the string.
+
+Return the minimum number of steps to make s palindrome.
+
+A Palindrome String is one that reads the same backward as well as forward. */
+
+/*  Minimum Number of Increments on Subarrays to Form a Target Array - You are given an integer array target. You have an integer array initial of the same size as target with all elements initially zeros.
+
+In one operation you can choose any subarray from initial and increment each value by one.
+
+Return the minimum number of operations to form a target array from initial.
+
+The test cases are generated so that the answer fits in a 32-bit integer. */

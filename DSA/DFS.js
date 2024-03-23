@@ -1,3 +1,58 @@
+/* Surrounded regions -Given an m x n matrix board containing 'X' and 'O', capture all regions that are 4-directionally surrounded by 'X'.
+
+A region is captured by flipping all 'O's into 'X's in that surrounded region.
+*/
+/**
+ * @param {character[][]} board
+ * @return {void} Do not return anything, modify board in-place instead.
+ */
+const solve = (board) => {
+
+    /* pseudo code
+      go to each border cell
+        mark cell as unreachable which is O
+        repeat for connected cells which are not on border
+      
+      go to each cell
+        if it is marked unreachable
+          restore to O
+        else mark X
+    */
+
+    const dfs = (i, j) => {
+        if (i < 0 || i >= board.length || j < 0 || j >= board[i].length
+            || board[i][j] === 'V' || board[i][j] === 'X') {
+            return
+        }
+
+        board[i][j] = 'V';
+        dfs(i + 1, j);
+        dfs(i - 1, j);
+        dfs(i, j + 1);
+        dfs(i, j - 1);
+    }
+
+    for (let r = 0; r < board.length; r++) {
+        for (let c = 0; c < board[0].length; c++) {
+            if (board[r][c] === 'O' && (r === 0 || c === 0 || r === board.length - 1
+                || c === board[0].length - 1)) {
+                dfs(r, c);
+            }
+        }
+    }
+
+    for (let r = 0; r < board.length; r++) {
+        for (let c = 0; c < board[0].length; c++) {
+            if (board[r][c] === 'V') {
+                board[r][c] = 'O';
+            } else {
+                board[r][c] = 'X';
+            }
+        }
+    }
+};
+
+
 /* Find falling indices */
 const findFallingIndices = () => {
     const m = [

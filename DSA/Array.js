@@ -408,3 +408,12 @@ const maxSubarraySumCircular = (nums) => {
   return Math.max(maxSum, sum - minSum);
 };
 
+/* Maximum Gap - Given an integer array nums, return the maximum difference between two successive elements in its sorted form. If the array contains less than two elements, return 0.
+
+You must write an algorithm that runs in linear time and uses linear extra space. */
+
+/* Number of Submatrices That Sum to Target - Given a matrix and a target, return the number of non-empty submatrices that sum to target.
+
+A submatrix x1, y1, x2, y2 is the set of all cells matrix[x][y] with x1 <= x <= x2 and y1 <= y <= y2.
+
+Two submatrices (x1, y1, x2, y2) and (x1', y1', x2', y2') are different if they have some coordinate that is different: for example, if x1 != x1'. */

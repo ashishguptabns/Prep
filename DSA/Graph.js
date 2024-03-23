@@ -389,60 +389,6 @@ const alienOrder = (words) => {
   return seen.size === charGraph.size ? result.join('') : '';
 }
 
-/* Surrounded regions -Given an m x n matrix board containing 'X' and 'O', capture all regions that are 4-directionally surrounded by 'X'.
-
-A region is captured by flipping all 'O's into 'X's in that surrounded region.
-*/
-/**
- * @param {character[][]} board
- * @return {void} Do not return anything, modify board in-place instead.
- */
-const solve = (board) => {
-
-  /* pseudo code
-    go to each border cell
-      mark cell as visited which is O
-      repeat for neighbour cells which are not on border
-    
-    go to each cell
-      if it is marked visited
-        restore to O
-      else mark X
-  */
-
-  const dfs = (i, j) => {
-    if (i < 0 || i >= board.length || j < 0 || j >= board[i].length
-      || board[i][j] === 'V' || board[i][j] === 'X') {
-      return
-    }
-
-    board[i][j] = 'V';
-    dfs(i + 1, j);
-    dfs(i - 1, j);
-    dfs(i, j + 1);
-    dfs(i, j - 1);
-  }
-
-  for (let r = 0; r < board.length; r++) {
-    for (let c = 0; c < board[0].length; c++) {
-      if (board[r][c] === 'O' && (r === 0 || c === 0 || r === board.length - 1
-        || c === board[0].length - 1)) {
-        dfs(r, c);
-      }
-    }
-  }
-
-  for (let r = 0; r < board.length; r++) {
-    for (let c = 0; c < board[0].length; c++) {
-      if (board[r][c] === 'V') {
-        board[r][c] = 'O';
-      } else {
-        board[r][c] = 'X';
-      }
-    }
-  }
-};
-
 /* Find eventual safe states - There is a directed graph of n nodes with each node labeled from 0 to n - 1. The graph is represented by a 0 - indexed 2D integer array graph where graph[i] is an integer array of nodes adjacent to node i, meaning there is an edge from node i to each node in graph[i].
 
 A node is a terminal node if there are no outgoing edges.A node is a safe node if every possible path starting from that node leads to a terminal node(or another safe node).
@@ -725,3 +671,10 @@ const countSubTrees = (n, edges, labels) => {
 
 /* Shortest Path Visiting All Nodes */
 
+/* Design Graph With Shortest Path Calculator - There is a directed weighted graph that consists of n nodes numbered from 0 to n - 1. The edges of the graph are initially represented by the given array edges where edges[i] = [fromi, toi, edgeCosti] meaning that there is an edge from fromi to toi with the cost edgeCosti.
+
+Implement the Graph class:
+
+Graph(int n, int[][] edges) initializes the object with n nodes and the given edges.
+addEdge(int[] edge) adds an edge to the list of edges where edge = [from, to, edgeCost]. It is guaranteed that there is no edge between the two nodes before adding this one.
+int shortestPath(int node1, int node2) returns the minimum cost of a path from node1 to node2. If no path exists, return -1. The cost of a path is the sum of the costs of the edges in the path. */
