@@ -632,8 +632,7 @@ const rotateRight = (head, k) => {
     if (!head) {
         return head;
     }
-    let count = 0,
-        curr = head;
+    let [count, curr] = [0, head]
 
     while (curr) {
         count++;

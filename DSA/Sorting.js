@@ -161,29 +161,23 @@ const merge = (intervals) => {
     push last interval's [start, end] to merged array
   */
 
-  if (!intervals || !intervals.length) {
-    return [];
-  }
+  intervals.sort((a, b) => a[0] - b[0])
 
-  let merged = [];
+  const res = []
 
-  intervals.sort((a, b) => a[0] - b[0]);
-
-  let [lastStart, lastEnd] = intervals[0];
-
+  let [lastS, lastE] = intervals[0]
   for (const [start, end] of intervals) {
-    if (start <= lastEnd) {
-      lastEnd = Math.max(end, lastEnd);
+    if (start > lastE) {
+      res.push([lastS, lastE])
+      lastS = start
+      lastE = end
     } else {
-      merged.push([lastStart, lastEnd]);
-      lastStart = start;
-      lastEnd = end;
+      lastS = Math.min(start, lastS)
+      lastE = Math.max(end, lastE)
     }
   }
-
-  merged.push([lastStart, lastEnd]);
-
-  return merged;
+  res.push([lastS, lastE])
+  return res
 };
 
 /* H-index - Given an array of integers citations where citations[i] is the number of citations a researcher received for their ith paper, return the researcher's h-index.
