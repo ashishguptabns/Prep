@@ -167,15 +167,6 @@ Trie.prototype.startsWith = function (prefix) {
   return true
 };
 
-/**
- * Your Trie object will be instantiated and called as such:
- * var obj = new Trie()
- * obj.insert(word)
- * var param_2 = obj.search(word)
- * var param_3 = obj.startsWith(prefix)
- */
-
-// todo
 /* Longest Word With All Prefixes - Given an array of strings words, find the longest string in words such that every prefix of it is also in words.
 
   Input: words = ["a", "banana", "app", "appl", "ap", "apple"]

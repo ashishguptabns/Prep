@@ -283,14 +283,12 @@ const oddEvenList = (head) => {
     let evenHead = head.next
 
     while (evenNode !== null && evenNode.next !== null) {
-        //  keep connecting odd ones to each other
         oddNode.next = evenNode.next
         oddNode = oddNode.next
-        //  keep connecting even ones to each other
+
         evenNode.next = oddNode.next
         evenNode = evenNode.next
     }
-    //  all even nodes are on the right side now
     oddNode.next = evenHead
 
     return head
