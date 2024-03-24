@@ -519,7 +519,6 @@ const minTime = (n, edges, hasApple) => {
 
   const adjlist = Array.from({ length: n }, () => new Array());
   for (const [from, to] of edges) {
-    //  undirected edges
     adjlist[from].push(to);
     adjlist[to].push(from);
   }
@@ -528,7 +527,6 @@ const minTime = (n, edges, hasApple) => {
     let pathlen = 0;
     for (const neighbour of adjlist[node]) {
       if (neighbour == parent) {
-        //  skip the parent cause counting is already done
         continue;
       }
       pathlen += dfs(neighbour, node);
@@ -539,7 +537,6 @@ const minTime = (n, edges, hasApple) => {
     return pathlen > 0 || hasApple[node] ? pathlen + 2 : 0;
   }
 
-  //  start with root
   return dfs(0, -1);
 };
 
@@ -649,8 +646,6 @@ const countSubTrees = (n, edges, labels) => {
 
   return ans
 };
-
-/* Shortest Path Visiting All Nodes */
 
 /* Design Graph With Shortest Path Calculator - There is a directed weighted graph that consists of n nodes numbered from 0 to n - 1. The edges of the graph are initially represented by the given array edges where edges[i] = [fromi, toi, edgeCosti] meaning that there is an edge from fromi to toi with the cost edgeCosti.
 

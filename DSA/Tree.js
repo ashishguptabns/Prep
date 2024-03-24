@@ -648,28 +648,23 @@ const findDuplicateSubtrees = (root) => {
     const map = new Map()
     const result = []
 
-    const dfs = (currNode, result, map) => {
+    const dfs = (currNode) => {
         if (!currNode) {
-            //  used to represent null node
             return '#'
         }
 
-        //  store pre order in a string
-        const subtree = `${currNode.val},${dfs(currNode.left, result, map)},${dfs(currNode.right, result, map)}`
+        const subtree = `${currNode.val},${dfs(currNode.left)},${dfs(currNode.right)}`
         const freq = map.get(subtree) || 0
 
         if (freq == 1) {
-            //  found a duplicate        
             result.push(currNode)
         }
 
-        //  maintain the freq
         map.set(subtree, freq + 1)
 
-        //  return the string signature
         return subtree
     }
-    dfs(root, result, map)
+    dfs(root)
 
     return result
 };
