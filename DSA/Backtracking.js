@@ -307,7 +307,3 @@ const letterCombinations = (digits) => {
 0 representing empty squares we can walk over.
 -1 representing obstacles that we cannot walk over.
 Return the number of 4-directional walks from the starting square to the ending square, that walk over every non-obstacle square exactly once. */
-
-/* N-Queens II - The n-queens puzzle is the problem of placing n queens on an n x n chessboard such that no two queens attack each other.
-
-Given an integer n, return the number of distinct solutions to the n-queens puzzle. */

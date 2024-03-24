@@ -1136,6 +1136,22 @@ Return the knight's minimum initial health so that he can rescue the princess.
 
 Note that any room can contain threats or power-ups, even the first room the knight enters and the bottom-right room where the princess is imprisoned. */
 
+var calculateMinimumHP = function (m) {
+
+    const dp = Array(m.length + 1).fill()
+        .map(() => Array(m[0].length + 1).fill(Infinity))
+
+    dp[m.length][m[0].length - 1] = dp[m.length - 1][m[0].length] = 1
+
+    for (let r = m.length - 1; r >= 0; r--) {
+        for (let c = m[0].length - 1; c >= 0; c--) {
+            const min = Math.min(dp[r + 1][c], dp[r][c + 1]) - m[r][c]
+            dp[r][c] = Math.max(1, min)
+        }
+    }
+    return dp[0][0]
+};
+
 /* Different Ways to Add Parentheses - Given a string expression of numbers and operators, return all possible results from computing all the different possible ways to group numbers and operators. You may return the answer in any order.
 
 The test cases are generated such that the output values fit in a 32-bit integer and the number of different results does not exceed 104. */

@@ -464,45 +464,36 @@ const closestMeetingNode = (edges, node1, node2) => {
 
   let distance = 0;
 
-  // Populate map1 with distances from node1 to each node in the graph.
-  while (!map1[node1] && node1 !== -1) {
+  while (map1[node1] == undefined && node1 !== -1) {
     map1[node1] = distance;
     distance++;
     node1 = edges[node1];
   }
 
-  // Reset the counter for map2.
   distance = 0;
 
-  // Populate map2 with distances from node2 to each node in the graph.
-  while (!map2[node2] && node2 !== -1) {
+  while (map2[node2] == undefined && node2 !== -1) {
     map2[node2] = distance;
     distance++;
     node2 = edges[node2];
   }
 
-  // Initialize variables to find the maximum of the minimum distances between node1 and node2.
   let max = Infinity;
   let res = -1;
 
-  // Iterate through each node in the graph.
   for (let i = 0; i < edges.length; i++) {
-    // If either map1 or map2 doesn't have information about the distance to the current node, skip to the next iteration.
-    if (!map1[i] || !map2[i]) {
+    if (map1[i] == undefined || map2[i] == undefined) {
       continue;
     }
 
-    // Calculate the maximum of the distances from node1 and node2 to the current node.
     let localMax = Math.max(map1[i], map2[i]);
 
-    // Update the result if the current node provides a smaller maximum distance.
     if (localMax < max) {
       max = localMax;
       res = i;
     }
   }
 
-  // Return the node that minimizes the maximum distance from both node1 and node2.
   return res;
 };
 
@@ -658,16 +649,6 @@ const countSubTrees = (n, edges, labels) => {
 
   return ans
 };
-
-/* Prim's Algorithm */
-
-/* Bellman-Ford Algorithm */
-
-/* Floyd-Warshall Algorithm */
-
-/* Minimum Spanning Tree  */
-
-/* Minimum Cut Algorithm */
 
 /* Shortest Path Visiting All Nodes */
 

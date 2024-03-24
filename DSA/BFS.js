@@ -70,53 +70,42 @@ Note that the starting point is assumed to be valid, so it might not be included
  * @return {number}
  */
 const minMutation = (startGene, endGene, bank) => {
-
-    /* pseudo code
-        start BFS with curr gene
-            loop until queue is empty
-                move i through curr gene
-                    move through valid mutations
-                        create a new Gene
-                        check if this gene can be added to the queue for next travel
-    */
-
-    const validMutations = ['A', 'C', 'G', 'T'];
-
-    const geneSet = new Set(bank);
-
-    if (!geneSet.has(endGene)) {
-        return -1;
+    if (!bank.includes(endGene)) {
+        return -1
     }
+    const validMutations = ['A', 'C', 'G', 'T'];
+    let steps = 0
 
-    const visitedGenes = new Set();
+    const visited = new Set()
+    const queue = [startGene]
+    visited.add(startGene)
 
-    const queue = [[startGene, 0]];
-
-    visitedGenes.add(startGene);
-
-    while (queue.length > 0) {
-        const [currGene, numMutations] = queue.shift();
-
-        if (currGene === endGene) {
-            return numMutations;
-        }
-
-        for (let i = 0; i < currGene.length; i++) {
-            for (let mutationChar of validMutations) {
-                if (currGene[i] === mutationChar) {
-                    continue;
-                }
-
-                const newGene = currGene.slice(0, i) + mutationChar + currGene.slice(i + 1);
-
-                if (geneSet.has(newGene) && !visitedGenes.has(newGene)) {
-                    queue.push([newGene, numMutations + 1]);
-                    visitedGenes.add(newGene);
+    while (queue.length) {
+        const size = queue.length
+        for (let i = 0; i < size; i++) {
+            const currGene = queue.shift()
+            if (currGene === endGene) {
+                return steps
+            }
+            for (let j = 0; j < currGene.length; j++) {
+                for (const newChar of validMutations) {
+                    if (currGene[j] === newChar) {
+                        continue;
+                    }
+                    const newGene = currGene.substring(0, j)
+                        + newChar.toUpperCase() + currGene.substring(j + 1)
+                    if (bank.includes(newGene) && !visited.has(newGene)) {
+                        queue.push(newGene)
+                        visited.add(newGene)
+                    }
                 }
             }
         }
+        console.log(queue)
+        steps++
     }
-    return -1;
+
+    return -1
 };
 
 /* Shortest Path to Get Food - You are starving and you want to eat food as quickly as possible. You want to find the shortest path to arrive at any food cell.
