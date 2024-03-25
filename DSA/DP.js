@@ -1357,10 +1357,6 @@ Return the minimum number of steps to make s palindrome.
 
 A Palindrome String is one that reads the same backward as well as forward. */
 
-/*  Minimum Number of Increments on Subarrays to Form a Target Array - You are given an integer array target. You have an integer array initial of the same size as target with all elements initially zeros.
+/* Concatenated Words - Given an array of strings words (without duplicates), return all the concatenated words in the given list of words.
 
-In one operation you can choose any subarray from initial and increment each value by one.
-
-Return the minimum number of operations to form a target array from initial.
-
-The test cases are generated so that the answer fits in a 32-bit integer. */
+A concatenated word is defined as a string that is comprised entirely of at least two shorter words (not necessarily distinct) in the given array. */

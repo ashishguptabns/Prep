@@ -404,7 +404,7 @@ const minStoneSum = (piles, k) => {
     return stones
 };
 
-/* Meeting rooms - You are given an integer n. There are n rooms numbered from 0 to n - 1.
+/* Meeting Rooms III - You are given an integer n. There are n rooms numbered from 0 to n - 1.
 
 You are given a 2D integer array meetings where meetings[i] = [starti, endi] means that a meeting will be held during the half-closed time interval [starti, endi). All the values of starti are unique.
 
@@ -424,49 +424,38 @@ A half-closed interval [a, b) is the interval between a and b including a and no
 * @return {number}
 */
 const mostBooked = (n, meetings) => {
-    // Sort meetings by start day and then by end date
     meetings.sort((a, b) => a[0] === b[0] ? a[1] - b[1] : a[0] - b[0]);
 
-    // Create a priority queue (PQ) sorted by end time and then by room
     const pq = new MinPriorityQueue({ compare: (a, b) => a[1] === b[1] ? a[2] > b[2] : a[1] > b[1] });
 
-    // Initialize an array to record the number of meetings booked for each room
     const roomRecords = Array(n).fill(0);
 
-    // Initialize another priority queue to keep track of available rooms
     const rooms = new MinPriorityQueue();
 
-    // Enqueue all room indices initially
     for (let i = 0; i < n; i++) {
         rooms.enqueue(i);
     }
 
-    // Iterate through each meeting
     for (let [start, end] of meetings) {
         const duration = end - start;
 
-        // Free up rooms whose meetings have ended
         while (pq.front()?.[1] <= start) {
             rooms.enqueue(pq.dequeue()[2]);
         }
 
-        // Check if there's an available room
         if (rooms.size() !== 0) {
-            // Find the lowest possible room
             const room = rooms.dequeue().element;
             pq.enqueue([start, end, room]);
             roomRecords[room]++;
             continue;
         }
 
-        // No available room, find the next available room by dequeuing the meeting with the earliest end time
         let firstMeetingToEnd = pq.dequeue();
         const room = firstMeetingToEnd[2];
         pq.enqueue([firstMeetingToEnd[1], firstMeetingToEnd[1] + duration, room]);
         roomRecords[room]++;
     }
 
-    // Find the room that hosted the most meetings
     let res = -1;
     let max = -Infinity;
     for (let i = 0; i < roomRecords.length; i++) {

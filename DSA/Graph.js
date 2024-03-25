@@ -8,20 +8,15 @@ const findSmallestSetOfVertices = (n, edges) => {
     count indegrees of each node and find the node which has no indegree and hence the node we need to find 
   */
 
-  //  nodes are numbered 0 to n - 1
-  //  by default 0 edges are incoming
   const indegree = Array(n).fill(0)
 
-  //  track how many edges are incoming in each node
   for (const [from, to] of edges) {
-    //  maintain count of incoming edges to this node
     indegree[to]++
   }
 
   const res = []
 
   for (const node in indegree) {
-    //  found a node which is unreachable from other nodes
     if (indegree[node] === 0) {
       res.push(node)
     }
