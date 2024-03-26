@@ -1301,12 +1301,6 @@ const isInterleave = (s1, s2, s3) => {
     return dp[s1.length][s2.length];
 };
 
-/* Sum of Distances in Tree - There is an undirected connected tree with n nodes labeled from 0 to n - 1 and n - 1 edges.
-
-You are given the integer n and the array edges where edges[i] = [ai, bi] indicates that there is an edge between nodes ai and bi in the tree.
-
-Return an array answer of length n where answer[i] is the sum of the distances between the ith node in the tree and all other nodes. */
-
 /* Minimum Number of Refueling Stops - A car travels from a starting position to a destination which is target miles east of the starting position.
 
 There are gas stations along the way. The gas stations are represented as an array stations where stations[i] = [positioni, fueli] indicates that the ith gas station is positioni miles east of the starting position and has fueli liters of gas.

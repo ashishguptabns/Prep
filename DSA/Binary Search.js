@@ -681,9 +681,6 @@ Given the sorted rotated array nums that may contain duplicates, return the mini
 
 You must decrease the overall operation steps as much as possible. */
 
-/* Count of Smaller Numbers After Self - Given an integer array nums, return an integer array counts where counts[i] is the number of smaller elements to the right of nums[i].
- */
-
 /* Kth Smallest Element in a Sorted Matrix - Given an n x n matrix where each of the rows and columns is sorted in ascending order, return the kth smallest element in the matrix.
 
 Note that it is the kth smallest element in the sorted order, not the kth distinct element.

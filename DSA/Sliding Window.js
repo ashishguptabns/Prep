@@ -573,28 +573,22 @@ const characterReplacement = (s, k) => {
                 shrink window from left and maintain freq of left most char
     */
 
-    let left = 0;
-    let right = 0;
-
-    let maxCharCount = 0;
-
-    const freqMap = {};
-
-    while (right < s.length) {
-        const char = s[right];
-
-        freqMap[char] = freqMap[char] ? freqMap[char] + 1 : 1;
-
-        maxCharCount = Math.max(freqMap[char], maxCharCount);
-
-        if (right - left + 1 - maxCharCount > k) {
-            freqMap[s[left]]--;
-            left++;
+    const map = {}
+    let maxCount = 0
+    let start = 0
+    let maxLen = 0
+    for (let i = 0; i < s.length; i++) {
+        const c = s[i]
+        map[c] = (map[c] || 0) + 1
+        maxCount = Math.max(maxCount, map[c])
+        if (i + 1 - start - maxCount > k) {
+            map[s[start]]--
+            start++
         }
-        right++;
+        maxLen = Math.max(maxLen, i + 1 - start)
     }
 
-    return right - left;
+    return maxLen
 };
 
 /* Longest Substring with At Least K Repeating Characters - Given a string s and an integer k, return the length of the longest substring of s such that the frequency of each character in this substring is greater than or equal to k.
