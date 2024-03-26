@@ -51,23 +51,18 @@ const findSubsequences = (nums) => {
 
     const res = []
 
-    //  maintain a map of all subseqs found so far to avoid repeats
     const map = {}
     const backtrack = (index, currSeq) => {
         if (map[currSeq]) {
-            //  we already have this subseq
             return;
         }
-        //  mark as found
         map[currSeq] = true;
 
         if (currSeq.length >= 2) {
-            //  as per condition
             res.push(currSeq)
         }
         for (let i = index; i < nums.length; i++) {
             if (currSeq.at(-1) > nums[i]) {
-                //  curr element is smaller than the last element of subseq
                 continue;
             }
             backtrack(i + 1, [...currSeq, nums[i]])
@@ -142,7 +137,7 @@ const combinationSum = (candidates, target) => {
     return res
 };
 
-/* Power set - Given an integer array nums of unique elements, return all possible 
+/* Subsets - Given an integer array nums of unique elements, return all possible 
 subsets (the power set).
 
 The solution set must not contain duplicate subsets. Return the solution in any order

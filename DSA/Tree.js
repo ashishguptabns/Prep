@@ -61,14 +61,11 @@ const zigzagLevelOrder = (root) => {
         while (queue.length) {
             const [node, level] = queue.shift()
 
-            //  init if null
             res[level] ??= []
 
             if (level % 2 == 1) {
-                //  travelling from left to right
                 res[level].push(node.val)
             } else {
-                //  travelling from right to left
                 res[level].unshift(node.val)
             }
             if (node.right) {
