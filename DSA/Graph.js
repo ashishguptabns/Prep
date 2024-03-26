@@ -649,3 +649,13 @@ Implement the Graph class:
 Graph(int n, int[][] edges) initializes the object with n nodes and the given edges.
 addEdge(int[] edge) adds an edge to the list of edges where edge = [from, to, edgeCost]. It is guaranteed that there is no edge between the two nodes before adding this one.
 int shortestPath(int node1, int node2) returns the minimum cost of a path from node1 to node2. If no path exists, return -1. The cost of a path is the sum of the costs of the edges in the path. */
+
+/* Suppose you have a graph of Google's organizational structure where: Each node N corresponds to a person 
+
+If N reports to M (i.e. M is N's boss), M is the parent of N 
+  M -> N
+If P reports to N (i.e. N is P's boss), P is the child of N 
+  N -> P
+At Google, someone's "employee score" is the total number of reports (including themselves). 
+Write a function to compute anyone's employee score.
+ */

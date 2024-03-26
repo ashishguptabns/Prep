@@ -212,7 +212,7 @@ const numOfSubarrays = (arr, k, threshold) => {
     return count
 };
 
-/* Max consecutive Ones - Given a binary array nums and an integer k, return the maximum number of consecutive 1's in the array if you can flip at most k 0's.
+/* Max consecutive Ones III - Given a binary array nums and an integer k, return the maximum number of consecutive 1's in the array if you can flip at most k 0's.
  */
 
 /**
@@ -221,34 +221,24 @@ const numOfSubarrays = (arr, k, threshold) => {
 * @return {number}
 */
 const longestOnes = (nums, k) => {
-    /* pseudo code
-        move through nums
-            track 0 count
-                decrease k
-            k < 0
-                track k if left index item is 0
-                shrink window from left
-    */
-
-    let left = 0, right = 0
-
-    while (right < nums.length) {
-        if (nums[right] === 0) {
-            //  found a zero hence a flip is used
-            k--
+    let max = 0
+    let numZeroes = 0
+    let start = 0
+    for (let i = 0; i < nums.length; i++) {
+        const num = nums[i]
+        if (num !== 1) {
+            numZeroes++
         }
-        if (k < 0) {
-            //  window has to be shrinked from left
-            if (nums[left] === 0) {
-                //  gained one flip
-                k++
+        while (numZeroes > k) {
+            if (nums[start] === 0) {
+                numZeroes--
             }
-            left++
+            start++
         }
-        right++
+        max = Math.max(max, i + 1 - start)
     }
 
-    return right - left
+    return max
 };
 
 /* Sequential Digits - An integer has sequential digits if and only if each digit in the number is one more than the previous digit.
