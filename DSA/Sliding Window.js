@@ -700,3 +700,10 @@ const countSubarrays = (nums, minK, maxK) => {
     return numSubArrays
 };
 
+/* 1358. Number of Substrings Containing All Three Characters */
+
+/* 1248. Count Number of Nice Subarrays */
+
+/* 1031. Maximum Sum of Two Non-Overlapping Subarrays */
+
+/* 1052. Grumpy Bookstore Owner */

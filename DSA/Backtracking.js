@@ -295,10 +295,14 @@ const letterCombinations = (digits) => {
     return list
 };
 
-/* Unique Paths III - You are given an m x n integer array grid where grid[i][j] could be:
+/* 1980. Find Unique Binary String */
 
-1 representing the starting square. There is exactly one starting square.
-2 representing the ending square. There is exactly one ending square.
-0 representing empty squares we can walk over.
--1 representing obstacles that we cannot walk over.
-Return the number of 4-directional walks from the starting square to the ending square, that walk over every non-obstacle square exactly once. */
+/* 784. Letter Case Permutation */
+
+/* 77. Combinations */
+
+/* 1238. Circular Permutation in Binary Representation */
+
+/* 216. Combination Sum III */
+
+/* 526. Beautiful Arrangement */

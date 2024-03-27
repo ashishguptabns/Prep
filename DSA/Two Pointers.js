@@ -494,3 +494,8 @@ const nextPermutation = (nums) => {
   reverse(nums, i + 1);
 };
 
+/* 1963. Minimum Number of Swaps to Make the String Balanced */
+
+/* 1850. Minimum Adjacent Swaps to Reach the Kth Smallest Number */
+
+/* 1237. Find Positive Integer Solution for a Given Equation */

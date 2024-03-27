@@ -651,3 +651,31 @@ If P reports to N (i.e. N is P's boss), P is the child of N
 At Google, someone's "employee score" is the total number of reports (including themselves). 
 Write a function to compute anyone's employee score.
  */
+
+/* 841. Keys and Rooms */
+
+/* 1584. Min Cost to Connect All Points */
+
+/* 547. Number of Provinces */
+
+/* 1615. Maximal Network Rank */
+
+/* 2685. Count the Number of Complete Components */
+
+/* 2477. Minimum Fuel Cost to Report to the Capital */
+
+/* 1466. Reorder Routes to Make All Paths Lead to the City Zero */
+
+/* 684. Redundant Connection */
+
+/* 1319. Number of Operations to Make Network Connected */
+
+/* 399. Evaluate Division */
+
+/* 2285. Maximum Total Importance of Roads */
+
+/* 1334. Find the City With the Smallest Number of Neighbors at a Threshold Distance */
+
+/* 851. Loud and Rich */
+
+/* 2368. Reachable Nodes With Restrictions */

@@ -741,3 +741,14 @@ const removeNthFromEnd = (head, n) => {
 
 /* Convert Sorted List to Binary Search Tree - Given the head of a singly linked list where elements are sorted in ascending order, convert it to a height-balanced binary search tree. */
 
+/* 1669. Merge In Between Linked Lists */
+
+/* 1472. Design Browser History */
+
+/* 1721. Swapping Nodes in a Linked List */
+
+/* 2487. Remove Nodes From Linked List */
+
+/* 725. Split Linked List in Parts */
+
+/* 1019. Next Greater Node In Linked List */
