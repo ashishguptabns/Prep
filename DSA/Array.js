@@ -381,10 +381,6 @@ A subarray may only include each element of the fixed buffer nums at most once. 
 
 const maxSubarraySumCircular = (nums) => {
 
-  /* pseudo code
-    
-  */
-
   let curMax = 0,
     curMin = 0,
     sum = 0,

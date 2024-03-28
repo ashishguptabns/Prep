@@ -1220,6 +1220,37 @@ const findLCA = (root, node1, node2) => {
 
 /* Recover Binary Search Tree - You are given the root of a binary search tree (BST), where the values of exactly two nodes of the tree were swapped by mistake. Recover the tree without changing its structure. */
 
+var recoverTree = function (root) {
+    let first = null;
+    let last = null;
+    let prev = null;
+
+    function dfs(node) {
+        if (!node) {
+            return;
+        }
+
+        dfs(node.left);
+
+        if (prev && node.val < prev.val) {
+            if (!first) {
+                first = prev;
+            }
+            last = node;
+        }
+        prev = node;
+
+        dfs(node.right);
+    }
+    dfs(root)
+
+    let temp = first.val;
+    first.val = last.val;
+    last.val = temp
+
+    return root;
+};
+
 /* Binary Search Tree Iterator - Implement the BSTIterator class that represents an iterator over the in-order traversal of a binary search tree (BST):
 
 - BSTIterator(TreeNode root) Initializes an object of the BSTIterator class. The root of the BST is given as part of the constructor. The pointer should be initialized to a non-existent number smaller than any element in the BST.
@@ -1235,6 +1266,57 @@ You may assume that next() calls will always be valid. That is, there will be at
 The path does not need to start or end at the root or a leaf, but it must go downwards (i.e., traveling only from parent nodes to child nodes). */
 
 /* 1261. Find Elements in a Contaminated Binary Tree */
+
+/**
+ * Definition for a binary tree node.
+ * function TreeNode(val, left, right) {
+ *     this.val = (val===undefined ? 0 : val)
+ *     this.left = (left===undefined ? null : left)
+ *     this.right = (right===undefined ? null : right)
+ * }
+ */
+/**
+ * @param {TreeNode} root
+ */
+var FindElements = function (root) {
+    this.root = root
+    this.travel(root, 0)
+    console.log(root)
+};
+
+FindElements.prototype.travel = function (node, value) {
+    if (node !== null && node.val === -1) {
+        if (node.val !== value) {
+            node.val = value
+        }
+        this.travel(node.left, value * 2 + 1)
+        this.travel(node.right, value * 2 + 2)
+    }
+};
+
+/** 
+ * @param {number} target
+ * @return {boolean}
+ */
+FindElements.prototype.find = function (target, node) {
+    if (!node) {
+        node = this.root
+    }
+    if (node.val === target) {
+        return true
+    }
+    if (node.left) {
+        if (this.find(target, node.left)) {
+            return true
+        }
+    }
+    if (node.right) {
+        if (this.find(target, node.right)) {
+            return true
+        }
+    }
+    return false
+};
 
 /* 701. Insert into a Binary Search Tree */
 

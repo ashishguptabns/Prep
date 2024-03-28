@@ -299,6 +299,27 @@ const letterCombinations = (digits) => {
 
 /* 784. Letter Case Permutation */
 
+/**
+ * @param {string} s
+ * @return {string[]}
+ */
+var letterCasePermutation = function (s) {
+    const set = new Set()
+    const backtrack = (curr, index) => {
+        if (curr.length === s.length) {
+            set.add(curr)
+        } else {
+            for (let i = index; i < s.length; i++) {
+                backtrack(curr + s[i].toLowerCase(), i + 1)
+                backtrack(curr + s[i].toUpperCase(), i + 1)
+            }
+        }
+    }
+    backtrack('', 0)
+
+    return [...set]
+};
+
 /* 77. Combinations */
 
 /* 1238. Circular Permutation in Binary Representation */

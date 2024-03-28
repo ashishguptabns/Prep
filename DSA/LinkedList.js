@@ -576,10 +576,6 @@ const mergeNodes = (head) => {
  */
 const sortList = (head) => {
 
-    /* pseudo code
-
-    */
-
     if (!head || !head.next) {
         return head;
     }
@@ -787,6 +783,40 @@ BrowserHistory.prototype.forward = function (steps) {
 };
 
 /* 1721. Swapping Nodes in a Linked List */
+
+/**
+ * Definition for singly-linked list.
+ * function ListNode(val, next) {
+ *     this.val = (val===undefined ? 0 : val)
+ *     this.next = (next===undefined ? null : next)
+ * }
+ */
+/**
+ * @param {ListNode} head
+ * @param {number} k
+ * @return {ListNode}
+ */
+var swapNodes = function (head, k) {
+    let first, sec
+    const travel = (node, index) => {
+        if (node) {
+            if (index === k - 1) {
+                first = node
+            }
+            travel(node.next, index + 1)
+            k--
+            if (k == 0) {
+                sec = node
+            }
+        }
+    }
+    travel(head, 0)
+    const temp = sec.val
+    sec.val = first.val
+    first.val = temp
+
+    return head
+};
 
 /* 2487. Remove Nodes From Linked List */
 

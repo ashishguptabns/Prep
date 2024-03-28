@@ -652,6 +652,26 @@ At Google, someone's "employee score" is the total number of reports (including 
 Write a function to compute anyone's employee score.
  */
 
+function employeeScoreMemoized(graph, node, memo) {
+  if (memo[node] !== undefined) {
+    return memo[node];
+  }
+
+  if (!graph[node] || graph[node].length === 0) {
+    return 1;
+  }
+
+  let score = 1;
+
+  for (const child of graph[node]) {
+    score += employeeScoreMemoized(graph, child, memo);
+  }
+
+  memo[node] = score;
+
+  return score;
+}
+
 /* 841. Keys and Rooms */
 
 /* 1584. Min Cost to Connect All Points */
@@ -659,6 +679,40 @@ Write a function to compute anyone's employee score.
 /* 547. Number of Provinces */
 
 /* 1615. Maximal Network Rank */
+
+/**
+ * @param {number} n
+ * @param {number[][]} roads
+ * @return {number}
+ */
+var maximalNetworkRank = function (n, roads) {
+  const graph = {}
+  const degree = Array(n).fill(0)
+
+  for (const [a, b] of roads) {
+    graph[a] = graph[a] || []
+    graph[a].push(b)
+    graph[b] = graph[b] || []
+    graph[b].push(a)
+
+    degree[a]++
+    degree[b]++
+  }
+
+  let max = 0
+
+  for (let i = 0; i < n; i++) {
+    for (let j = i + 1; j < n; j++) {
+      let count = degree[i] + degree[j]
+      if (graph[i] && graph[i].includes(j)) {
+        count--
+      }
+      max = Math.max(max, count)
+    }
+  }
+
+  return max
+};
 
 /* 2685. Count the Number of Complete Components */
 
