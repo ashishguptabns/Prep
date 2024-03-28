@@ -1131,46 +1131,36 @@ Note that you need to maximize the answer before taking the mod and not after ta
  * @return {number}
  */
 const maxProduct = (root) => {
-    // Initialize an array to store the sums of nodes in different subtrees.
     let res = [];
 
-    // Define a constant for modulo operation.
     const MOD = 10 ** 9 + 7;
 
-    // Define a recursive function to perform depth-first search (DFS) on the tree.
     const dfs = (node) => {
         if (!node) {
-            return 0; // Return 0 for null nodes.
+            return 0;
         }
 
         if (!node.left && !node.right) {
-            return node.val; // Return the value for leaf nodes.
+            return node.val;
         }
 
-        // Recursively calculate the sums of left and right subtrees.
         const leftSum = dfs(node.left);
         const rightSum = dfs(node.right);
 
-        // Add the sums to the result array.
         res.push(leftSum, rightSum);
 
-        // Return the sum of the current subtree.
         return leftSum + node.val + rightSum;
     };
 
-    // Calculate the total sum of the tree using DFS.
     const totalSum = dfs(root);
 
-    // Initialize a variable to store the maximum product.
     let max = 0;
 
-    // Iterate through the sums in the result array and calculate the product.
     for (const sum of res) {
         const curr = sum * (totalSum - sum);
-        max = Math.max(max, curr); // Update the maximum product.
+        max = Math.max(max, curr);
     }
 
-    // Return the maximum product modulo MOD.
     return max % MOD;
 };
 

@@ -745,6 +745,47 @@ const removeNthFromEnd = (head, n) => {
 
 /* 1472. Design Browser History */
 
+/**
+ * @param {string} homepage
+ */
+var BrowserHistory = function (homepage) {
+    this.history = [homepage]
+    this.curr = 0
+    this.limit = 0
+};
+
+/** 
+ * @param {string} url
+ * @return {void}
+ */
+BrowserHistory.prototype.visit = function (url) {
+    this.curr++
+    if (this.curr === this.history.length) {
+        this.history.push(url)
+    } else {
+        this.history[this.curr] = url
+    }
+    this.limit = this.curr
+};
+
+/** 
+ * @param {number} steps
+ * @return {string}
+ */
+BrowserHistory.prototype.back = function (steps) {
+    this.curr = Math.max(0, this.curr - steps)
+    return this.history[this.curr]
+};
+
+/** 
+ * @param {number} steps
+ * @return {string}
+ */
+BrowserHistory.prototype.forward = function (steps) {
+    this.curr = Math.min(this.limit, this.curr + steps)
+    return this.history[this.curr]
+};
+
 /* 1721. Swapping Nodes in a Linked List */
 
 /* 2487. Remove Nodes From Linked List */

@@ -282,12 +282,10 @@ const twoSumLessThanK = (nums, k) => {
   while (left < right) {
     const sum = nums[left] + nums[right];
 
-    // If the sum is less than k, update maxSum and move the left pointer to the right
     if (sum < k) {
       maxSum = Math.max(maxSum, sum);
       left++;
     } else {
-      // If the sum is greater than or equal to k, move the right pointer to the left
       right--;
     }
   }

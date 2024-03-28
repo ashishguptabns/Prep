@@ -670,7 +670,61 @@ Write a function to compute anyone's employee score.
 
 /* 1319. Number of Operations to Make Network Connected */
 
-/* 399. Evaluate Division */
+/* 399. Evaluate Division - You are given an array of variable pairs equations and an array of real numbers values, where equations[i] = [Ai, Bi] and values[i] represent the equation Ai / Bi = values[i]. Each Ai or Bi is a string that represents a single variable.
+
+You are also given some queries, where queries[j] = [Cj, Dj] represents the jth query where you must find the answer for Cj / Dj = ?.
+
+Return the answers to all queries. If a single answer cannot be determined, return -1.0.
+
+Note: The input is always valid. You may assume that evaluating the queries will not result in division by zero and that there is no contradiction.
+
+Note: The variables that do not occur in the list of equations are undefined, so the answer cannot be determined for them.*/
+
+var calcEquation = function (equations, values, queries) {
+  const graph = {};
+
+  for (let i = 0; i < equations.length; i++) {
+
+    const [num, den] = equations[i];
+
+    const value = values[i];
+
+    graph[num] = graph[num] || {};
+    graph[den] = graph[den] || {};
+
+    graph[num][den] = value;
+    graph[den][num] = 1 / value;
+  }
+
+  const evaluateQuery = (num, den, visited) => {
+    if (!graph[num] || !graph[den]) {
+      return -1.0;
+    }
+    if (num === den) {
+      return 1.0;
+    }
+    visited.add(num);
+    for (let neighbor in graph[num]) {
+      if (!visited.has(neighbor)) {
+        const result = evaluateQuery(neighbor, den, visited);
+        if (result !== -1.0) {
+          return graph[num][neighbor] * result;
+        }
+      }
+    }
+    return -1.0;
+  };
+
+  const results = [];
+
+  for (const [num, den] of queries) {
+    let visited = new Set();
+    let result = evaluateQuery(num, den, visited);
+    results.push(result);
+  }
+
+  return results;
+};
 
 /* 2285. Maximum Total Importance of Roads */
 
@@ -679,3 +733,94 @@ Write a function to compute anyone's employee score.
 /* 851. Loud and Rich */
 
 /* 2368. Reachable Nodes With Restrictions */
+
+/**
+ * @param {number} n
+ * @param {number[][]} edges
+ * @param {number[]} restricted
+ * @return {number}
+ */
+var reachableNodes = function (n, edges, restricted) {
+  const graph = {};
+
+  for (const [u, v] of edges) {
+    graph[u] = graph[u] || []
+    graph[v] = graph[v] || []
+
+    graph[u].push(v)
+    graph[v].push(u)
+  }
+
+  const restrictedSet = new Set(restricted);
+  const visited = new Set();
+
+  let ans = 0;
+
+  function dfs(node) {
+    if (restrictedSet.has(node) || visited.has(node)) {
+      return;
+    }
+
+    ans++;
+    visited.add(node);
+
+    for (const next of graph[node]) {
+      dfs(next);
+    }
+  }
+
+  dfs(0);
+
+  return ans;
+};
+
+/* 1976. Number of Ways to Arrive at Destination - You are in a city that consists of n intersections numbered from 0 to n - 1 with bi-directional roads between some intersections. The inputs are generated such that you can reach any intersection from any other intersection and that there is at most one road between any two intersections.
+
+You are given an integer n and a 2D integer array roads where roads[i] = [ui, vi, timei] means that there is a road between intersections ui and vi that takes timei minutes to travel. You want to know in how many ways you can travel from intersection 0 to intersection n - 1 in the shortest amount of time.
+
+Return the number of ways you can arrive at your destination in the shortest amount of time. Since the answer may be large, return it modulo 109 + 7.*/
+
+var countPaths = function (n, roads) {
+  const mod = 1e9 + 7;
+  const distances = Array(n).fill(Infinity)
+  const ways = Array(n).fill(0)
+  const visited = new Set()
+  const graph = Array.from({ length: n }, () => [])
+  distances[0] = 0
+  ways[0] = 1
+
+  for (var [u, v, weight] of roads) {
+    graph[u].push([v, weight])
+    graph[v].push([u, weight])
+  }
+
+  // get the edge with minimum total weight (distance)
+  var getMin = () => {
+    var minDistance = Infinity
+    var minNode = -1
+    for (var node = 0; node < n; node++) {
+      if (!visited.has(node) && distances[node] < minDistance) {
+        minDistance = distances[node]
+        minNode = node
+      }
+    }
+    return [minDistance, minNode]
+  }
+
+  // dijkstra's algorithm
+  for (var i = 1; i <= n; i++) {
+    var [weight, node] = getMin()
+    if (node === -1) { break }
+    visited.add(node)
+    for (var [nextNode, nextWeight] of graph[node]) {
+      if (weight + nextWeight === distances[nextNode]) {
+        ways[nextNode] += ways[node]
+        ways[nextNode] %= mod
+      } else if (weight + nextWeight < distances[nextNode]) {
+        distances[nextNode] = weight + nextWeight
+        ways[nextNode] = ways[node]
+      }
+    }
+  }
+  return ways[n - 1]
+};

@@ -303,6 +303,61 @@ const letterCombinations = (digits) => {
 
 /* 1238. Circular Permutation in Binary Representation */
 
-/* 216. Combination Sum III */
+/* 216. Combination Sum III - Find all valid combinations of k numbers that sum up to n such that the following conditions are true:
+
+Only numbers 1 through 9 are used.
+Each number is used at most once.
+Return a list of all possible valid combinations. The list must not contain the same combination twice, and the combinations may be returned in any order.*/
+
+var combinationSum3 = function (k, n) {
+    const res = []
+
+    const backtrack = (arr, sum, start) => {
+        if (sum > n) {
+            return
+        }
+        else if (arr.length === k) {
+            sum === n && res.push(arr)
+        }
+        else {
+            for (let i = start; i <= 9; i++) {
+                backtrack([...arr, i], sum + i, i + 1)
+            }
+        }
+    }
+    backtrack([], 0, 1)
+    return res
+};
 
 /* 526. Beautiful Arrangement */
+
+
+/* 2305. Fair Distribution of Cookies */
+
+/**
+ * @param {number[]} cookies
+ * @param {number} k
+ * @return {number}
+ */
+var distributeCookies = function (cookies, k) {
+    let ans = Infinity;
+    const childs = new Array(k).fill(0);
+
+    function fairDistribution(ind) {
+        if (ind === cookies.length) {
+            const maxCookie = Math.max(...childs);
+            ans = Math.min(maxCookie, ans);
+            return;
+        }
+
+        for (let i = 0; i < childs.length; i++) {
+            childs[i] += cookies[ind];
+            fairDistribution(ind + 1);
+            childs[i] -= cookies[ind];
+        }
+    }
+
+    fairDistribution(0)
+
+    return ans;
+};

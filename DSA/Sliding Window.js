@@ -406,41 +406,6 @@ const longestCSubarray = (nums, limit) => {
     return nums.length - left - 1;
 };
 
-/* Minimum Swaps to Group All 1's Together 
-    - You're given a binary array data (containing just 0s and 1s).
-    - Your goal is to minimize the number of swaps needed to bring all the 1s together in any part of the array.
-*/
-const minSwaps = (arr) => {
-
-    /* pseudo code
-      
-    */
-
-    // Count the number of 1's in the array
-    const countOnes = arr.reduce((acc, val) => acc + val, 0);
-
-    // If there are no 1's or only one 1, no swaps are needed for grouping
-    if (countOnes <= 1) {
-        return 0;
-    }
-
-    let windowSize = countOnes;
-    let onesInWindow = arr
-        .slice(0, windowSize)
-        .reduce((acc, val) => acc + val, 0);
-
-    //  these swaps are needed for the left most window
-    let minSwaps = countOnes - onesInWindow;
-
-    // Slide the window through the array and find the minimum number of swaps
-    for (let i = windowSize; i < arr.length; i++) {
-        onesInWindow = onesInWindow + arr[i] - arr[i - windowSize];
-        minSwaps = Math.min(minSwaps, countOnes - onesInWindow);
-    }
-
-    return minSwaps;
-};
-
 /* Sliding window maximum - You are given an array of integers nums, there is a sliding window of size k which is moving from the very left of the array to the very right. You can only see the k numbers in the window. Each time the sliding window moves right by one position.
 
 Return the max sliding window.
@@ -601,6 +566,33 @@ A circular array is defined as an array where we consider the first element and 
 
 Given a binary circular array nums, return the minimum number of swaps required to group all 1's present in the array together at any location. */
 
+const minSwaps2 = (nums) => {
+    let ones = 0
+    for (const num of nums) {
+        num && ones++
+    }
+
+    let maxOnesInWindow = 0
+    for (let i = 0; i < ones; i++) {
+        nums[i] && maxOnesInWindow++
+    }
+
+    let curr = maxOnesInWindow
+
+    for (let i = ones; i < ones + nums.length - 1; i++) {
+        if (nums[i - ones] === 1) {
+            curr--
+        }
+        if (nums[i % nums.length] === 1) {
+            curr++
+        }
+
+        maxOnesInWindow = Math.max(maxOnesInWindow, curr)
+    }
+
+    return ones - maxOnesInWindow
+};
+
 /* Maximize the confusion in exam - A teacher is writing a test with n true/false questions, with 'T' denoting true and 'F' denoting false. He wants to confuse the students by maximizing the number of consecutive questions with the same answer (multiple trues or multiple falses in a row).
 
 You are given a string answerKey, where answerKey[i] is the original answer to the ith question. In addition, you are given an integer k, the maximum number of times you may perform the following operation:
@@ -704,6 +696,61 @@ const countSubarrays = (nums, minK, maxK) => {
 
 /* 1248. Count Number of Nice Subarrays */
 
+/**
+ * @param {number[]} nums
+ * @param {number} k
+ * @return {number}
+ */
+var numberOfSubarrays = function (nums, k) {
+    let ans = 0
+    let odd = 0
+    let start = 0
+    let prefix = 0
+    for (let end = 0; end < nums.length; end++) {
+        if (nums[end] % 2 === 1) {
+            odd++
+            prefix = 0
+        }
+        while (odd === k && start <= end) {
+            if (nums[start] % 2 !== 0) {
+                odd--
+            }
+            start++
+            prefix++
+        }
+        ans += prefix
+    }
+
+    return ans
+};
+
 /* 1031. Maximum Sum of Two Non-Overlapping Subarrays */
 
 /* 1052. Grumpy Bookstore Owner */
+
+/* Minimum Swaps to Group All 1's Together 
+    - You're given a binary array data (containing just 0s and 1s).
+    - Your goal is to minimize the number of swaps needed to bring all the 1s together in any part of the array.
+*/
+const minSwaps = (arr) => {
+    const countOnes = arr.reduce((acc, val) => acc + val, 0);
+
+    if (countOnes <= 1) {
+        return 0;
+    }
+
+    let windowSize = countOnes;
+    let onesInWindow = arr
+        .slice(0, windowSize)
+        .reduce((acc, val) => acc + val, 0);
+
+    let minSwaps = countOnes - onesInWindow;
+
+    for (let i = windowSize; i < arr.length; i++) {
+        onesInWindow = onesInWindow + arr[i] - arr[i - windowSize];
+        minSwaps = Math.min(minSwaps, countOnes - onesInWindow);
+    }
+
+    return minSwaps;
+};
+

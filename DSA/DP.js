@@ -1084,46 +1084,6 @@ const uniquePathsWithObstacles = (obstacleGrid) => {
     return dp[m - 1][n - 1];
 };
 
-/* Find number of rectangles in a matrix which have equal number of A& B
- */
-function countRectanglesWithEqualAB(matrix, A, B) {
-    const rowCount = matrix.length;
-    const colCount = matrix[0].length;
-
-    // Create a 3D DP array to store cumulative counts
-    const dp = Array.from({ length: rowCount + 1 }, () =>
-        Array.from({ length: colCount + 1 }, () => ({ a: 0, b: 0 }))
-    );
-
-    // Compute the cumulative counts
-    for (let i = 1; i <= rowCount; i++) {
-        for (let j = 1; j <= colCount; j++) {
-            dp[i][j].a = dp[i - 1][j].a + dp[i][j - 1].a - dp[i - 1][j - 1].a + (matrix[i - 1][j - 1] === A ? 1 : 0);
-            dp[i][j].b = dp[i - 1][j].b + dp[i][j - 1].b - dp[i - 1][j - 1].b + (matrix[i - 1][j - 1] === B ? 1 : 0);
-        }
-    }
-
-    let count = 0;
-
-    // Iterate through all rectangles and count those with equal A and B elements
-    for (let topRow = 0; topRow < rowCount; topRow++) {
-        for (let bottomRow = topRow; bottomRow < rowCount; bottomRow++) {
-            for (let leftCol = 0; leftCol < colCount; leftCol++) {
-                for (let rightCol = leftCol; rightCol < colCount; rightCol++) {
-                    const aCount = dp[bottomRow + 1][rightCol + 1].a - dp[bottomRow + 1][leftCol].a - dp[topRow][rightCol + 1].a + dp[topRow][leftCol].a;
-                    const bCount = dp[bottomRow + 1][rightCol + 1].b - dp[bottomRow + 1][leftCol].b - dp[topRow][rightCol + 1].b + dp[topRow][leftCol].b;
-
-                    if (aCount === bCount) {
-                        count++;
-                    }
-                }
-            }
-        }
-    }
-
-    return count;
-}
-
 /* Dungeon Game - The demons had captured the princess and imprisoned her in the bottom-right corner of a dungeon. The dungeon consists of m x n rooms laid out in a 2D grid. Our valiant knight was initially positioned in the top-left room and must fight his way through dungeon to rescue the princess.
 
 The knight has an initial health point represented by a positive integer. If at any point his health point drops to 0 or below, he dies immediately.
@@ -1307,6 +1267,45 @@ const isInterleave = (s1, s2, s3) => {
 
 /* 1638. Count Substrings That Differ by One Character */
 
+/**
+ * @param {string} s
+ * @param {string} t
+ * @return {number}
+ */
+var countSubstrings = function (s, t) {
+    const leftDP = Array(s.length + 1).fill()
+        .map(() => Array(t.length + 1).fill(0))
+    const rightDP = Array(s.length + 1).fill()
+        .map(() => Array(t.length + 1).fill(0))
+
+    for (let i = 1; i <= s.length; i++) {
+        for (let j = 1; j <= t.length; j++) {
+            if (s[i - 1] === t[j - 1]) {
+                leftDP[i][j] = leftDP[i - 1][j - 1] + 1
+            }
+        }
+    }
+    for (let i = s.length - 1; i >= 0; i--) {
+        for (let j = t.length - 1; j >= 0; j--) {
+            if (s[i] === t[j]) {
+                rightDP[i][j] = rightDP[i + 1][j + 1] + 1
+            }
+        }
+    }
+
+    let count = 0
+    for (let i = 0; i < s.length; i++) {
+        for (let j = 0; j < t.length; j++) {
+            if (s[i] === t[j]) {
+                continue
+            }
+            count += (leftDP[i][j] + 1) * (rightDP[i + 1][j + 1] + 1)
+        }
+    }
+
+    return count
+};
+
 /* Stone Game */
 
 /* 647. Palindromic Substrings */
@@ -1315,16 +1314,34 @@ const isInterleave = (s1, s2, s3) => {
 
 /* 714. Best Time to Buy and Sell Stock with Transaction Fee */
 
-/* 2305. Fair Distribution of Cookies */
-
 /* 1372. Longest ZigZag Path in a Binary Tree */
 
 /* 2673. Make Costs of Paths Equal in a Binary Tree */
+
+/**
+ * @param {number} n
+ * @param {number[]} cost
+ * @return {number}
+ */
+var minIncrements = function (n, cost) {
+    let ans = 0
+
+    const travel = (node) => {
+        if (node * 2 > n) {
+            return cost[node - 1]
+        }
+        const left = travel(node * 2)
+        const right = travel(node * 2 + 1)
+        ans += Math.max(left, right) - Math.min(left, right)
+        return cost[node - 1] + Math.max(left, right)
+    }
+    travel(1)
+
+    return ans
+};
 
 /* 2925. Maximum Score After Applying Operations on a Tree */
 
 /* 1334. Find the City With the Smallest Number of Neighbors at a Threshold Distance */
 
 /* 1786. Number of Restricted Paths From First to Last Node */
-
-/* 1976. Number of Ways to Arrive at Destination */
