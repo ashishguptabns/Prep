@@ -1368,3 +1368,4 @@ var minCostColor = function (colors, neededTime) {
     return time
 };
 
+/* 678. Valid Parenthesis String */
