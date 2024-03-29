@@ -297,30 +297,6 @@ const minFlipsMonoIncr = (s) => {
   return numFlips
 };
 
-/* Minimum Time to Make Rope Colorful - Alice has n balloons arranged on a rope. You are given a 0-indexed string color where colors[i] is the color of the ith balloon.
-
-Alice wants the rope to be colorful. She does not want two consecutive balloons to be of the same color, so she asks Bob for help. Bob can remove some balloons from the rope to make it colorful. You are given a 0-indexed integer array neededTime where neededTime[i] is the time (in seconds) that Bob needs to remove the ith balloon from the rope.
-
-Return the minimum time Bob needs to make the rope colorful.
- */
-
-/**
- * @param {string} colors
- * @param {number[]} neededTime
- * @return {number}
- */
-var minCost = function (colors, neededTime) {
-  let time = 0
-  for (let i = 1; i < colors.length; i++) {
-    if (colors[i] === colors[i - 1]) {
-      time += Math.min(neededTime[i], neededTime[i - 1])
-      neededTime[i] = Math.max(neededTime[i], neededTime[i - 1])
-    }
-  }
-
-  return time
-};
-
 /* String compression - Given an array of characters chars, compress it using the following algorithm:
 
 Begin with an empty string s. For each group of consecutive repeating characters in chars:
@@ -430,3 +406,25 @@ var minNumberOperations = function (target) {
 
   return res
 };
+
+/* 714. Best Time to Buy and Sell Stock with Transaction Fee */
+
+/**
+ * @param {number[]} prices
+ * @param {number} fee
+ * @return {number}
+ */
+var maxProfit = function (prices, fee) {
+  const n = prices.length;
+
+  let profit = 0;
+  let lastBuy = -prices[0];
+
+  for (let i = 1; i < n; i++) {
+    profit = Math.max(profit, lastBuy + prices[i] - fee);
+    lastBuy = Math.max(lastBuy, profit - prices[i]);
+  }
+
+  return profit;
+};
+

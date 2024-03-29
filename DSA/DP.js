@@ -1128,7 +1128,7 @@ Besides the root, each house has one and only one parent house. After a tour, th
 
 Given the root of the binary tree, return the maximum amount of money the thief can rob without alerting the police. */
 
-/* Ugly number - An ugly number is a positive integer whose prime factors are limited to 2, 3, and 5.
+/* Ugly Number II - An ugly number is a positive integer whose prime factors are limited to 2, 3, and 5.
 
 Given an integer n, return the nth ugly number.
  */
@@ -1312,8 +1312,6 @@ var countSubstrings = function (s, t) {
 
 /* 1387. Sort Integers by The Power Value */
 
-/* 714. Best Time to Buy and Sell Stock with Transaction Fee */
-
 /* 1372. Longest ZigZag Path in a Binary Tree */
 
 /* 2673. Make Costs of Paths Equal in a Binary Tree */
@@ -1345,3 +1343,28 @@ var minIncrements = function (n, cost) {
 /* 1334. Find the City With the Smallest Number of Neighbors at a Threshold Distance */
 
 /* 1786. Number of Restricted Paths From First to Last Node */
+
+/* Minimum Time to Make Rope Colorful - Alice has n balloons arranged on a rope. You are given a 0-indexed string color where colors[i] is the color of the ith balloon.
+
+Alice wants the rope to be colorful. She does not want two consecutive balloons to be of the same color, so she asks Bob for help. Bob can remove some balloons from the rope to make it colorful. You are given a 0-indexed integer array neededTime where neededTime[i] is the time (in seconds) that Bob needs to remove the ith balloon from the rope.
+
+Return the minimum time Bob needs to make the rope colorful.
+ */
+
+/**
+ * @param {string} colors
+ * @param {number[]} neededTime
+ * @return {number}
+ */
+var minCostColor = function (colors, neededTime) {
+    let time = 0
+    for (let i = 1; i < colors.length; i++) {
+        if (colors[i] === colors[i - 1]) {
+            time += Math.min(neededTime[i], neededTime[i - 1])
+            neededTime[i] = Math.max(neededTime[i], neededTime[i - 1])
+        }
+    }
+
+    return time
+};
+

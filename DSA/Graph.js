@@ -454,42 +454,38 @@ const closestMeetingNode = (edges, node1, node2) => {
         update the distance and the node
   */
 
-  const map1 = {};
-  const map2 = {};
+  const dist1 = {}
+  const dist2 = {}
 
-  let distance = 0;
-
-  while (map1[node1] == undefined && node1 !== -1) {
-    map1[node1] = distance;
-    distance++;
-    node1 = edges[node1];
+  let dist = 0
+  while (dist1[node1] === undefined && node1 !== -1) {
+    dist1[node1] = dist++
+    node1 = edges[node1]
   }
 
-  distance = 0;
-
-  while (map2[node2] == undefined && node2 !== -1) {
-    map2[node2] = distance;
-    distance++;
-    node2 = edges[node2];
+  dist = 0
+  while (dist2[node2] === undefined && node2 !== -1) {
+    dist2[node2] = dist++
+    node2 = edges[node2]
   }
 
-  let max = Infinity;
-  let res = -1;
+  console.log(dist1, dist2)
 
-  for (let i = 0; i < edges.length; i++) {
-    if (map1[i] == undefined || map2[i] == undefined) {
-      continue;
+  let [max, closestNode] = [Infinity, -1]
+  for (let node = 0; node < edges.length; node++) {
+    if (dist1[node] === undefined || dist2[node] === undefined) {
+      continue
     }
 
-    let localMax = Math.max(map1[i], map2[i]);
+    const localMax = Math.max(dist1[node], dist2[node])
 
     if (localMax < max) {
-      max = localMax;
-      res = i;
+      max = localMax
+      closestNode = node
     }
   }
 
-  return res;
+  return closestNode
 };
 
 /* Minimum Time to Collect All Apples in a Tree - Given an undirected tree consisting of n vertices numbered from 0 to n-1, which has some apples in their vertices. You spend 1 second to walk over one edge of the tree. Return the minimum time in seconds you have to spend to collect all apples in the tree, starting at vertex 0 and coming back to this vertex.

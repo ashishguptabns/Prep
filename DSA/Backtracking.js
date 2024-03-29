@@ -217,17 +217,17 @@ const combinationSum2 = (candidates, target) => {
 
     candidates.sort((a, b) => a - b)
 
-    let paths = []
+    let res = []
 
-    const backtrack = (target, currPath, index, candidates, paths) => {
-        if (target === 0) {
-            paths.push([...currPath])
+    const backtrack = (left, currPath, index) => {
+        if (left === 0) {
+            res.push([...currPath])
             return
         }
 
-        while (index < candidates.length && target - candidates[index] >= 0) {
-            backtrack(target - candidates[index], [...currPath, candidates[index]],
-                index + 1, candidates, paths)
+        while (index < candidates.length && left - candidates[index] >= 0) {
+            backtrack(left - candidates[index],
+                [...currPath, candidates[index]], index + 1)
             index++
 
             while (candidates[index - 1] === candidates[index]) {
@@ -236,9 +236,9 @@ const combinationSum2 = (candidates, target) => {
         }
     }
 
-    backtrack(target, [], 0, candidates, paths)
+    backtrack(target, [], 0)
 
-    return paths
+    return res
 };
 
 /* all possible combinations of valid IP addresses - A valid IP address consists of exactly four integers separated by single dots. Each integer is between 0 and 255 (inclusive) and cannot have leading zeros.
