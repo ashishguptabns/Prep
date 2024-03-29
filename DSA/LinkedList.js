@@ -784,18 +784,6 @@ BrowserHistory.prototype.forward = function (steps) {
 
 /* 1721. Swapping Nodes in a Linked List */
 
-/**
- * Definition for singly-linked list.
- * function ListNode(val, next) {
- *     this.val = (val===undefined ? 0 : val)
- *     this.next = (next===undefined ? null : next)
- * }
- */
-/**
- * @param {ListNode} head
- * @param {number} k
- * @return {ListNode}
- */
 var swapNodes = function (head, k) {
     let first, sec
     const travel = (node, index) => {
