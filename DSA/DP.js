@@ -1306,7 +1306,7 @@ var countSubstrings = function (s, t) {
     return count
 };
 
-/* Stone Game */
+/* 877. Stone Game */
 
 /* 647. Palindromic Substrings */
 

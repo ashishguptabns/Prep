@@ -810,4 +810,40 @@ var swapNodes = function (head, k) {
 
 /* 725. Split Linked List in Parts */
 
+var splitListToParts = function (head, k) {
+    const mainK = k
+    let node = head
+    let totalLen = 0
+    while (node) {
+        totalLen++
+        node = node.next
+    }
+
+    let [prevHead, curr] = [head, head]
+
+    const res = Array(k)
+    let currLen = 0
+    let currIndex = 0
+    while (curr) {
+        currLen++
+        if (currLen >= Math.ceil(totalLen / k)) {
+            res[currIndex++] = prevHead
+            prevHead = curr.next
+            curr.next = null
+            curr = prevHead
+            totalLen -= currLen
+            currLen = 0
+            k--
+        } else {
+            curr = curr?.next
+        }
+    }
+
+    while (currIndex < mainK) {
+        res[currIndex++] = prevHead
+    }
+
+    return res
+};
+
 /* 1019. Next Greater Node In Linked List */

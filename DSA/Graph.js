@@ -761,6 +761,38 @@ var minReorder = function (n, connections) {
 
 /* 684. Redundant Connection */
 
+/**
+ * @param {number[][]} edges
+ * @return {number[]}
+ */
+var findRedundantConnection = function (edges) {
+  const graph = {}
+  const dfs = (node, target, prev) => {
+    if (node === target) {
+      return true
+    }
+    for (let subnode of graph[node]) {
+      if (subnode !== prev && dfs(subnode, target, node)) {
+        return true
+      }
+    }
+    return false
+  }
+
+  for (let edge of edges) {
+    const [a, b] = edge
+    graph[a] = graph[a] || []
+    graph[b] = graph[b] || []
+
+    graph[a].push(b)
+    graph[b].push(a)
+
+    if (dfs(b, a, a)) {
+      return [a, b]
+    }
+  }
+};
+
 /* 1319. Number of Operations to Make Network Connected */
 
 /* 399. Evaluate Division - You are given an array of variable pairs equations and an array of real numbers values, where equations[i] = [Ai, Bi] and values[i] represent the equation Ai / Bi = values[i]. Each Ai or Bi is a string that represents a single variable.
@@ -824,6 +856,47 @@ var calcEquation = function (equations, values, queries) {
 /* 1334. Find the City With the Smallest Number of Neighbors at a Threshold Distance */
 
 /* 851. Loud and Rich */
+
+/**
+ * @param {number[][]} richer
+ * @param {number[]} quiet
+ * @return {number[]}
+ */
+var loudAndRich = function (arr, quiet) {
+  const graph = {}
+
+  for (const [more, less] of arr) {
+    graph[less] = graph[less] || []
+    graph[less].push(more)
+  }
+
+  const memo = new Map();
+  const getQuietest = (person) => {
+    if (memo.has(person)) {
+      return memo.get(person);
+    }
+    const richerList = graph[person]
+    let min = quiet[person];
+    let quietest = person;
+    if (!richerList) {
+      memo.set(person, quietest);
+      return quietest;
+    }
+    for (const rich of richerList) {
+      if (quiet[getQuietest(rich)] < min) {
+        min = quiet[getQuietest(rich)];
+        quietest = getQuietest(rich);
+      }
+    }
+    memo.set(person, quietest);
+    return quietest;
+  }
+  const answer = [];
+  for (let i = 0; i < quiet.length; i++) {
+    answer.push(getQuietest(i));
+  }
+  return answer;
+};
 
 /* 2368. Reachable Nodes With Restrictions */
 
