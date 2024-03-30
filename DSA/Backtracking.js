@@ -322,6 +322,23 @@ var letterCasePermutation = function (s) {
 
 /* 77. Combinations */
 
+var combine = function (n, k) {
+    const res = []
+
+    const backtrack = (arr, num) => {
+        if (arr.length === k) {
+            res.push(arr)
+        } else {
+            for (let i = num; i <= n; i++) {
+                backtrack([...arr, i], i + 1)
+            }
+        }
+    }
+    backtrack([], 1)
+
+    return res
+};
+
 /* 1238. Circular Permutation in Binary Representation */
 
 /* 216. Combination Sum III - Find all valid combinations of k numbers that sum up to n such that the following conditions are true:

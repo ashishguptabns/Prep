@@ -696,32 +696,28 @@ const countSubarrays = (nums, minK, maxK) => {
 
 /* 1248. Count Number of Nice Subarrays */
 
-/**
- * @param {number[]} nums
- * @param {number} k
- * @return {number}
- */
 var numberOfSubarrays = function (nums, k) {
-    let ans = 0
-    let odd = 0
-    let start = 0
-    let prefix = 0
-    for (let end = 0; end < nums.length; end++) {
-        if (nums[end] % 2 === 1) {
-            odd++
-            prefix = 0
+    let countOdd = 0;
+    let l = 0;
+    let niceSubarray = 0;
+    let result = 0;
+    for (let r = 0; r < nums.length; r++) {
+        if (nums[r] % 2 !== 0) {
+            countOdd++;
         }
-        while (odd === k && start <= end) {
-            if (nums[start] % 2 !== 0) {
-                odd--
+        if (countOdd === k) {
+            niceSubarray = 0;
+        }
+        while (countOdd >= k) {
+            if (nums[l] % 2 !== 0) {
+                countOdd--;
             }
-            start++
-            prefix++
+            l++;
+            niceSubarray++;
         }
-        ans += prefix
+        result += niceSubarray;
     }
-
-    return ans
+    return result;
 };
 
 /* 1031. Maximum Sum of Two Non-Overlapping Subarrays */

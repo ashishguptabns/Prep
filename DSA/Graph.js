@@ -716,6 +716,49 @@ var maximalNetworkRank = function (n, roads) {
 
 /* 1466. Reorder Routes to Make All Paths Lead to the City Zero */
 
+var minReorder = function (n, connections) {
+  const graph = {}
+
+  for (let c of connections) {
+    const [src, dest] = c
+    graph[src] = graph[src] || []
+    graph[src].push({
+      city: dest,
+      distance: 1
+    })
+
+    graph[dest] = graph[dest] || []
+    graph[dest].push({
+      city: src,
+      distance: 0
+    })
+  }
+
+  const visited = new Set()
+  const queue = []
+  queue.push(0)
+  let changes = 0
+
+  while (queue.length) {
+    const node = queue.shift()
+
+    if (visited.has(node)) {
+      continue
+    }
+    visited.add(node)
+
+    for (let next of graph[node]) {
+      if (visited.has(next.city)) {
+        continue
+      }
+      changes += Number(next.distance)
+      queue.push(next.city)
+    }
+  }
+
+  return changes
+};
+
 /* 684. Redundant Connection */
 
 /* 1319. Number of Operations to Make Network Connected */
