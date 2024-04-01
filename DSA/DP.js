@@ -1116,12 +1116,6 @@ var calculateMinimumHP = function (m) {
 
 The test cases are generated such that the output values fit in a 32-bit integer and the number of different results does not exceed 104. */
 
-/* Burst Balloons - You are given n balloons, indexed from 0 to n - 1. Each balloon is painted with a number on it represented by an array nums. You are asked to burst all the balloons.
-
-If you burst the ith balloon, you will get nums[i - 1] * nums[i] * nums[i + 1] coins. If i - 1 or i + 1 goes out of bounds of the array, then treat it as if there is a balloon with a 1 painted on it.
-
-Return the maximum coins you can collect by bursting the balloons wisely. */
-
 /* House Robber III - The thief has found himself a new place for his thievery again. There is only one entrance to this area, called root.
 
 Besides the root, each house has one and only one parent house. After a tour, the smart thief realized that all houses in this place form a binary tree. It will automatically contact the police if two directly-linked houses were broken into on the same night.
@@ -1340,8 +1334,6 @@ var minIncrements = function (n, cost) {
 
 /* 2925. Maximum Score After Applying Operations on a Tree */
 
-/* 1334. Find the City With the Smallest Number of Neighbors at a Threshold Distance */
-
 /* 1786. Number of Restricted Paths From First to Last Node */
 
 /* Minimum Time to Make Rope Colorful - Alice has n balloons arranged on a rope. You are given a 0-indexed string color where colors[i] is the color of the ith balloon.
@@ -1401,4 +1393,47 @@ var checkValidString = function (s) {
     }
 
     return openStack.length === 0;
+};
+
+
+/* 1334. Find the City With the Smallest Number of Neighbors at a Threshold Distance */
+
+/**
+ * @param {number} n
+ * @param {number[][]} edges
+ * @param {number} distanceThreshold
+ * @return {number}
+ */
+var findTheCity = function (n, edges, distanceThreshold) {
+    const dp = Array(n).fill().map(_ => Array(n).fill(Infinity));
+    let minCities = n;
+    let result = 0;
+
+    for (let index = 0; index < n; index++) {
+        dp[index][index] = 0;
+    }
+
+    edges.forEach(([from, to, weight]) => {
+        dp[from][to] = dp[to][from] = weight;
+    });
+
+    for (let k = 0; k < n; k++) {
+        for (let from = 0; from < n; from++) {
+            for (let to = 0; to < n; to++) {
+                dp[from][to] = Math.min(dp[from][to], dp[from][k] + dp[k][to]);
+            }
+        }
+    }
+    for (let from = 0; from < n; from++) {
+        let cities = 0;
+        for (let to = 0; to < n; to++) {
+            dp[from][to] <= distanceThreshold && cities++;
+        }
+        if (cities > minCities) {
+            continue;
+        }
+        minCities = cities;
+        result = from;
+    }
+    return result;
 };

@@ -739,6 +739,36 @@ const removeNthFromEnd = (head, n) => {
 
 /* 1669. Merge In Between Linked Lists */
 
+var mergeInBetween = function (list1, a, b, list2) {
+    let [prevA, prevB] = [null, null]
+
+    let curr = list1
+    while (a > 0) {
+        a--
+        prevA = curr
+        curr = curr.next
+    }
+
+    curr = list1
+    while (b >= 0) {
+        b--
+        prevB = curr
+        curr = curr.next
+    }
+
+    console.log(prevA, prevB)
+
+    prevA.next = list2
+
+    curr = list2
+    while (curr.next) {
+        curr = curr.next
+    }
+    curr.next = prevB.next
+
+    return list1
+};
+
 /* 1472. Design Browser History */
 
 /**

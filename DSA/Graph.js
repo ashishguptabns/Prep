@@ -853,8 +853,6 @@ var calcEquation = function (equations, values, queries) {
 
 /* 2285. Maximum Total Importance of Roads */
 
-/* 1334. Find the City With the Smallest Number of Neighbors at a Threshold Distance */
-
 /* 851. Loud and Rich */
 
 /**
