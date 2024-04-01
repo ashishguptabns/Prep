@@ -111,7 +111,7 @@ const diagonalSort = (mat) => {
   return mat;
 };
 
-/* Wiggle sort - Given an integer array nums, reorder it such that nums[0] < nums[1] > nums[2] < nums[3]....
+/* 324. Wiggle Sort II - Given an integer array nums, reorder it such that nums[0] < nums[1] > nums[2] < nums[3]....
  */
 const wiggleSort = (nums) => {
 

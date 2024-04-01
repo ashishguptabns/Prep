@@ -988,3 +988,7 @@ var countPaths = function (n, roads) {
   }
   return ways[n - 1]
 };
+
+/* 2492. Minimum Score of a Path Between Two Cities */
+
+/* 785. Is Graph Bipartite? */
