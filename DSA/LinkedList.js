@@ -319,24 +319,16 @@ const flatten = (head) => {
 
     const flattenDFS = (prev, curr) => {
         if (!curr) {
-            //  prev is the tail
             return prev
         }
 
-        //  establish links
         curr.prev = prev
         prev.next = curr
 
-        //  this will be needed after flattening
         const tempNext = curr.next
-
-        //  find the tail of flattened children
         const tail = flattenDFS(curr, curr.child)
-
-        //  remove the child
         curr.child = null
 
-        //  establish the pointers and travel further
         return flattenDFS(tail, tempNext)
     }
 
@@ -348,13 +340,12 @@ const flatten = (head) => {
     temp.next = head
     flattenDFS(temp, head)
 
-    //  remove the temp pointer
     temp.next.prev = null
 
     return temp.next
 };
 
-/* Linked List Cycle - Given the head of a linked list, return the node where the cycle begins. If there is no cycle, return null. */
+/* 142. Linked List Cycle II - Given the head of a linked list, return the node where the cycle begins. If there is no cycle, return null. */
 /**
  * @param {ListNode} head
  * @return {ListNode}

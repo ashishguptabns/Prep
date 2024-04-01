@@ -707,7 +707,7 @@ const minPathSum = (grid) => {
  * @return {boolean}
  */
 const canPartition = (nums) => {
-    let sum = nums.reduce((prevVal, currValue) => prevVal + currValue, 0); // Calculate the sum of all values in the array
+    let sum = nums.reduce((prevVal, currValue) => prevVal + currValue, 0);
 
     if (sum % 2 !== 0) {
         return false;
@@ -989,44 +989,34 @@ const countVowelStrings = (n) => {
 /* All possible full binary trees - Given an integer n, return a list of all possible full binary trees with n nodes. Each node of each tree in the answer must have Node.val == 0.
  */
 const allPossibleFBT = (n) => {
-    // we will use DP to keep precomputed trees
     const memo = {}
 
     const createFBT = (size) => {
-        //  FBT of one node can be created
         if (size === 1) {
             return [new TreeNode()]
         }
-        //  can not form FBT with even number of nodes
         if (size % 2 == 0) {
             return []
         }
-        //  we have already computed the result
         if (memo[size]) {
             return memo[size]
         }
 
         const trees = []
 
-        // iterate over all possible odd numbers
         for (let left = 1; left < size; left += 2) {
-            //  get all possible left subtress
             const leftTrees = createFBT(left)
-            //  get all possible right subtress
             const rightTress = createFBT(size - left - 1)
             if (leftTrees && rightTress) {
-                //  create combination of trees
                 for (const l of leftTrees) {
                     for (r of rightTress) {
                         const root = new TreeNode(0, l, r)
-                        //  track the root of all trees
                         trees.push(root)
                     }
                 }
             }
         }
 
-        //  keep for future use
         memo[size] = trees
         return trees
     }
@@ -1256,6 +1246,30 @@ const isInterleave = (s1, s2, s3) => {
 };
 
 /* Partition Array for Maximum Sum */
+
+/**
+ * @param {number[]} arr
+ * @param {number} k
+ * @return {number}
+ */
+var maxSumAfterPartitioning = function (arr, k) {
+    const n = arr.length;
+    const dp = new Array(n + 1).fill(0);
+
+    for (let i = 0; i < n; i++) {
+        let curMax = 0, curSum = 0;
+
+        for (let j = i; j >= Math.max(0, i - k + 1); j--) {
+            curMax = Math.max(curMax, arr[j]);
+            const cur = curMax * (i + 1 - j) + dp[j];
+            curSum = Math.max(curSum, cur);
+        }
+
+        dp[i + 1] = curSum;
+    }
+
+    return dp[n];
+};
 
 /* Egg Drop With 2 Eggs and N Floors */
 

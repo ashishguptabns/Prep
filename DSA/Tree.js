@@ -1267,17 +1267,6 @@ The path does not need to start or end at the root or a leaf, but it must go dow
 
 /* 1261. Find Elements in a Contaminated Binary Tree */
 
-/**
- * Definition for a binary tree node.
- * function TreeNode(val, left, right) {
- *     this.val = (val===undefined ? 0 : val)
- *     this.left = (left===undefined ? null : left)
- *     this.right = (right===undefined ? null : right)
- * }
- */
-/**
- * @param {TreeNode} root
- */
 var FindElements = function (root) {
     this.root = root
     this.travel(root, 0)

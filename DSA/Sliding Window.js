@@ -329,37 +329,31 @@ const minimumRecolors = (blocks, k) => {
  */
 
 /**
-* @param {string} s
-* @param {number} k
-* @return {number}
-*/
-const maxVowels = (s, k) => {
-
-    /* pseudo code
-        go through the string
-            keep tracking vowel count
-            shrink the window from left
-    */
-
-    let maxCount = 0, count = 0;
-    const vowel = ['a', "e", "i", "o", "u"]
+ * @param {string} s
+ * @param {number} k
+ * @return {number}
+ */
+var maxVowels = function (s, k) {
+    const vowels = ['a', 'e', 'i', 'o', 'u']
+    let max = 0
+    let start = 0
+    let count = 0
     for (let i = 0; i < s.length; i++) {
-        if (vowel.includes(s[i])) {
+        const c = s[i]
+        if (vowels.includes(c)) {
             count++
         }
+        max = Math.max(count, max)
 
-        if (i >= k && vowel.includes(s[i - k])) {
-            count--
+        if (i - start + 1 === k) {
+            if (vowels.includes(s[start])) {
+                count--
+            }
+            start++
         }
-
-        //  max possible number of vowels
-        if (count == k) {
-            return k;
-        }
-
-        maxCount = Math.max(maxCount, count)
     }
-    return maxCount
+
+    return max
 };
 
 /* Longest Continuous Subarray With Absolute Diff Less Than or Equal to Limit - Given an array of integers nums and an integer limit, return the size of the longest non-empty subarray such that the absolute difference between any two elements of this subarray is less than or equal to limit.
