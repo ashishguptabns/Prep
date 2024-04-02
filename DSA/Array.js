@@ -422,3 +422,4 @@ var maxProfit = function (prices, fee) {
   return profit;
 };
 
+/* 442. Find All Duplicates in an Array */
