@@ -1312,18 +1312,22 @@ FindElements.prototype.find = function (target, node) {
 /* 979. Distribute Coins in Binary Tree */
 
 var distributeCoins = function (root) {
-    let moves = 0;
-    function DFS(root) {
-        if (!root) {
-            return 0;
+    let ans = 0
+
+    const travel = (node) => {
+        if (node) {
+            const leftRemaining = travel(node.left)
+            const rightRemaining = travel(node.right)
+
+            ans += Math.abs(leftRemaining) + Math.abs(rightRemaining)
+
+            return node.val + leftRemaining + rightRemaining - 1
         }
-        let coinsFromLeft = DFS(root.left);
-        let coinsFromRight = DFS(root.right);
-        moves += Math.abs(coinsFromLeft) + Math.abs(coinsFromRight);
-        return root.val + coinsFromLeft + coinsFromRight - 1;
+        return 0
     }
-    DFS(root);
-    return moves;
+    travel(root)
+
+    return ans
 };
 
 /* 2196. Create Binary Tree From Descriptions */

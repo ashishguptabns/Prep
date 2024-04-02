@@ -241,7 +241,7 @@ const combinationSum2 = (candidates, target) => {
     return res
 };
 
-/* all possible combinations of valid IP addresses - A valid IP address consists of exactly four integers separated by single dots. Each integer is between 0 and 255 (inclusive) and cannot have leading zeros.
+/* 93. Restore IP Addresses - A valid IP address consists of exactly four integers separated by single dots. Each integer is between 0 and 255 (inclusive) and cannot have leading zeros.
 
 For example, "0.1.2.201" and "192.168.1.1" are valid IP addresses, but "0.011.255.245", "192.168.1.312" and "192.168@1.1" are invalid IP addresses.
 Given a string s containing only digits, return all possible valid IP addresses that can be formed by inserting dots into s. You are not allowed to reorder or remove any digits in s. You may return the valid IP addresses in any order.
@@ -368,6 +368,37 @@ var combinationSum3 = function (k, n) {
 };
 
 /* 526. Beautiful Arrangement */
+
+/**
+ * @param {number} n
+ * @return {number}
+ */
+var countArrangement = function (n) {
+    if (n < 3) {
+        return n
+    }
+
+    const seen = Array(n + 1).fill(false)
+    let ans = 0
+
+    const dfs = (i) => {
+        if (i > n) {
+            ans++
+            return
+        }
+
+        for (let index = 1; index <= n; index++) {
+            if (!seen[index] && (index % i === 0 || i % index === 0)) {
+                seen[index] = true
+                dfs(i + 1)
+                seen[index] = false
+            }
+        }
+    }
+    dfs(1)
+
+    return ans
+};
 
 /* 2305. Fair Distribution of Cookies */
 
