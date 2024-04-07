@@ -905,19 +905,15 @@ const bstFromPreorder = (preorder) => {
                 build left and right nodes recursively
                 return the node
     */
-    const buildNode = (lower, upper) => {
-        if (preorder.length === 0) {
-            return null;
+    if (preorder.length > 0) {
+        if (preorder[0] < min || preorder[0] > max) {
+            return null
         }
-        if (preorder[0] < lower || preorder[0] > upper) {
-            return null;
-        }
-        const node = new TreeNode(preorder.shift());
-        node.left = buildNode(lower, node.val);
-        node.right = buildNode(node.val, upper);
-        return node;
+        const val = preorder.shift()
+        const left = bstFromPreorder(preorder, min, val)
+        const right = bstFromPreorder(preorder, val, max)
+        return new TreeNode(val, left, right)
     }
-    return buildNode(-Infinity, Infinity);
 };
 
 /* Sum root to leaf numbers - You are given the root of a binary tree containing digits from 0 to 9 only.
