@@ -1340,4 +1340,47 @@ var distributeCoins = function (root) {
 
 /* 429. N-ary Tree Level Order Traversal */
 
+var NAryLevelOrder = function (root) {
+    if (!root) {
+        return []
+    }
+    const q = [root]
+    const res = []
+    while (q.length) {
+        const size = q.length
+        const arr = []
+        for (let i = 0; i < size; i++) {
+            const node = q.shift()
+            arr.push(node.val)
+            for (const child of node.children) {
+                q.push(child)
+            }
+        }
+        res.push(arr)
+    }
+
+    return res
+};
+
 /* 865. Smallest Subtree with all the Deepest Nodes */
+
+var subtreeWithAllDeepest = function (root) {
+    let height = 0
+    let maxNode = null
+
+    const dfs = (node, level) => {
+        if (!node) {
+            return level - 1
+        }
+        height = Math.max(level, height)
+        const leftDepth = dfs(node.left, level + 1)
+        const rightDepth = dfs(node.right, level + 1)
+        if (leftDepth == height && rightDepth === height) {
+            maxNode = node
+        }
+        return Math.max(leftDepth, rightDepth)
+    }
+    dfs(root, 0)
+
+    return maxNode
+};

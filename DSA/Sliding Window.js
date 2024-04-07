@@ -440,26 +440,26 @@ Return the maximum length of a subarray with positive product.
 */
 
 const getMaxLen = (nums) => {
-    let result = positive = negative = 0;
+    let [res, pos, neg] = [0, 0, 0];
 
     for (const num of nums) {
         if (num === 0) {
-            positive = negative = 0;
+            pos = neg = 0;
         }
         else if (num > 0) {
-            positive += 1;
-            negative && (negative += 1);
+            pos += 1;
+            neg && (neg += 1);
         }
         else {
-            const current = positive;
-            positive = negative ? negative + 1 : 0;
-            negative = current + 1;
+            const current = pos;
+            pos = neg ? neg + 1 : 0;
+            neg = current + 1;
         }
 
-        result = Math.max(result, positive);
+        res = Math.max(res, pos);
     }
 
-    return result;
+    return res;
 };
 
 /* Find All Anagrams in a String - Given two strings s and p, return an array of all the start indices of p's anagrams in s. You may return the answer in any order.

@@ -423,3 +423,20 @@ var maxProfit = function (prices, fee) {
 };
 
 /* 442. Find All Duplicates in an Array */
+
+/**
+ * @param {number[]} nums
+ * @return {number[]}
+ */
+var findDuplicates = function (nums) {
+  const ans = []
+  for (let i = 0; i < nums.length; i++) {
+    const x = Math.abs(nums[i])
+    if (nums[x - 1] < 0) {
+      ans.push(x)
+    }
+    nums[x - 1] *= -1
+  }
+  console.log(ans, nums)
+  return ans
+};

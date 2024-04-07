@@ -191,11 +191,7 @@ Return a list answer, where answer[i] is the list of ancestors of the ith node, 
 
 A node u is an ancestor of another node v if u can reach v via a set of edges.
  */
-/**
- * @param {number} n
- * @param {number[][]} edges
- * @return {number[][]}
- */
+
 const getAncestors = (n, edges) => {
 
   /* pseudo code
@@ -205,42 +201,34 @@ const getAncestors = (n, edges) => {
         keep pushing current node as an ancestor of the node being visited in BFS
   */
 
-  const graph = Array(n);
-  for (let i = 0; i < graph.length; i++) {
-    graph[i] = [];
-  }
+  const graph = {}
   for (const [from, to] of edges) {
-    graph[from].push(to);
+    graph[from] = graph[from] || []
+    graph[from].push(to)
   }
 
-  const ancestors = new Array(n).fill().map(() => []);
+  const ans = Array(n).fill().map(() => [])
 
-  for (let originNode = 0; originNode < n; originNode++) {
-    const neighbors = graph[originNode];
-
-    let queue = neighbors;
-
-    const seen = new Set();
-    while (queue.length) {
-      const nextQueue = [];
-
-      for (let i = 0; i < queue.length; i++) {
-        const currNode = queue[i];
-        if (!seen.has(currNode)) {
-          seen.add(currNode);
-          ancestors[currNode].push(originNode);
-
-          for (const nextNode of graph[currNode]) {
-            nextQueue.push(nextNode);
+  for (let node = 0; node < n; node++) {
+    const q = [node]
+    const seen = {}
+    while (q.length) {
+      const curr = q.shift()
+      if (!seen[curr]) {
+        seen[curr] = true
+        if (curr !== node && !ans[curr].includes(node)) {
+          ans[curr].push(node)
+        }
+        if (graph[curr]) {
+          for (const next of graph[curr]) {
+            q.push(next)
           }
         }
       }
-
-      queue = nextQueue;
     }
   }
 
-  return ancestors;
+  return ans
 };
 
 /* Course Schedule II - There are a total of numCourses courses you have to take, labeled from 0 to numCourses - 1. You are given an array prerequisites where prerequisites[i] = [ai, bi] indicates that you must take course bi first if you want to take course ai.
@@ -404,27 +392,31 @@ const eventualSafeNodes = (graph) => {
         set true in map if no unsafe nodes are found
   */
 
-  const ans = [];
-  const map = new Map();
-  const dfs = (graph, node, map) => {
-    if (map.has(node)) {
-      return map.get(node);
+  const ans = []
+
+  const safe = {}
+  const dfs = (node) => {
+    if (safe[node] !== undefined) {
+      return safe[node]
     }
-    map.set(node, false);
-    for (let nei of graph[node]) {
-      if (!dfs(graph, nei, map)) {
-        return false;
+    safe[node] = false
+    for (const next of graph[node]) {
+      if (!dfs(next)) {
+        return false
       }
     }
-    map.set(node, true);
-    return true;
+    safe[node] = true
+
+    return true
   }
-  for (let i = 0; i < graph.length; i++) {
-    if (dfs(graph, i, map)) {
-      ans.push(i);
+
+  for (let node = 0; node < graph.length; node++) {
+    if (dfs(node)) {
+      ans.push(node)
     }
   }
-  return ans;
+
+  return ans
 };
 
 /* Find Closest Node to Given Two Nodes - You are given a directed graph of n nodes numbered from 0 to n - 1, where each node has at most one outgoing edge.
