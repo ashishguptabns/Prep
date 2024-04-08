@@ -1273,6 +1273,17 @@ var maxSumAfterPartitioning = function (arr, k) {
 
 /* Egg Drop With 2 Eggs and N Floors */
 
+var twoEggDrop = function (n) {
+    const dp = Array.from({ length: n + 1 }, (_, i) => i);
+
+    for (let i = 1; i <= n; i++) {
+        for (let j = 1; j <= i; j++) {
+            dp[i] = Math.min(dp[i], Math.max(1 + dp[i - j], j));
+        }
+    }
+    return dp[n];
+};
+
 /* 1638. Count Substrings That Differ by One Character */
 
 /**

@@ -1,42 +1,26 @@
-/**
- * Palindrome
- * A string is a palindrome if it is read the same from forward or backward.
- * For example, 'dad' reads the same either from forward or backward.
- * So the word 'dad' is a palindrome.
- * Similarly, 'madam' is also a palindrome, as is 'noon'.
- * ˜
- * In your preferred language (either JS or Python), write a function to:
- * 
- * Part I - Check if a string is a palindrome using a For Loop
- * Part II - Check if a string is a palindrome using built-in language functions
- * 
-*/
-
-const isPalindrome = (s) => {
-    let [left, right] = [0, s.length - 1]
-    while (left < right) {
-        if (s[left++] !== s[right--]) {
-            return false
-        }
-    }
-    return true
+const rand7 = () => {
+    let random = Math.floor(Math.random() * 7)
+    return random
 }
 
-const words = ["racecar", "level", "cvic", "radar", "kayak", "elephant", "computer", "banana", "telescope", "firetruck"];
-const result = [true, true, true,
-    true, true, false,
-    false, false, false,
-    false]
+const arr = []
 
-const test = (result, words) => {
-    let i = 0
-    for (const word of words) {
-        if (result[i] !== isPalindrome(word)) {
-            throw new Error(`code is wrong. Output: ${isPalindrome(word)} Expected: ${result[i]}`)
-        }
-        i++
-    }
-    console.log('all tests passing')
+for (let i = 0; i < 7000; i++) {
+    const random = rand7()
+    arr[random] = arr[random] || 0
+    arr[random]++
 }
 
-test(result, words)
+const rand3 = () => {
+    return Math.floor(rand7() / 3)
+}
+
+const arr3 = []
+
+for (let i = 0; i < 9000; i++) {
+    const random = rand3()
+    arr3[random] = arr3[random] || 0
+    arr3[random]++
+}
+
+console.log(arr3)
