@@ -1471,4 +1471,17 @@ var findTheCity = function (n, edges, distanceThreshold) {
 
 /* 518. Coin Change II */
 
+var change = function (amount, coins) {
+    const dp = Array(amount + 1).fill(0)
+    dp[0] = 1
+
+    for (const coin of coins) {
+        for (let j = coin; j <= amount; j++) {
+            dp[j] += dp[j - coin]
+        }
+    }
+
+    return dp.at(-1)
+};
+
 /* 1947. Maximum Compatibility Score Sum */

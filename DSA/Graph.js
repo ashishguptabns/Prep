@@ -680,6 +680,7 @@ var maximalNetworkRank = function (n, roads) {
   for (const [a, b] of roads) {
     graph[a] = graph[a] || []
     graph[a].push(b)
+
     graph[b] = graph[b] || []
     graph[b].push(a)
 
@@ -688,13 +689,13 @@ var maximalNetworkRank = function (n, roads) {
   }
 
   let max = 0
-
-  for (let i = 0; i < n; i++) {
-    for (let j = i + 1; j < n; j++) {
-      let count = degree[i] + degree[j]
-      if (graph[i] && graph[i].includes(j)) {
+  for (let node = 0; node < n; node++) {
+    for (let next = node + 1; next < n; next++) {
+      let count = degree[node] + degree[next]
+      if (graph[node] && graph[node].includes(next)) {
         count--
       }
+
       max = Math.max(max, count)
     }
   }
