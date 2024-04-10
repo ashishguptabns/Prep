@@ -735,7 +735,7 @@ var maximalNetworkRank = function (n, roads) {
 
 /* 1466. Reorder Routes to Make All Paths Lead to the City Zero */
 
-var minReorder = function (n, connections) {
+var minReorder = function (n, edges) {
   const graph = {}
   for (const [from, to] of edges) {
     graph[from] = graph[from] || []
