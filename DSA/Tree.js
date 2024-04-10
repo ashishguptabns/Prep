@@ -1330,6 +1330,26 @@ var distributeCoins = function (root) {
 
 /* 814. Binary Tree Pruning */
 
+var pruneTree = function (root) {
+    const hasOne = (node) => {
+        if (node) {
+            const left = hasOne(node.left)
+            const right = hasOne(node.right)
+
+            if (!left) {
+                node.left = null
+            }
+            if (!right) {
+                node.right = null
+            }
+
+            return (node.left || node.right || node.val === 1) ? node : null
+        }
+        return null
+    }
+    return hasOne(root)
+};
+
 /* 889. Construct Binary Tree from Preorder and Postorder Traversal */
 
 var constructFromPrePost = function (pre, post) {

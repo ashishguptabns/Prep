@@ -373,30 +373,19 @@ subarray whose sum is greater than or equal to target. If there is no such subar
  * @return {number}
  */
 const minSubArrayLen = (target, nums) => {
-  /* pseudo code
-    move right through the nums array
-      update the sum
-      while sum >= target
-        update minLen
-        keep shring window from left
-  */
+  let ans = nums.length + 1
+  let sum = 0
 
-  let minLen = Infinity;
-  let left = 0;
-  let sum = 0;
-
-  for (let right = 0; right < nums.length; right++) {
-    sum += nums[right];
-
+  let start = 0
+  for (let i = 0; i < nums.length; i++) {
+    sum += nums[i]
     while (sum >= target) {
-      minLen = Math.min(minLen, right - left + 1);
-
-      //  shrink the window from left
-      sum -= nums[left++];
+      ans = Math.min(ans, i + 1 - start)
+      sum -= nums[start++]
     }
   }
 
-  return minLen === Infinity ? 0 : minLen;
+  return ans === nums.length + 1 ? 0 : ans
 };
 
 /* Trapping Rain Water - Given n non-negative integers representing an elevation map where the width of each bar is 1, compute how much water it can trap after raining.
