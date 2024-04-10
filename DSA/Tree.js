@@ -1001,28 +1001,26 @@ Given the label of a node in this tree, return the labels in the path from the r
  * @return {number[]}
  */
 const pathInZigZagTree = (label) => {
-    let level = 0;
+    let level = 0
 
-    //  find the level of label
-    while (Math.pow(2, level + 1) <= label) {
-        level++;
+    while (2 ** (level + 1) <= label) {
+        level++
     }
 
-    const getParent = (label, lvl) => {
+    const moveUp = (label, level) => {
         if (label === 1) {
-            //  no parent of root
-            return [];
+            return []
         }
-        const lvlMaxVal = Math.pow(2, lvl + 1) - 1, lvlMinVal = Math.pow(2, lvl);
-        const mirror = lvlMinVal + (lvlMaxVal - label);
 
-        //  parent by def
-        const parent = Math.floor(mirror / 2);
+        const levelMax = 2 ** (level + 1) - 1
+        const levelMin = 2 ** level
+        const mirror = levelMin + (levelMax - label)
 
-        //  find parent to this parent and so on
-        return [...getParent(parent, lvl - 1), parent];
+        const parent = Math.floor(mirror / 2)
+
+        return [...moveUp(parent, level - 1), parent]
     }
-    return [...getParent(label, level), label];
+    return [...moveUp(label, level), label]
 };
 
 /* Construct quad tree - Given a n * n matrix grid of 0's and 1's only.We want to represent grid with a Quad - Tree.
@@ -1334,6 +1332,23 @@ var distributeCoins = function (root) {
 
 /* 889. Construct Binary Tree from Preorder and Postorder Traversal */
 
+var constructFromPrePost = function (pre, post) {
+    if (!pre.length || !post.length) {
+        return null;
+    }
+
+    const tree = new TreeNode(pre.shift());
+
+    post.pop();
+    const index = post.indexOf(pre[0]);
+
+    tree.left = constructFromPrePost(pre, post.slice(0, index + 1));
+    tree.right = constructFromPrePost(pre, post.slice(index + 1));
+
+
+    return tree;
+};
+
 /* 429. N-ary Tree Level Order Traversal */
 
 var NAryLevelOrder = function (root) {
@@ -1379,4 +1394,28 @@ var subtreeWithAllDeepest = function (root) {
     dfs(root, 0)
 
     return maxNode
+};
+
+/* House Robber III - The thief has found himself a new place for his thievery again. There is only one entrance to this area, called root.
+
+Besides the root, each house has one and only one parent house. After a tour, the smart thief realized that all houses in this place form a binary tree. It will automatically contact the police if two directly-linked houses were broken into on the same night.
+
+Given the root of the binary tree, return the maximum amount of money the thief can rob without alerting the police. */
+
+var rob = function (root) {
+    const dfs = (root) => {
+        if (!root) {
+            return [0, 0]
+        }
+
+        const left = dfs(root.left);
+        const right = dfs(root.right);
+
+        const withRoot = root.val + left[1] + right[1];
+        const withoutRoot = Math.max(...left) + Math.max(...right);
+
+        return [withRoot, withoutRoot];
+    }
+
+    return Math.max(...dfs(root));
 };

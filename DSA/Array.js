@@ -440,3 +440,30 @@ var findDuplicates = function (nums) {
   console.log(ans, nums)
   return ans
 };
+
+/* Partition Array for Maximum Sum */
+
+/**
+ * @param {number[]} arr
+ * @param {number} k
+ * @return {number}
+ */
+var maxSumAfterPartitioning = function (arr, k) {
+  const sumArr = Array(arr.length).fill(0)
+
+  for (let i = 0; i < arr.length; i++) {
+    let currMax = 0
+    let currSum = 0
+
+    for (let j = i; j >= Math.max(0, i + 1 - k); j--) {
+      currMax = Math.max(currMax, arr[j])
+      const curr = currMax * (i + 1 - j) + sumArr[j]
+      currSum = Math.max(currSum, curr)
+    }
+
+    sumArr[i + 1] = currSum
+  }
+
+  return sumArr.at(-1)
+};
+

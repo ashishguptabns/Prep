@@ -662,6 +662,32 @@ function employeeScoreMemoized(graph, node, memo) {
 
 /* 841. Keys and Rooms */
 
+var canVisitAllRooms = function (rooms) {
+  const arr = Array(rooms.length).fill(false)
+
+  const q = [rooms[0]]
+  arr[0] = true
+
+  while (q.length) {
+    const nextRooms = q.pop()
+    for (const room of nextRooms) {
+      if (room === 0 || arr[room]) {
+        continue
+      }
+      arr[room] = true
+      q.push(rooms[room])
+    }
+  }
+
+  for (const lock of arr) {
+    if (!lock) {
+      return false
+    }
+  }
+
+  return true
+};
+
 /* 1584. Min Cost to Connect All Points */
 
 /* 547. Number of Provinces */
@@ -711,45 +737,35 @@ var maximalNetworkRank = function (n, roads) {
 
 var minReorder = function (n, connections) {
   const graph = {}
+  for (const [from, to] of edges) {
+    graph[from] = graph[from] || []
+    graph[from].push({ city: to, dist: 1 })
 
-  for (let c of connections) {
-    const [src, dest] = c
-    graph[src] = graph[src] || []
-    graph[src].push({
-      city: dest,
-      distance: 1
-    })
-
-    graph[dest] = graph[dest] || []
-    graph[dest].push({
-      city: src,
-      distance: 0
-    })
+    graph[to] = graph[to] || []
+    graph[to].push({ city: from, dist: 0 })
   }
 
-  const visited = new Set()
-  const queue = []
-  queue.push(0)
-  let changes = 0
+  const seen = {}
+  const q = [0]
+  let ans = 0
 
-  while (queue.length) {
-    const node = queue.shift()
-
-    if (visited.has(node)) {
+  while (q.length) {
+    const node = q.shift()
+    if (seen[node]) {
       continue
     }
-    visited.add(node)
+    seen[node] = true
 
-    for (let next of graph[node]) {
-      if (visited.has(next.city)) {
+    for (const next of graph[node]) {
+      if (seen[next.city]) {
         continue
       }
-      changes += Number(next.distance)
-      queue.push(next.city)
+      ans += Number(next.dist)
+      q.push(next.city)
     }
   }
 
-  return changes
+  return ans
 };
 
 /* 684. Redundant Connection */
@@ -787,6 +803,42 @@ var findRedundantConnection = function (edges) {
 };
 
 /* 1319. Number of Operations to Make Network Connected */
+
+var makeConnected = function (n, edges) {
+  if (edges.length < n - 1) {
+    return -1
+  }
+
+  const graph = {}
+  for (const [a, b] of edges) {
+    graph[a] = graph[a] || []
+    graph[a].push(b)
+
+    graph[b] = graph[b] || []
+    graph[b].push(a)
+  }
+
+  const seen = {}
+  let ans = 0
+
+  const connect = (node) => {
+    if (seen[node]) {
+      return 0
+    }
+    seen[node] = true
+    if (graph[node]) {
+      for (const next of graph[node]) {
+        connect(next)
+      }
+    }
+    return 1
+  }
+  for (let node = 0; node < n; node++) {
+    ans += connect(node)
+  }
+
+  return ans - 1
+};
 
 /* 399. Evaluate Division - You are given an array of variable pairs equations and an array of real numbers values, where equations[i] = [Ai, Bi] and values[i] represent the equation Ai / Bi = values[i]. Each Ai or Bi is a string that represents a single variable.
 
@@ -982,6 +1034,35 @@ var countPaths = function (n, roads) {
   return ways[n - 1]
 };
 
+
 /* 2492. Minimum Score of a Path Between Two Cities */
+
+var minScore = function (n, roads) {
+  const graph = {}
+  for (const [a, b, dist] of roads) {
+    graph[a] = graph[a] || []
+    graph[a].push([b, dist])
+    graph[b] = graph[b] || []
+    graph[b].push([a, dist])
+  }
+
+  const q = [1]
+  const seen = {}
+  seen[1] = true
+  let ans = Infinity
+
+  while (q.length) {
+    const node = q.shift()
+    for (const [next, dist] of graph[node]) {
+      ans = Math.min(ans, dist)
+      if (!seen[next]) {
+        seen[next] = true
+        q.push(next)
+      }
+    }
+  }
+
+  return ans
+};
 
 /* 785. Is Graph Bipartite? */

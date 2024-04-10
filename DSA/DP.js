@@ -1106,12 +1106,6 @@ var calculateMinimumHP = function (m) {
 
 The test cases are generated such that the output values fit in a 32-bit integer and the number of different results does not exceed 104. */
 
-/* House Robber III - The thief has found himself a new place for his thievery again. There is only one entrance to this area, called root.
-
-Besides the root, each house has one and only one parent house. After a tour, the smart thief realized that all houses in this place form a binary tree. It will automatically contact the police if two directly-linked houses were broken into on the same night.
-
-Given the root of the binary tree, return the maximum amount of money the thief can rob without alerting the police. */
-
 /* Ugly Number II - An ugly number is a positive integer whose prime factors are limited to 2, 3, and 5.
 
 Given an integer n, return the nth ugly number.
@@ -1243,32 +1237,6 @@ const isInterleave = (s1, s2, s3) => {
     }
 
     return dp[s1.length][s2.length];
-};
-
-/* Partition Array for Maximum Sum */
-
-/**
- * @param {number[]} arr
- * @param {number} k
- * @return {number}
- */
-var maxSumAfterPartitioning = function (arr, k) {
-    const n = arr.length;
-    const dp = new Array(n + 1).fill(0);
-
-    for (let i = 0; i < n; i++) {
-        let curMax = 0, curSum = 0;
-
-        for (let j = i; j >= Math.max(0, i - k + 1); j--) {
-            curMax = Math.max(curMax, arr[j]);
-            const cur = curMax * (i + 1 - j) + dp[j];
-            curSum = Math.max(curSum, cur);
-        }
-
-        dp[i + 1] = curSum;
-    }
-
-    return dp[n];
 };
 
 /* Egg Drop With 2 Eggs and N Floors */
