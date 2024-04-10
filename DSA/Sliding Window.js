@@ -554,6 +554,36 @@ const characterReplacement = (s, k) => {
 
 if no such substring exists, return 0. */
 
+var longestSubstring = function (s, k) {
+    if (s.length < k) {
+        return 0;
+    }
+
+    const charCount = new Map();
+
+    for (const char of s) {
+        if (!charCount.has(char)) {
+            charCount.set(char, 0);
+        }
+        charCount.set(char, charCount.get(char) + 1);
+    }
+    for (const [char, count] of charCount) {
+        if (count < k) {
+            const substrings = s.split(char);
+            console.log(substrings)
+            let maxLength = 0;
+
+            for (const substr of substrings) {
+                maxLength = Math.max(maxLength, longestSubstring(substr, k));
+            }
+
+            return maxLength;
+        }
+    }
+
+    return s.length;
+};
+
 /* Minimum Swaps to Group All 1's Together II - A swap is defined as taking two distinct positions in an array and swapping the values in them.
 
 A circular array is defined as an array where we consider the first element and the last element to be adjacent.
@@ -631,59 +661,6 @@ const maxConsecutiveAnswers = (answerKey, k) => {
     }
 
     return Math.max(maxConsequtive('T'), maxConsequtive('F'))
-};
-
-/* Count Subarrays With Fixed Bounds - You are given an integer array nums and two integers minK and maxK.
-
-A fixed-bound subarray of nums is a subarray that satisfies the following conditions:
-- The minimum value in the subarray is equal to minK.
-- The maximum value in the subarray is equal to maxK.
-Return the number of fixed-bound subarrays.
-
-A subarray is a contiguous part of an array.
- */
-/**
- * @param {number[]} nums
- * @param {number} minK
- * @param {number} maxK
- * @return {number}
- */
-const countSubarrays = (nums, minK, maxK) => {
-    /* pseudo code
-        move through the array
-            track index which is out of range
-            equal to min
-            equal to max
-            add the num of subarrays for this range 
-    */
-
-    let minPos = -1
-    let maxPos = -1
-
-    //  most recent index out of range    
-    let startIndex = -1
-
-    let numSubArrays = 0
-
-    for (let i = 0; i < nums.length; i++) {
-        //  update out of range index        
-        if (nums[i] < minK || nums[i] > maxK) {
-            startIndex = i
-        }
-
-        //  update recent positions if any
-        if (nums[i] === minK) {
-            minPos = i
-        }
-        if (nums[i] === maxK) {
-            maxPos = i
-        }
-
-        //  number of subarrays is number of elements between startIndex and smaller of two indices
-        numSubArrays += Math.max(0, Math.min(maxPos, minPos) - startIndex)
-    }
-
-    return numSubArrays
 };
 
 /* 1358. Number of Substrings Containing All Three Characters */

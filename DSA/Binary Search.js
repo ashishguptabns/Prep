@@ -109,51 +109,6 @@ const smallestCommonElement = (mat) => {
     return left;
 }
 
-/* Median of two sorted arrays - Given two sorted arrays nums1 and nums2 of size m and n respectively, return the median of the two sorted arrays.
-
-The overall run time complexity should be O(log (m+n)).
- */
-/**
- * @param {number[]} nums1
- * @param {number[]} nums2
- * @return {number}
- */
-const findMedianSortedArrays = (nums1, nums2) => {
-
-    if (nums1.length > nums2.length) {
-        [nums1, nums2] = [nums2, nums1];
-    }
-
-    const m = nums1.length;
-    const n = nums2.length;
-    let low = 0, high = m;
-
-    while (low <= high) {
-        const partitionX = Math.floor((low + high) / 2);
-        const partitionY = Math.floor((m + n + 1) / 2) - partitionX;
-
-        const maxX = (partitionX === 0) ? Number.MIN_SAFE_INTEGER : nums1[partitionX - 1];
-        const maxY = (partitionY === 0) ? Number.MIN_SAFE_INTEGER : nums2[partitionY - 1];
-
-        const minX = (partitionX === m) ? Number.MAX_SAFE_INTEGER : nums1[partitionX];
-        const minY = (partitionY === n) ? Number.MAX_SAFE_INTEGER : nums2[partitionY];
-
-        if (maxX <= minY && maxY <= minX) {
-            if ((m + n) % 2 === 0) {
-                return (Math.max(maxX, maxY) + Math.min(minX, minY)) / 2;
-            } else {
-                return Math.max(maxX, maxY);
-            }
-        } else if (maxX > minY) {
-            high = partitionX - 1;
-        } else {
-            low = partitionX + 1;
-        }
-    }
-
-    throw new Error("Input arrays are not sorted.");
-};
-
 /* Minimum Time to Complete Trips - You are given an array time where time[i] denotes the time taken by the ith bus to complete one trip.
 
 Each bus can make multiple trips successively; that is, the next trip can start immediately after completing the current trip. Also, each bus operates independently; that is, the trips of one bus do not influence the trips of any other bus.

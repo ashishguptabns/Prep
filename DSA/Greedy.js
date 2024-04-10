@@ -605,21 +605,18 @@ Return the minimum cost to fly every person to a city such that exactly n people
  * @return {number}
  */
 const twoCitySchedCost = (costs) => {
-  //  people with lower cost difference will come first
-  //  preferable to the first city
-  costs.sort((a, b) => a[0] - a[1] - (b[0] - b[1]));
+  costs.sort((a, b) => (a[0] - a[1]) - (b[0] - b[1]))
 
-  //  equal number of people in both cities
-  let n = costs.length / 2;
-
-  let minCost = 0;
-  let count = 0;
-
-  for (const cost of costs) {
-    //  fill the first city then second
-    minCost += count < n ? cost[0] : cost[1];
-    count++;
+  let sum = 0
+  let count = 0
+  for (const [a, b] of costs) {
+    if (count < Math.floor(costs.length / 2)) {
+      sum += a
+    } else {
+      sum += b
+    }
+    count++
   }
 
-  return minCost;
+  return sum
 };

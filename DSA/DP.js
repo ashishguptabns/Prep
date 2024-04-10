@@ -576,60 +576,6 @@ const numTrees = (numNodes) => {
     return dpArr[numNodes]
 };
 
-/* Maximum Profit in Job Scheduling - We have n jobs, where every job is scheduled to be done from startTime[i] to endTime[i], obtaining a profit of profit[i].
-
-You're given the startTime, endTime and profit arrays, return the maximum profit you can take such that there are no two jobs in the subset with overlapping time range.
-
-If you choose a job that ends at time X you will be able to start another job that starts at time X.
- */
-/**
- * @param {number[]} startTime
- * @param {number[]} endTime
- * @param {number[]} profit
- * @return {number}
- */
-const jobScheduling = (startTime, endTime, profit) => {
-
-    /* pseudo code
-        keep a dp array
-            ith item tells max profit till ith job
-        keep a jobs array with start, end and profit
-            sort by start time
-        base case
-            start from the last job and its profit
-        move through jobs in reverse
-            find a next job which starts when ith job ends
-            either keep the curr job's profit and profit till next compatible job
-            or carry the profit accrued so far
-    */
-
-    const numJobs = jobs.length
-    const dpArr = Array(numJobs)
-
-    const jobs = []
-    for (let i = 0; i < startTime.length; i++) {
-        jobs.push([startTime[i], endTime[i], profit[i]])
-    }
-
-    jobs.sort((a, b) => a[0] - b[0])
-
-    dpArr[numJobs - 1] = jobs.at(-1)[2]
-
-    for (let i = numJobs - 2; i >= 0; i--) {
-        const [start, end, profit] = jobs[i]
-        let next = i + 1
-
-        while (next < numJobs && jobs[next][0] < end) {
-            next++
-        }
-
-        dpArr[i] = Math.max(profit + (next < numJobs ? dpArr[next] : 0),
-            dpArr[i + 1])
-    }
-
-    return dpArr[0]
-};
-
 /* Maximal Square - Given an m x n binary matrix filled with 0's and 1's, find the largest square containing only 1's and return its area.
  */
 
