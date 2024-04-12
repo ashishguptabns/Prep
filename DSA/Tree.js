@@ -440,31 +440,24 @@ const addOneRow = (root, val, depth) => {
                 add new right node with curr node's right as right child
     */
 
-    if (!root) {
-        return root
-    }
-
     if (depth === 1) {
         return new TreeNode(val, root)
     }
-
-    const refactor = (node, currDepth) => {
-        if (!node) {
-            return
+    const q = [root]
+    let level = 0
+    while (q.length) {
+        level++
+        const size = q.length
+        for (let i = 0; i < size; i++) {
+            const curr = q.shift()
+            if (level === depth - 1) {
+                curr.left = new TreeNode(val, curr.left)
+                curr.right = new TreeNode(val, null, curr.right)
+            }
+            curr.left && q.push(curr.left)
+            curr.right && q.push(curr.right)
         }
-
-        if (currDepth === depth - 1) {
-            const { left, right } = node
-            node.left = new TreeNode(val, left)
-            node.right = new TreeNode(val, null, right)
-
-            return
-        }
-
-        refactor(node.left, currDepth + 1)
-        refactor(node.right, currDepth + 1)
     }
-    refactor(root, 1)
 
     return root
 };
@@ -1325,6 +1318,31 @@ var distributeCoins = function (root) {
 };
 
 /* 2196. Create Binary Tree From Descriptions */
+
+var createBinaryTree = function (descriptions) {
+    const set = new Set()
+    const map = {}
+
+    for (const [par, child, isLeft] of descriptions) {
+        if (!map[par]) {
+            map[par] = new TreeNode(par)
+        }
+        if (!map[child]) {
+            map[child] = new TreeNode(child)
+        }
+        if (isLeft) {
+            map[par].left = map[child]
+        } else {
+            map[par].right = map[child]
+        }
+        set.add(par)
+    }
+
+    for (const [par, child, isLeft] of descriptions) {
+        set.delete(child)
+    }
+    return map[Array.from(set)[0]]
+};
 
 /* 1123. Lowest Common Ancestor of Deepest Leaves */
 

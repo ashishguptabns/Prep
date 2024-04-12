@@ -1034,7 +1034,6 @@ var countPaths = function (n, roads) {
   return ways[n - 1]
 };
 
-
 /* 2492. Minimum Score of a Path Between Two Cities */
 
 var minScore = function (n, roads) {
@@ -1066,3 +1065,32 @@ var minScore = function (n, roads) {
 };
 
 /* 785. Is Graph Bipartite? */
+
+var isBipartite = function (graph) {
+  const colors = Array(graph.length).fill(0)
+
+  const dfs = (node, color) => {
+    colors[node] = color
+    for (const next of graph[node]) {
+      if (colors[next] === color) {
+        return false
+      }
+      if (!colors[next]) {
+        if (!dfs(next, -color)) {
+          return false
+        }
+      }
+    }
+    return true
+  }
+
+  for (let node = 0; node < graph.length; node++) {
+    if (!colors[node]) {
+      if (!dfs(node, 1)) {
+        return false
+      }
+    }
+  }
+
+  return true
+};

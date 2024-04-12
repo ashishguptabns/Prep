@@ -1381,6 +1381,27 @@ var findTheCity = function (n, edges, distanceThreshold) {
 
 /* 1395. Count Number of Teams */
 
+var numTeams = function (rating) {
+    const dp = [...Array(rating.length)].map(_ => [0, 0]);
+
+    let ct = 0;
+
+    for (let i = 0; i < rating.length; i++) {
+        for (let j = i + 1; j < rating.length; j++) {
+            if (rating[j] > rating[i]) {
+                dp[j][0]++;
+                ct += dp[i][0];
+            }
+            if (rating[i] > rating[j]) {
+                dp[j][1]++;
+                ct += dp[i][1];
+            }
+        }
+    }
+
+    return ct;
+};
+
 /* 983. Minimum Cost For Tickets */
 
 /* 518. Coin Change II */
