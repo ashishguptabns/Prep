@@ -775,29 +775,42 @@ var minReorder = function (n, edges) {
  * @return {number[]}
  */
 var findRedundantConnection = function (edges) {
-  const graph = {}
-  const dfs = (node, target, prev) => {
-    if (node === target) {
-      return true
-    }
-    for (let subnode of graph[node]) {
-      if (subnode !== prev && dfs(subnode, target, node)) {
-        return true
-      }
-    }
-    return false
+  const graph = new Map();
+  for (const [node1, node2] of edges) {
+    if (!graph.has(node1)) graph.set(node1, []);
+    graph.get(node1).push(node2);
+
+    if (!graph.has(node2)) graph.set(node2, []);
+    graph.get(node2).push(node1);
   }
 
-  for (let edge of edges) {
-    const [a, b] = edge
-    graph[a] = graph[a] || []
-    graph[b] = graph[b] || []
+  for (let node = edges.length - 1; node >= 0; node--) {
+    const [start, skip] = edges[node]
+    const seen = new Set([start]);
+    let count = 0;
 
-    graph[a].push(b)
-    graph[b].push(a)
+    let queue = [start];
+    while (queue.length) {
+      const size = queue.length
+      for (let i = 0; i < size; i++) {
+        const node = queue.shift();
+        count++;
 
-    if (dfs(b, a, a)) {
-      return [a, b]
+        for (const next of graph.get(node)) {
+          if (node === start && next === skip) {
+            continue;
+          }
+
+          if (!seen.has(next)) {
+            seen.add(next);
+            queue.push(next);
+          }
+        }
+      }
+    }
+
+    if (count === edges.length) {
+      return edges[node];
     }
   }
 };

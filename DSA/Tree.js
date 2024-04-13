@@ -1457,3 +1457,20 @@ var rob = function (root) {
 
     return Math.max(...dfs(root));
 };
+
+/* 1372. Longest ZigZag Path in a Binary Tree */
+
+var longestZigZag = function (root) {
+    let ans = 0
+    const stack = [[root, 0, null]]
+    while (stack.length) {
+        const [node, n, left] = stack.pop()
+        if (node) {
+            ans = Math.max(n, ans)
+            stack.push([node.left, left != null && left == 0 ? n + 1 : 1, 1])
+            stack.push([node.right, left != null && left == 1 ? n + 1 : 1, 0])
+        }
+    }
+
+    return ans
+};

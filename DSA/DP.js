@@ -1052,6 +1052,35 @@ var calculateMinimumHP = function (m) {
 
 The test cases are generated such that the output values fit in a 32-bit integer and the number of different results does not exceed 104. */
 
+var diffWaysToCompute = function (input) {
+    let res = [];
+    for (let i = 0; i < input.length; i++) {
+        if (isNaN(input[i])) {
+            let left = diffWaysToCompute(input.slice(0, i));
+            let right = diffWaysToCompute(input.slice(i + 1));
+            for (let l of left) {
+                for (let r of right) {
+                    l = Number(l);
+                    r = Number(r);
+
+                    if (input[i] == '+') {
+                        res.push(l + r);
+                    } else if (input[i] == '-') {
+                        res.push(l - r);
+                    } else {
+                        res.push(l * r);
+                    }
+                }
+            }
+        }
+    }
+
+    if (res.length != 0) {
+        return res;
+    }
+    return [input];
+};
+
 /* Ugly Number II - An ugly number is a positive integer whose prime factors are limited to 2, 3, and 5.
 
 Given an integer n, return the nth ugly number.
@@ -1245,8 +1274,6 @@ var countSubstrings = function (s, t) {
 
 /* 1387. Sort Integers by The Power Value */
 
-/* 1372. Longest ZigZag Path in a Binary Tree */
-
 /* 2673. Make Costs of Paths Equal in a Binary Tree */
 
 /**
@@ -1378,6 +1405,26 @@ var findTheCity = function (n, edges, distanceThreshold) {
 };
 
 /* 2304. Minimum Path Cost in a Grid */
+
+var minPathCost = function (grid, moveCost) {
+    const dp = Array.from(Array(grid.length), () => Array(grid[0].length));
+    for (let i = 0; i < grid[0].length; i++) {
+        dp[0][i] = grid[0][i];
+    }
+    for (let i = 1; i < grid.length; i++) {
+        for (let j = 0; j < grid[i].length; j++) {
+            dp[i][j] = Infinity;
+            for (let k = 0; k < grid[i].length; k++) {
+                dp[i][j] = Math.min(dp[i][j], grid[i][j] + dp[i - 1][k] + moveCost[grid[i - 1][k]][j]);
+            }
+        }
+    }
+    let res = Infinity;
+    for (let i = 0; i < grid[0].length; i++) {
+        res = Math.min(res, dp[grid.length - 1][i]);
+    }
+    return res;
+};
 
 /* 1395. Count Number of Teams */
 
