@@ -1,26 +1,27 @@
-const rand7 = () => {
-    let random = Math.floor(Math.random() * 7)
-    return random
+//  concept rate limiting - throttling
+
+const funcA = (userProps, num) => {
+    userProps.lastTs = userProps.lastTs || Date.now()
+    if (Date.now() - userProps.lastTs < 60000) {
+        if (userProps.count <= 100) {
+            userProps.count++
+            console.log(num)
+        } else {
+            console.log('throttled', userProps.count++)
+        }
+    } else {
+        userProps.count = 0
+        userProps.lastTs = Date.now()
+    }
 }
 
-const arr = []
-
-for (let i = 0; i < 7000; i++) {
-    const random = rand7()
-    arr[random] = arr[random] || 0
-    arr[random]++
+const map = {
+    '123': { count: 0, lastTs: null },
+    '112': { count: 0, lastTs: null }
 }
 
-const rand3 = () => {
-    return Math.floor(rand7() / 3)
+for (let i = 0; i < 200; i++) {
+    setTimeout(() => {
+        funcA(map['123'], i + 10)
+    }, 0);
 }
-
-const arr3 = []
-
-for (let i = 0; i < 9000; i++) {
-    const random = rand3()
-    arr3[random] = arr3[random] || 0
-    arr3[random]++
-}
-
-console.log(arr3)
