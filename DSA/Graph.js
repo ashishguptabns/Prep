@@ -1088,17 +1088,18 @@ var isBipartite = function (graph) {
       if (colors[next] === color) {
         return false
       }
-      if (!colors[next]) {
+
+      if (colors[next] === 0) {
         if (!dfs(next, -color)) {
           return false
         }
       }
     }
+
     return true
   }
-
   for (let node = 0; node < graph.length; node++) {
-    if (!colors[node]) {
+    if (colors[node] === 0) {
       if (!dfs(node, 1)) {
         return false
       }

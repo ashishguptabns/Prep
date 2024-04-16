@@ -253,7 +253,7 @@ const pivotArray = (nums, pivot) => {
   return arr
 };
 
-/* Two Sum Less Than K - 
+/* Two Sum Less Than K
  */
 
 /**

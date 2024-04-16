@@ -567,43 +567,42 @@ const mergeNodes = (head) => {
  */
 const sortList = (head) => {
 
+
     if (!head || !head.next) {
-        return head;
+        return head
     }
 
-    let [prev, slow, fast] = [null, head, head];
+    let [prev, slow, fast] = [null, head, head]
 
     while (fast && fast.next) {
-        prev = slow;
-        slow = slow.next;
-        fast = fast.next.next;
+        prev = slow
+        slow = slow.next
+        fast = fast.next.next
     }
-
     if (prev) {
-        prev.next = null;
+        prev.next = null
     }
 
-    const firstHalf = sortList(head);
-    const secHalf = sortList(slow);
+    const first = sortList(head)
+    const second = sortList(slow)
 
-    const merge = (a, b) => {
-        if (!a) {
-            return b;
+    const merge = (left, right) => {
+        if (!left) {
+            return right
         }
-        if (!b) {
-            return a;
+        if (!right) {
+            return left
         }
-
-        if (a.val < b.val) {
-            a.next = merge(a.next, b);
-            return a;
+        if (left.val < right.val) {
+            left.next = merge(left.next, right)
+            return left
         } else {
-            b.next = merge(a, b.next);
-            return b;
+            right.next = merge(left, right.next)
+            return right
         }
-    };
+    }
 
-    return merge(firstHalf, secHalf);
+    return merge(first, second)
 };
 
 /* Rotate list - Given the head of a linked list, rotate the list to the right by k places.
