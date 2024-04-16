@@ -247,6 +247,40 @@ For example, "0.1.2.201" and "192.168.1.1" are valid IP addresses, but "0.011.25
 Given a string s containing only digits, return all possible valid IP addresses that can be formed by inserting dots into s. You are not allowed to reorder or remove any digits in s. You may return the valid IP addresses in any order.
  */
 
+var restoreIpAddresses = function (s) {
+    if (!s || s.length === 0) {
+        return []
+    }
+
+    const ans = []
+
+    const backtrack = (index, left, curr) => {
+        if (left == 0) {
+            if (index === s.length) {
+                ans.push(curr.slice(0, -1))
+            }
+        } else {
+            for (let i = 1; i <= 3; i++) {
+                if (index + i > s.length) {
+                    break
+                }
+
+                const sub = s.substring(index, index + i)
+                if (sub[0] === '0' && sub.length > 1) {
+                    return
+                }
+
+                if (Number(sub) <= 255) {
+                    backtrack(index + i, left - 1, curr + sub + '.')
+                }
+            }
+        }
+    }
+    backtrack(0, 4, '')
+
+    return ans
+};
+
 /* Letter Combinations of a Phone Number - Given a string containing digits from 2-9 inclusive, return all possible letter combinations that the number could represent. Return the answer in any order.
  */
 /**

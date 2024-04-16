@@ -630,37 +630,29 @@ Return the maximum number of consecutive 'T's or 'F's in the answer key after pe
  * @param {number} k
  * @return {number}
  */
-const maxConsecutiveAnswers = (answerKey, k) => {
+const maxConsecutiveAnswers = (arr, k) => {
 
-    /* pseudo code
-        we will find max length of subseqs having max k Ts or Fs
-        run through the array
-            keep tracking the count of given char - T or F
-            more than k chars
-                shrink windown from left
-            keep tracking the max window length
-        return max length found so far
-    */
-
-    const maxConsequtive = (char) => {
+    const find = (char) => {
         let left = 0, charCount = 0, max = 0
-        for (let right = 0; right < answerKey.length; right++) {
-            if (answerKey[right] === char) {
+
+        for (let r = 0; r < arr.length; r++) {
+            if (arr[r] === char) {
                 charCount++
             }
 
             while (charCount > k) {
-                if (answerKey[left] === char) {
+                if (arr[left] === char) {
                     charCount--
                 }
                 left++
             }
-            max = Math.max(max, right - left + 1)
+            max = Math.max(max, r + 1 - left)
         }
+
         return max
     }
 
-    return Math.max(maxConsequtive('T'), maxConsequtive('F'))
+    return Math.max(find('T'), find('F'))
 };
 
 /* 1358. Number of Substrings Containing All Three Characters */
