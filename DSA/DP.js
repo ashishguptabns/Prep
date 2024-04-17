@@ -1298,8 +1298,6 @@ var minIncrements = function (n, cost) {
     return ans
 };
 
-/* 2925. Maximum Score After Applying Operations on a Tree */
-
 /* 1786. Number of Restricted Paths From First to Last Node */
 
 /* Minimum Time to Make Rope Colorful - Alice has n balloons arranged on a rope. You are given a 0-indexed string color where colors[i] is the color of the ith balloon.

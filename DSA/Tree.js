@@ -1208,34 +1208,29 @@ const findLCA = (root, node1, node2) => {
 /* Recover Binary Search Tree - You are given the root of a binary search tree (BST), where the values of exactly two nodes of the tree were swapped by mistake. Recover the tree without changing its structure. */
 
 var recoverTree = function (root) {
-    let first = null;
-    let last = null;
-    let prev = null;
+    let [first, last, prev] = [null, null, null]
 
-    function dfs(node) {
-        if (!node) {
-            return;
-        }
-
-        dfs(node.left);
-
-        if (prev && node.val < prev.val) {
-            if (!first) {
-                first = prev;
+    const travel = (node) => {
+        if (node) {
+            travel(node.left)
+            if (prev && node.val < prev.val) {
+                if (!first) {
+                    first = prev
+                }
+                last = node
             }
-            last = node;
+            prev = node
+
+            travel(node.right)
         }
-        prev = node;
-
-        dfs(node.right);
     }
-    dfs(root)
+    travel(root)
 
-    let temp = first.val;
-    first.val = last.val;
+    const temp = first.val
+    first.val = last.val
     last.val = temp
 
-    return root;
+    return root
 };
 
 /* Binary Search Tree Iterator - Implement the BSTIterator class that represents an iterator over the in-order traversal of a binary search tree (BST):
@@ -1251,6 +1246,41 @@ You may assume that next() calls will always be valid. That is, there will be at
 /* Path Sum III - Given the root of a binary tree and an integer targetSum, return the number of paths where the sum of the values along the path equals targetSum.
 
 The path does not need to start or end at the root or a leaf, but it must go downwards (i.e., traveling only from parent nodes to child nodes). */
+
+var pathSum = function (root, t) {
+    let output = 0;
+    const map = {};
+
+    const traverse = (node, pathSum) => {
+        if (!node) {
+            return null;
+        }
+
+        pathSum += node.val;
+
+        if (pathSum === t) {
+            output++;
+        }
+        if (map[pathSum - t]) {
+            output += map[pathSum - t];
+        }
+
+        if (map[pathSum]) {
+            map[pathSum]++;
+        }
+        else {
+            map[pathSum] = 1;
+        }
+
+        traverse(node.left, pathSum);
+        traverse(node.right, pathSum);
+
+        map[pathSum]--;
+    };
+
+    traverse(root, 0);
+    return output;
+};
 
 /* 1261. Find Elements in a Contaminated Binary Tree */
 
@@ -1497,4 +1527,41 @@ var longestZigZag = function (root) {
     }
 
     return ans
+};
+
+
+/* 2925. Maximum Score After Applying Operations on a Tree */
+
+var maximumScoreAfterOperations = function (edges, values) {
+    const graph = {}
+    for (const [a, b] of edges) {
+        graph[a] = graph[a] || []
+        graph[a].push(b)
+
+        graph[b] = graph[b] || []
+        graph[b].push(a)
+    }
+
+    let totalSum = 0
+    for (const num of values) {
+        totalSum += num
+    }
+
+    const dfs = (node, parent) => {
+        if (graph[node].length === 1 && graph[node][0] === parent) {
+            return values[node]
+        }
+
+        let sum = 0
+        for (const next of graph[node]) {
+            if (next === parent) {
+                continue
+            }
+
+            sum += dfs(next, node)
+        }
+
+        return Math.min(values[node], sum)
+    }
+    return totalSum - dfs(0, -1)
 };
