@@ -1051,11 +1051,11 @@ var countPaths = function (n, roads) {
 
 var minScore = function (n, roads) {
   const graph = {}
-  for (const [a, b, dist] of roads) {
+  for (const [a, b, cost] of roads) {
     graph[a] = graph[a] || []
-    graph[a].push([b, dist])
+    graph[a].push([b, cost])
     graph[b] = graph[b] || []
-    graph[b].push([a, dist])
+    graph[b].push([a, cost])
   }
 
   const q = [1]
@@ -1065,11 +1065,13 @@ var minScore = function (n, roads) {
 
   while (q.length) {
     const node = q.shift()
-    for (const [next, dist] of graph[node]) {
-      ans = Math.min(ans, dist)
-      if (!seen[next]) {
-        seen[next] = true
-        q.push(next)
+    if (graph[node]) {
+      for (const [next, cost] of graph[node]) {
+        ans = Math.min(cost, ans)
+        if (!seen[next]) {
+          seen[next] = true
+          q.push(next)
+        }
       }
     }
   }

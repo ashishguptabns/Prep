@@ -661,32 +661,33 @@ const maxConsecutiveAnswers = (arr, k) => {
  * @param {string} s
  * @return {number}
  */
-var numberOfSubstrings = function (s) {
-    let a = 0, b = 0, c = 0, count = 0;
+var numberOfSubstrings = function (str) {
+    let ans = 0
+    let [a, b, c] = [0, 0, 0]
 
-    for (let i = 0, j = 0; i < s.length; i++) {
-        const curr = s[i]
-        if (curr == 'a') {
-            a++;
-        } else if (curr == 'b') {
-            b++;
+    for (let i = 0, j = 0; i < str.length; i++) {
+        const curr = str[i]
+        if (curr === 'a') {
+            a++
+        } else if (curr === 'b') {
+            b++
         } else {
-            c++;
+            c++
         }
         while (a && b && c) {
-            count += s.length - i;
-            if (s[j] == "a") {
-                a--;
-            } else if (s[j] == "b") {
-                b--;
+            ans += str.length - i
+            if (str[j] === 'a') {
+                a--
+            } else if (str[j] === 'b') {
+                b--
             } else {
-                c--;
+                c--
             }
-            j++;
+            j++
         }
-
     }
-    return count;
+
+    return ans
 };
 
 /* 1248. Count Number of Nice Subarrays */

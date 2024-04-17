@@ -1405,23 +1405,30 @@ var findTheCity = function (n, edges, distanceThreshold) {
 /* 2304. Minimum Path Cost in a Grid */
 
 var minPathCost = function (grid, moveCost) {
-    const dp = Array.from(Array(grid.length), () => Array(grid[0].length));
-    for (let i = 0; i < grid[0].length; i++) {
-        dp[0][i] = grid[0][i];
+    const dp = Array(m.length).fill()
+        .map(_ => Array(m[0].length).fill(0))
+
+    for (let c = 0; c < m[0].length; c++) {
+        dp[0][c] = m[0][c]
     }
-    for (let i = 1; i < grid.length; i++) {
-        for (let j = 0; j < grid[i].length; j++) {
-            dp[i][j] = Infinity;
-            for (let k = 0; k < grid[i].length; k++) {
-                dp[i][j] = Math.min(dp[i][j], grid[i][j] + dp[i - 1][k] + moveCost[grid[i - 1][k]][j]);
+
+    for (let r = 1; r < m.length; r++) {
+        for (let c = 0; c < m[0].length; c++) {
+            dp[r][c] = Infinity
+            for (let k = 0; k < m[0].length; k++) {
+                dp[r][c] = Math.min(dp[r][c], m[r][c]
+                    + dp[r - 1][k] + cost[m[r - 1][k]][c])
             }
         }
     }
-    let res = Infinity;
-    for (let i = 0; i < grid[0].length; i++) {
-        res = Math.min(res, dp[grid.length - 1][i]);
+
+    let ans = Infinity
+
+    for (let c = 0; c < m[0].length; c++) {
+        ans = Math.min(ans, dp.at(-1)[c])
     }
-    return res;
+
+    return ans
 };
 
 /* 1395. Count Number of Teams */

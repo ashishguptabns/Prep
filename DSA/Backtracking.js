@@ -442,24 +442,22 @@ var countArrangement = function (n) {
  * @return {number}
  */
 var distributeCookies = function (cookies, k) {
-    let ans = Infinity;
-    const childs = new Array(k).fill(0);
+    let ans = Infinity
+    const childs = Array(k).fill(0)
 
-    function fairDistribution(ind) {
-        if (ind === cookies.length) {
-            const maxCookie = Math.max(...childs);
-            ans = Math.min(maxCookie, ans);
-            return;
-        }
-
-        for (let i = 0; i < childs.length; i++) {
-            childs[i] += cookies[ind];
-            fairDistribution(ind + 1);
-            childs[i] -= cookies[ind];
+    const backtrack = (index) => {
+        if (index === cookies.length) {
+            const max = Math.max(...childs)
+            ans = Math.min(ans, max)
+        } else {
+            for (let i = 0; i < k; i++) {
+                childs[i] += cookies[index]
+                backtrack(index + 1)
+                childs[i] -= cookies[index]
+            }
         }
     }
+    backtrack(0)
 
-    fairDistribution(0)
-
-    return ans;
+    return ans
 };

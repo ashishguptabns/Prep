@@ -453,34 +453,56 @@ const nextPermutation = (nums) => {
     reverse elements starting at i + 1
   */
 
-  let i = nums.length - 2;
-
-  while (i >= 0 && nums[i] >= nums[i + 1]) {
-    i--;
+  let pos = nums.length - 2
+  while (pos >= 0 && nums[pos] >= nums[pos + 1]) {
+    pos--
   }
 
-  if (i >= 0) {
-    let j = nums.length - 1;
-    while (nums[j] <= nums[i]) {
-      j--;
+  if (pos >= 0) {
+    let j = nums.length - 1
+    while (nums[j] <= nums[pos]) {
+      j--
     }
-    //  swap 4 with 5 -> 1, 5, 8, 5, 7, 6, 4, 3, 1
-    [nums[i], nums[j]] = [nums[j], nums[i]];
+    const temp = nums[j]
+    nums[j] = nums[pos]
+    nums[pos] = temp
   }
 
-  const reverse = (nums, start) => {
-    let left = start;
-    let right = nums.length - 1;
-    while (left < right) {
-      [nums[left], nums[right]] = [nums[right], nums[left]];
-      left++;
-      right--;
-    }
-  };
-  //  to find the next larger number -> 1, 5, 8, 5, 1, 3, 4, 6, 7
-  reverse(nums, i + 1);
+
+  let [left, right] = [pos + 1, nums.length - 1]
+  while (left < right) {
+    const temp = nums[left]
+    nums[left] = nums[right]
+    nums[right] = temp
+    left++
+    right--
+  }
 };
 
 /* 1963. Minimum Number of Swaps to Make the String Balanced */
 
 /* 1237. Find Positive Integer Solution for a Given Equation */
+
+var findSolution = function (f, z) {
+  const res = []
+  let maxR = 1000
+
+  for (let i = 1; i <= 1000; i++) {
+    let left = 1, right = maxR
+    while (left <= right) {
+      const mid = Math.floor((left + right) / 2)
+      const found = f.f(i, mid)
+      if (found === z) {
+        maxR = mid
+        res.push([i, mid])
+        break
+      } else if (z > found) {
+        left = mid + 1
+      } else {
+        right = mid - 1
+      }
+    }
+  }
+
+  return res
+};
