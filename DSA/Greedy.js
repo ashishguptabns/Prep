@@ -423,17 +423,11 @@ Since the result may be very large, so you need to return a string instead of an
  * @return {string}
  */
 const largestNumber = (nums) => {
-  if (!nums || !nums.length) {
-    return "0";
-  }
-
-  nums.sort((a, b) => `${b}${a}` - `${a}${b}`);
-
+  nums.sort((a, b) => (b + '' + a) - (a + '' + b))
   if (nums[0] === 0) {
-    return "0";
+    return '0'
   }
-
-  return nums.join("");
+  return nums.join('')
 };
 
 /* Minimum Increment to Make Array Unique - You are given an integer array nums. In one move, you can pick an index i where 0 <= i < nums.length and increment nums[i] by 1.

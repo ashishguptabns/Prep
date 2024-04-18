@@ -204,28 +204,23 @@ const inorderSuccessor = (root, p) => {
  */
 const levelOrder = (root) => {
 
-    const res = []
-
-    if (root) {
-        const queue = [root]
-
-        while (queue.length) {
-            const levelSize = queue.length
-            const currLevelNodes = []
-            for (let i = 0; i < levelSize; i++) {
-                const currNode = queue.shift()
-                if (currNode.left) {
-                    queue.push(currNode.left)
-                }
-                if (currNode.right) {
-                    queue.push(currNode.right)
-                }
-                currLevelNodes.push(currNode.val)
+    const q = [root]
+    const ans = []
+    while (q.length) {
+        const size = q.length
+        const arr = []
+        for (let i = 0; i < size; i++) {
+            const node = q.shift()
+            if (node) {
+                arr.push(node.val)
+                q.push(node.left)
+                q.push(node.right)
             }
-            res.push([...currLevelNodes])
         }
+        arr.length && ans.push(arr)
     }
-    return res
+
+    return ans
 };
 
 /* Kth Smallest Element in a BST
@@ -1035,35 +1030,27 @@ const construct = (grid) => {
             return a normal node with four children and value as 1
     */
 
-    //  n * n grid
     let n = grid.length;
 
-    //  rowStart, rowEnd, colStart, colEnd
     const buildQuadNode = (rs, re, cs, ce) => {
         const len = re - rs;
         if (len === 1) {
-            //  leaf node
             return new Node(grid[rs][cs], 1);
         }
         let mid = Math.floor(len / 2);
 
-        //  find children
         let topLeft = buildQuadNode(rs, rs + mid, cs, cs + mid);
         let topRight = buildQuadNode(rs, rs + mid, cs + mid, ce);
         let bottomLeft = buildQuadNode(rs + mid, re, cs, cs + mid);
         let bottomRight = buildQuadNode(rs + mid, re, cs + mid, ce);
 
         const topLeftVal = topLeft.val
-        //  all children are leafs
         if (topLeft.isLeaf && topRight.isLeaf && bottomLeft.isLeaf && bottomRight.isLeaf) {
-            //  all children have same values
             if (topLeftVal === topRight.val && topLeftVal === bottomLeft.val && topLeftVal === bottomRight.val) {
-                //  leaf node
                 return new Node(topLeftVal, 1);
             }
         }
 
-        //  not a leaf node
         return new Node(1, 0, topLeft, topRight, bottomLeft, bottomRight);
     }
     const head = buildQuadNode(0, n, 0, n);
@@ -1175,10 +1162,6 @@ const generateTrees = (end, start = 1) => {
 
 /* Find lowest common ancestor in 'n' ary tree */
 const findLCA = (root, node1, node2) => {
-
-    /* pseudo code
-        
-    */
 
     if (!root) {
         return null;
