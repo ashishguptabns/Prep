@@ -1489,5 +1489,3 @@ var change = function (amount, coins) {
 
     return dp.at(-1)
 };
-
-/* 1947. Maximum Compatibility Score Sum */
