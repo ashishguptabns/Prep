@@ -119,20 +119,17 @@ const combinationSum = (candidates, target) => {
 
     const res = []
 
-    const backTrack = (currIndex, currArr, targetLeft) => {
-        if (targetLeft === 0) {
-            res.push([...currArr])
-            return
-        }
-        if (targetLeft < 0) {
-            return
-        }
-        for (let i = currIndex; i < candidates.length; i++) {
-            //  same item can be considered multiple times
-            backTrack(i, [...currArr, candidates[i]], targetLeft - candidates[i])
+    const backtrack = (arr, index, left) => {
+        if (left === 0) {
+            res.push(arr)
+        } else if (left > 0) {
+            for (let i = index; i < candidates.length; i++) {
+                const num = candidates[i]
+                backtrack([...arr, num], i, left - num)
+            }
         }
     }
-    backTrack(0, [], target)
+    backtrack([], 0, target)
 
     return res
 };

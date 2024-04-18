@@ -500,27 +500,30 @@ const minTime = (n, edges, hasApple) => {
       keep adding the path lengths found from DFS
   */
 
-  const adjlist = Array.from({ length: n }, () => new Array());
+  const graph = {}
   for (const [from, to] of edges) {
-    adjlist[from].push(to);
-    adjlist[to].push(from);
+    graph[from] = graph[from] || []
+    graph[from].push(to)
+
+    graph[to] = graph[to] || []
+    graph[to].push(from)
   }
 
-  const dfs = (node, parent) => {
-    let pathlen = 0;
-    for (const neighbour of adjlist[node]) {
-      if (neighbour == parent) {
-        continue;
+  const travel = (node, parent) => {
+    let steps = 0
+    if (graph[node]) {
+      for (const next of graph[node]) {
+        if (next !== parent) {
+          steps += travel(next, node)
+        }
       }
-      pathlen += dfs(neighbour, node);
     }
-    if (node == 0) {
-      return pathlen;
+    if (node === 0) {
+      return steps
     }
-    return pathlen > 0 || hasApple[node] ? pathlen + 2 : 0;
+    return hasApple[node] || steps > 0 ? steps + 2 : 0
   }
-
-  return dfs(0, -1);
+  return travel(0, -1)
 };
 
 /* Dijkstra's algorithm for finding the shortest paths from a node to other nodes in a graph 
@@ -700,28 +703,25 @@ var canVisitAllRooms = function (rooms) {
  * @return {number}
  */
 var maximalNetworkRank = function (n, roads) {
+  const deg = Array(n).fill(0)
   const graph = {}
-  const degree = Array(n).fill(0)
-
   for (const [a, b] of roads) {
     graph[a] = graph[a] || []
-    graph[a].push(b)
-
     graph[b] = graph[b] || []
+    graph[a].push(b)
     graph[b].push(a)
 
-    degree[a]++
-    degree[b]++
+    deg[a]++
+    deg[b]++
   }
 
   let max = 0
   for (let node = 0; node < n; node++) {
     for (let next = node + 1; next < n; next++) {
-      let count = degree[node] + degree[next]
-      if (graph[node] && graph[node].includes(next)) {
+      let count = deg[node] + deg[next]
+      if (graph[next]?.includes(node)) {
         count--
       }
-
       max = Math.max(max, count)
     }
   }
@@ -910,6 +910,24 @@ var calcEquation = function (equations, values, queries) {
 };
 
 /* 2285. Maximum Total Importance of Roads */
+
+var maximumImportance = function (n, roads) {
+  const deg = Array(n).fill(0)
+  for (const [a, b] of roads) {
+    deg[a]++
+    deg[b]++
+  }
+
+  deg.sort((a, b) => a - b)
+
+  let sum = 0
+
+  for (let node = 0; node < n; node++) {
+    sum += (deg[node] * (node + 1))
+  }
+
+  return sum
+};
 
 /* 851. Loud and Rich */
 
