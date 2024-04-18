@@ -480,29 +480,3 @@ const nextPermutation = (nums) => {
 };
 
 /* 1963. Minimum Number of Swaps to Make the String Balanced */
-
-/* 1237. Find Positive Integer Solution for a Given Equation */
-
-var findSolution = function (f, z) {
-  const res = []
-  let maxR = 1000
-
-  for (let i = 1; i <= 1000; i++) {
-    let left = 1, right = maxR
-    while (left <= right) {
-      const mid = Math.floor((left + right) / 2)
-      const found = f.f(i, mid)
-      if (found === z) {
-        maxR = mid
-        res.push([i, mid])
-        break
-      } else if (z > found) {
-        left = mid + 1
-      } else {
-        right = mid - 1
-      }
-    }
-  }
-
-  return res
-};

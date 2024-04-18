@@ -805,31 +805,28 @@ const numDecodings = (s) => {
                 add dp[i - 2]
     */
 
-    if (!s || s[0] === '0') {
-        return 0;
+    if (!str || str[0] === '0') {
+        return 0
     }
 
-    const n = s.length;
+    const dp = Array(str.length + 1).fill(0)
+    dp[0] = 1
+    dp[1] = 1
 
-    const dp = Array(n + 1).fill(0);
-
-    dp[0] = 1;
-    dp[1] = 1;
-
-    for (let i = 2; i <= n; ++i) {
-        const lastDigit = parseInt(s[i - 1]);
-        const lastTwoDigits = parseInt(s.substring(i - 2, i));
+    for (let i = 2; i <= str.length; i++) {
+        const lastDigit = Number(str[i - 1])
+        const last2Digits = Number(str.substring(i - 2, i))
 
         if (lastDigit !== 0) {
-            dp[i] += dp[i - 1];
+            dp[i] += dp[i - 1]
         }
 
-        if (10 <= lastTwoDigits && lastTwoDigits <= 26) {
-            dp[i] += dp[i - 2];
+        if (last2Digits >= 10 && last2Digits <= 26) {
+            dp[i] += dp[i - 2]
         }
     }
 
-    return dp[n];
+    return dp.at(-1)
 };
 
 /* Knight Dialer - Given an integer n, return how many distinct phone numbers of length n we can dial.
