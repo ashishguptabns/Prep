@@ -1451,24 +1451,25 @@ var NAryLevelOrder = function (root) {
 /* 865. Smallest Subtree with all the Deepest Nodes */
 
 var subtreeWithAllDeepest = function (root) {
-    let height = 0
-    let maxNode = null
+    let h = 0
+    let sub
+    const travel = (node, level) => {
+        if (node) {
+            h = Math.max(h, level)
+            const leftD = travel(node.left, level + 1)
+            const rightD = travel(node.right, level + 1)
 
-    const dfs = (node, level) => {
-        if (!node) {
-            return level - 1
+            if (leftD === h && rightD === h) {
+                sub = node
+            }
+
+            return Math.max(leftD, rightD)
         }
-        height = Math.max(level, height)
-        const leftDepth = dfs(node.left, level + 1)
-        const rightDepth = dfs(node.right, level + 1)
-        if (leftDepth == height && rightDepth === height) {
-            maxNode = node
-        }
-        return Math.max(leftDepth, rightDepth)
+        return level - 1
     }
-    dfs(root, 0)
+    travel(root, 1)
 
-    return maxNode
+    return sub
 };
 
 /* House Robber III - The thief has found himself a new place for his thievery again. There is only one entrance to this area, called root.

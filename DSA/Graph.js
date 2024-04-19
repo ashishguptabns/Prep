@@ -667,23 +667,24 @@ function employeeScoreMemoized(graph, node, memo) {
 
 var canVisitAllRooms = function (rooms) {
   const arr = Array(rooms.length).fill(false)
-
   const q = [rooms[0]]
   arr[0] = true
 
   while (q.length) {
-    const nextRooms = q.pop()
-    for (const room of nextRooms) {
-      if (room === 0 || arr[room]) {
+    const nextRooms = q.shift()
+    for (const next of nextRooms) {
+      if (arr[next] || next === 0) {
         continue
       }
-      arr[room] = true
-      q.push(rooms[room])
+      arr[next] = true
+      q.push(rooms[next])
     }
   }
 
-  for (const lock of arr) {
-    if (!lock) {
+  console.log(arr)
+
+  for (const visited of arr) {
+    if (!visited) {
       return false
     }
   }
