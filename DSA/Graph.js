@@ -921,13 +921,13 @@ var maximumImportance = function (n, roads) {
 
   deg.sort((a, b) => a - b)
 
-  let sum = 0
+  let total = 0
 
   for (let node = 0; node < n; node++) {
-    sum += (deg[node] * (node + 1))
+    total += (node + 1) * deg[node]
   }
 
-  return sum
+  return total
 };
 
 /* 851. Loud and Rich */

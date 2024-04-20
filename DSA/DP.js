@@ -1367,37 +1367,41 @@ var checkValidString = function (s) {
  * @return {number}
  */
 var findTheCity = function (n, edges, distanceThreshold) {
-    const dp = Array(n).fill().map(_ => Array(n).fill(Infinity));
-    let minCities = n;
-    let result = 0;
+    const dp = Array(n).fill()
+        .map(_ => Array(n).fill(Infinity))
 
-    for (let index = 0; index < n; index++) {
-        dp[index][index] = 0;
+    for (let i = 0; i < n; i++) {
+        dp[i][i] = 0
     }
 
-    edges.forEach(([from, to, weight]) => {
-        dp[from][to] = dp[to][from] = weight;
-    });
+    for (const [from, to, w] of edges) {
+        dp[from][to] = dp[to][from] = w
+    }
 
-    for (let k = 0; k < n; k++) {
+    for (let mid = 0; mid < n; mid++) {
         for (let from = 0; from < n; from++) {
             for (let to = 0; to < n; to++) {
-                dp[from][to] = Math.min(dp[from][to], dp[from][k] + dp[k][to]);
+                dp[from][to]
+                    = Math.min(dp[from][to], dp[from][mid] + dp[mid][to])
             }
         }
     }
+
+    let minCities = n
+    let ans
     for (let from = 0; from < n; from++) {
-        let cities = 0;
+        let cities = 0
         for (let to = 0; to < n; to++) {
-            dp[from][to] <= distanceThreshold && cities++;
+            dp[from][to] <= distanceThreshold && cities++
         }
         if (cities > minCities) {
-            continue;
+            continue
         }
-        minCities = cities;
-        result = from;
+        minCities = cities
+        ans = from
     }
-    return result;
+
+    return ans
 };
 
 /* 2304. Minimum Path Cost in a Grid */
