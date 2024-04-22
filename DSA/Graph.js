@@ -85,38 +85,40 @@ const possibleBipartition = (n, dislikes) => {
           push in the queue for next travel
   */
 
-  const adjList = Array(n + 1).fill(null).map(() => []);
-  for (const [a, b] of dislikes) {
-    adjList[a].push(b);
-    adjList[b].push(a);
+  const graph = {}
+  for (const [from, to] of edges) {
+    graph[from] = graph[from] || []
+    graph[from].push(to)
+
+    graph[to] = graph[to] || []
+    graph[to].push(from)
   }
 
-  const color = new Array(n + 1).fill(0);
+  const color = Array(n + 1).fill(0)
 
   for (let node = 1; node <= n; node++) {
-
     if (color[node] !== 0) {
-      continue;
+      continue
     }
-
-    const queue = [node];
-    color[node] = 1;
-
-    while (queue.length) {
-      const currNode = queue.shift();
-
-      for (const neighbor of adjList[currNode]) {
-        if (color[neighbor] === color[currNode]) {
-          return false;
-        }
-        if (color[neighbor] === 0) {
-          color[neighbor] = -color[currNode];
-          queue.push(neighbor);
+    color[node] = 1
+    const q = [node]
+    while (q.length) {
+      const curr = q.shift()
+      if (graph[curr]) {
+        for (const next of graph[curr]) {
+          if (color[next] === color[curr]) {
+            return false
+          }
+          if (color[next] === 0) {
+            color[next] = -color[curr]
+            q.push(next)
+          }
         }
       }
     }
   }
-  return true;
+
+  return true
 };
 
 /* Parallel courses - Find the minimum number of semesters needed to take all courses given a set of prerequisites and a maximum number of courses you can take per semester.
@@ -501,29 +503,35 @@ const minTime = (n, edges, hasApple) => {
   */
 
   const graph = {}
-  for (const [from, to] of edges) {
-    graph[from] = graph[from] || []
-    graph[from].push(to)
-
-    graph[to] = graph[to] || []
-    graph[to].push(from)
+  for (const [a, b] of edges) {
+    graph[a] = graph[a] || []
+    graph[a].push(b)
+    graph[b] = graph[b] || []
+    graph[b].push(a)
   }
 
-  const travel = (node, parent) => {
-    let steps = 0
-    if (graph[node]) {
-      for (const next of graph[node]) {
-        if (next !== parent) {
-          steps += travel(next, node)
+  const seen = {}
+  const findTime = (node) => {
+    if (!seen[node]) {
+      seen[node] = true
+
+      let time = 0
+
+      if (graph[node]) {
+        for (const next of graph[node]) {
+          time += findTime(next)
         }
       }
+
+      if (node === 0) {
+        return time
+      }
+
+      return hasApple[node] || time > 0 ? time + 2 : time
     }
-    if (node === 0) {
-      return steps
-    }
-    return hasApple[node] || steps > 0 ? steps + 2 : 0
+    return 0
   }
-  return travel(0, -1)
+  return findTime(0)
 };
 
 /* Dijkstra's algorithm for finding the shortest paths from a node to other nodes in a graph 

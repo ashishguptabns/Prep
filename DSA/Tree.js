@@ -1360,27 +1360,26 @@ var createBinaryTree = function (descriptions) {
 /* 1123. Lowest Common Ancestor of Deepest Leaves */
 
 var lcaDeepestLeaves = function (root) {
-    let ans, leftH = 0, rightH = 0
+    let h = 0
+    let sub
 
-    const dfs = (node, level) => {
-        if (!node) {
-            return level - 1
+    const travel = (node, level) => {
+        if (node) {
+            h = Math.max(h, level)
+            const leftD = travel(node.left, level + 1)
+            const rightD = travel(node.right, level + 1)
+
+            if (leftD === h && rightD === h) {
+                sub = node
+            }
+
+            return Math.max(leftD, rightD)
         }
-
-        const lh = dfs(node.left, level + 1)
-        const rh = dfs(node.right, level + 1)
-
-        if (lh >= leftH && rh >= rightH) {
-            ans = node
-            leftH = lh
-            rightH = rh
-        }
-
-        return Math.max(lh, rh)
+        return level - 1
     }
-    dfs(root, 0)
+    travel(root, 0)
 
-    return ans
+    return sub
 };
 
 /* 814. Binary Tree Pruning */

@@ -1049,22 +1049,22 @@ var calculateMinimumHP = function (m) {
 
 The test cases are generated such that the output values fit in a 32-bit integer and the number of different results does not exceed 104. */
 
-var diffWaysToCompute = function (input) {
+var diffWaysToCompute = function (s) {
     const res = []
 
-    for (let i = 0; i < s.length; i++) {
-        if (isNaN(s[i])) {
-            const left = diffWaysToCompute(s.slice(0, i))
-            const right = diffWaysToCompute(s.slice(i + 1))
+    for (let i = 0; i < str.length; i++) {
+        const curr = str[i]
+        if (isNaN(curr)) {
+            const left = diffWaysToCompute(str.slice(0, i))
+            const right = diffWaysToCompute(str.slice(i + 1))
 
             for (let l of left) {
                 for (let r of right) {
                     l = Number(l)
                     r = Number(r)
-
-                    if (s[i] === '-') {
+                    if (curr === '-') {
                         res.push(l - r)
-                    } else if (s[i] === '+') {
+                    } else if (curr === '+') {
                         res.push(l + r)
                     } else {
                         res.push(l * r)
@@ -1073,10 +1073,12 @@ var diffWaysToCompute = function (input) {
             }
         }
     }
+
     if (res.length) {
         return res
     }
-    return [s]
+
+    return [str]
 };
 
 /* Ugly Number II - An ugly number is a positive integer whose prime factors are limited to 2, 3, and 5.
@@ -1408,7 +1410,7 @@ var findTheCity = function (n, edges, distanceThreshold) {
 
 var minPathCost = function (grid, moveCost) {
     const dp = Array(m.length).fill()
-        .map(_ => Array(m[0].length).fill(0))
+        .map(_ => Array(m[0].length).fill(Infinity))
 
     for (let c = 0; c < m[0].length; c++) {
         dp[0][c] = m[0][c]
@@ -1418,19 +1420,13 @@ var minPathCost = function (grid, moveCost) {
         for (let c = 0; c < m[0].length; c++) {
             dp[r][c] = Infinity
             for (let k = 0; k < m[0].length; k++) {
-                dp[r][c] = Math.min(dp[r][c], m[r][c]
-                    + dp[r - 1][k] + cost[m[r - 1][k]][c])
+                dp[r][c] = Math.min(dp[r][c],
+                    m[r][c] + dp[r - 1][k] + cost[m[r - 1][k]][c])
             }
         }
     }
 
-    let ans = Infinity
-
-    for (let c = 0; c < m[0].length; c++) {
-        ans = Math.min(ans, dp.at(-1)[c])
-    }
-
-    return ans
+    return Math.min(...dp.at(-1))
 };
 
 /* 1395. Count Number of Teams */

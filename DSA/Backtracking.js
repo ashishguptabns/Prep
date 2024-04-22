@@ -399,11 +399,6 @@ var combinationSum3 = function (k, n) {
 };
 
 /* 526. Beautiful Arrangement */
-
-/**
- * @param {number} n
- * @return {number}
- */
 var countArrangement = function (n) {
     if (n < 3) {
         return n
@@ -411,22 +406,20 @@ var countArrangement = function (n) {
 
     const seen = Array(n + 1).fill(false)
     let ans = 0
-
-    const dfs = (i) => {
-        if (i > n) {
+    const backtrack = (num) => {
+        if (num > n) {
             ans++
-            return
-        }
-
-        for (let index = 1; index <= n; index++) {
-            if (!seen[index] && (index % i === 0 || i % index === 0)) {
-                seen[index] = true
-                dfs(i + 1)
-                seen[index] = false
+        } else {
+            for (let i = 1; i <= n; i++) {
+                if (!seen[i] && (i % num === 0 || num % i === 0)) {
+                    seen[i] = true
+                    backtrack(num + 1)
+                    seen[i] = false
+                }
             }
         }
     }
-    dfs(1)
+    backtrack(1)
 
     return ans
 };

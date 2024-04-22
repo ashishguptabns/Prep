@@ -141,18 +141,16 @@ const maxChunksToSorted = (arr) => {
         increase the count
   */
 
-  let count = 0;
-  let max = -Infinity;
-
-  arr.forEach((num, index) => {
-    max = Math.max(num, max);
-
-    if (max === index) {
-      count++;
+  let ans = 0
+  let currMax = arr[0]
+  for (let i = 0; i < arr.length; i++) {
+    currMax = Math.max(currMax, arr[i])
+    if (i === currMax) {
+      ans++
     }
-  });
+  }
 
-  return count;
+  return ans
 };
 
 /* Break a palindrome - Given a palindromic string of lowercase English letters palindrome, replace exactly one character with any lowercase English letter so that the resulting string is not a palindrome and that it is the lexicographically smallest one possible.

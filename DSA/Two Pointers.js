@@ -1,42 +1,33 @@
 /* Valid Palindrome II - Given a string s, return true if the s can be palindrome after deleting at most one character from it.
  */
-/**
- * @param {string} s
- * @return {boolean}
- */
-const validPalindrome = (str) => {
-  function isPalindromeRange(start, end) {
-    while (start < end) {
-      if (str[start] !== str[end]) {
-        return false;
+var validPalindrome = function (s) {
+  const check = (left, right) => {
+    while (left < right) {
+      if (s[left++] !== s[right--]) {
+        return false
       }
-      start++;
-      end--;
     }
-    return true;
+
+    return true
   }
-
-  let left = 0;
-  let right = str.length - 1;
-
+  let [left, right] = [0, s.length - 1]
   while (left < right) {
-    if (str[left] !== str[right]) {
-      if (isPalindromeRange(left + 1, right)) {
-        return true;
+    if (s[left] !== s[right]) {
+      if (check(left + 1, right)) {
+        return true
+      }
+      if (check(left, right - 1)) {
+        return true
       }
 
-      if (isPalindromeRange(left, right - 1)) {
-        return true;
-      }
-
-      return false;
+      return false
     }
 
-    left++;
-    right--;
+    left++
+    right--
   }
 
-  return true;
+  return true
 };
 
 /* Container With Most Water - You are given an integer array height of length n. There are n vertical lines drawn such that the two endpoints of the ith line are (i, 0) and (i, height[i]).
