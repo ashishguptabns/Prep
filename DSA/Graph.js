@@ -700,8 +700,6 @@ var canVisitAllRooms = function (rooms) {
   return true
 };
 
-/* 1584. Min Cost to Connect All Points */
-
 /* 547. Number of Provinces */
 
 /* 1615. Maximal Network Rank */

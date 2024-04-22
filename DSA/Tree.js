@@ -1316,12 +1316,12 @@ var distributeCoins = function (root) {
 
     const travel = (node) => {
         if (node) {
-            const leftRemaining = travel(node.left)
-            const rightRemaining = travel(node.right)
+            const leftBalance = travel(node.left)
+            const rightBalance = travel(node.right)
 
-            ans += Math.abs(leftRemaining) + Math.abs(rightRemaining)
+            ans += (Math.abs(rightBalance) + Math.abs(leftBalance))
 
-            return node.val + leftRemaining + rightRemaining - 1
+            return node.val - 1 + rightBalance + leftBalance
         }
         return 0
     }
