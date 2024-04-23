@@ -710,30 +710,32 @@ var canVisitAllRooms = function (rooms) {
  * @return {number}
  */
 var maximalNetworkRank = function (n, roads) {
-  const deg = Array(n).fill(0)
   const graph = {}
+  const deg = Array(n).fill(0)
+
   for (const [a, b] of roads) {
     graph[a] = graph[a] || []
-    graph[b] = graph[b] || []
     graph[a].push(b)
+
+    graph[b] = graph[b] || []
     graph[b].push(a)
 
     deg[a]++
     deg[b]++
   }
 
-  let max = 0
+  let ans = 0
   for (let node = 0; node < n; node++) {
     for (let next = node + 1; next < n; next++) {
       let count = deg[node] + deg[next]
-      if (graph[next]?.includes(node)) {
+      if (graph[node] && graph[node].includes(next)) {
         count--
       }
-      max = Math.max(max, count)
+
+      ans = Math.max(ans, count)
     }
   }
-
-  return max
+  return ans
 };
 
 /* 2685. Count the Number of Complete Components */
