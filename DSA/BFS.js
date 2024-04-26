@@ -243,52 +243,54 @@ Return the minimum number of minutes that must elapse until no cell has a fresh 
  * @param {number[][]} grid
  * @return {number}
  */
-const orangesRotting = (grid) => {
-    const qu = [];
-    let noOfFreshOranges = 0;
-    let time = 0;
-    for (let i = 0; i < grid.length; i++) {
-        for (let j = 0; j < grid[i].length; j++) {
-            if (grid[i][j] === 2) qu.push([i, j]);
-            if (grid[i][j] === 1) noOfFreshOranges++;
+const orangesRotting = (m) => {
+    const q = []
+    let fresh = 0
+    for (let r = 0; r < m.length; r++) {
+        for (let c = 0; c < m[0].length; c++) {
+            if (m[r][c] === 2) {
+                q.push([r, c])
+            } else if (m[r][c] === 1) {
+                fresh++
+            }
         }
     }
 
-    while (qu.length) {
-        const n = qu.length;
-
-        let freshOrngCount = 0;
-        for (let i = 0; i < n; i++) {
-            const [x, y] = qu.shift();
-            // right
-            if ((y < grid[x].length - 1) && (grid[x][y + 1] === 1)) {
-                freshOrngCount++;
-                grid[x][y + 1] = 2
-                qu.push([x, y + 1]);
+    let time = 0
+    while (q.length) {
+        const size = q.length
+        let freshFound = 0
+        for (let i = 0; i < size; i++) {
+            const [r, c] = q.shift()
+            if (c + 1 < m[0].length && m[r][c + 1] === 1) {
+                m[r][c + 1] = 2
+                q.push([r, c + 1])
+                freshFound++
             }
-            // bottom
-            if ((x < grid.length - 1) && (grid[x + 1][y] === 1)) {
-                freshOrngCount++;
-                grid[x + 1][y] = 2
-                qu.push([x + 1, y]);
+            if (c - 1 >= 0 && m[r][c - 1] === 1) {
+                m[r][c - 1] = 2
+                q.push([r, c - 1])
+                freshFound++
             }
-            // top
-            if ((x >= 1) && (grid[x - 1][y] === 1)) {
-                freshOrngCount++;
-                grid[x - 1][y] = 2
-                qu.push([x - 1, y]);
+            if (r + 1 < m.length && m[r + 1][c] === 1) {
+                m[r + 1][c] = 2
+                q.push([r + 1, c])
+                freshFound++
             }
-            // left
-            if ((y >= 1) && (grid[x][y - 1] === 1)) {
-                freshOrngCount++;
-                grid[x][y - 1] = 2
-                qu.push([x, y - 1]);
+            if (r - 1 >= 0 && m[r - 1][c] === 1) {
+                m[r - 1][c] = 2
+                q.push([r - 1, c])
+                freshFound++
             }
         }
-        if (freshOrngCount) time++;
-        noOfFreshOranges -= freshOrngCount;
+        if (freshFound > 0) {
+            time++
+        }
+        fresh -= freshFound
     }
 
-    // if any fresh orange remains
-    return noOfFreshOranges === 0 ? time : -1;
+    if (fresh == 0) {
+        return time
+    }
+    return -1
 };

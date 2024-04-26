@@ -933,12 +933,11 @@ const countVowelStrings = (n) => {
  */
 const allPossibleFBT = (n) => {
     const memo = {}
-
     const createFBT = (size) => {
         if (size === 1) {
             return [new TreeNode()]
         }
-        if (size % 2 == 0) {
+        if (size % 2 === 0) {
             return []
         }
         if (memo[size]) {
@@ -946,26 +945,23 @@ const allPossibleFBT = (n) => {
         }
 
         const trees = []
-
         for (let left = 1; left < size; left += 2) {
             const leftTrees = createFBT(left)
-            const rightTress = createFBT(size - left - 1)
-            if (leftTrees && rightTress) {
+            const rightTrees = createFBT(size - 1 - left)
+            if (leftTrees && rightTrees) {
                 for (const l of leftTrees) {
-                    for (r of rightTress) {
+                    for (const r of rightTrees) {
                         const root = new TreeNode(0, l, r)
                         trees.push(root)
                     }
                 }
             }
         }
-
         memo[size] = trees
+
         return trees
     }
-
     return createFBT(n)
-
 };
 
 /* Unique Paths 2 - You are given an m x n integer array grid. There is a robot initially located at the top-left corner (i.e., grid[0][0]). The robot tries to move to the bottom-right corner (i.e., grid[m - 1][n - 1]). The robot can only move either down or right at any point in time.
