@@ -92,44 +92,24 @@ Return the size of the longest non-empty subarray containing only 1's in the res
  * @return {number}
  */
 const longestSubarray = (nums) => {
-    /* pseudo code
-        move through the arr
-            track count of 0s
-            if zero count is more than 1
-                keep shrinking the window from left
-                decrease 0 count if the left most element is a 0
-            keep tracking the max length of sub array
-    */
-
-    let left = 0
-    let right = 0
-    let zeroCount = 0
-
-    let maxLength = 0
-
-    //  move from left to right
-    while (right < nums.length) {
-        if (nums[right] == 0) {
-            //  track num 0s
-            zeroCount++
+    let start = 0
+    let max = 0
+    let numZeroes = 0
+    for (let i = 0; i < nums.length; i++) {
+        if (nums[i] === 0) {
+            numZeroes++
         }
-
-        //  keep max one 0
-        while (zeroCount > 1) {
-            if (nums[left] === 0) {
-                zeroCount--
+        if (numZeroes > 1) {
+            while (numZeroes > 1) {
+                if (nums[start++] === 0) {
+                    numZeroes--
+                }
             }
-            //  shrink the window
-            left++
         }
-
-        //  record window size
-        maxLength = Math.max(maxLength, right - left)
-
-        right++
+        max = Math.max(i - start, max)
     }
 
-    return maxLength
+    return max
 };
 
 /* Longest substring without repeating characters - Given a string s, find the length of the longest substring without repeating characters.

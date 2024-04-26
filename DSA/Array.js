@@ -271,26 +271,12 @@ Return the minimum number of flips to make s monotone increasing.
  */
 const minFlipsMonoIncr = (s) => {
 
-  /* pseudo code
-    move through s
-      found a 1
-        track number of 1s
-      found a 0
-        either flip all 1s or flip curr 0
-  */
-
-  let numOfOnesSoFar = 0
-  let numFlips = 0
-
+  let [numOnes, numFlips] = [0, 0]
   for (const c of s) {
     if (c === '1') {
-      numOfOnesSoFar++
+      numOnes++
     } else {
-      if (numOnes < numFlips + 1) {
-        numFlips = numOnes
-      } else {
-        numFlips++
-      }
+      numFlips = Math.min(numFlips + 1, numOnes)
     }
   }
 

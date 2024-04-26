@@ -1050,35 +1050,37 @@ var calculateMinimumHP = function (m) {
 The test cases are generated such that the output values fit in a 32-bit integer and the number of different results does not exceed 104. */
 
 var diffWaysToCompute = function (s) {
-    const res = []
+    if (s.length < 3) {
+        return [s]
+    }
 
-    for (let i = 0; i < str.length; i++) {
-        const curr = str[i]
-        if (isNaN(curr)) {
-            const left = diffWaysToCompute(str.slice(0, i))
-            const right = diffWaysToCompute(str.slice(i + 1))
+    const ans = []
+    for (let i = 0; i < s.length; i++) {
+        const c = s[i]
+        if (isNaN(c)) {
+            const left = diffWaysToCompute(s.slice(0, i))
+            const right = diffWaysToCompute(s.slice(i + 1))
 
             for (let l of left) {
                 for (let r of right) {
                     l = Number(l)
                     r = Number(r)
-                    if (curr === '-') {
-                        res.push(l - r)
-                    } else if (curr === '+') {
-                        res.push(l + r)
+                    if (c === '-') {
+                        ans.push(l - r)
+                    } else if (c === '+') {
+                        ans.push(l + r)
                     } else {
-                        res.push(l * r)
+                        ans.push(l * r)
                     }
                 }
             }
         }
     }
 
-    if (res.length) {
-        return res
+    if (ans.length) {
+        return ans
     }
-
-    return [str]
+    return [s]
 };
 
 /* Ugly Number II - An ugly number is a positive integer whose prime factors are limited to 2, 3, and 5.
