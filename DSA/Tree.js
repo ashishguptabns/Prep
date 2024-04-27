@@ -1000,9 +1000,10 @@ const pathInZigZagTree = (label) => {
             return []
         }
 
-        const levelMax = 2 ** (level + 1) - 1
-        const levelMin = 2 ** level
-        const mirror = levelMin + (levelMax - label)
+        const max = 2 ** (level + 1) - 1
+        const min = 2 ** level
+
+        const mirror = min + (max - label)
 
         const parent = Math.floor(mirror / 2)
 

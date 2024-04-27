@@ -1109,31 +1109,31 @@ var minScore = function (n, roads) {
 /* 785. Is Graph Bipartite? */
 
 var isBipartite = function (graph) {
-  const colors = Array(graph.length).fill(0)
-
-  const dfs = (node, color) => {
-    colors[node] = color
-    for (const next of graph[node]) {
-      if (colors[next] === color) {
-        return false
-      }
-
-      if (colors[next] === 0) {
-        if (!dfs(next, -color)) {
+  const color = []
+  for (let node = 0; node < graph.length; node++) {
+    if (color[node] !== undefined) {
+      continue
+    }
+    const q = [node]
+    color[node] = 1
+    while (q.length) {
+      const node = q.shift()
+      for (const next of graph[node]) {
+        if (color[next] === undefined) {
+          color[next] = -color[node]
+          q.push(next)
+        }
+        else if (color[next] === color[node]) {
           return false
         }
       }
     }
-
-    return true
   }
-  for (let node = 0; node < graph.length; node++) {
-    if (colors[node] === 0) {
-      if (!dfs(node, 1)) {
-        return false
-      }
+
+  for (const c of color) {
+    if (c === undefined) {
+      return false
     }
   }
-
   return true
 };
