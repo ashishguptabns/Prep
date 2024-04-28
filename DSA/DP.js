@@ -271,17 +271,15 @@ const numSquares = (n) => {
                 either keep (k and dp[num - k**2]) or leave the count as it is
     */
 
-    const dp = Array(n + 1).fill(Infinity);
+    const dp = Array(n + 1).fill(Infinity)
+    dp[0] = 0
 
-    dp[0] = 0;
-
-    for (let num = 1; num <= n; num++) {
-        for (let k = 1; k ** 2 <= num; k++) {
-            dp[num] = Math.min(dp[num], dp[num - (k ** 2)] + 1);
+    for (let i = 1; i <= n; i++) {
+        for (let j = 1; j ** 2 <= i; j++) {
+            dp[i] = Math.min(1 + dp[i - j ** 2], dp[i])
         }
     }
-
-    return dp[n];
+    return dp.at(-1)
 };
 
 /* Longest Common Subsequence - Given two strings text1 and text2, return the length of their longest common subsequence. If there is no common subsequence, return 0.

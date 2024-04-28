@@ -46,38 +46,29 @@ const deepestLeavesSum = (root) => {
  */
 const zigzagLevelOrder = (root) => {
 
-    /* pseudo code
-        do a level order travel and keep level information in the queue
-            if the level is odd
-                push to the last of res[level]
-            else
-                push to start of res[level]
-    */
-
-    let res = []
-
-    if (root) {
-        const queue = [[root, 0]]
-        while (queue.length) {
-            const [node, level] = queue.shift()
-
-            res[level] ??= []
-
-            if (level % 2 == 1) {
-                res[level].push(node.val)
-            } else {
-                res[level].unshift(node.val)
-            }
-            if (node.right) {
-                queue.push([node.right, level + 1])
-            }
-            if (node.left) {
-                queue.push([node.left, level + 1])
+    const ans = []
+    const q = [root]
+    let level = 0
+    while (q.length) {
+        const size = q.length
+        const arr = []
+        for (let i = 0; i < size; i++) {
+            const node = q.shift()
+            if (node) {
+                if (level % 2 === 1) {
+                    arr.unshift(node.val)
+                } else {
+                    arr.push(node.val)
+                }
+                q.push(node.left)
+                q.push(node.right)
             }
         }
+        level++
+        arr.length && ans.push(arr)
     }
 
-    return res
+    return ans
 };
 
 /* Binary tree right side view - Given the root of a binary tree, imagine yourself standing on the right side of it, return the values of the nodes you can see ordered from top to bottom.
@@ -1314,15 +1305,14 @@ FindElements.prototype.find = function (target, node) {
 
 var distributeCoins = function (root) {
     let ans = 0
-
     const travel = (node) => {
         if (node) {
-            const leftBalance = travel(node.left)
-            const rightBalance = travel(node.right)
+            const leftCoins = travel(node.left)
+            const rightCoins = travel(node.right)
 
-            ans += (Math.abs(rightBalance) + Math.abs(leftBalance))
+            ans += Math.abs(leftCoins) + Math.abs(rightCoins)
 
-            return node.val - 1 + rightBalance + leftBalance
+            return leftCoins + rightCoins + node.val - 1
         }
         return 0
     }

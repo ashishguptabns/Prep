@@ -46,7 +46,7 @@ Given the integer array fruits, return the maximum number of fruits you can pick
  * @param {number[]} fruits
  * @return {number}
  */
-const totalFruit = (fruits) => {
+const totalFruit = (arr) => {
     /* pseudo code
     we can choose max 2 groups of fruits and can have unlimited fruits in each group 
     move through the array as we have to pick a fruit from each tree
@@ -58,29 +58,27 @@ const totalFruit = (fruits) => {
             shrink the window from left
     */
 
-    let left = 0
-    let right = 0
-    let totalNum = 0
-
     const map = {}
-
-    while (right < fruits.length) {
-        map[fruits[right]] = (map[fruits[right]] || 0) + 1
-
-        totalNum++
+    let curr = 0
+    let start = 0
+    let max = 0
+    for (const type of arr) {
+        map[type] = map[type] || 0
+        map[type]++
+        curr++
 
         if (Object.keys(map).length > 2) {
-            map[fruits[left]] = map[fruits[left]] - 1
-            totalNum--
-            if (map[fruits[left]] === 0) {
-                delete map[fruits[left]]
+            const leftType = arr[start]
+            map[leftType]--
+            curr--
+            if (map[leftType] === 0) {
+                delete map[leftType]
             }
-            left++
+            start++
         }
-        right++
+        max = Math.max(max, curr)
     }
-
-    return totalNum
+    return max
 };
 
 /* Longest Subarray of 1's After Deleting One Element - Given a binary array nums, you should delete one element from it.

@@ -463,17 +463,16 @@ Return the minimum number of operations needed to make s equal to target.
  */
 const minFlips = (target) => {
 
-  let flipCount = 0;
-  let currChar = "0";
-
-  for (let i = 0; i < target.length; i++) {
-    if (target[i] != currChar) {
-      currChar = target[i];
-      flipCount++;
+  let numFlips = 0
+  let currC = '0'
+  for (const c of target) {
+    if (c !== currC) {
+      numFlips++
+      currC = c
     }
   }
 
-  return flipCount;
+  return numFlips
 };
 
 /* Dot product of two sparse vectors - Given two sparse vectors, compute their dot product.

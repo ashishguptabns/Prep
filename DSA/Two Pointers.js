@@ -223,25 +223,25 @@ Return nums after the rearrangement.
  * @return {number[]}
  */
 const pivotArray = (nums, pivot) => {
-  const arr = Array(nums.length).fill(pivot)
-  let left = 0
-  let pivotCount = 0
+  const ans = []
+  let index = 0
   for (const num of nums) {
     if (num < pivot) {
-      arr[left++] = num
-    }
-    if (num === pivot) {
-      pivotCount++
+      ans[index++] = num
     }
   }
-  left += pivotCount
+  for (const num of nums) {
+    if (num === pivot) {
+      ans[index++] = num
+    }
+  }
   for (const num of nums) {
     if (num > pivot) {
-      arr[left++] = num
+      ans[index++] = num
     }
   }
 
-  return arr
+  return ans
 };
 
 /* Two Sum Less Than K

@@ -829,7 +829,7 @@ var swapNodes = function (head, k) {
 /* 2487. Remove Nodes From Linked List */
 
 var removeNodes = function (head) {
-    let dummy = new ListNode(-1)
+    const dummy = new ListNode(-1)
     dummy.next = head
     let max = 0
     const travel = (prev, curr) => {
@@ -837,13 +837,11 @@ var removeNodes = function (head) {
             travel(curr, curr.next)
             max = Math.max(max, curr.val)
             if (max !== curr.val) {
-                console.log(max, prev.val)
                 prev.next = curr.next
             }
         }
     }
     travel(dummy, head)
-
     return dummy.next
 };
 
