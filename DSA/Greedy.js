@@ -48,61 +48,23 @@ const partitionString = (s) => {
 Given an array changed, return original if changed is a doubled array. If changed is not a doubled array, return an empty array. The elements in original may be returned in any order.
 */
 
-/**
- * @param {number[]} changed
- * @return {number[]}
- */
 const findOriginalArray = (changed) => {
 
-  /* pseudo code
-    keep a map to keep double of items we find with freq
-    sort the array
-    move curr through changed arr
-      curr is a double of some item
-        freq is 1
-          remove from the map
-        else 
-          decrease the freq by 1
-      else
-        map already has its double
-          increase the freq of double
-        else
-          put the double in the map
-        push to res array
-    check if items are still left in the map
-  */
-
-  if (changed.length % 2 === 1) {
-    return [];
-  }
-  const res = [];
-  const map = new Map();
-
-  changed.sort((a, b) => a - b);
-
-  for (const curr of changed) {
-    if (map.has(curr)) {
-      const currValFreq = map.get(curr);
-
-      if (currValFreq === 1) {
-        map.delete(curr);
-      } else {
-        map.set(curr, currValFreq - 1);
-      }
+  const ans = []
+  const map = {}
+  changed.sort((a, b) => a - b)
+  for (const num of changed) {
+    if (map[num]) {
+      ans.push(num / 2)
+      map[num]--
     } else {
-      const double = curr * 2;
-
-      if (map.has(double)) {
-        map.set(double, map.get(double) + 1);
-      } else {
-        map.set(double, 1);
-      }
-
-      res.push(curr);
+      const double = num * 2
+      map[double] = map[double] || 0
+      map[double]++
     }
   }
 
-  return map.size > 0 ? [] : res;
+  return ans.length * 2 === changed.length ? ans : []
 };
 
 /* Buildings With an Ocean View - Find the indices of buildings that have an unobstructed view of the ocean, assuming buildings to the right can block the view.

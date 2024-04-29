@@ -10,6 +10,7 @@ var validPalindrome = function (s) {
 
     return true
   }
+
   let [left, right] = [0, s.length - 1]
   while (left < right) {
     if (s[left] !== s[right]) {
@@ -19,10 +20,8 @@ var validPalindrome = function (s) {
       if (check(left, right - 1)) {
         return true
       }
-
       return false
     }
-
     left++
     right--
   }

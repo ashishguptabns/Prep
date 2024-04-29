@@ -741,6 +741,36 @@ var maximalNetworkRank = function (n, roads) {
 /* 2685. Count the Number of Complete Components */
 
 /* 2477. Minimum Fuel Cost to Report to the Capital */
+var minimumFuelCost = function (roads, seats) {
+  const graph = {}
+  for (const [a, b] of roads) {
+    graph[a] = graph[a] || []
+    graph[a].push(b)
+
+    graph[b] = graph[b] || []
+    graph[b].push(a)
+  }
+
+  let ans = 0
+
+  const dfs = (node, prev) => {
+    let pplCount = 1
+    if (graph[node]) {
+      for (const next of graph[node]) {
+        if (next !== prev) {
+          pplCount += dfs(next, node)
+        }
+      }
+    }
+    if (node) {
+      ans += Math.ceil(pplCount / seats)
+    }
+    return pplCount
+  }
+  dfs(0, -1)
+
+  return ans
+};
 
 /* 1466. Reorder Routes to Make All Paths Lead to the City Zero */
 

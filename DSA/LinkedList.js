@@ -146,88 +146,59 @@ const swapPairs = (head) => {
 
 /* LRUCache - Design a data structure that follows the constraints of a Least Recently Used(LRU) cache.
  */
-class DLLNode {
-    constructor(key, value) {
-        this.key = key;
-        this.value = value;
-        this.prev = null;
-        this.next = null;
+var LRUCache = function (capacity) {
+    this.cache = {}
+    this.max = capacity
+    this.head = {}
+    this.tail = {}
+    this.head.next = this.tail
+    this.tail.prev = this.head
+    this.size = 0
+};
+
+LRUCache.prototype.get = function (key) {
+    if (this.cache[key]) {
+        this.removeNode(this.cache[key])
+        this.moveToFront(this.cache[key])
+        return this.cache[key].val
     }
+    return -1
+};
+
+LRUCache.prototype.moveToFront = function (node) {
+    node.next = this.head.next
+    node.prev = this.head
+    this.head.next.prev = node
+    this.head.next = node
 }
 
-class LRUCache {
+LRUCache.prototype.removeNode = function (node) {
+    node.next.prev = node.prev
+    node.prev.next = node.next
+}
 
-    /* pseudo code 
-        keep a cache map to find values for a key
-        get
-            find the node from the map
-            remove the node from DLL
-            add to the front of DLL
-        put
-            map has the key
-                find the node and update value
-                remove from DLL
-                add to front of DLL
-            else
-                exceeds capacity
-                    find the last node
-                    remove it from DLL and cache map
-                else
-                    create a new node
-                    add to front of DLL
-                    add to the map
-    */
-
-    constructor(capacity) {
-        this.capacity = capacity;
-        this.cache = new Map();
-        this.head = new DLLNode();
-        this.tail = new DLLNode();
-        this.head.next = this.tail;
-        this.tail.prev = this.head;
-    }
-
-    removeNode(node) {
-        node.prev.next = node.next;
-        node.next.prev = node.prev;
-    }
-
-    addToFront(node) {
-        node.next = this.head.next;
-        node.prev = this.head;
-        this.head.next.prev = node;
-        this.head.next = node;
-    }
-
-    get(key) {
-        if (this.cache.has(key)) {
-            const node = this.cache.get(key);
-            this.removeNode(node);
-            this.addToFront(node);
-            return node.value;
+LRUCache.prototype.put = function (key, value) {
+    if (this.cache[key]) {
+        const node = this.cache[key]
+        node.val = value
+        this.removeNode(node)
+        this.moveToFront(node)
+    } else {
+        if (this.isFull()) {
+            const lastNode = this.tail.prev
+            this.removeNode(lastNode)
+            delete this.cache[lastNode.key]
         } else {
-            return -1;
+            this.size++
         }
+        const node = { key: key, val: value }
+        this.moveToFront(node)
+        this.cache[key] = node
     }
+};
 
-    put(key, value) {
-        if (this.cache.has(key)) {
-            const node = this.cache.get(key);
-            node.value = value;
-            this.removeNode(node);
-            this.addToFront(node);
-        } else {
-            if (this.cache.size >= this.capacity) {
-                const lastNode = this.tail.prev;
-                this.removeNode(lastNode);
-                this.cache.delete(lastNode.key);
-            }
-
-            const newNode = new DLLNode(key, value);
-            this.addToFront(newNode);
-            this.cache.set(key, newNode);
-        }
-    }
+LRUCache.prototype.isFull = function () {
+    return this.size >= this.max
 }
 
 /* Add Two Numbers - You are given two non-empty linked lists representing two non-negative integers. The digits are stored in reverse order, and each of their nodes contains a single digit. Add the two numbers and return the sum as a linked list.

@@ -199,17 +199,17 @@ const numOfSubarrays = (arr, k, threshold) => {
 * @return {number}
 */
 const longestOnes = (nums, k) => {
-    let max = 0
-    let numZeroes = 0
+    let currZ = 0
     let start = 0
+    let max = 0
     for (let i = 0; i < nums.length; i++) {
-        const num = nums[i]
-        if (num !== 1) {
-            numZeroes++
+        const curr = nums[i]
+        if (curr === 0) {
+            currZ++
         }
-        while (numZeroes > k) {
+        while (currZ > k) {
             if (nums[start] === 0) {
-                numZeroes--
+                currZ--
             }
             start++
         }

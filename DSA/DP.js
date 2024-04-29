@@ -974,41 +974,29 @@ Return the number of possible unique paths that the robot can take to reach the 
  */
 const uniquePathsWithObstacles = (obstacleGrid) => {
 
-    /* pseudo code
-        keep a 2D dp array
-            [i, j] tells unique paths to come to this point
-        handle first col and row as base cases
-        visit each cell
-            not an obstacle
-                sum of paths
-    */
+    const arr = Array(m.length).fill().map(_ => Array(m[0].length).fill(0))
 
-    const m = obstacleGrid.length;
-    const n = obstacleGrid[0].length;
-
-    if (obstacleGrid[0][0] === 1) {
-        return 0;
+    for (let r = 0; r < m.length; r++) {
+        if (m[r][0] === 1) {
+            break
+        }
+        arr[r][0] = 1
+    }
+    for (let c = 0; c < m[0].length; c++) {
+        if (m[0][c] === 1) {
+            break
+        }
+        arr[0][c] = 1
     }
 
-    const dp = Array(m).fill(0).map(() => Array(n).fill(0));
-    dp[0][0] = 1;
-
-    for (let i = 1; i < m; i++) {
-        dp[i][0] = (obstacleGrid[i][0] === 0 && dp[i - 1][0] === 1) ? 1 : 0;
-    }
-
-    for (let j = 1; j < n; j++) {
-        dp[0][j] = (obstacleGrid[0][j] === 0 && dp[0][j - 1] === 1) ? 1 : 0;
-    }
-
-    for (let i = 1; i < m; i++) {
-        for (let j = 1; j < n; j++) {
-            if (obstacleGrid[i][j] === 0) {
-                dp[i][j] = dp[i - 1][j] + dp[i][j - 1];
+    for (let r = 1; r < m.length; r++) {
+        for (let c = 1; c < m[0].length; c++) {
+            if (m[r][c] !== 1) {
+                arr[r][c] = arr[r - 1][c] + arr[r][c - 1]
             }
         }
     }
-    return dp[m - 1][n - 1];
+    return arr.at(-1).at(-1)
 };
 
 /* Dungeon Game - The demons had captured the princess and imprisoned her in the bottom-right corner of a dungeon. The dungeon consists of m x n rooms laid out in a 2D grid. Our valiant knight was initially positioned in the top-left room and must fight his way through dungeon to rescue the princess.

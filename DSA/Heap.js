@@ -54,26 +54,16 @@ Note that it is the kth largest element in the sorted order, not the kth distinc
 
 Can you solve it without sorting?
  */
-/**
- * @param {number[]} nums
- * @param {number} k
- * @return {number}
- */
 const findKthLargest = (nums, k) => {
-    const minHeap = new MinHeap()
-
+    const pq = new MaxPriorityQueue()
     for (const num of nums) {
-        minHeap.push(num)
+        pq.enqueue(num)
     }
-
-    for (let i = 0; i < nums.length; i++) {
-        const element = minHeap.pop()
-        if (nums.length - i === k) {
-            return element
-        }
+    while (k > 1) {
+        pq.dequeue()
+        k--
     }
-
-    return -1
+    return pq.dequeue().element
 };
 
 /* Make Max Heap */
