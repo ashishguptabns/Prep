@@ -674,30 +674,18 @@ function employeeScoreMemoized(graph, node, memo) {
 /* 841. Keys and Rooms */
 
 var canVisitAllRooms = function (rooms) {
-  const arr = Array(rooms.length).fill(false)
-  const q = [rooms[0]]
-  arr[0] = true
-
-  while (q.length) {
-    const nextRooms = q.shift()
-    for (const next of nextRooms) {
-      if (arr[next] || next === 0) {
-        continue
+  const seen = {}
+  const dfs = (room) => {
+    if (!seen[room]) {
+      seen[room] = true
+      const nextRooms = rooms[room]
+      for (const next of nextRooms) {
+        dfs(next)
       }
-      arr[next] = true
-      q.push(rooms[next])
     }
   }
-
-  console.log(arr)
-
-  for (const visited of arr) {
-    if (!visited) {
-      return false
-    }
-  }
-
-  return true
+  dfs(0)
+  return Object.keys(seen).length === rooms.length
 };
 
 /* 547. Number of Provinces */
@@ -871,25 +859,25 @@ var makeConnected = function (n, edges) {
   }
 
   const seen = {}
-  let ans = 0
-
-  const connect = (node) => {
-    if (seen[node]) {
-      return 0
-    }
-    seen[node] = true
-    if (graph[node]) {
-      for (const next of graph[node]) {
-        connect(next)
+  const dfs = (node) => {
+    if (!seen[node]) {
+      seen[node] = true
+      if (graph[node]) {
+        for (const next of graph[node]) {
+          dfs(next)
+        }
       }
+      return true
     }
-    return 1
+    return false
   }
+  let networks = 0
   for (let node = 0; node < n; node++) {
-    ans += connect(node)
+    if (dfs(node)) {
+      networks++
+    }
   }
-
-  return ans - 1
+  return networks - 1
 };
 
 /* 399. Evaluate Division - You are given an array of variable pairs equations and an array of real numbers values, where equations[i] = [Ai, Bi] and values[i] represent the equation Ai / Bi = values[i]. Each Ai or Bi is a string that represents a single variable.

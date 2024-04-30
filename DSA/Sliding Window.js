@@ -534,32 +534,27 @@ if no such substring exists, return 0. */
 
 var longestSubstring = function (s, k) {
     if (s.length < k) {
-        return 0;
+        return 0
+    }
+    const map = {}
+    for (const c of s) {
+        map[c] = map[c] || 0
+        map[c]++
     }
 
-    const charCount = new Map();
-
-    for (const char of s) {
-        if (!charCount.has(char)) {
-            charCount.set(char, 0);
-        }
-        charCount.set(char, charCount.get(char) + 1);
-    }
-    for (const [char, count] of charCount) {
+    for (const [char, count] of Object.entries(map)) {
         if (count < k) {
-            const substrings = s.split(char);
-            console.log(substrings)
-            let maxLength = 0;
-
-            for (const substr of substrings) {
-                maxLength = Math.max(maxLength, longestSubstring(substr, k));
+            const substrs = s.split(char)
+            let max = 0
+            for (const str of substrs) {
+                max = Math.max(max, longestSubstring(str, k))
             }
 
-            return maxLength;
+            return max
         }
     }
 
-    return s.length;
+    return s.length
 };
 
 /* Minimum Swaps to Group All 1's Together II - A swap is defined as taking two distinct positions in an array and swapping the values in them.
