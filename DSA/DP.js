@@ -1381,7 +1381,7 @@ var findTheCity = function (n, edges, distanceThreshold) {
 
 var minPathCost = function (grid, moveCost) {
     const dp = Array(m.length).fill()
-        .map(_ => Array(m[0].length).fill(Infinity))
+        .map(_ => Array(m[0].length).fill(0))
 
     for (let c = 0; c < m[0].length; c++) {
         dp[0][c] = m[0][c]
@@ -1391,8 +1391,9 @@ var minPathCost = function (grid, moveCost) {
         for (let c = 0; c < m[0].length; c++) {
             dp[r][c] = Infinity
             for (let k = 0; k < m[0].length; k++) {
+                const rowCost = cost[m[r - 1][k]][c]
                 dp[r][c] = Math.min(dp[r][c],
-                    m[r][c] + dp[r - 1][k] + cost[m[r - 1][k]][c])
+                    m[r][c] + dp[r - 1][k] + rowCost)
             }
         }
     }

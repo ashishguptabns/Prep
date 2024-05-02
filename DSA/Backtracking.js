@@ -245,16 +245,16 @@ Given a string s containing only digits, return all possible valid IP addresses 
  */
 
 var restoreIpAddresses = function (s) {
-    if (!s || s.length === 0) {
+    if (!s || !s.length) {
         return []
     }
 
     const ans = []
 
-    const backtrack = (index, left, curr) => {
-        if (left == 0) {
+    const backtrack = (index, dotsLeft, str) => {
+        if (dotsLeft === 0) {
             if (index === s.length) {
-                ans.push(curr.slice(0, -1))
+                ans.push(str.substring(0, str.length - 1))
             }
         } else {
             for (let i = 1; i <= 3; i++) {
@@ -266,9 +266,8 @@ var restoreIpAddresses = function (s) {
                 if (sub[0] === '0' && sub.length > 1) {
                     return
                 }
-
                 if (Number(sub) <= 255) {
-                    backtrack(index + i, left - 1, curr + sub + '.')
+                    backtrack(index + i, dotsLeft - 1, str + sub + '.')
                 }
             }
         }

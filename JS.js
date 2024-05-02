@@ -143,3 +143,84 @@ document.getElementById('inner').addEventListener('click', function () {
 // Inner div clicked
 // Middle div clicked
 // Outer div clicked
+
+/* deep equality check */
+
+const obj1 = {
+    name: '',
+    address: {
+        line1: ''
+    },
+    third: [123, '123'],
+    fourth: [{ 123: '123' }]
+}
+
+const obj2 = {
+    name: '',
+    address: {
+        line1: ''
+    },
+    third: [123, '123'],
+    // fourth: [{ 123: '1234' }]
+}
+
+function deepEqual(obj1, obj2) {
+    if (typeof obj1 !== typeof obj2) {
+        return false
+    }
+    if (obj1 === obj2) {
+        return true
+    }
+    if (Object.entries(obj1).length !== Object.entries(obj2).length) {
+        return false
+    }
+    for (const [key, val] of Object.entries(obj1)) {
+        if (Array.isArray(val)) {
+            if (!Array.isArray(obj2[key])) {
+                return false
+            }
+            if (val.length !== obj2[key].length) {
+                return false
+            }
+            for (let i = 0; i < val.length; i++) {
+                const arrVal = val[i]
+                if (!deepEqual(arrVal, obj2[key][i])) {
+                    return false
+                }
+            }
+        }
+        else if (typeof val === 'object') {
+            if (!deepEqual(obj1[key], obj2[key])) {
+                return false
+            }
+        }
+        else if (obj2[key] !== val) {
+            return false
+        }
+    }
+
+    return true
+}
+
+// console.log(deepEqual(obj1, obj2))
+
+/* curry function */
+
+function sum(num) {
+    let total = num
+    let addOps = false
+    return nextFn = (val) => {
+        if (val !== undefined) {
+            if (addOps) {
+                total += val
+            } else {
+                total -= val
+            }
+            addOps = !addOps
+            return nextFn
+        }
+        return total;
+    };
+}
+
+console.log(sum(1)(3)(3)(4)(6)())
