@@ -325,8 +325,6 @@ const letterCombinations = (digits) => {
     return list
 };
 
-/* 1980. Find Unique Binary String */
-
 /* 784. Letter Case Permutation */
 
 /**

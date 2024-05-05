@@ -238,19 +238,16 @@ const sequentialDigits = (low, high) => {
                 compare and push to ans array
     */
 
-    const digits = '123456789'
+    const base = '123456789'
     const ans = []
-
-    const minLen = low.toString().length
-    const maxLen = high.toString().length
-
-    for (let size = minLen; size <= maxLen; ++size) {
-        for (let i = 0; i + size <= digits.length; ++i) {
-            const num = parseInt(digits.substring(i, i + size))
-
+    for (let len = String(low).length; len <= String(high).length; len++) {
+        let s = 0
+        while (s + len <= base.length) {
+            const num = Number(base.substring(s, s + len))
             if (num >= low && num <= high) {
                 ans.push(num)
             }
+            s++
         }
     }
 

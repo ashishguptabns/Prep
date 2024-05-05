@@ -12,21 +12,18 @@ const isPalindrome = (head) => {
     go to the end of list
     compare the right pointer to left pointer */
 
-    let currNode = head
-    let isPalindrome = true
-    const moveToEnd = (node) => {
+    let curr = head
+    const check = (node) => {
         if (node) {
-            moveToEnd(node.next)
-
-            if (node.val !== currNode.val) {
-                isPalindrome = false
+            const res = check(node.next) && node.val === curr.val
+            if (!res) {
+                return false
             }
-            currNode = currNode.next
+            curr = curr.next
         }
+        return true
     }
-    moveToEnd(head)
-
-    return isPalindrome
+    return check(head)
 };
 
 /* Merge k Sorted Lists - You are given an array of k linked - lists lists, each linked - list is sorted in ascending order.

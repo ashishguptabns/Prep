@@ -1,3 +1,14 @@
+/* 1980. Find Unique Binary String */
+var findDifferentBinaryString = function (nums) {
+  let ans = ''
+  for (const num of nums) {
+    const c = num[ans.length]
+    ans += c === '1' ? '0' : '1'
+  }
+
+  return ans
+};
+
 /* Minimize product sum of two arrays
  */
 const minimizeProductSum = (arr1, arr2) => {
