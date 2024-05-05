@@ -1492,11 +1492,13 @@ var longestZigZag = function (root) {
     let ans = 0
     const stack = [[root, 0, null]]
     while (stack.length) {
-        const [node, n, left] = stack.pop()
+        const [node, len, dir] = stack.pop()
         if (node) {
-            ans = Math.max(n, ans)
-            stack.push([node.left, left != null && left == 0 ? n + 1 : 1, 1])
-            stack.push([node.right, left != null && left == 1 ? n + 1 : 1, 0])
+            ans = Math.max(ans, len)
+            stack.push([node.left,
+            dir !== null && dir == 0 ? len + 1 : 1, 1])
+            stack.push([node.right,
+            dir !== null && dir == 1 ? len + 1 : 1, 0])
         }
     }
 

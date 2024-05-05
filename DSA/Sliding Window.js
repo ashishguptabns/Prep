@@ -630,37 +630,25 @@ const maxConsecutiveAnswers = (arr, k) => {
 
 /* 1358. Number of Substrings Containing All Three Characters */
 
-/**
- * @param {string} s
- * @return {number}
- */
-var numberOfSubstrings = function (str) {
-    let ans = 0
+var numberOfSubstrings = function (s) {
     let [a, b, c] = [0, 0, 0]
+    let count = 0
+    for (let i = 0, j = 0; i < s.length; i++) {
+        const curr = s[i]
+        curr === 'a' && a++
+        curr === 'b' && b++
+        curr === 'c' && c++
 
-    for (let i = 0, j = 0; i < str.length; i++) {
-        const curr = str[i]
-        if (curr === 'a') {
-            a++
-        } else if (curr === 'b') {
-            b++
-        } else {
-            c++
-        }
         while (a && b && c) {
-            ans += str.length - i
-            if (str[j] === 'a') {
-                a--
-            } else if (str[j] === 'b') {
-                b--
-            } else {
-                c--
-            }
+            count += (s.length - i)
+            s[j] === 'a' && a--
+            s[j] === 'b' && b--
+            s[j] === 'c' && c--
             j++
         }
     }
 
-    return ans
+    return count
 };
 
 /* 1248. Count Number of Nice Subarrays */

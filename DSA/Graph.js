@@ -847,18 +847,18 @@ var minReorder = function (n, edges) {
  * @return {number[]}
  */
 var findRedundantConnection = function (edges) {
-  const graph = new Map();
-  for (const [node1, node2] of edges) {
-    if (!graph.has(node1)) graph.set(node1, []);
-    graph.get(node1).push(node2);
-
-    if (!graph.has(node2)) graph.set(node2, []);
-    graph.get(node2).push(node1);
+  const graph = {}
+  for (const [a, b] of edges) {
+    graph[a] = graph[a] || []
+    graph[a].push(b)
+    graph[b] = graph[b] || []
+    graph[b].push(a)
   }
 
   for (let node = edges.length - 1; node >= 0; node--) {
     const [start, skip] = edges[node]
-    const seen = new Set([start]);
+    const seen = {}
+    seen[start] = true
     let count = 0;
 
     let queue = [start];
@@ -868,13 +868,13 @@ var findRedundantConnection = function (edges) {
         const node = queue.shift();
         count++;
 
-        for (const next of graph.get(node)) {
+        for (const next of graph[node]) {
           if (node === start && next === skip) {
             continue;
           }
 
-          if (!seen.has(next)) {
-            seen.add(next);
+          if (!seen[next]) {
+            seen[next] = true
             queue.push(next);
           }
         }
