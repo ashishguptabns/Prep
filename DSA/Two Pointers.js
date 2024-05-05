@@ -443,27 +443,22 @@ const nextPermutation = (nums) => {
     reverse elements starting at i + 1
   */
 
-  let pos = nums.length - 2
-  while (pos >= 0 && nums[pos] >= nums[pos + 1]) {
-    pos--
+  let i = nums.length - 2
+  while (i >= 0 && nums[i] >= nums[i + 1]) {
+    i--
   }
 
-  if (pos >= 0) {
+  if (i >= 0) {
     let j = nums.length - 1
-    while (nums[j] <= nums[pos]) {
+    while (nums[j] <= nums[i]) {
       j--
     }
-    const temp = nums[j]
-    nums[j] = nums[pos]
-    nums[pos] = temp
+    [nums[i], nums[j]] = [nums[j], nums[i]]
   }
 
-
-  let [left, right] = [pos + 1, nums.length - 1]
+  let [left, right] = [i + 1, nums.length - 1]
   while (left < right) {
-    const temp = nums[left]
-    nums[left] = nums[right]
-    nums[right] = temp
+    [nums[left], nums[right]] = [nums[right], nums[left]]
     left++
     right--
   }

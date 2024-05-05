@@ -728,6 +728,51 @@ var maximalNetworkRank = function (n, roads) {
 
 /* 2685. Count the Number of Complete Components */
 
+var countCompleteComponents = function (n, edges) {
+  const graph = {}
+  for (const [a, b] of edges) {
+    graph[a] = graph[a] || []
+    graph[a].push(b)
+    graph[b] = graph[b] || []
+    graph[b].push(a)
+  }
+
+  const seen = {}
+
+  let count = 0
+  for (let node = 0; node < n; node++) {
+    if (seen[node]) {
+      continue
+    }
+    const q = [node]
+    let nodesCount = 0
+    let edgesCount = 0
+
+    while (q.length) {
+      const curr = q.shift()
+      if (seen[curr]) {
+        continue
+      }
+      seen[curr] = true
+      nodesCount++
+      if (graph[curr]) {
+        for (const next of graph[curr]) {
+          if (!seen[next]) {
+            q.push(next)
+            edgesCount++
+          }
+        }
+      }
+    }
+    const idealEdges = nodesCount * (nodesCount - 1) / 2
+    if (edgesCount === idealEdges) {
+      count++
+    }
+  }
+
+  return count
+};
+
 /* 2477. Minimum Fuel Cost to Report to the Capital */
 var minimumFuelCost = function (roads, seats) {
   const graph = {}

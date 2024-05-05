@@ -191,18 +191,17 @@ const dailyTemperatures = (temps) => {
             keep pushing i in the stack
     */
 
+    const ans = new Array(temps.length).fill(0)
     const stack = []
-    const answer = Array(temps.length).fill(0)
-
     for (let i = 0; i < temps.length; i++) {
-        while (stack.length && temps[stack.at(-1)] < temps[i]) {
-            const coldIndex = stack.pop()
-            answer[coldIndex] = i - coldIndex
+        const temp = temps[i]
+        while (stack.length && temp > temps[stack.at(-1)]) {
+            const day = stack.pop()
+            ans[day] = i - day
         }
         stack.push(i)
     }
-
-    return answer
+    return ans
 };
 
 /* Online Stock Span - Design an algorithm that collects daily price quotes for some stock and returns the span of that stock's price for the current day.
