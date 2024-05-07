@@ -594,20 +594,20 @@ const maximalSquare = (matrix) => {
         return max**2
     */
 
-    if (!matrix.length) {
-        return 0;
-    }
-    const dp = new Array(matrix.length + 1).fill(0).map(() => new Array(matrix[0].length + 1).fill(0));
-    let max = 0;
-    for (let r = 1; r < dp.length; r++) {
-        for (let c = 1; c < dp[0].length; c++) {
-            if (matrix[r - 1][c - 1] != 0) {
-                dp[r][c] = Math.min(dp[r][c - 1], dp[r - 1][c], dp[r - 1][c - 1]) + 1;
-                max = Math.max(dp[r][c], max);
+    const dp = Array(m.length + 1).fill()
+        .map(_ => Array(m[0].length + 1).fill(0))
+
+    let ans = 0
+    for (let r = 1; r <= m.length; r++) {
+        for (let c = 1; c <= m[0].length; c++) {
+            if (m[r - 1][c - 1] === '1') {
+                dp[r][c] = 1 +
+                    Math.min(dp[r - 1][c], dp[r - 1][c - 1], dp[r][c - 1])
+                ans = Math.max(ans, dp[r][c] ** 2)
             }
         }
     }
-    return max ** 2;
+    return ans
 };
 
 /* Minimum Path Sum - Given a m x n grid filled with non-negative numbers, find a path from top left to bottom right, which minimizes the sum of all numbers along its path.
@@ -1205,22 +1205,23 @@ const isInterleave = (s1, s2, s3) => {
  * @return {number}
  */
 var countSubstrings = function (s, t) {
-    const leftDP = Array(s.length + 1).fill()
-        .map(() => Array(t.length + 1).fill(0))
-    const rightDP = Array(s.length + 1).fill()
-        .map(() => Array(t.length + 1).fill(0))
+    const leftDp = Array(s.length + 1).fill()
+        .map(_ => Array(t.length + 1).fill(0))
+    const rightDp = Array(s.length + 1).fill()
+        .map(_ => Array(t.length + 1).fill(0))
 
     for (let i = 1; i <= s.length; i++) {
         for (let j = 1; j <= t.length; j++) {
             if (s[i - 1] === t[j - 1]) {
-                leftDP[i][j] = leftDP[i - 1][j - 1] + 1
+                leftDp[i][j] = 1 + leftDp[i - 1][j - 1]
             }
         }
     }
+
     for (let i = s.length - 1; i >= 0; i--) {
         for (let j = t.length - 1; j >= 0; j--) {
             if (s[i] === t[j]) {
-                rightDP[i][j] = rightDP[i + 1][j + 1] + 1
+                rightDp[i][j] = 1 + rightDp[i + 1][j + 1]
             }
         }
     }
@@ -1231,7 +1232,7 @@ var countSubstrings = function (s, t) {
             if (s[i] === t[j]) {
                 continue
             }
-            count += (leftDP[i][j] + 1) * (rightDP[i + 1][j + 1] + 1)
+            count += (leftDp[i][j] + 1) * (rightDp[i + 1][j + 1] + 1)
         }
     }
 

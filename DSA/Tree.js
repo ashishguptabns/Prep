@@ -131,26 +131,18 @@ const inorderTraversal = (root) => {
 
 /* Convert a BST into a GST(greater sum tree) - Given the root of a Binary Search Tree(BST), convert it to a Greater Tree such that every key of the original BST is changed to the original key plus the sum of all keys greater than the original key in BST.
  */
-/**
- * @param {TreeNode} root
- * @return {TreeNode}
- */
 const bstToGst = (root) => {
-    //  we will do reverse inorder traversal and maintain the sum while coming from right
-
     let sum = 0
 
-    const reverseInorder = (node) => {
+    const travel = (node) => {
         if (node) {
-            reverseInorder(node.right)
-
+            travel(node.right)
             sum += node.val
             node.val = sum
-
-            reverseInorder(node.left)
+            travel(node.left)
         }
     }
-    reverseInorder(root)
+    travel(root)
 
     return root
 };

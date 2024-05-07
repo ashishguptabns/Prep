@@ -423,28 +423,20 @@ var countArrangement = function (n) {
 
 /* 2305. Fair Distribution of Cookies */
 
-/**
- * @param {number[]} cookies
- * @param {number} k
- * @return {number}
- */
 var distributeCookies = function (cookies, k) {
     let ans = Infinity
-    const childs = Array(k).fill(0)
-
-    const backtrack = (index) => {
-        if (index === cookies.length) {
-            const max = Math.max(...childs)
-            ans = Math.min(ans, max)
-        } else {
+    const backtrack = (arr, index) => {
+        if (index < cookies.length) {
             for (let i = 0; i < k; i++) {
-                childs[i] += cookies[index]
-                backtrack(index + 1)
-                childs[i] -= cookies[index]
+                arr[i] += cookies[index]
+                backtrack(arr, index + 1)
+                arr[i] -= cookies[index]
             }
+        } else {
+            ans = Math.min(ans, Math.max(...arr))
         }
     }
-    backtrack(0)
+    backtrack(Array(k).fill(0), 0)
 
     return ans
 };
