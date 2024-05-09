@@ -809,29 +809,27 @@ var minReorder = function (n, edges) {
   const graph = {}
   for (const [from, to] of edges) {
     graph[from] = graph[from] || []
-    graph[from].push({ city: to, dist: 1 })
+    graph[from].push([to, 1])
 
     graph[to] = graph[to] || []
-    graph[to].push({ city: from, dist: 0 })
+    graph[to].push([from, 0])
   }
 
   const seen = {}
-  const q = [0]
   let ans = 0
-
+  const q = [0]
   while (q.length) {
     const node = q.shift()
     if (seen[node]) {
       continue
     }
     seen[node] = true
-
-    for (const next of graph[node]) {
-      if (seen[next.city]) {
+    for (const [next, dist] of graph[node]) {
+      if (seen[next]) {
         continue
       }
-      ans += Number(next.dist)
-      q.push(next.city)
+      ans += dist
+      q.push(next)
     }
   }
 

@@ -335,39 +335,36 @@ const shipWithinDays = (weights, days) => {
             discard right or left for further search
     */
 
-    let minCapacity = 0
-    let maxCapacity = 0
-
-    for (const weight of weights) {
-        minCapacity = Math.max(weight, minCapacity)
-        maxCapacity += weight
+    let max = 0
+    let min = 0
+    for (const w of weights) {
+        max += w
+        min = Math.max(min, w)
     }
 
-    const isFeasible = (weights, capacity, days) => {
-        let currentLoad = 0
-        let daysNeeded = 1
-
-        for (const weight of weights) {
-            currentLoad += weight
-            if (currentLoad > capacity) {
-                daysNeeded++
-                currentLoad = weight
+    const canShip = (max) => {
+        let currDays = 1
+        let sum = 0
+        for (const w of weights) {
+            sum += w
+            if (sum > max) {
+                currDays++
+                sum = w
             }
         }
-
-        return daysNeeded <= days
+        return currDays <= days
     }
 
-    while (minCapacity < maxCapacity) {
-        const mid = Math.floor((minCapacity + maxCapacity) / 2)
-        if (isFeasible(weights, mid, days)) {
-            maxCapacity = mid
+    while (min < max) {
+        const mid = Math.floor((min + max) / 2)
+        if (canShip(mid)) {
+            max = mid
         } else {
-            minCapacity = mid + 1
+            min = mid + 1
         }
     }
 
-    return minCapacity
+    return min
 };
 
 /* Peak Index in a Mountain Array - Given a mountain array arr, return the index i such that arr[0] < arr[1] < ... < arr[i - 1] < arr[i] > arr[i + 1] > ... > arr[arr.length - 1].

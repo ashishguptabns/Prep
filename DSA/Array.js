@@ -453,3 +453,21 @@ var maxSumAfterPartitioning = function (arr, k) {
   return sumArr.at(-1)
 };
 
+/* 1387. Sort Integers by The Power Value */
+var getKth = function (lo, hi, k) {
+  const findPower = num => {
+    let power = 0
+    while (num > 1) {
+      power++
+      num = num % 2 ? 3 * num + 1 : num / 2
+    }
+    return power
+  }
+  const result = [], map = {}
+  for (let i = lo; i <= hi; i++) {
+    result.push(i)
+    map[i] = findPower(i)
+  }
+  result.sort((a, b) => map[a] - map[b])
+  return result[k - 1]
+};

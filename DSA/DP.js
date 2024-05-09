@@ -1242,8 +1242,6 @@ var countSubstrings = function (s, t) {
 
 /* 647. Palindromic Substrings */
 
-/* 1387. Sort Integers by The Power Value */
-
 /* 2673. Make Costs of Paths Equal in a Binary Tree */
 
 /**

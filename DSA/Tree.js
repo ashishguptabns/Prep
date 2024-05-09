@@ -1177,18 +1177,16 @@ var recoverTree = function (root) {
     let [first, last, prev] = [null, null, null]
 
     const travel = (node) => {
-        if (node) {
-            travel(node.left)
-            if (prev && node.val < prev.val) {
-                if (!first) {
-                    first = prev
-                }
-                last = node
-            }
-            prev = node
-
-            travel(node.right)
+        if (!node) {
+            return
         }
+        travel(node.left)
+        if (prev && node.val < prev.val) {
+            first = first || prev
+            last = node
+        }
+        prev = node
+        travel(node.right)
     }
     travel(root)
 
@@ -1214,38 +1212,31 @@ You may assume that next() calls will always be valid. That is, there will be at
 The path does not need to start or end at the root or a leaf, but it must go downwards (i.e., traveling only from parent nodes to child nodes). */
 
 var pathSum = function (root, t) {
-    let output = 0;
-    const map = {};
+    let ans = 0
+    const map = {}
 
-    const traverse = (node, pathSum) => {
+    const travel = (node, sum) => {
         if (!node) {
-            return null;
+            return
         }
-
-        pathSum += node.val;
-
-        if (pathSum === t) {
-            output++;
+        sum += node.val
+        if (sum === t) {
+            ans++
         }
-        if (map[pathSum - t]) {
-            output += map[pathSum - t];
+        if (map[sum - t]) {
+            ans += map[sum - t]
         }
+        map[sum] = map[sum] || 0
+        map[sum]++
 
-        if (map[pathSum]) {
-            map[pathSum]++;
-        }
-        else {
-            map[pathSum] = 1;
-        }
+        travel(node.left, sum)
+        travel(node.right, sum)
 
-        traverse(node.left, pathSum);
-        traverse(node.right, pathSum);
+        map[sum]--
+    }
+    travel(root, 0)
 
-        map[pathSum]--;
-    };
-
-    traverse(root, 0);
-    return output;
+    return ans
 };
 
 /* 1261. Find Elements in a Contaminated Binary Tree */
