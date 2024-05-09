@@ -679,26 +679,26 @@ var numberOfSubarrays = function (nums, k) {
 /* 1052. Grumpy Bookstore Owner */
 
 var maxSatisfied = function (customers, grumpy, minutes) {
-    let res = 0, temp = 0, maxSatisfied = 0;
+    let totalSatisfied = 0
+    let max = 0
+    let extraSatisfied = 0
+    let ws = 0 //window start
+    let ans = 0
 
-    for (let i = 0; i < customers.length; i++) {
-        if (grumpy[i] === 0) {
-            res += customers[i];
-            customers[i] = 0;
+    for (let index = 0; index < customers.length; index++) {
+        const cust = customers[index]
+        !grumpy[index] && (totalSatisfied += cust)
+        grumpy[index] && (extraSatisfied += cust)
+
+        if (index - ws + 1 > minutes) {
+            grumpy[ws] && (extraSatisfied -= customers[ws])
+            ws++
         }
+        max = Math.max(max, extraSatisfied)
+        ans = totalSatisfied + max
+
     }
-
-    for (let i = 0; i < customers.length; i++) {
-        temp = res;
-
-        if (grumpy[i] === 1) {
-            customers.slice(i, i + minutes).forEach((a) => (temp += a));
-        }
-
-        maxSatisfied = Math.max(maxSatisfied, temp);
-    }
-
-    return maxSatisfied;
+    return ans
 };
 
 /* Minimum Swaps to Group All 1's Together 

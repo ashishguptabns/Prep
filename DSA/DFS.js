@@ -1,3 +1,27 @@
+
+/* 547. Number of Provinces */
+var findCircleNum = function (m) {
+    let ans = 0
+    const dfs = (r) => {
+        for (let c = 0; c < m[0].length; c++) {
+            if (m[r][c] === 1) {
+                m[r][c] = 0
+                dfs(c)
+            }
+        }
+    }
+    for (let r = 0; r < m.length; r++) {
+        for (let c = 0; c < m[0].length; c++) {
+            if (m[r][c] === 1) {
+                ans++
+                dfs(c)
+            }
+        }
+    }
+
+    return ans
+};
+
 /* Surrounded regions -Given an m x n matrix board containing 'X' and 'O', capture all regions that are 4-directionally surrounded by 'X'.
 
 A region is captured by flipping all 'O's into 'X's in that surrounded region.

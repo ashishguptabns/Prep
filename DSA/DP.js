@@ -803,22 +803,21 @@ const numDecodings = (s) => {
                 add dp[i - 2]
     */
 
-    if (!str || str[0] === '0') {
+    if (!s || s[0] === '0') {
         return 0
     }
 
-    const dp = Array(str.length + 1).fill(0)
+    const dp = Array(s.length + 1).fill(0)
     dp[0] = 1
     dp[1] = 1
 
-    for (let i = 2; i <= str.length; i++) {
-        const lastDigit = Number(str[i - 1])
-        const last2Digits = Number(str.substring(i - 2, i))
+    for (let i = 2; i <= s.length; i++) {
+        const lastDigit = Number(s[i - 1])
+        const last2Digits = Number(s[i - 2] + s[i - 1])
 
         if (lastDigit !== 0) {
             dp[i] += dp[i - 1]
         }
-
         if (last2Digits >= 10 && last2Digits <= 26) {
             dp[i] += dp[i - 2]
         }
@@ -1333,48 +1332,42 @@ var checkValidString = function (s) {
 
 /* 1334. Find the City With the Smallest Number of Neighbors at a Threshold Distance */
 
-/**
- * @param {number} n
- * @param {number[][]} edges
- * @param {number} distanceThreshold
- * @return {number}
- */
 var findTheCity = function (n, edges, distanceThreshold) {
-    const dp = Array(n).fill()
-        .map(_ => Array(n).fill(Infinity))
+    const dp = Array(n).fill().map(_ => Array(n).fill(Infinity))
 
     for (let i = 0; i < n; i++) {
         dp[i][i] = 0
     }
 
-    for (const [from, to, w] of edges) {
-        dp[from][to] = dp[to][from] = w
+    for (const [from, to, dist] of edges) {
+        dp[from][to] = dp[to][from] = dist
     }
 
     for (let mid = 0; mid < n; mid++) {
         for (let from = 0; from < n; from++) {
             for (let to = 0; to < n; to++) {
-                dp[from][to]
-                    = Math.min(dp[from][to], dp[from][mid] + dp[mid][to])
+                dp[from][to] = Math.min(dp[from][to],
+                    dp[from][mid] + dp[mid][to])
             }
         }
     }
 
-    let minCities = n
-    let ans
+    let min = n
+    let city = 0
     for (let from = 0; from < n; from++) {
-        let cities = 0
+        let allowedNextNum = 0
         for (let to = 0; to < n; to++) {
-            dp[from][to] <= distanceThreshold && cities++
+            if (dp[from][to] <= distanceThreshold) {
+                allowedNextNum++
+            }
         }
-        if (cities > minCities) {
+        if (allowedNextNum > min) {
             continue
         }
-        minCities = cities
-        ans = from
+        min = allowedNextNum
+        city = from
     }
-
-    return ans
+    return city
 };
 
 /* 2304. Minimum Path Cost in a Grid */
@@ -1403,7 +1396,7 @@ var minPathCost = function (grid, moveCost) {
 
 /* 1395. Count Number of Teams */
 
-var numTeams = function (rating) {
+var numTeams = function (arr) {
     const dp = Array(arr.length).fill().map(_ => [0, 0])
 
     let ans = 0

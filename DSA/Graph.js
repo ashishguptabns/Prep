@@ -688,8 +688,6 @@ var canVisitAllRooms = function (rooms) {
   return Object.keys(seen).length === rooms.length
 };
 
-/* 547. Number of Provinces */
-
 /* 1615. Maximal Network Rank */
 
 /**

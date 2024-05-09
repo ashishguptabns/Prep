@@ -973,26 +973,25 @@ Given the label of a node in this tree, return the labels in the path from the r
  */
 const pathInZigZagTree = (label) => {
     let level = 0
-
     while (2 ** (level + 1) <= label) {
         level++
     }
 
-    const moveUp = (label, level) => {
+    const travel = (label, level) => {
         if (label === 1) {
             return []
         }
 
-        const max = 2 ** (level + 1) - 1
-        const min = 2 ** level
+        const levelMax = 2 ** (level + 1) - 1
+        const levelMin = 2 ** level
 
-        const mirror = min + (max - label)
-
+        const mirror = levelMin + (levelMax - label)
         const parent = Math.floor(mirror / 2)
 
-        return [...moveUp(parent, level - 1), parent]
+        return [...travel(parent, level - 1), parent]
     }
-    return [...moveUp(label, level), label]
+
+    return [...travel(label, level), label]
 };
 
 /* Construct quad tree - Given a n * n matrix grid of 0's and 1's only.We want to represent grid with a Quad - Tree.
