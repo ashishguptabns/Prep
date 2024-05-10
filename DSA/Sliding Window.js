@@ -595,33 +595,26 @@ Change the answer key for any question to 'T' or 'F' (i.e., set answerKey[i] to 
 Return the maximum number of consecutive 'T's or 'F's in the answer key after performing the operation at most k times.
  */
 
-/**
- * @param {string} answerKey
- * @param {number} k
- * @return {number}
- */
 const maxConsecutiveAnswers = (arr, k) => {
 
     const find = (char) => {
-        let left = 0, charCount = 0, max = 0
-
-        for (let r = 0; r < arr.length; r++) {
-            if (arr[r] === char) {
+        let start = 0, charCount = 0, max = 0
+        for (let end = 0; end < arr.length; end++) {
+            if (arr[end] === char) {
                 charCount++
             }
 
             while (charCount > k) {
-                if (arr[left] === char) {
+                if (arr[start] === char) {
                     charCount--
                 }
-                left++
+                start++
             }
-            max = Math.max(max, r + 1 - left)
-        }
 
+            max = Math.max(max, end + 1 - start)
+        }
         return max
     }
-
     return Math.max(find('T'), find('F'))
 };
 
@@ -675,6 +668,32 @@ var numberOfSubarrays = function (nums, k) {
 };
 
 /* 1031. Maximum Sum of Two Non-Overlapping Subarrays */
+
+var maxSumTwoNoOverlap = function (nums, F, S) {
+    let n = nums.length;
+
+    let sum = [0];
+    for (let i = 0; i < n; i++) {
+        sum.push(nums[i] + sum[i]);
+    }
+
+    let max = 0, sum1, sum2;
+    for (let i = 0; i <= n - F - S; i++) {
+        for (let j = i + F; j <= n - S; j++) {
+            sum1 = sum[i + F] - sum[i];
+            sum2 = sum[j + S] - sum[j];
+            max = Math.max(sum1 + sum2, max);
+        }
+    }
+    for (let i = 0; i <= n - F - S; i++) {
+        for (let j = i + S; j <= n - F; j++) {
+            sum1 = sum[i + S] - sum[i];
+            sum2 = sum[j + F] - sum[j];
+            max = Math.max(sum1 + sum2, max);
+        }
+    }
+    return max;
+};
 
 /* 1052. Grumpy Bookstore Owner */
 

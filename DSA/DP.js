@@ -1418,21 +1418,17 @@ var numTeams = function (arr) {
 /* 983. Minimum Cost For Tickets */
 
 var mincostTickets = function (days, costs) {
-    const [_1day, _7days, _30days] = [0, 1, 2]
-
-    const daysSet = new Set(days)
     const lastDay = days.at(-1)
-
     const dp = Array(lastDay + 1).fill(0)
 
     for (let day = 1; day <= lastDay; day++) {
-        if (!daysSet.has(day)) {
+        if (!days.includes(day)) {
             dp[day] = dp[day - 1]
         } else {
             dp[day] = Math.min(
-                dp[day - 1] + costs[_1day],
-                dp[Math.max(0, day - 7)] + costs[_7days],
-                dp[Math.max(0, day - 30)] + costs[_30days]
+                dp[day - 1] + costs[0],
+                dp[Math.max(0, day - 7)] + costs[1],
+                dp[Math.max(0, day - 30)] + costs[2],
             )
         }
     }
