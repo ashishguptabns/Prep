@@ -465,3 +465,5 @@ const nextPermutation = (nums) => {
 };
 
 /* 1963. Minimum Number of Swaps to Make the String Balanced */
+
+/* 1055. Shortest Way to Form String */

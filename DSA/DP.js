@@ -1450,3 +1450,15 @@ var change = function (amount, coins) {
 
     return dp.at(-1)
 };
+
+/* 2184. Number of Ways to Build Sturdy Brick Wall */
+
+/* 1937. Maximum Number of Points with Cost */
+
+/* 562. Longest Line of Consecutive One in Matrix */
+
+/* 1525. Number of Good Ways to Split a String */
+
+/* 1049. Last Stone Weight II */
+
+/* 435. Non-overlapping Intervals */

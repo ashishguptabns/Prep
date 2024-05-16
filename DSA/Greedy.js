@@ -584,3 +584,7 @@ const twoCitySchedCost = (costs) => {
 
   return sum
 };
+
+/* 1007. Minimum Domino Rotations For Equal Row */
+
+/* 1509. Minimum Difference Between Largest and Smallest Value in Three Moves */

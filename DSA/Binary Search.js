@@ -715,3 +715,7 @@ var findMin2 = function (nums) {
 
     return nums[left];
 };
+
+/* 1574. Shortest Subarray to be Removed to Make Array Sorted */
+
+/* 528. Random Pick with Weight */

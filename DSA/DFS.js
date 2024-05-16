@@ -350,3 +350,8 @@ const hasPath = (maze, start, destination) => {
     return dfs(startRow, startCol);
 };
 
+/* 2101. Detonate the Maximum Bombs */
+
+/* 2096. Step-By-Step Directions From a Binary Tree Node to Another */
+
+/* 1110. Delete Nodes And Return Forest */

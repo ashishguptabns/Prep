@@ -448,3 +448,4 @@ const kSmallestPairs = (nums1, nums2, k) => {
     return res;
 };
 
+/* 2542. Maximum Subsequence Score */

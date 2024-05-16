@@ -294,3 +294,5 @@ const orangesRotting = (m) => {
     }
     return -1
 };
+
+/* 1926. Nearest Exit from Entrance in Maze */

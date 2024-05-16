@@ -440,3 +440,5 @@ var distributeCookies = function (cookies, k) {
 
     return ans
 };
+
+/* 2178. Maximum Split of Positive Even Integers */
