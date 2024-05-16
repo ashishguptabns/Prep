@@ -455,19 +455,22 @@ var maxSumAfterPartitioning = function (arr, k) {
 
 /* 1387. Sort Integers by The Power Value */
 var getKth = function (lo, hi, k) {
-  const findPower = num => {
+  const findPower = (num) => {
     let power = 0
     while (num > 1) {
       power++
       num = num % 2 ? 3 * num + 1 : num / 2
     }
+
     return power
   }
-  const result = [], map = {}
+
+  const ans = []
+  const map = {}
   for (let i = lo; i <= hi; i++) {
-    result.push(i)
+    ans.push(i)
     map[i] = findPower(i)
   }
-  result.sort((a, b) => map[a] - map[b])
-  return result[k - 1]
+  ans.sort((a, b) => map[a] - map[b])
+  return ans[k - 1]
 };

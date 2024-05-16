@@ -606,37 +606,35 @@ const countSubTrees = (n, edges, labels) => {
     update the count of each label in parent arr
   */
 
-  const adjList = Array(n).fill().map(() => [])
+  const graph = {}
+  for (const [a, b] of edges) {
+    graph[a] = graph[a] || []
+    graph[a].push(b)
 
-  for (const [from, to] of edges) {
-    adjList[from].push(to)
-    adjList[to].push(from)
+    graph[b] = graph[b] || []
+    graph[b].push(a)
   }
 
-  const ans = Array(n).fill(0)
-
-  const countArr = Array(26).fill(0)
-
-  const dfs = (node, parent, parentCountArr) => {
-    const countArr = Array(26).fill(0)
-
-    for (const neighbour of adjList[node]) {
-      if (neighbour === parent) {
-        continue
+  const ans = []
+  const travel = (node, parent, arr) => {
+    const newArr = Array(26).fill(0)
+    if (graph[node]) {
+      for (const next of graph[node]) {
+        if (next === parent) {
+          continue
+        }
+        travel(next, node, newArr)
       }
-
-      dfs(neighbour, node, countArr)
     }
-
-    countArr[labels.charCodeAt(node) - 97]++
-    ans[node] = countArr[labels.charCodeAt(node) - 97]
+    newArr[labels.charCodeAt(node) - 97]++
+    ans[node] = newArr[labels.charCodeAt(node) - 97]
 
     for (let i = 0; i < 26; i++) {
-      parentCountArr[i] += countArr[i]
+      arr[i] += newArr[i]
     }
   }
-
-  dfs(0, -1, countArr)
+  const arr = Array(26).fill(0)
+  travel(0, -1, arr)
 
   return ans
 };
@@ -851,34 +849,31 @@ var findRedundantConnection = function (edges) {
     graph[b].push(a)
   }
 
-  for (let node = edges.length - 1; node >= 0; node--) {
-    const [start, skip] = edges[node]
+  for (let i = edges.length - 1; i >= 0; i--) {
+    const [start, skip] = edges[i]
     const seen = {}
     seen[start] = true
-    let count = 0;
+    let nodes = 0
 
-    let queue = [start];
-    while (queue.length) {
-      const size = queue.length
-      for (let i = 0; i < size; i++) {
-        const node = queue.shift();
-        count++;
-
+    const q = [start]
+    while (q.length) {
+      const size = q.length
+      for (let j = 0; j < size; j++) {
+        const node = q.shift()
+        nodes++
         for (const next of graph[node]) {
           if (node === start && next === skip) {
-            continue;
+            continue
           }
-
           if (!seen[next]) {
             seen[next] = true
-            queue.push(next);
+            q.push(next)
           }
         }
       }
     }
-
-    if (count === edges.length) {
-      return edges[node];
+    if (nodes >= edges.length) {
+      return [start, skip]
     }
   }
 };
@@ -886,10 +881,6 @@ var findRedundantConnection = function (edges) {
 /* 1319. Number of Operations to Make Network Connected */
 
 var makeConnected = function (n, edges) {
-  if (edges.length < n - 1) {
-    return -1
-  }
-
   const graph = {}
   for (const [a, b] of edges) {
     graph[a] = graph[a] || []
@@ -899,25 +890,30 @@ var makeConnected = function (n, edges) {
     graph[b].push(a)
   }
 
-  const seen = {}
-  const dfs = (node) => {
-    if (!seen[node]) {
-      seen[node] = true
-      if (graph[node]) {
-        for (const next of graph[node]) {
-          dfs(next)
-        }
-      }
-      return true
-    }
-    return false
-  }
   let networks = 0
-  for (let node = 0; node < n; node++) {
-    if (dfs(node)) {
-      networks++
+  const seen = {}
+  const travel = (node) => {
+    if (seen[node]) {
+      return
+    }
+    seen[node] = true
+    if (graph[node]) {
+      for (const next of graph[node]) {
+        travel(next)
+      }
     }
   }
+  for (let node = 0; node < n; node++) {
+    if (!seen[node]) {
+      networks++
+      travel(node)
+    }
+  }
+
+  if (Object.keys(seen).length - 1 > edges.length) {
+    return -1
+  }
+
   return networks - 1
 };
 
@@ -1195,4 +1191,40 @@ var isBipartite = function (graph) {
     }
   }
   return true
+};
+
+/* 2925. Maximum Score After Applying Operations on a Tree */
+
+var maximumScoreAfterOperations = function (edges, values) {
+  const graph = {}
+  for (const [a, b] of edges) {
+    graph[a] = graph[a] || []
+    graph[a].push(b)
+
+    graph[b] = graph[b] || []
+    graph[b].push(a)
+  }
+
+  let totalSum = 0
+  for (const num of values) {
+    totalSum += num
+  }
+
+  const dfs = (node, parent) => {
+    if (graph[node].length === 1 && graph[node][0] === parent) {
+      return values[node]
+    }
+
+    let sum = 0
+    for (const next of graph[node]) {
+      if (next === parent) {
+        continue
+      }
+
+      sum += dfs(next, node)
+    }
+
+    return Math.min(values[node], sum)
+  }
+  return totalSum - dfs(0, -1)
 };
