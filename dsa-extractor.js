@@ -48,13 +48,13 @@ fs.readdir(directoryPath, (err, files) => {
         });
     })
     promise.then(data => {
-        const outputFilePath = path.join(__dirname, 'dsa-problems.js');
-        const jsonData = JSON.stringify(data)
-        fs.appendFile(outputFilePath, jsonData, err => {
+        const outputFilePath = path.join(__dirname, 'dsa-problems.json');
+        const jsonData = JSON.stringify({"problems":data})
+        fs.writeFile(outputFilePath, jsonData, err => {
             if (err) {
-                console.error('Error appending to file:', err);
+                console.error('Error writing to file:', err);
             } else {
-                console.log('Data has been appended to', outputFilePath);
+                console.log('Data has been written to', outputFilePath);
             }
         });
     })

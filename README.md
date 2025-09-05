@@ -1,1 +1,0 @@
-Notes on DSA/SQL
