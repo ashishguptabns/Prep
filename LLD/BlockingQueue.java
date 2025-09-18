@@ -3,6 +3,16 @@ package LLD;
 import java.util.ArrayList;
 import java.util.List;
 
+/*
+Blocking Queue
+
+Key Operations:
+
+enqueue(item) – Adds item; blocks if full.
+dequeue() – Removes and returns item; blocks if empty.
+size() – Returns current queue size.
+*/
+
 public class BlockingQueue<T> {
     int size = 0;
     int max = 0;
@@ -14,7 +24,7 @@ public class BlockingQueue<T> {
 
     private synchronized void offer(T value) throws Exception {
         while (this.size >= this.max) {
-            System.out.println("Waiting - " + value);
+            System.out.println("Waiting - " + value + " on thread - " + Thread.currentThread().getName());
             wait();
         }
         this.size++;
