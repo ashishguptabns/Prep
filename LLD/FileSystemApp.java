@@ -26,6 +26,6 @@ If the destination already exists, it should overwrite a file but merge director
 Handle cyclic moves (e.g., moving a directory into one of its own subdirectories).
 */
 
-public class FileSystem {
+public class FileSystemApp {
     
 }
