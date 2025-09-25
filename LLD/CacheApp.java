@@ -22,6 +22,26 @@ Support TTL and automatic expiry cleanup.
 Extensibility to support different data types or modules.
 */
 
-public class Cache {
+enum ConsistencyLevel {
+    STRONG, EVENTUAL
+}
+
+interface Cache {
+    String get(String key);
+
+    void put(String key, String value);
+
+    void put(String key, String value, long ttl);
+
+    void delete(String key);
+
+    boolean compareAndSet(String key, String expectedValue, String newValue);
+
+    long increment(String key);
+
+    void setConsistencyLevel(ConsistencyLevel level);
+}
+
+public class CacheApp {
 
 }
