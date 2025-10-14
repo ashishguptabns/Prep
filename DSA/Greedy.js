@@ -242,27 +242,19 @@ const jump = (nums) => {
 /* Jump Game - You are given an integer array nums. You are initially positioned at the array's first index, and each element in the array represents your maximum jump length at that position.
 
 Return true if you can reach the last index, or false otherwise.
- */
-/**
- * @param {number[]} nums
- * @return {boolean}
- */
-const canJump = (nums) => {
 
-  /* pseudo code
-      
-  */
-
-  let lastPos = nums.length - 1;
-
-  for (let i = nums.length - 2; i >= 0; i--) {
-    if (i + nums[i] >= lastPos) {
-      lastPos = i;
+public boolean canJump(int[] nums) {
+        int reachable = 0;
+  for (int i = 0; i < nums.length; i++) {
+    if (i > reachable) {
+      return false;
     }
+    reachable = Math.max(reachable, i + nums[i]);
   }
 
-  return lastPos === 0;
-};
+  return true;
+}
+ */
 
 /* Minimum Rounds to Complete All Tasks - You are given a 0-indexed integer array tasks, where tasks[i] represents the difficulty level of a task. In each round, you can complete either 2 or 3 tasks of the same difficulty level.
 
