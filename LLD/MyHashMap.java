@@ -33,6 +33,10 @@ public class MyHashMap<K, V> {
         return null;
     }
 
+    public V remove(K key) {
+        return null;
+    }
+
     public void put(K key, V val) {
         Entry<K, V> head = buckets[getBucketIndex(key)];
         while (head != null) {
