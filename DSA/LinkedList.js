@@ -693,8 +693,6 @@ const removeNthFromEnd = (head, n) => {
     return head;
 };
 
-/* Convert Sorted List to Binary Search Tree - Given the head of a singly linked list where elements are sorted in ascending order, convert it to a height-balanced binary search tree. */
-
 /* 1669. Merge In Between Linked Lists */
 
 var mergeInBetween = function (list1, a, b, list2) {
@@ -852,3 +850,5 @@ var splitListToParts = function (head, k) {
 };
 
 /* 1019. Next Greater Node In Linked List */
+
+/* Convert Sorted List to Binary Search Tree - Given the head of a singly linked list where elements are sorted in ascending order, convert it to a height-balanced binary search tree. */
