@@ -577,10 +577,6 @@ const sortList = (head) => {
 */
 const rotateRight = (head, k) => {
 
-    /* pseudo code
-
-    */
-
     if (!head) {
         return head;
     }
