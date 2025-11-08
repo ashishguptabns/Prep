@@ -836,48 +836,6 @@ var minReorder = function (n, edges) {
 
 /* 684. Redundant Connection */
 
-/**
- * @param {number[][]} edges
- * @return {number[]}
- */
-var findRedundantConnection = function (edges) {
-  const graph = {}
-  for (const [a, b] of edges) {
-    graph[a] = graph[a] || []
-    graph[a].push(b)
-    graph[b] = graph[b] || []
-    graph[b].push(a)
-  }
-
-  for (let i = edges.length - 1; i >= 0; i--) {
-    const [start, skip] = edges[i]
-    const seen = {}
-    seen[start] = true
-    let nodes = 0
-
-    const q = [start]
-    while (q.length) {
-      const size = q.length
-      for (let j = 0; j < size; j++) {
-        const node = q.shift()
-        nodes++
-        for (const next of graph[node]) {
-          if (node === start && next === skip) {
-            continue
-          }
-          if (!seen[next]) {
-            seen[next] = true
-            q.push(next)
-          }
-        }
-      }
-    }
-    if (nodes >= edges.length) {
-      return [start, skip]
-    }
-  }
-};
-
 /* 1319. Number of Operations to Make Network Connected */
 
 var makeConnected = function (n, edges) {
