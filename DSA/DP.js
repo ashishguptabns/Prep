@@ -646,39 +646,6 @@ const minPathSum = (grid) => {
 /* Partition Equal Subset Sum - Given an integer array nums, return true if you can partition the array into two subsets such that the sum of the elements in both subsets is equal or false otherwise.
  */
 
-/**
- * @param {number[]} nums
- * @return {boolean}
- */
-const canPartition = (nums) => {
-    let sum = nums.reduce((prevVal, currValue) => prevVal + currValue, 0);
-
-    if (sum % 2 !== 0) {
-        return false;
-    }
-
-    let target = sum / 2;
-    let dp = new Set();
-    dp.add(0);
-
-    for (let i = nums.length - 1; i >= 0; i--) {
-        let nextDp = new Set();
-
-        for (const ele of dp.values()) {
-            let newVal = ele + nums[i];
-            if (newVal === target) {
-                return true;
-            }
-
-            nextDp.add(newVal);
-        }
-
-        dp = new Set([...dp, ...nextDp]);
-    }
-
-    return false;
-};
-
 /* Longest Increasing Path in a Matrix - Given an m x n integers matrix, return the length of the longest increasing path in matrix.
 
 From each cell, you can either move in four directions: left, right, up, or down. You may not move diagonally or move outside the boundary (i.e., wrap-around is not allowed).
