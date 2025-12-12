@@ -4,6 +4,7 @@ import static java.lang.Thread.sleep;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.PriorityQueue;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -51,7 +52,7 @@ public class LiftSystem {
 
         @Override
         public void run() {
-            while (isRunning) {
+            while (isRunning && !Thread.currentThread().isInterrupted()) {
                 Integer nextFloor = null;
                 lock.lock();
                 try {
@@ -63,8 +64,13 @@ public class LiftSystem {
                     if (nextFloor == null) {
                         dir = Direction.IDLE;
                         Thread.sleep(200);
+                        if (Thread.currentThread().isInterrupted()) {
+                            break;
+                        }
                         continue;
                     }
+                } catch (InterruptedException e) {
+                    break;
                 } catch (Exception e) {
                 }
                 move(nextFloor);
@@ -77,28 +83,45 @@ public class LiftSystem {
             } else if (toFloor < currFloor) {
                 dir = Direction.DOWN;
             }
-            while (currFloor != toFloor) {
+            while (currFloor != toFloor && !Thread.currentThread().isInterrupted()) {
                 try {
+                    System.out.println(String
+                            .format("Lift %s is moving from %d to %d",
+                                    toString(), currFloor, toFloor));
                     sleep(300);
+                    if (Thread.currentThread().isInterrupted()) {
+                        break;
+                    }
+                } catch (InterruptedException e) {
+                    break;
                 } catch (Exception e) {
                 }
                 currFloor += (dir == Direction.DOWN) ? -1 : 1;
             }
+            System.out.println("Lift is idle - " + toString());
             dir = Direction.IDLE;
         }
 
         LiftState getState() {
             lock.lock();
             try {
-                return new LiftState(this.dir, this.currFloor, new PriorityQueue<>(tasks));
+                return new LiftState(this.dir,
+                        this.currFloor, new PriorityQueue<>(tasks));
             } finally {
                 lock.unlock();
             }
         }
 
+        @Override
+        public String toString() {
+            return "Lift - " + name;
+        }
+
         void addTask(int toFloor) {
             lock.lock();
             try {
+                System.out.println("Added task to lift - "
+                        + this.toString());
                 tasks.add(toFloor);
             } finally {
                 lock.unlock();
@@ -112,7 +135,6 @@ public class LiftSystem {
         while (numLifts-- > 0) {
             Lift lift = new Lift(numLifts + "", numFloors);
             liftsArr.add(lift);
-            new Thread(lift, lift.name).start();
         }
     }
 
@@ -127,6 +149,11 @@ public class LiftSystem {
         public Req(int fromFloor, Direction dir) {
             this.fromFloor = fromFloor;
             this.dir = dir;
+        }
+
+        @Override
+        public String toString() {
+            return "Req - " + fromFloor + " Dir - " + dir.toString();
         }
     }
 
@@ -153,8 +180,11 @@ public class LiftSystem {
                     Req req = q.take();
                     Lift bestLift = findBestLift(req);
                     if (bestLift != null) {
+                        System.out.println("Found lift - " + bestLift.toString());
                         bestLift.addTask(req.fromFloor);
                     }
+                } catch (InterruptedException e) {
+                    break;
                 } catch (Exception e) {
                 }
             }
@@ -185,22 +215,53 @@ public class LiftSystem {
         }
 
         void submitHallReq(Req req) {
+            System.out.println("New req added - " + req.toString());
             q.offer(req);
         }
     }
 
     void run() throws InterruptedException {
+        ExecutorService liftExecutor = java.util.concurrent.Executors.newFixedThreadPool(2);
+        ExecutorService dispatcherExecutor = java.util.concurrent.Executors.newSingleThreadExecutor();
+
         LiftController controller = new LiftController();
-        new Thread(controller, "Dispatcher").start();
+        dispatcherExecutor.submit(controller);
+
+        for (Lift lift : liftsArr) {
+            liftExecutor.submit(lift);
+        }
 
         controller.submitHallReq(new Req(5, Direction.DOWN));
         controller.submitHallReq(new Req(3, Direction.UP));
         controller.submitHallReq(new Req(5, Direction.DOWN));
+
+        Thread.sleep(1000);
+
         controller.submitHallReq(new Req(1, Direction.DOWN));
+        controller.submitHallReq(new Req(5, Direction.UP));
+        controller.submitHallReq(new Req(3, Direction.UP));
+
+        Thread.sleep(1000);
+
+        controller.submitHallReq(new Req(5, Direction.DOWN));
+        controller.submitHallReq(new Req(1, Direction.UP));
+
+        Thread.sleep(3000);
+
+        System.out.println("Shutting down");
+        for (Lift lift : liftsArr) {
+            lift.isRunning = false;
+        }
+        controller.isRunning = false;
+
+        liftExecutor.shutdownNow();
+        dispatcherExecutor.shutdownNow();
+        liftExecutor.awaitTermination(2, java.util.concurrent.TimeUnit.SECONDS);
+        dispatcherExecutor.awaitTermination(2, java.util.concurrent.TimeUnit.SECONDS);
     }
 
     public static void main(String[] a) throws InterruptedException {
-        LiftSystem app = new LiftSystem(10, 10);
+        LiftSystem app = new LiftSystem(5, 10);
         app.run();
     }
 }
