@@ -87,4 +87,15 @@ public class MyList<T> {
             cursor = 0;
         }
     }
+
+    public static void main(String[] a) {
+        MyList<String> list = new MyList<>();
+        list.add("A");
+        list.add("AA");
+        MyIterator<String> it = list.getIterator();
+        System.out.println(it.next());
+        System.out.println(it.next());
+        list.add("AAA");
+        System.out.println(it.next());
+    }
 }
