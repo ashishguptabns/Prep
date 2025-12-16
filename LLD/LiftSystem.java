@@ -36,13 +36,12 @@ Responsible for:
     pushing tasks to elevator queues
  */
 public class LiftSystem {
-    class Lift implements Runnable {
+    class Lift extends Thread {
         final String name;
         final int numFloors;
         int currFloor = 0;
         Direction dir = Direction.IDLE;
         PriorityQueue<Integer> tasks = new PriorityQueue<>();
-        volatile boolean isRunning = true;
         final ReentrantLock lock = new ReentrantLock();
 
         public Lift(String name, int numFloors) {
@@ -52,7 +51,7 @@ public class LiftSystem {
 
         @Override
         public void run() {
-            while (isRunning && !Thread.currentThread().isInterrupted()) {
+            while (!Thread.currentThread().isInterrupted()) {
                 Integer nextFloor = null;
                 lock.lock();
                 try {
@@ -64,9 +63,6 @@ public class LiftSystem {
                     if (nextFloor == null) {
                         dir = Direction.IDLE;
                         Thread.sleep(200);
-                        if (Thread.currentThread().isInterrupted()) {
-                            break;
-                        }
                         continue;
                     }
                 } catch (InterruptedException e) {
@@ -102,7 +98,7 @@ public class LiftSystem {
             dir = Direction.IDLE;
         }
 
-        LiftState getState() {
+        LiftState getLiftState() {
             lock.lock();
             try {
                 return new LiftState(this.dir,
@@ -135,6 +131,7 @@ public class LiftSystem {
         while (numLifts-- > 0) {
             Lift lift = new Lift(numLifts + "", numFloors);
             liftsArr.add(lift);
+            lift.start();
         }
     }
 
@@ -142,13 +139,22 @@ public class LiftSystem {
         UP, DOWN, IDLE
     }
 
-    class Req {
-        final int fromFloor;
-        final Direction dir;
+    abstract class Req {
+        int toFloor;
+        int fromFloor;
+        Direction dir;
+    }
 
-        public Req(int fromFloor, Direction dir) {
+    class HallReq extends Req {
+
+        public HallReq(int fromFloor, Direction dir) {
             this.fromFloor = fromFloor;
             this.dir = dir;
+        }
+
+        public HallReq(int fromFloor, int toFloor) {
+            this.fromFloor = fromFloor;
+            this.toFloor = toFloor;
         }
 
         @Override
@@ -157,7 +163,7 @@ public class LiftSystem {
         }
     }
 
-    class LiftState {
+    public class LiftState {
         final Direction dir;
         final int floor;
         final PriorityQueue<Integer> tasks;
@@ -169,13 +175,12 @@ public class LiftSystem {
         }
     }
 
-    class LiftController implements Runnable {
+    class LiftController extends Thread {
         final java.util.concurrent.BlockingQueue<Req> q = new LinkedBlockingQueue<>();
-        volatile boolean isRunning = true;
 
         @Override
         public void run() {
-            while (isRunning) {
+            while (!Thread.currentThread().isInterrupted()) {
                 try {
                     Req req = q.take();
                     Lift bestLift = findBestLift(req);
@@ -204,7 +209,7 @@ public class LiftSystem {
             Lift ans = null;
             int bestScore = Integer.MAX_VALUE;
             for (Lift lift : liftsArr) {
-                LiftState state = lift.getState();
+                LiftState state = lift.getLiftState();
                 int score = findScore(state, req);
                 if (score < bestScore) {
                     ans = lift;
@@ -221,43 +226,31 @@ public class LiftSystem {
     }
 
     void run() throws InterruptedException {
-        ExecutorService liftExecutor = java.util.concurrent.Executors.newFixedThreadPool(2);
-        ExecutorService dispatcherExecutor = java.util.concurrent.Executors.newSingleThreadExecutor();
-
         LiftController controller = new LiftController();
-        dispatcherExecutor.submit(controller);
+        controller.start();
 
-        for (Lift lift : liftsArr) {
-            liftExecutor.submit(lift);
-        }
-
-        controller.submitHallReq(new Req(5, Direction.DOWN));
-        controller.submitHallReq(new Req(3, Direction.UP));
-        controller.submitHallReq(new Req(5, Direction.DOWN));
+        controller.submitHallReq(new HallReq(5, Direction.DOWN));
+        controller.submitHallReq(new HallReq(3, Direction.UP));
+        controller.submitHallReq(new HallReq(5, Direction.DOWN));
 
         Thread.sleep(1000);
 
-        controller.submitHallReq(new Req(1, Direction.DOWN));
-        controller.submitHallReq(new Req(5, Direction.UP));
-        controller.submitHallReq(new Req(3, Direction.UP));
+        controller.submitHallReq(new HallReq(1, Direction.DOWN));
+        controller.submitHallReq(new HallReq(5, Direction.UP));
+        controller.submitHallReq(new HallReq(3, Direction.UP));
 
         Thread.sleep(1000);
 
-        controller.submitHallReq(new Req(5, Direction.DOWN));
-        controller.submitHallReq(new Req(1, Direction.UP));
+        controller.submitHallReq(new HallReq(5, Direction.DOWN));
+        controller.submitHallReq(new HallReq(1, Direction.UP));
 
-        Thread.sleep(3000);
+        Thread.sleep(5000);
 
         System.out.println("Shutting down");
+        controller.interrupt();
         for (Lift lift : liftsArr) {
-            lift.isRunning = false;
+            lift.interrupt();
         }
-        controller.isRunning = false;
-
-        liftExecutor.shutdownNow();
-        dispatcherExecutor.shutdownNow();
-        liftExecutor.awaitTermination(2, java.util.concurrent.TimeUnit.SECONDS);
-        dispatcherExecutor.awaitTermination(2, java.util.concurrent.TimeUnit.SECONDS);
     }
 
     public static void main(String[] a) throws InterruptedException {
