@@ -6,8 +6,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Set;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 /* 
  * Multiple entry gates, levels and spots
@@ -48,7 +51,7 @@ public class ParkingLotApp {
         public Level(int num) {
             this.num = num;
             pq = new PriorityQueue<>((a, b) -> a.name.compareTo(b.name));
-            initFreeSpots(25);
+            initFreeSpots(20);
         }
 
         synchronized void recordBookedSpot(Spot spot) {
@@ -64,6 +67,11 @@ public class ParkingLotApp {
         void addSpot(Spot spot) {
             this.pq.offer(spot);
             hasFreeSpots = true;
+
+            try {
+                Thread.sleep(200);
+            } catch (InterruptedException e) {
+            }
         }
 
         Spot findFreeSpot() {
@@ -71,6 +79,11 @@ public class ParkingLotApp {
             if (pq.isEmpty()) {
                 hasFreeSpots = false;
             }
+            try {
+                Thread.sleep(200);
+            } catch (InterruptedException e) {
+            }
+
             if (spot != null) {
                 return spot;
             }
@@ -100,6 +113,12 @@ public class ParkingLotApp {
                 this.isEmpty = false;
                 this.vehicle = vehicle;
                 this.level.recordBookedSpot(this);
+
+                try {
+                    Thread.sleep(300);
+                } catch (InterruptedException e) {
+                }
+
                 return true;
             }
             return false;
@@ -200,26 +219,30 @@ public class ParkingLotApp {
     }
 
     void run() {
-        ExecutorService executor = Executors.newFixedThreadPool(2);
+        ExecutorService executor = Executors.newFixedThreadPool(3);
+        CountDownLatch latch = new CountDownLatch(50);
         int count = 0;
-        while (count++ < 100) {
-            int temp = count;
+        while (count++ < 50) {
+            final int temp = count;
             executor.submit(() -> {
-                Ticket ticket = gateMap.get("Gate " + String.valueOf(temp % 2 + 1))
-                        .issueTicket(new Vehicle("Vehicle - " + temp));
-                if (ticket != null) {
-                    System.out.println(ticket.toString());
+                try {
+                    Ticket ticket = gateMap.get("Gate " + String.valueOf(temp % 2 + 1))
+                            .issueTicket(new Vehicle("Vehicle - " + temp));
+                    if (ticket != null) {
+                        System.out.println(ticket.toString());
+                    }
+                } finally {
+                    latch.countDown();
                 }
             });
         }
-
         try {
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
+            latch.await();
+        } catch (Exception e) {
+        } finally {
+            System.out.println("Shutting down");
+            executor.shutdownNow();
         }
-
-        System.out.println("Shutting down");
-        executor.shutdownNow();
     }
 
     public static void main(String[] ar) {
