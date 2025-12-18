@@ -150,16 +150,15 @@ public class ParkingLotApp {
 
     class Gate {
         final List<Level> levels;
-        final Map<String, ParkingStrategy> parkingStrategies;
+        final ParkingStrategy parkingStrategy;
 
-        public Gate(String name, List<Level> levels) {
+        public Gate(String name, ParkingStrategy parkingStrategy, List<Level> levels) {
             this.levels = levels;
-            this.parkingStrategies = new HashMap<>();
-            this.parkingStrategies.put(FastestFillParkingStrategy.name, new FastestFillParkingStrategy());
+            this.parkingStrategy = parkingStrategy;
         }
 
-        Ticket issueTicket(Vehicle vehicle, String strategyName) {
-            Spot spot = this.parkingStrategies.get(strategyName).findFreeSpot(this.levels, vehicle);
+        Ticket issueTicket(Vehicle vehicle) {
+            Spot spot = this.parkingStrategy.findFreeSpot(this.levels, vehicle);
             if (spot != null) {
                 boolean booked = false;
                 try {
@@ -194,9 +193,9 @@ public class ParkingLotApp {
                 new Level(3),
                 new Level(4));
         gateMap = new HashMap<>();
-        gateMap.put("Gate 1", new Gate("Gate 1",
+        gateMap.put("Gate 1", new Gate("Gate 1", new FastestFillParkingStrategy(),
                 List.of(this.levels.get(0), this.levels.get(2))));
-        gateMap.put("Gate 2", new Gate("Gate 2",
+        gateMap.put("Gate 2", new Gate("Gate 2", new FastestFillParkingStrategy(),
                 List.of(this.levels.get(1), this.levels.get(2), this.levels.get(3))));
     }
 
@@ -207,7 +206,7 @@ public class ParkingLotApp {
             int temp = count;
             executor.submit(() -> {
                 Ticket ticket = gateMap.get("Gate " + String.valueOf(temp % 2 + 1))
-                        .issueTicket(new Vehicle("Vehicle - " + temp), FastestFillParkingStrategy.name);
+                        .issueTicket(new Vehicle("Vehicle - " + temp));
                 if (ticket != null) {
                     System.out.println(ticket.toString());
                 }
