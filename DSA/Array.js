@@ -341,31 +341,6 @@ A circular array means the end of the array connects to the beginning of the arr
 A subarray may only include each element of the fixed buffer nums at most once. Formally, for a subarray nums[i], nums[i + 1], ..., nums[j], there does not exist i <= k1, k2 <= j with k1 % n == k2 % n.
  */
 
-const maxSubarraySumCircular = (nums) => {
-
-  let curMax = 0,
-    curMin = 0,
-    sum = 0,
-    maxSum = nums[0],
-    minSum = nums[0];
-
-  for (const num of nums) {
-    curMax = Math.max(curMax, 0) + num;
-    maxSum = Math.max(maxSum, curMax);
-
-    curMin = Math.min(curMin, 0) + num;
-    minSum = Math.min(minSum, curMin);
-
-    sum += num;
-  }
-
-  if (sum === minSum) {
-    return maxSum;
-  }
-
-  return Math.max(maxSum, sum - minSum);
-};
-
 /* Maximum Gap - Given an integer array nums, return the maximum difference between two successive elements in its sorted form. If the array contains less than two elements, return 0.
 
 You must write an algorithm that runs in linear time and uses linear extra space. */
