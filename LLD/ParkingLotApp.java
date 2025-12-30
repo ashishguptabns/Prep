@@ -1,16 +1,18 @@
 package LLD;
 
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.PriorityQueue;
 import java.util.Set;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 /* 
  * Multiple entry gates, levels and spots
@@ -44,50 +46,47 @@ public class ParkingLotApp {
 
     class Level {
         final int num;
-        final PriorityQueue<Spot> pq;
-        volatile boolean hasFreeSpots = true;
-        Set<Spot> bookedSpots = new HashSet<>();
+        private final AtomicInteger availableCount = new AtomicInteger(20);
+        private final ConcurrentLinkedQueue<Spot> freeSpots = new ConcurrentLinkedQueue<>();
 
         public Level(int num) {
             this.num = num;
-            pq = new PriorityQueue<>((a, b) -> a.name.compareTo(b.name));
             initFreeSpots(20);
         }
 
-        synchronized void recordBookedSpot(Spot spot) {
-            this.bookedSpots.add(spot);
+        boolean hasFreeSpots() {
+            return availableCount.get() > 0;
         }
 
         private void initFreeSpots(int numSpots) {
             while (numSpots-- > 0) {
-                pq.offer(new Spot("Spot - " + numSpots, this));
+                freeSpots.add(new Spot("Spot - " + numSpots, this));
             }
         }
 
-        void addSpot(Spot spot) {
-            this.pq.offer(spot);
-            hasFreeSpots = true;
-
-            try {
-                Thread.sleep(200);
-            } catch (InterruptedException e) {
+        void addSpot(Spot spot, ParkingStrategy strategy) {
+            spot.vehicle.set(null);
+            int count = availableCount.incrementAndGet();
+            freeSpots.add(spot);
+            if (count == 1) {
+                strategy.addLevel(this);
             }
         }
 
         Spot findFreeSpot() {
-            Spot spot = pq.poll();
-            if (pq.isEmpty()) {
-                hasFreeSpots = false;
-            }
-            try {
-                Thread.sleep(200);
-            } catch (InterruptedException e) {
+            while (availableCount.get() > 0) {
+                int curr = availableCount.get();
+                if (curr > 0 && availableCount.compareAndSet(curr, curr - 1)) {
+                    Spot spot = freeSpots.poll();
+                    if (spot == null) {
+                        availableCount.incrementAndGet();
+                        return null;
+                    }
+                    return spot;
+                }
             }
 
-            if (spot != null) {
-                return spot;
-            }
-            System.out.println("No free spots at " + this + " left - " + pq.size());
+            System.out.println("No free spots at " + this + " left - " + availableCount.get());
             return null;
         }
 
@@ -98,8 +97,7 @@ public class ParkingLotApp {
     }
 
     class Spot {
-        volatile boolean isEmpty = true;
-        Vehicle vehicle;
+        AtomicReference<Vehicle> vehicle = new AtomicReference<>();
         final String name;
         final Level level;
 
@@ -108,20 +106,8 @@ public class ParkingLotApp {
             this.level = level;
         }
 
-        synchronized boolean book(Vehicle vehicle) {
-            if (this.isEmpty) {
-                this.isEmpty = false;
-                this.vehicle = vehicle;
-                this.level.recordBookedSpot(this);
-
-                try {
-                    Thread.sleep(300);
-                } catch (InterruptedException e) {
-                }
-
-                return true;
-            }
-            return false;
+        boolean book(Vehicle vehicle) {
+            return this.vehicle.compareAndSet(null, vehicle);
         }
 
         @Override
@@ -144,23 +130,35 @@ public class ParkingLotApp {
     }
 
     interface ParkingStrategy {
-        Spot findFreeSpot(List<Level> levels, Vehicle vehicle);
+        void addLevels(List<Level> levels);
+
+        void addLevel(Level level);
+
+        Spot findFreeSpot(Vehicle vehicle);
     }
 
     class FastestFillParkingStrategy implements ParkingStrategy {
         public static String name = "FastestFillParkingStrategy";
+        ConcurrentSkipListSet<Level> activeLevels = new ConcurrentSkipListSet<>(
+                Comparator.comparingInt(level -> level.num));
+
+        public void addLevel(Level level) {
+            activeLevels.add(level);
+        }
+
+        public void addLevels(List<Level> levels) {
+            activeLevels.addAll(levels);
+        }
 
         @Override
-        public Spot findFreeSpot(List<Level> levels, Vehicle vehicle) {
-            for (Level level : levels) {
-                if (!level.hasFreeSpots) {
-                    continue;
+        public Spot findFreeSpot(Vehicle vehicle) {
+            for (Level level : activeLevels) {
+                Spot spot = level.findFreeSpot();
+                if (spot != null) {
+                    return spot;
                 }
-                synchronized (level) {
-                    Spot spot = level.findFreeSpot();
-                    if (spot != null) {
-                        return spot;
-                    }
+                if (!level.hasFreeSpots()) {
+                    activeLevels.remove(level);
                 }
             }
             return null;
@@ -174,26 +172,16 @@ public class ParkingLotApp {
         public Gate(String name, ParkingStrategy parkingStrategy, List<Level> levels) {
             this.levels = levels;
             this.parkingStrategy = parkingStrategy;
+            this.parkingStrategy.addLevels(levels);
         }
 
         Ticket issueTicket(Vehicle vehicle) {
-            Spot spot = this.parkingStrategy.findFreeSpot(this.levels, vehicle);
+            Spot spot = this.parkingStrategy.findFreeSpot(vehicle);
             if (spot != null) {
-                boolean booked = false;
-                try {
-                    synchronized (spot) {
-                        if (spot.book(vehicle)) {
-                            booked = true;
-                            return new Ticket(vehicle, spot);
-                        }
-                    }
-                } finally {
-                    if (!booked) {
-                        synchronized (spot.level) {
-                            System.out.println("Adding Spot back " + spot);
-                            spot.level.addSpot(spot);
-                        }
-                    }
+                if (spot.book(vehicle)) {
+                    return new Ticket(vehicle, spot);
+                } else {
+                    spot.level.addSpot(spot, parkingStrategy);
                 }
             }
 
