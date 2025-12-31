@@ -9,6 +9,9 @@ import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -44,16 +47,17 @@ public class ParkingLotApp {
 
     class Level {
         final int num;
-        private final AtomicInteger availableCount = new AtomicInteger(20);
-        private final ConcurrentLinkedQueue<Spot> freeSpots = new ConcurrentLinkedQueue<>();
+        private final LinkedBlockingQueue<Spot> freeSpots = new LinkedBlockingQueue<>();
+        private final Semaphore semaphore;
 
         public Level(int num) {
             this.num = num;
+            semaphore = new Semaphore(20, true);
             initFreeSpots(20);
         }
 
         boolean hasFreeSpots() {
-            return availableCount.get() > 0;
+            return semaphore.availablePermits() > 0;
         }
 
         private void initFreeSpots(int numSpots) {
@@ -64,27 +68,20 @@ public class ParkingLotApp {
 
         void addSpot(Spot spot, ParkingStrategy strategy) {
             spot.vehicle.set(null);
-            int count = availableCount.incrementAndGet();
-            freeSpots.add(spot);
-            if (count == 1) {
-                strategy.addLevel(this);
-            }
+            freeSpots.offer(spot);
+            semaphore.release();
         }
 
         Spot findFreeSpot() {
-            while (availableCount.get() > 0) {
-                int curr = availableCount.get();
-                if (curr > 0 && availableCount.compareAndSet(curr, curr - 1)) {
-                    Spot spot = freeSpots.poll();
-                    if (spot == null) {
-                        availableCount.incrementAndGet();
-                        return null;
-                    }
+            if (semaphore.tryAcquire()) {
+                Spot spot = freeSpots.poll();
+                if (spot != null) {
                     return spot;
                 }
+                semaphore.release();
             }
 
-            System.out.println("No free spots at " + this + " left - " + availableCount.get());
+            System.out.println("No free spots at " + this + " left - " + semaphore.availablePermits());
             return null;
         }
 
@@ -104,8 +101,8 @@ public class ParkingLotApp {
             this.level = level;
         }
 
-        boolean book(Vehicle vehicle) {
-            return this.vehicle.compareAndSet(null, vehicle);
+        void book(Vehicle vehicle) {
+            this.vehicle.set(vehicle);
         }
 
         @Override
@@ -155,9 +152,6 @@ public class ParkingLotApp {
                 if (spot != null) {
                     return spot;
                 }
-                if (!level.hasFreeSpots()) {
-                    activeLevels.remove(level);
-                }
             }
             return null;
         }
@@ -176,11 +170,8 @@ public class ParkingLotApp {
         Ticket issueTicket(Vehicle vehicle) {
             Spot spot = this.parkingStrategy.findFreeSpot(vehicle);
             if (spot != null) {
-                if (spot.book(vehicle)) {
-                    return new Ticket(vehicle, spot);
-                } else {
-                    spot.level.addSpot(spot, parkingStrategy);
-                }
+                spot.book(vehicle);
+                return new Ticket(vehicle, spot);
             }
 
             System.out.println("No Spot Found for " + vehicle.toString());
@@ -198,9 +189,10 @@ public class ParkingLotApp {
                 new Level(3),
                 new Level(4));
         gateMap = new HashMap<>();
-        gateMap.put("Gate 1", new Gate("Gate 1", new FastestFillParkingStrategy(),
+        ParkingStrategy parkingStrategy = new FastestFillParkingStrategy();
+        gateMap.put("Gate 1", new Gate("Gate 1", parkingStrategy,
                 List.of(this.levels.get(0), this.levels.get(2))));
-        gateMap.put("Gate 2", new Gate("Gate 2", new FastestFillParkingStrategy(),
+        gateMap.put("Gate 2", new Gate("Gate 2", parkingStrategy,
                 List.of(this.levels.get(1), this.levels.get(2), this.levels.get(3))));
     }
 
