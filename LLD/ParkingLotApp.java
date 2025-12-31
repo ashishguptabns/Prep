@@ -207,7 +207,7 @@ public class ParkingLotApp {
     }
 
     void run() {
-        ExecutorService executor = Executors.newFixedThreadPool(3);
+        ExecutorService executor = Executors.newFixedThreadPool(10);
         CountDownLatch latch = new CountDownLatch(50);
         int count = 0;
         while (count++ < 50) {
