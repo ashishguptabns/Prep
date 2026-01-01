@@ -47,7 +47,7 @@ public class ParkingLotApp {
 
     class Level {
         final int num;
-        private final LinkedBlockingQueue<Spot> freeSpots = new LinkedBlockingQueue<>();
+        private final LinkedBlockingDeque<Spot> freeSpots = new LinkedBlockingDeque<>();
         private final Semaphore semaphore;
 
         public Level(int num) {
@@ -66,19 +66,25 @@ public class ParkingLotApp {
             }
         }
 
-        void addSpot(Spot spot, ParkingStrategy strategy) {
-            spot.vehicle.set(null);
-            freeSpots.offer(spot);
-            semaphore.release();
+        void releaseSpot(Spot spot, ParkingStrategy strategy) {
+            if (spot != null) {
+                spot.unBook();
+                freeSpots.offer(spot);
+                semaphore.release();
+            }
         }
 
         Spot findFreeSpot() {
             if (semaphore.tryAcquire()) {
-                Spot spot = freeSpots.poll();
-                if (spot != null) {
-                    return spot;
+                try {
+                    Spot spot = freeSpots.poll();
+                    if (spot != null) {
+                        return spot;
+                    }
+                    semaphore.release();
+                } catch (Exception e) {
+                    semaphore.release();
                 }
-                semaphore.release();
             }
 
             System.out.println("No free spots at " + this + " left - " + semaphore.availablePermits());
@@ -101,8 +107,12 @@ public class ParkingLotApp {
             this.level = level;
         }
 
-        void book(Vehicle vehicle) {
-            this.vehicle.set(vehicle);
+        void unBook() {
+            this.vehicle.set(null);
+        }
+
+        boolean book(Vehicle vehicle) {
+            return this.vehicle.compareAndSet(null, vehicle);
         }
 
         @Override
@@ -125,29 +135,15 @@ public class ParkingLotApp {
     }
 
     interface ParkingStrategy {
-        void addLevels(List<Level> levels);
-
-        void addLevel(Level level);
-
-        Spot findFreeSpot(Vehicle vehicle);
+        Spot findFreeSpot(List<Level> levels, Vehicle vehicle);
     }
 
     class FastestFillParkingStrategy implements ParkingStrategy {
         public static String name = "FastestFillParkingStrategy";
-        ConcurrentSkipListSet<Level> activeLevels = new ConcurrentSkipListSet<>(
-                Comparator.comparingInt(level -> level.num));
-
-        public void addLevel(Level level) {
-            activeLevels.add(level);
-        }
-
-        public void addLevels(List<Level> levels) {
-            activeLevels.addAll(levels);
-        }
 
         @Override
-        public Spot findFreeSpot(Vehicle vehicle) {
-            for (Level level : activeLevels) {
+        public Spot findFreeSpot(List<Level> levels, Vehicle vehicle) {
+            for (Level level : levels) {
                 Spot spot = level.findFreeSpot();
                 if (spot != null) {
                     return spot;
@@ -164,14 +160,14 @@ public class ParkingLotApp {
         public Gate(String name, ParkingStrategy parkingStrategy, List<Level> levels) {
             this.levels = levels;
             this.parkingStrategy = parkingStrategy;
-            this.parkingStrategy.addLevels(levels);
         }
 
         Ticket issueTicket(Vehicle vehicle) {
-            Spot spot = this.parkingStrategy.findFreeSpot(vehicle);
+            Spot spot = this.parkingStrategy.findFreeSpot(levels, vehicle);
             if (spot != null) {
-                spot.book(vehicle);
-                return new Ticket(vehicle, spot);
+                if (spot.book(vehicle)) {
+                    return new Ticket(vehicle, spot);
+                }
             }
 
             System.out.println("No Spot Found for " + vehicle.toString());
