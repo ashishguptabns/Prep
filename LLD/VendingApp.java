@@ -18,7 +18,7 @@ public class VendingApp {
         }
     }
 
-    static class Reservation implements Comparable<Reservation> {
+    static class Reservation implements Delayed {
         final String itemId;
         final long expiry;
         final long seq = seqGenerator.getAndIncrement();
@@ -30,14 +30,18 @@ public class VendingApp {
         }
 
         @Override
-        public int compareTo(Reservation o) {
-            int res = Long.compare(this.expiry, o.expiry);
-            return res != 0 ? res : Long.compare(this.seq, o.seq);
+        public long getDelay(TimeUnit unit) {
+            return unit.convert(this.expiry - System.currentTimeMillis(), TimeUnit.MILLISECONDS);
+        }
+
+        @Override
+        public int compareTo(Delayed o) {
+            return Long.compare(this.expiry, ((Reservation) o).expiry);
         }
     }
 
     private final Map<String, Item> inventory = new ConcurrentHashMap<>();
-    private final ConcurrentSkipListSet<Reservation> ttlSet = new ConcurrentSkipListSet<>();
+    private final DelayQueue<Reservation> delayQ = new DelayQueue<>();
 
     public void addItem(String id) {
         inventory.put(id, new Item(id));
@@ -45,11 +49,9 @@ public class VendingApp {
 
     public boolean reserve(String id) {
         Item item = inventory.get(id);
-        if (item != null && item.state.get() == State.AVAILABLE) {
-            if (item.state.compareAndSet(State.AVAILABLE, State.RESERVED)) {
-                ttlSet.add(new Reservation(id, System.currentTimeMillis() + 2000)); // 2s TTL
-                return true;
-            }
+        if (item != null && item.state.compareAndSet(State.AVAILABLE, State.RESERVED)) {
+            delayQ.add(new Reservation(id, 2000)); // 2s TTL
+            return true;
         }
         return false;
     }
@@ -75,16 +77,21 @@ public class VendingApp {
 
     public void startWatchdog() {
         dog = Executors.newSingleThreadScheduledExecutor();
-        dog.scheduleAtFixedRate(() -> {
-            long now = System.currentTimeMillis();
-            while (!ttlSet.isEmpty() && ttlSet.first().expiry < now) {
-                Reservation expired = ttlSet.pollFirst();
-                Item item = inventory.get(expired.itemId);
-                if (item.state.compareAndSet(State.RESERVED, State.AVAILABLE)) {
-                    System.out.println("Watchdog: Reverted " + expired.itemId);
+        dog.submit(() -> {
+            try {
+                while (!Thread.currentThread().isInterrupted()) {
+                    // 2. take() blocks until a reservation is actually expired
+                    Reservation expired = delayQ.take();
+                    Item item = inventory.get(expired.itemId);
+
+                    if (item != null && item.state.compareAndSet(State.RESERVED, State.AVAILABLE)) {
+                        System.out.println("Watchdog: Item " + expired.itemId + " reverted to AVAILABLE.");
+                    }
                 }
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
             }
-        }, 1, 1, TimeUnit.SECONDS);
+        });
     }
 
     public static void main(String[] args) throws InterruptedException {
