@@ -82,6 +82,6 @@ public class DesignPattern {
 
         // Updated Main usage
         PricingStrategy order = new TaxDecorator(new CouponDecorator(new BusinessStrategy()));
-        System.out.println("Final: " + order.apply(200.0)); // ((200 * 0.85) - 5) * 1.08
+        System.out.println("Final: " + (int) order.apply(itemPrice)); // ((200 * 0.85) - 5) * 1.08
     }
 }
