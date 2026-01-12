@@ -42,6 +42,6 @@ interface Cache {
     void setConsistencyLevel(ConsistencyLevel level);
 }
 
-public class CacheApp {
+public class LruCacheApp {
 
 }
