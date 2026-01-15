@@ -5,17 +5,80 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
 public class VendingApp {
+
+    interface PricingStrategy {
+        double findPrice(double basePrice);
+    }
+
+    class RegularPricing implements PricingStrategy {
+        @Override
+        public double findPrice(double basePrice) {
+            return basePrice;
+        }
+    }
+
+    class DiscountPricing implements PricingStrategy {
+        @Override
+        public double findPrice(double basePrice) {
+            return 0.9 * basePrice;
+        }
+    }
+
     enum State {
         AVAILABLE, RESERVED, DISPENSED
     }
 
-    static class Item {
+    interface Vendable {
+        String getDesc();
+
+        double getCost();
+    }
+
+    static class Item implements Vendable {
         final String id;
         final AtomicReference<State> state = new AtomicReference<>(State.AVAILABLE);
 
         Item(String id) {
             this.id = id;
         }
+
+        @Override
+        public String getDesc() {
+            return null;
+        }
+
+        @Override
+        public double getCost() {
+            return 0.0;
+        }
+    }
+
+    static abstract class ItemDecorator implements Vendable {
+
+        Vendable item;
+
+        public ItemDecorator(Vendable item) {
+            this.item = item;
+        }
+
+    }
+
+    static class GiftWrap extends ItemDecorator {
+
+        public GiftWrap(Vendable item) {
+            super(item);
+        }
+
+        @Override
+        public String getDesc() {
+            return item.getDesc();
+        }
+
+        @Override
+        public double getCost() {
+            return item.getCost() * 2.1;
+        }
+
     }
 
     static class Reservation implements Delayed {
