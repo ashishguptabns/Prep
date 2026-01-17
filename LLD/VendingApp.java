@@ -28,57 +28,18 @@ public class VendingApp {
         AVAILABLE, RESERVED, DISPENSED
     }
 
-    interface Vendable {
-        String getDesc();
-
-        double getCost();
-    }
-
-    static class Item implements Vendable {
+    static class Item {
         final String id;
         final AtomicReference<State> state = new AtomicReference<>(State.AVAILABLE);
+        private List<AddOn> addOns = new ArrayList<>();
 
         Item(String id) {
             this.id = id;
         }
 
-        @Override
-        public String getDesc() {
-            return null;
+        private void addDecoration(AddOn addOn) {
+            this.addOns.add(addOn);
         }
-
-        @Override
-        public double getCost() {
-            return 0.0;
-        }
-    }
-
-    static abstract class ItemDecorator implements Vendable {
-
-        Vendable item;
-
-        public ItemDecorator(Vendable item) {
-            this.item = item;
-        }
-
-    }
-
-    static class GiftWrap extends ItemDecorator {
-
-        public GiftWrap(Vendable item) {
-            super(item);
-        }
-
-        @Override
-        public String getDesc() {
-            return item.getDesc();
-        }
-
-        @Override
-        public double getCost() {
-            return item.getCost() * 2.1;
-        }
-
     }
 
     static class Reservation implements Delayed {
@@ -106,8 +67,8 @@ public class VendingApp {
     private final Map<String, Item> inventory = new ConcurrentHashMap<>();
     private final DelayQueue<Reservation> delayQ = new DelayQueue<>();
 
-    public void addItem(String id) {
-        inventory.put(id, new Item(id));
+    public void addItem(Item item) {
+        inventory.put(item.id, item);
     }
 
     public boolean reserve(String id) {
@@ -157,9 +118,14 @@ public class VendingApp {
         });
     }
 
+    record AddOn(String name) {
+    }
+
     public static void main(String[] args) throws InterruptedException {
         VendingApp app = new VendingApp();
-        app.addItem("Coke");
+        Item item = new Item("Coke");
+        item.addDecoration(new AddOn("Gift"));
+        app.addItem(item);
         app.startWatchdog();
 
         ExecutorService executor = Executors.newFixedThreadPool(2);
