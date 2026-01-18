@@ -8,66 +8,25 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicReference;
 
-class ElectricChargingDecorator extends TicketDecorator {
-    public ElectricChargingDecorator(ITicket ticket) {
-        super(ticket);
-    }
-
-    @Override
-    public String getDescription() {
-        return super.getDescription() + ", Electric Charging included";
-    }
-}
-
-class ValetDecorator extends TicketDecorator {
-    public ValetDecorator(ITicket ticket) {
-        super(ticket);
-    }
-
-    @Override
-    public String getDescription() {
-        return super.getDescription() + ", Valet Service";
-    }
-}
-
-abstract class TicketDecorator implements ITicket {
-    protected ITicket decoratedTicket;
-
-    public TicketDecorator(ITicket ticket) {
-        this.decoratedTicket = ticket;
-    }
-
-    @Override
-    public String getDescription() {
-        return decoratedTicket.getDescription();
-    }
-
-    @Override
-    public String toString() {
-        return getDescription();
-    }
-
-}
-
-interface ITicket {
-    String getDescription();
-}
-
-class Ticket implements ITicket {
+class Ticket {
     final Spot spot;
+    final List<AddOn> decorators = new ArrayList<>();
 
     public Ticket(Spot spot) {
         this.spot = spot;
     }
 
-    @Override
-    public String getDescription() {
+    String getDescription() {
         return "Ticket - Level - " + spot.getLevel() + " Num - " + spot.getNum();
     }
 
     @Override
     public String toString() {
         return getDescription();
+    }
+
+    void addDecoration(AddOn addOn) {
+        this.decorators.add(addOn);
     }
 }
 
@@ -127,7 +86,7 @@ interface ParkingStrategy {
     public void addSpot(List<Level> levels, Spot spot);
 }
 
-class ClosestParkingStrategy implements ParkingStrategy {
+class FastestParkingStrategy implements ParkingStrategy {
     @Override
     public Spot findSpot(List<Level> levels) {
         for (Level level : levels) {
@@ -145,6 +104,9 @@ class ClosestParkingStrategy implements ParkingStrategy {
     }
 }
 
+record AddOn(String name) {
+}
+
 public class ParkingLot {
 
     List<Level> levels = new ArrayList<>();
@@ -157,16 +119,13 @@ public class ParkingLot {
         }
     }
 
-    ITicket issueTicket(boolean needsCharging, boolean valetNeeded) {
+    Ticket issueTicket(List<AddOn> decorators) {
         Spot spot = this.strategy.findSpot(levels);
         if (spot != null) {
             if (spot.reserve()) {
-                ITicket ticket = new Ticket(spot);
-                if (needsCharging) {
-                    ticket = new ElectricChargingDecorator(ticket);
-                }
-                if (valetNeeded) {
-                    ticket = new ValetDecorator(ticket);
+                Ticket ticket = new Ticket(spot);
+                for (AddOn a : decorators) {
+                    ticket.addDecoration(a);
                 }
                 return ticket;
             } else {
@@ -179,14 +138,14 @@ public class ParkingLot {
     }
 
     public static void main(String[] a) {
-        ParkingLot app = new ParkingLot(new ClosestParkingStrategy());
+        ParkingLot app = new ParkingLot(new FastestParkingStrategy());
         ExecutorService executor = Executors.newFixedThreadPool(10);
         CountDownLatch latch = new CountDownLatch(30);
         for (int i = 0; i < 30; i++) {
             final int temp = i;
             executor.submit(() -> {
                 try {
-                    ITicket ticket = app.issueTicket(temp % 2 == 0, temp % 3 == 0);
+                    Ticket ticket = app.issueTicket(List.of(new AddOn("Electric"), new AddOn("Valet")));
                     if (ticket != null) {
                         System.out.println(ticket.toString());
                     } else {
