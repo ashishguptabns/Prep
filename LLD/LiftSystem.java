@@ -1,110 +1,81 @@
 package LLD;
 
-import static java.lang.Thread.sleep;
+import LLD.LiftSystem.HallReq;
+import LLD.LiftSystem.Lift;
+import LLD.LiftSystem.Lift.LiftData;
+import LLD.LiftSystem.LiftController;
+import LLD.LiftSystem.Req;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.PriorityQueue;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.locks.LockSupport;
 
-/* 
- * 
-For each request (floor, direction):
-
-    If elevator is already moving in the same direction and the request lies in its path → highest priority
-    Cost = |floor – elevator.currentFloor| minus small bonus
-
-    If elevator is idle → medium priority
-    Cost = distance to requested floor
-
-    If elevator is moving opposite direction → lowest priority
-    Cost = large penalty + distance
-
-Elevator Thread (1 per lift)
-Responsible for:
-    moving the elevator car (simulated movement)
-    updating current floor
-    reading sensors
-    opening/closing doors
-    sending status updates to dispatcher
-
-Dispatcher Thread
-Responsible for:
-    reading button events from the queue
-    choosing best elevator
-    pushing tasks to elevator queues
- */
 public class LiftSystem {
     class Lift extends Thread {
         final String name;
-        final int numFloors;
-        int currFloor = 0;
-        Direction dir = Direction.IDLE;
-        PriorityQueue<Integer> tasks = new PriorityQueue<>();
-        final ReentrantLock lock = new ReentrantLock();
+        final AtomicReference<LiftData> state = new AtomicReference<>(
+                new LiftData(0, Direction.IDLE, new PriorityQueue<>()));
+
+        record LiftData(int currFloor, Direction dir, PriorityQueue<Integer> tasks) {
+        }
 
         public Lift(String name, int numFloors) {
             this.name = name;
-            this.numFloors = numFloors;
         }
 
         @Override
         public void run() {
             while (!Thread.currentThread().isInterrupted()) {
-                Integer nextFloor = null;
-                lock.lock();
-                try {
-                    nextFloor = tasks.poll();
-                } finally {
-                    lock.unlock();
+                LiftData current = this.state.get();
+                if (current.tasks.isEmpty()) {
+                    LockSupport.parkNanos(100_000_000L); // 100ms
+                    continue;
                 }
+                int nextFloor = current.tasks.peek();
+                if (current.currFloor() == nextFloor) {
+                    completeTask(nextFloor);
+                } else {
+                    performStep(nextFloor);
+                }
+
                 try {
-                    if (nextFloor == null) {
-                        dir = Direction.IDLE;
-                        Thread.sleep(200);
-                        continue;
-                    }
+                    Thread.sleep(300); // Simulate transit time
                 } catch (InterruptedException e) {
-                    break;
-                } catch (Exception e) {
+                    Thread.currentThread().interrupt();
                 }
-                move(nextFloor);
             }
         }
 
-        void move(int toFloor) {
-            if (toFloor > currFloor) {
-                dir = Direction.UP;
-            } else if (toFloor < currFloor) {
-                dir = Direction.DOWN;
-            }
-            while (currFloor != toFloor && !Thread.currentThread().isInterrupted()) {
-                try {
-                    System.out.println(String
-                            .format("Lift %s is moving from %d to %d",
-                                    toString(), currFloor, toFloor));
-                    sleep(300);
-                    if (Thread.currentThread().isInterrupted()) {
-                        break;
-                    }
-                } catch (InterruptedException e) {
+        private void performStep(int targetFloor) {
+            while (true) {
+                LiftData current = state.get();
+                int nextStep = current.currFloor() < targetFloor ? current.currFloor() + 1 : current.currFloor() - 1;
+                Direction nextDir = current.currFloor() < targetFloor ? Direction.UP : Direction.DOWN;
+
+                LiftData updated = new LiftData(nextStep, nextDir, new PriorityQueue<>(current.tasks()));
+
+                if (state.compareAndSet(current, updated)) {
+                    System.out.printf("Lift %s moved to floor %d (Heading to %d)%n", name, nextStep, targetFloor);
                     break;
-                } catch (Exception e) {
                 }
-                currFloor += (dir == Direction.DOWN) ? -1 : 1;
             }
-            System.out.println("Lift is idle - " + toString());
-            dir = Direction.IDLE;
         }
 
-        LiftState getLiftState() {
-            lock.lock();
-            try {
-                return new LiftState(this.dir,
-                        this.currFloor, new PriorityQueue<>(tasks));
-            } finally {
-                lock.unlock();
+        private void completeTask(int floor) {
+            while (true) {
+                LiftData current = state.get();
+                PriorityQueue<Integer> updatedTasks = new PriorityQueue<>(current.tasks());
+                updatedTasks.poll();
+
+                Direction nextDir = updatedTasks.isEmpty() ? Direction.IDLE : current.dir();
+                LiftData updated = new LiftData(current.currFloor(), nextDir, updatedTasks);
+
+                if (state.compareAndSet(current, updated)) {
+                    System.out.printf("Lift %s arrived at floor %d. Task completed.%n", name, floor);
+                    break;
+                }
             }
         }
 
@@ -114,13 +85,18 @@ public class LiftSystem {
         }
 
         void addTask(int toFloor) {
-            lock.lock();
-            try {
-                System.out.println("Added task to lift - "
-                        + this.toString());
-                tasks.add(toFloor);
-            } finally {
-                lock.unlock();
+
+            while (true) {
+                LiftData currState = this.state.get();
+                PriorityQueue<Integer> newTasks = new PriorityQueue<>(currState.tasks());
+                newTasks.add(toFloor);
+
+                LiftData next = new LiftData(currState.currFloor(), currState.dir(), newTasks);
+                if (this.state.compareAndSet(currState, next)) {
+                    System.out.println("Added task to lift - "
+                            + this.toString());
+                    break;
+                }
             }
         }
     }
@@ -195,8 +171,8 @@ public class LiftSystem {
             }
         }
 
-        int findScore(LiftState state, Req req) {
-            int baseDist = Math.abs(state.floor - req.fromFloor);
+        int findScore(LiftData state, Req req) {
+            int baseDist = Math.abs(state.currFloor() - req.fromFloor);
             int dirPenalty = 0;
             if (state.dir != Direction.IDLE && state.dir != req.dir) {
                 dirPenalty = 10;
@@ -209,7 +185,7 @@ public class LiftSystem {
             Lift ans = null;
             int bestScore = Integer.MAX_VALUE;
             for (Lift lift : liftsArr) {
-                LiftState state = lift.getLiftState();
+                LiftData state = lift.state.get();
                 int score = findScore(state, req);
                 if (score < bestScore) {
                     ans = lift;
