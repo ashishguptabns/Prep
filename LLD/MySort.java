@@ -2,12 +2,13 @@ package LLD;
 
 /* 
 quick sort
+insertion sort
+bubble sort (TLE)
+
 top-down merge sort
 bottom-up merge sort
 heap sort
 selection sort
-insertion sort
-bubble sort (TLE)
  */
 public class MySort {
     private int[] quickSortHelper(int[] nums, int start, int end) {
