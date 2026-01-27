@@ -3,15 +3,6 @@ package LLD;
 import java.util.ArrayList;
 import java.util.List;
 
-/*
-Key Points to Cover:
-
-Maintain a fixed-size pool of DB connections.
-Provide getConnection() and releaseConnection() methods.
-Use blocking/waiting if no connections available.
-Thread-safe (synchronized/locks).
-Optional: connection timeout, health checks, singleton pattern.
-*/
 public class ConnectionPool<T> {
     int size;
     List<T> pool = new ArrayList<>();
