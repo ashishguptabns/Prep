@@ -3,6 +3,7 @@ package LLD;
 import LLD.LiftSystem.HallReq;
 import LLD.LiftSystem.Lift;
 import LLD.LiftSystem.Lift.LiftData;
+import LLD.LiftSystem.LiftComponent;
 import LLD.LiftSystem.LiftController;
 import LLD.LiftSystem.Req;
 import java.util.ArrayList;
@@ -13,6 +14,34 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.LockSupport;
 
 public class LiftSystem {
+    interface DispatchStrategy {
+        Lift findBestLift(List<LiftComponent> lifts, Req req);
+    }
+
+    class ProximityStrategy implements DispatchStrategy {
+        @Override
+        public Lift findBestLift(List<LiftComponent> lifts, Req req) {
+            Lift bestLift = null;
+            int bestScore = Integer.MAX_VALUE;
+            for (LiftComponent lift : lifts) {
+                LiftData state = lift.getLift().state.get();
+                int score = calculateScore(state, req);
+                if (score < bestScore) {
+                    bestScore = score;
+                    bestLift = lift.getLift();
+                }
+            }
+            return bestLift;
+        }
+
+        private int calculateScore(LiftData state, Req req) {
+            int baseDist = Math.abs(state.currFloor() - req.fromFloor);
+            int dirPenalty = (state.dir() != Direction.IDLE && state.dir() != req.dir) ? 10 : 0;
+            int loadPenalty = state.tasks().size() * 2;
+            return baseDist + dirPenalty + loadPenalty;
+        }
+    }
+
     class Lift extends Thread {
         final String name;
         final AtomicReference<LiftData> state = new AtomicReference<>(
@@ -40,11 +69,7 @@ public class LiftSystem {
                     performStep(nextFloor);
                 }
 
-                try {
-                    Thread.sleep(300); // Simulate transit time
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                }
+                LockSupport.parkNanos(300_000_000L); // 300ms
             }
         }
 
@@ -101,12 +126,13 @@ public class LiftSystem {
         }
     }
 
-    final List<Lift> liftsArr = new ArrayList<>();
+    final List<LiftComponent> liftsArr = new ArrayList<>();
 
     public LiftSystem(int numLifts, int numFloors) {
         while (numLifts-- > 0) {
             Lift lift = new Lift(numLifts + "", numFloors);
-            liftsArr.add(lift);
+            LiftComponent liftComp = new LoggingLiftDecorator(lift);
+            liftsArr.add(liftComp);
             lift.start();
         }
     }
@@ -151,15 +177,58 @@ public class LiftSystem {
         }
     }
 
+    // Common interface for Decorator
+    interface LiftComponent {
+        void addTask(int floor);
+
+        String getName();
+
+        Lift getLift();
+    }
+
+    // The original Lift class would now implement LiftComponent
+    // (Referencing your current Lift implementation)
+    class LoggingLiftDecorator implements LiftComponent {
+        protected final Lift decoratedLift;
+
+        public LoggingLiftDecorator(Lift lift) {
+            this.decoratedLift = lift;
+        }
+
+        @Override
+        public Lift getLift() {
+            return this.decoratedLift;
+        }
+
+        @Override
+        public void addTask(int floor) {
+            System.out.printf("[AUDIT] Lift %s receiving floor request: %d%n",
+                    decoratedLift.name, floor);
+            decoratedLift.addTask(floor); // Delegates to the CAS-based addTask
+        }
+
+        @Override
+        public String getName() {
+            return decoratedLift.name;
+        }
+    }
+
     class LiftController extends Thread {
         final java.util.concurrent.BlockingQueue<Req> q = new LinkedBlockingQueue<>();
+        private final DispatchStrategy strategy;
+        private final List<LiftComponent> lifts;
+
+        public LiftController(List<LiftComponent> lifts, DispatchStrategy strategy) {
+            this.lifts = lifts;
+            this.strategy = strategy;
+        }
 
         @Override
         public void run() {
             while (!Thread.currentThread().isInterrupted()) {
                 try {
                     Req req = q.take();
-                    Lift bestLift = findBestLift(req);
+                    Lift bestLift = strategy.findBestLift(this.lifts, req);
                     if (bestLift != null) {
                         System.out.println("Found lift - " + bestLift.toString());
                         bestLift.addTask(req.fromFloor);
@@ -171,30 +240,6 @@ public class LiftSystem {
             }
         }
 
-        int findScore(LiftData state, Req req) {
-            int baseDist = Math.abs(state.currFloor() - req.fromFloor);
-            int dirPenalty = 0;
-            if (state.dir != Direction.IDLE && state.dir != req.dir) {
-                dirPenalty = 10;
-            }
-            int loadPenalty = state.tasks.size() * 2;
-            return baseDist + dirPenalty + loadPenalty;
-        }
-
-        Lift findBestLift(Req req) {
-            Lift ans = null;
-            int bestScore = Integer.MAX_VALUE;
-            for (Lift lift : liftsArr) {
-                LiftData state = lift.state.get();
-                int score = findScore(state, req);
-                if (score < bestScore) {
-                    ans = lift;
-                    bestScore = score;
-                }
-            }
-            return ans;
-        }
-
         void submitHallReq(Req req) {
             System.out.println("New req added - " + req.toString());
             q.offer(req);
@@ -202,7 +247,7 @@ public class LiftSystem {
     }
 
     void run() throws InterruptedException {
-        LiftController controller = new LiftController();
+        LiftController controller = new LiftController(liftsArr, new ProximityStrategy());
         controller.start();
 
         controller.submitHallReq(new HallReq(5, Direction.DOWN));
@@ -224,8 +269,8 @@ public class LiftSystem {
 
         System.out.println("Shutting down");
         controller.interrupt();
-        for (Lift lift : liftsArr) {
-            lift.interrupt();
+        for (LiftComponent lift : liftsArr) {
+            lift.getLift().interrupt();
         }
     }
 
