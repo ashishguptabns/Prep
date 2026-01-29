@@ -1,35 +1,25 @@
 package LLD;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 public class ConnectionPool<T> {
-    int size;
-    List<T> pool = new ArrayList<>();
+    final java.util.concurrent.BlockingQueue<T> pool;
 
     public ConnectionPool(int size) {
-        this.size = size;
+        pool = new LinkedBlockingQueue<>(size);
     }
 
-    private synchronized Connection getConnection() throws Exception {
-        while (pool.size() == 0) {
-            System.out.println("Waiting to get - " + Thread.currentThread().getName());
-            wait();
-        }
-        Connection c = (Connection) pool.remove(0);
-        System.out.println("Got - " + c.getName());
-        notifyAll();
+    private T getConnection() throws Exception {
+        T c = pool.poll(200, TimeUnit.MILLISECONDS);
+        System.out.println("Got - " + ((Connection) c).getName());
         return c;
     }
 
-    private synchronized void addConnection(T connection) throws Exception {
-        while (pool.size() >= this.size) {
-            System.out.println("Waiting to add - " + Thread.currentThread().getName());
-            wait();
+    private void addConnection(T connection) {
+        if (connection != null) {
+            pool.offer(connection);
         }
-        System.out.println("Added - " + Thread.currentThread().getName());
-        pool.add(connection);
-        notifyAll();
     }
 
     static class Connection {
@@ -69,8 +59,12 @@ public class ConnectionPool<T> {
                 public void run() {
                     try {
                         Connection c = pool.getConnection();
-                        System.out.println(
-                                "connection - " + c.getName() + " thread - " + Thread.currentThread().getName());
+                        try {
+                            System.out.println(
+                                    "connection - " + c.getName() + " thread - " + Thread.currentThread().getName());
+                        } finally {
+                            pool.addConnection(c);
+                        }
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
