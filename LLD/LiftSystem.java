@@ -110,7 +110,6 @@ public class LiftSystem {
         }
 
         void addTask(int toFloor) {
-
             while (true) {
                 LiftData currState = this.state.get();
                 PriorityQueue<Integer> newTasks = new PriorityQueue<>(currState.tasks());
