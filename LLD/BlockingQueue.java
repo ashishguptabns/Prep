@@ -1,6 +1,7 @@
 package LLD;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 /*
@@ -16,7 +17,7 @@ size() – Returns current queue size.
 public class BlockingQueue<T> {
     int size = 0;
     int max = 0;
-    List<T> q = new ArrayList<>();
+    List<T> q = new LinkedList<>();
 
     public BlockingQueue(int max) {
         this.max = max;

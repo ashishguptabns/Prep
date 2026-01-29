@@ -1,4 +1,4 @@
-package LLD.LoggerApp;
+package LLD;
 
 import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
