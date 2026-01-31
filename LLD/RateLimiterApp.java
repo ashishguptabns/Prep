@@ -78,12 +78,9 @@ public class RateLimiterApp {
         RateLimiterApp app = new RateLimiterApp(new FixedWindowLimiter(5, 60_000));
         int count = 10;
         while (count-- > 0) {
-            Thread t1 = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    if (app.isReqAllowed("JWT_A", "RES_A")) {
+            Thread t1 = new Thread(() -> {
+                if (app.isReqAllowed("JWT_A", "RES_A")) {
 
-                    }
                 }
             });
             t1.start();
