@@ -11,14 +11,15 @@ Token Bucket
 Leaky Bucket
 */
 
+import LLD.FixedWindowLimiter.Window;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
-interface IRateLimiter {
+interface RateLimitStrategy {
     public boolean isReqAllowed(String token, String resourcePath);
 }
 
-class FixedWindowLimiter implements IRateLimiter {
+class FixedWindowLimiter implements RateLimitStrategy {
 
     class Window {
         AtomicInteger reqsCount = new AtomicInteger(0);
@@ -68,9 +69,9 @@ class FixedWindowLimiter implements IRateLimiter {
 
 public class RateLimiterApp {
 
-    IRateLimiter rateLimiter;
+    RateLimitStrategy rateLimiter;
 
-    public RateLimiterApp(IRateLimiter rateLimiter) {
+    public RateLimiterApp(RateLimitStrategy rateLimiter) {
         this.rateLimiter = rateLimiter;
     }
 
