@@ -13,10 +13,59 @@ Leaky Bucket
 
 import LLD.FixedWindowLimiter.Window;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 interface RateLimitStrategy {
     public boolean isReqAllowed(String token, String resourcePath);
+}
+
+class TokenBucketLimiter implements RateLimitStrategy {
+
+    class Bucket {
+        final long ts, tokens;
+
+        public Bucket(long tokens, long ts) {
+            this.tokens = tokens;
+            this.ts = ts;
+        }
+    }
+
+    final ConcurrentHashMap<String, AtomicReference<Bucket>> buckets = new ConcurrentHashMap<>();
+
+    final long capacity, tokensPerSec;
+
+    public TokenBucketLimiter(long capacity, long tokensPerSec) {
+        this.capacity = capacity;
+        this.tokensPerSec = tokensPerSec;
+    }
+
+    @Override
+    public boolean isReqAllowed(String token, String resourcePath) {
+        AtomicReference<Bucket> bucketRef = buckets.computeIfAbsent(token,
+                k -> new AtomicReference<>(new Bucket(capacity, System.currentTimeMillis())));
+
+        while (true) {
+            Bucket old = bucketRef.get();
+            long now = System.currentTimeMillis();
+            long refillAmt = (now - old.ts) * tokensPerSec;
+            long newTokens = Math.min(capacity, old.tokens + refillAmt);
+
+            if (newTokens < 1) {
+                return false;
+            }
+
+            long nextRefilTime = (refillAmt > 0) ? now : old.ts;
+            Bucket newBucket = new Bucket(newTokens - 1, nextRefilTime);
+            if (bucketRef.compareAndSet(old, newBucket)) {
+                return true;
+            }
+        }
+    }
+
 }
 
 class FixedWindowLimiter implements RateLimitStrategy {
@@ -41,7 +90,6 @@ class FixedWindowLimiter implements RateLimitStrategy {
     final int limit;
     final long windowSizeMs;
     final ConcurrentHashMap<String, Window> windowMap;
-    final ConcurrentHashMap<String, Object> locks = new ConcurrentHashMap<>();
 
     public FixedWindowLimiter(int limit, long windowSizeMs) {
         this.limit = limit;
@@ -51,19 +99,15 @@ class FixedWindowLimiter implements RateLimitStrategy {
 
     @Override
     public boolean isReqAllowed(String token, String resourcePath) {
-        String key = token + resourcePath;
-        locks.putIfAbsent(key, new Object());
-        synchronized (locks.get(key)) {
-            Window window = windowMap.get(token);
-            if (window == null || System.currentTimeMillis() - window.getTimeMs() >= this.windowSizeMs) {
-                window = new Window(System.currentTimeMillis());
-                windowMap.put(token, window);
+        long currTime = System.currentTimeMillis();
+        Window window = windowMap.compute(token, (key, existing) -> {
+            if (existing == null || currTime - existing.getTimeMs() >= this.windowSizeMs) {
+                return new Window(currTime);
             }
-            if (window.increaseAndGet() <= this.limit) {
-                return true;
-            }
-            return false;
-        }
+            return existing;
+        });
+
+        return window.increaseAndGet() <= this.limit;
     }
 }
 
@@ -75,16 +119,34 @@ public class RateLimiterApp {
         this.rateLimiter = rateLimiter;
     }
 
+    static RateLimitStrategy getRateLimiter() {
+        return new TokenBucketLimiter(8, 1);
+        // return new FixedWindowLimiter(5, 60_000);
+    }
+
     public static void main(String a[]) {
-        RateLimiterApp app = new RateLimiterApp(new FixedWindowLimiter(5, 60_000));
+        RateLimiterApp app = new RateLimiterApp(getRateLimiter());
+        ExecutorService executors = Executors.newFixedThreadPool(3);
+        CountDownLatch latch = new CountDownLatch(10);
         int count = 10;
         while (count-- > 0) {
-            Thread t1 = new Thread(() -> {
-                if (app.isReqAllowed("JWT_A", "RES_A")) {
-
+            final int temp = count;
+            executors.submit(() -> {
+                try {
+                    if (app.isReqAllowed("JWT_A", "RES_A")) {
+                        System.out.println("allowed" + temp);
+                    } else {
+                        System.out.println("not allowed" + temp);
+                    }
+                } finally {
+                    latch.countDown();
                 }
             });
-            t1.start();
+        }
+        try {
+            latch.await();
+            executors.shutdown();
+        } catch (Exception e) {
         }
     }
 
