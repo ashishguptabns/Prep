@@ -11,13 +11,14 @@ Token Bucket
 Leaky Bucket
 */
 
-import LLD.FixedWindowLimiter.Window;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.atomic.LongAdder;
 
 interface RateLimitStrategy {
     public boolean isReqAllowed(String token, String resourcePath);
@@ -70,6 +71,15 @@ class TokenBucketLimiter implements RateLimitStrategy {
 
 class FixedWindowLimiter implements RateLimitStrategy {
 
+    class HighWindow {
+        final LongAdder count = new LongAdder();
+        final long timeMs;
+
+        public HighWindow(long time) {
+            this.timeMs = time;
+        }
+    }
+
     class Window {
         AtomicInteger reqsCount = new AtomicInteger(0);
         final long timeMs;
@@ -89,7 +99,7 @@ class FixedWindowLimiter implements RateLimitStrategy {
 
     final int limit;
     final long windowSizeMs;
-    final ConcurrentHashMap<String, Window> windowMap;
+    final Map<String, HighWindow> windowMap;
 
     public FixedWindowLimiter(int limit, long windowSizeMs) {
         this.limit = limit;
@@ -100,14 +110,15 @@ class FixedWindowLimiter implements RateLimitStrategy {
     @Override
     public boolean isReqAllowed(String token, String resourcePath) {
         long currTime = System.currentTimeMillis();
-        Window window = windowMap.compute(token, (key, existing) -> {
-            if (existing == null || currTime - existing.getTimeMs() >= this.windowSizeMs) {
-                return new Window(currTime);
+        HighWindow window = windowMap.compute(token, (key, existing) -> {
+            if (existing == null || currTime - existing.timeMs >= this.windowSizeMs) {
+                return new HighWindow(currTime);
             }
             return existing;
         });
 
-        return window.increaseAndGet() <= this.limit;
+        window.count.increment();
+        return window.count.sum() <= this.limit;
     }
 }
 
@@ -120,8 +131,8 @@ public class RateLimiterApp {
     }
 
     static RateLimitStrategy getRateLimiter() {
-        return new TokenBucketLimiter(8, 1);
-        // return new FixedWindowLimiter(5, 60_000);
+        // return new TokenBucketLimiter(8, 1);
+        return new FixedWindowLimiter(5, 60_000);
     }
 
     public static void main(String a[]) {
