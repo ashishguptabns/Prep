@@ -59,8 +59,8 @@ class TokenBucketLimiter implements RateLimitStrategy {
                 return false;
             }
 
-            long nextRefilTime = (refillAmt > 0) ? now : old.ts;
-            Bucket newBucket = new Bucket(newTokens - 1, nextRefilTime);
+            long lastRefilTime = (refillAmt > 0) ? now : old.ts;
+            Bucket newBucket = new Bucket(newTokens - 1, lastRefilTime);
             if (bucketRef.compareAndSet(old, newBucket)) {
                 return true;
             }
