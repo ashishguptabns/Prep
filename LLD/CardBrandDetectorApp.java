@@ -75,11 +75,24 @@ class RangePrefixMatcher implements IMatcher {
 }
 
 class CardBrandDetector {
-    List<CardBrand> brands = new ArrayList<>();
+    List<CardBrand> brands;
 
-    public CardBrandDetector() {
-        initBrands();
+    public CardBrandDetector(List<CardBrand> brands) {
+        this.brands = brands;
     }
+
+    public String detect(String number) {
+        for (CardBrand brand : brands) {
+            if (brand.matches(number)) {
+                return brand.getName();
+            }
+        }
+        return "unknown";
+    }
+}
+
+public class CardBrandDetectorApp {
+    static List<CardBrand> brands = new ArrayList<>();
 
     private void initBrands() {
         CardBrand visa = new CardBrand("Visa");
@@ -94,19 +107,8 @@ class CardBrandDetector {
         brands.add(masterCard);
     }
 
-    public String detect(String number) {
-        for (CardBrand brand : brands) {
-            if (brand.matches(number)) {
-                return brand.getName();
-            }
-        }
-        return "unknown";
-    }
-}
-
-public class CardBrandDetectorApp {
     public static void main(String[] a) {
-        CardBrandDetector detector = new CardBrandDetector();
+        CardBrandDetector detector = new CardBrandDetector(brands);
         System.out.println(detector.detect("4111111111111")); // Visa (13-digit)
         System.out.println(detector.detect("4111111111111111")); // Visa (16-digit)
         System.out.println(detector.detect("4111111111111111111"));// Visa (19-digit)
