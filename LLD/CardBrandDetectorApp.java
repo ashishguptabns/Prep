@@ -94,7 +94,7 @@ class CardBrandDetector {
 public class CardBrandDetectorApp {
     static List<CardBrand> brands = new ArrayList<>();
 
-    private void initBrands() {
+    private static void initBrands() {
         CardBrand visa = new CardBrand("Visa");
         visa.addMatcher(new PrefixLengthMatcher("4", 13));
         visa.addMatcher(new PrefixLengthMatcher("4", 16));
@@ -108,6 +108,7 @@ public class CardBrandDetectorApp {
     }
 
     public static void main(String[] a) {
+        initBrands();
         CardBrandDetector detector = new CardBrandDetector(brands);
         System.out.println(detector.detect("4111111111111")); // Visa (13-digit)
         System.out.println(detector.detect("4111111111111111")); // Visa (16-digit)
