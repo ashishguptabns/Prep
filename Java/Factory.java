@@ -20,7 +20,8 @@ abstract class Logistics {
 }
 
 class RoadTransport extends Logistics {
-    Transport createTransport() {
+    @Override
+    public Transport createTransport() {
         return new Truck();
     }
 }

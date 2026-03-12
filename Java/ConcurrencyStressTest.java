@@ -21,7 +21,7 @@ public class ConcurrencyStressTest {
         for (int i = 0; i < THREAD_COUNT; i++) {
             executor.submit(() -> {
                 try {
-                    // All threads wait here until the latch hits zero
+                    // All threads wait here until start latch hits zero
                     startLatch.await();
                     for (int j = 0; j < INCREMENTS_PER_THREAD; j++) {
                         counter.incrementAndGet();

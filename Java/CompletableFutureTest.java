@@ -13,18 +13,20 @@ public class CompletableFutureTest {
             }
             return "Result";
         });
-
+        CountDownLatch latch = new CountDownLatch(1);
         future.thenApply(result -> {
             System.out.println("Processing " + result);
             return result.length();
         }).thenAccept(length -> {
             System.out.println("Length is " + length);
+            latch.countDown();
         });
 
         System.out.println("Main thread continues");
 
+        latch.await();
+
         // Wait for all async tasks to complete
         future.get();
-        Thread.sleep(1000);
     }
 }
