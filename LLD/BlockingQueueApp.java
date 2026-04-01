@@ -11,9 +11,9 @@ Key Operations:
 enqueue(item) – Adds item; blocks if full.
 dequeue() – Removes and returns item; blocks if empty.
 size() – Returns current queue size.
-*/
-
+ */
 public class BlockingQueueApp<T> {
+
     int size = 0;
     int max = 0;
     List<T> q = new LinkedList<>();
@@ -37,14 +37,11 @@ public class BlockingQueueApp<T> {
         BlockingQueueApp<String> q = new BlockingQueueApp<>(2);
         int count = 10;
         while (count-- > 0) {
-            Thread t = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        q.offer("Hello");
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+            Thread t = new Thread(() -> {
+                try {
+                    q.offer("Hello");
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             });
             t.start();
