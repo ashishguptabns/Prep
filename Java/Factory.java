@@ -6,7 +6,7 @@ interface Transport {
 
 class Truck implements Transport {
     public void deliver() {
-        System.out.println("Delivering by road in a box.");
+        System.out.println("Delivering by truck in a box.");
     }
 }
 
