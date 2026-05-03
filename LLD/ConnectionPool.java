@@ -4,6 +4,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 public class ConnectionPool<T> {
+
     final java.util.concurrent.BlockingQueue<T> pool;
 
     public ConnectionPool(int size) {
@@ -23,6 +24,7 @@ public class ConnectionPool<T> {
     }
 
     static class Connection {
+
         String name;
 
         public Connection(String name) {

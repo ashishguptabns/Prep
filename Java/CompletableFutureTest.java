@@ -3,6 +3,7 @@ package Java;
 import java.util.concurrent.*;
 
 public class CompletableFutureTest {
+
     public static void main(String[] args) throws Exception {
         CompletableFuture<String> future = CompletableFuture.supplyAsync(() -> {
             System.out.println("Task started");
