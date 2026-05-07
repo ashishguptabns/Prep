@@ -1,8 +1,8 @@
 package com.example.rackapp.controller;
 
-import com.example.rackapp.dto.DtoMapper;
 import com.example.rackapp.dto.request.PowerReadingRequest;
 import com.example.rackapp.dto.response.RackReportResponse;
+import com.example.rackapp.mapper.DtoMapper;
 import com.example.rackapp.exception.BadRequestException;
 import com.example.rackapp.model.RackReport;
 import com.example.rackapp.service.RackService;

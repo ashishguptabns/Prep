@@ -1,4 +1,4 @@
-package com.example.rackapp.dto;
+package com.example.rackapp.mapper;
 
 import com.example.rackapp.dto.request.PowerReadingRequest;
 import com.example.rackapp.dto.response.RackReportResponse;
