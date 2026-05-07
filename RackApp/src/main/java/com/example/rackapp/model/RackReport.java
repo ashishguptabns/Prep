@@ -1,4 +1,4 @@
-package com.example.test1.model;
+package com.example.rackapp.model;
 
 import java.util.List;
 

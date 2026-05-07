@@ -1,12 +1,11 @@
-package com.example.test1.service;
+package com.example.rackapp.service;
 
-import com.example.test1.model.PowerReading;
-import com.example.test1.model.RackReport;
+import com.example.rackapp.model.PowerReading;
+import com.example.rackapp.model.RackReport;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
-
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 

@@ -1,8 +1,8 @@
-package com.example.test1.controller;
+package com.example.rackapp.controller;
 
-import com.example.test1.model.PowerReading;
-import com.example.test1.model.RackReport;
-import com.example.test1.service.RackService;
+import com.example.rackapp.model.PowerReading;
+import com.example.rackapp.model.RackReport;
+import com.example.rackapp.service.RackService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
