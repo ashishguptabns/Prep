@@ -24,7 +24,7 @@ public class RackController {
             return ResponseEntity.badRequest().build();
         }
 
-        rackService.saveReading(DtoMapper.toDomain(request));
+        rackService.saveReading(DtoMapper.toEntity(request));
         return ResponseEntity.ok().build();
     }
 
