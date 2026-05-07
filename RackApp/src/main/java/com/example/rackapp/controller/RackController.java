@@ -3,6 +3,7 @@ package com.example.rackapp.controller;
 import com.example.rackapp.dto.DtoMapper;
 import com.example.rackapp.dto.request.PowerReadingRequest;
 import com.example.rackapp.dto.response.RackReportResponse;
+import com.example.rackapp.exception.BadRequestException;
 import com.example.rackapp.model.RackReport;
 import com.example.rackapp.service.RackService;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +22,7 @@ public class RackController {
     @PostMapping("/readings")
     public ResponseEntity<Void> ingestReading(@RequestBody PowerReadingRequest request) {
         if (request == null || request.getRackId() == null || request.getTimestamp() == null || request.getPowerKw() == null) {
-            return ResponseEntity.badRequest().build();
+            throw new BadRequestException("Missing required power reading fields");
         }
 
         rackService.saveReading(DtoMapper.toEntity(request));
