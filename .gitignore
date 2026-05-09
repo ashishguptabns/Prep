@@ -1,2 +1,3 @@
 *.log
 /RackApp/target
+*.DS_Store
