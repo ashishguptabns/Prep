@@ -7,6 +7,7 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class RackService {
@@ -17,10 +18,12 @@ public class RackService {
         this.powerReadingRepository = powerReadingRepository;
     }
 
+    @Transactional
     public void saveReading(PowerReadingEntity reading) {
         powerReadingRepository.save(reading);
     }
 
+    @Transactional(readOnly = true)
     public RackReport getReport(String rackId) {
         Instant now = Instant.now();
         Instant days30Ago = now.minus(30, ChronoUnit.DAYS);
