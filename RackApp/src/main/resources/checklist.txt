@@ -1,3 +1,7 @@
+Ignore this file
+
+--
+
 src/main/java/com/yourcompany/project/
 │
 ├── config/              # Global configurations (Security, CORS, Beans, Swagger)

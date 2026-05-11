@@ -6,7 +6,9 @@ CREATE TABLE IF NOT EXISTS racks (
 
 CREATE TABLE IF NOT EXISTS power_readings (
     reading_id SERIAL PRIMARY KEY,
-    rack_id TEXT NOT NULL,
+    rack_id TEXT NOT NULL REFERENCES racks(rack_id),
     timestamp TIMESTAMP NOT NULL,
     power_kw NUMERIC NOT NULL
 );
+
+CREATE INDEX IF NOT EXISTS idx_power_readings_rack_timestamp ON power_readings (rack_id, timestamp);

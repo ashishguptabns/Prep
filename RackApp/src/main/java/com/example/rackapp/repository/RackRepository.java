@@ -26,4 +26,13 @@ public class RackRepository {
                         )) : Optional.empty()
         );
     }
+
+    public void save(RackEntity rack) {
+        jdbcTemplate.update(
+                "INSERT INTO racks (rack_id, site_id, max_power_kw) VALUES (?, ?, ?)",
+                rack.getRackId(),
+                rack.getSiteId(),
+                rack.getMaxPowerKw()
+        );
+    }
 }
