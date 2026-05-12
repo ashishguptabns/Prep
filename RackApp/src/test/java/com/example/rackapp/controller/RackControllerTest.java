@@ -44,13 +44,12 @@ public class RackControllerTest {
 
     @Test
     void reportCalculatesTopSpikesAndAverage() throws Exception {
-        String payload1 = "{\"rackId\":\"rack-2\",\"timestamp\":\"2026-05-05T12:00:00Z\",\"powerKw\": 20.0}";
-        String payload2 = "{\"rackId\":\"rack-2\",\"timestamp\":\"2026-05-06T12:00:00Z\",\"powerKw\": 30.0}";
-        String payload3 = "{\"rackId\":\"rack-2\",\"timestamp\":\"2026-04-10T12:00:00Z\",\"powerKw\": 10.0}";
+        String rackId = "rack-2";
+        Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
 
-        mockMvc.perform(post("/v1/readings").contentType(MediaType.APPLICATION_JSON).content(payload1)).andExpect(status().isOk());
-        mockMvc.perform(post("/v1/readings").contentType(MediaType.APPLICATION_JSON).content(payload2)).andExpect(status().isOk());
-        mockMvc.perform(post("/v1/readings").contentType(MediaType.APPLICATION_JSON).content(payload3)).andExpect(status().isOk());
+        ingestReading(rackId, now.minus(1, ChronoUnit.DAYS), 20.0);
+        ingestReading(rackId, now.minus(2, ChronoUnit.DAYS), 30.0);
+        ingestReading(rackId, now.minus(31, ChronoUnit.DAYS), 10.0);
 
         mockMvc.perform(get("/v1/racks/rack-2/report"))
                 .andExpect(status().isOk())

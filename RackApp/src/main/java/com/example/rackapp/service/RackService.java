@@ -3,6 +3,7 @@ package com.example.rackapp.service;
 import com.example.rackapp.entity.PowerReadingEntity;
 import com.example.rackapp.entity.RackEntity;
 import com.example.rackapp.model.RackReport;
+import com.example.rackapp.observability.LogLatency;
 import com.example.rackapp.repository.PowerReadingRepository;
 import com.example.rackapp.repository.RackRepository;
 import java.time.Instant;
@@ -21,6 +22,7 @@ public class RackService {
         this.rackRepository = rackRepository;
     }
 
+    @LogLatency
     @Transactional
     public void saveReading(PowerReadingEntity reading) {
         rackRepository.findById(reading.getRackId())
@@ -32,6 +34,7 @@ public class RackService {
         powerReadingRepository.save(reading);
     }
 
+    @LogLatency
     @Transactional(readOnly = true)
     public RackReport getReport(String rackId) {
         Instant now = Instant.now();
