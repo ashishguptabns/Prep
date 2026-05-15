@@ -2,8 +2,6 @@ package com.example.rackapp.filter;
 
 import java.io.IOException;
 
-import org.springframework.core.Ordered;
-import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import jakarta.servlet.Filter;
@@ -14,7 +12,6 @@ import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 
 @Component
-@Order(Ordered.HIGHEST_PRECEDENCE)
 public class RequestLoggingFilter implements Filter {
 
     @Override
