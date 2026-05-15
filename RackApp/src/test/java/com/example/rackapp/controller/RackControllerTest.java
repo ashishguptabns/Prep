@@ -3,6 +3,7 @@ package com.example.rackapp.controller;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Locale;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -108,5 +109,24 @@ public class RackControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(payload))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    void rateLimiterReturnsTooManyRequests() throws Exception {
+        String payload = "{\"rackId\":\"rate-limit-test\",\"timestamp\":\"2026-05-15T12:00:00Z\",\"powerKw\": 1.0}";
+
+        for (int i = 0; i < 50; i++) {
+            mockMvc.perform(post("/v1/readings")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .header("X-Forwarded-For", "rate-limit-client")
+                    .content(payload))
+                    .andExpect(status().isOk());
+        }
+
+        mockMvc.perform(post("/v1/readings")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("X-Forwarded-For", "rate-limit-client")
+                .content(payload))
+                .andExpect(status().isTooManyRequests());
     }
 }
