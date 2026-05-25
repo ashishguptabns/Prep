@@ -1,0 +1,1 @@
+/* Flipkart Buy Now Pay Later (BNPL) System: Implement an in-memory credit system. Track users, assign credit limits, process purchases, manage inventory, and handle repayments. */

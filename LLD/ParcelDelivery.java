@@ -1,0 +1,1 @@
+/* Peer-to-Peer Parcel Delivery System (Dunzo/Swiggy Genie clone): Design an app where customers place parcel requests. The system must auto-assign drivers based on proximity or driver utilization strategies, handling driver states and cancellation rules safely. */

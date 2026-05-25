@@ -1,0 +1,1 @@
+/* FlipKar (Vehicle Rental System): Onboard branches with specific fleets (Cars, Bikes). Users can rent vehicles for explicit time slots. The system must fulfill using specific strategies (e.g., cheapest option first, nearest branch fallback). */
