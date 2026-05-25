@@ -1,3 +1,6 @@
 *.log
 /RackApp/target
 *.DS_Store
+/LLD/RackApp
+/LLD/SlotBookingApp
+.DS_Store
