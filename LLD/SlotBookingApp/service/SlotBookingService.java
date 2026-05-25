@@ -1,49 +1,70 @@
 package LLD.SlotBookingApp.service;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
 import LLD.SlotBookingApp.entity.BookingEntity;
 import LLD.SlotBookingApp.entity.CenterEntity;
 import LLD.SlotBookingApp.entity.CustomerEntity;
 import LLD.SlotBookingApp.entity.SlotEntity;
 import LLD.SlotBookingApp.exception.SlotBookingException;
+import LLD.SlotBookingApp.inventory.InMemorySlotInventory;
+import LLD.SlotBookingApp.inventory.SlotInventory;
 import LLD.SlotBookingApp.model.BookingStatus;
 import LLD.SlotBookingApp.model.SlotView;
 import LLD.SlotBookingApp.model.WorkoutType;
+import LLD.SlotBookingApp.repository.ActiveBookingRegistry;
 import LLD.SlotBookingApp.repository.BookingRepository;
 import LLD.SlotBookingApp.repository.CenterRepository;
+import LLD.SlotBookingApp.repository.InMemoryActiveBookingRegistry;
 import LLD.SlotBookingApp.repository.SlotRepository;
 import LLD.SlotBookingApp.repository.WaitlistRepository;
+import LLD.SlotBookingApp.saga.BookingSaga;
 import LLD.SlotBookingApp.strategy.FifoWaitlistPromotionStrategy;
 import LLD.SlotBookingApp.strategy.WaitlistPromotionStrategy;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class SlotBookingService {
+
     private final CenterRepository centerRepository;
     private final SlotRepository slotRepository;
     private final BookingRepository bookingRepository;
+    private final ActiveBookingRegistry activeBookingRegistry;
     private final WaitlistRepository waitlistRepository;
     private final WaitlistPromotionStrategy waitlistPromotionStrategy;
-    private final Map<String, Object> slotLocks = new ConcurrentHashMap<>();
+    private final SlotInventory slotInventory;
 
     public SlotBookingService(CenterRepository centerRepository, SlotRepository slotRepository,
             BookingRepository bookingRepository, WaitlistRepository waitlistRepository) {
         this(centerRepository, slotRepository, bookingRepository, waitlistRepository,
-                new FifoWaitlistPromotionStrategy(waitlistRepository));
+                new FifoWaitlistPromotionStrategy(waitlistRepository),
+                new InMemoryActiveBookingRegistry(),
+                new InMemorySlotInventory());
     }
 
     public SlotBookingService(CenterRepository centerRepository, SlotRepository slotRepository,
             BookingRepository bookingRepository, WaitlistRepository waitlistRepository,
             WaitlistPromotionStrategy waitlistPromotionStrategy) {
+        this(centerRepository, slotRepository, bookingRepository, waitlistRepository,
+                waitlistPromotionStrategy,
+                new InMemoryActiveBookingRegistry(),
+                new InMemorySlotInventory());
+    }
+
+    public SlotBookingService(CenterRepository centerRepository, SlotRepository slotRepository,
+            BookingRepository bookingRepository, WaitlistRepository waitlistRepository,
+            WaitlistPromotionStrategy waitlistPromotionStrategy,
+            ActiveBookingRegistry activeBookingRegistry,
+            SlotInventory slotInventory) {
         this.centerRepository = centerRepository;
         this.slotRepository = slotRepository;
         this.bookingRepository = bookingRepository;
         this.waitlistRepository = waitlistRepository;
         this.waitlistPromotionStrategy = waitlistPromotionStrategy;
+        this.activeBookingRegistry = activeBookingRegistry;
+        this.slotInventory = slotInventory;
     }
 
     public CenterEntity createCenter(String name, LocalTime opensAt, LocalTime closesAt) {
@@ -66,44 +87,68 @@ public class SlotBookingService {
 
         SlotEntity slot = new SlotEntity(centerId, date, startsAt, endsAt, workoutType, capacity);
         slotRepository.save(slot);
+        slotInventory.registerSlot(slot.getSlotId());
         return slot;
     }
 
     public BookingEntity bookSlot(CustomerEntity customer, String slotId) {
         SlotEntity slot = findSlot(slotId);
-        synchronized (lockFor(slotId)) {
-            bookingRepository.findActiveByCustomerAndSlot(customer.getCustomerId(), slotId)
-                    .ifPresent(existing -> {
-                        throw new SlotBookingException("Customer already has an active booking for this slot");
-                    });
-
-            BookingStatus status = confirmedCount(slotId) < slot.getCapacity()
-                    ? BookingStatus.CONFIRMED
-                    : BookingStatus.WAITLISTED;
-            BookingEntity booking = new BookingEntity(customer.getCustomerId(), slotId, status);
-            bookingRepository.save(booking);
-            if (status == BookingStatus.WAITLISTED) {
-                waitlistRepository.add(slotId, booking.getBookingId());
+        BookingEntity booking = new BookingEntity(customer.getCustomerId(), slotId, BookingStatus.WAITLISTED);
+        BookingSaga saga = new BookingSaga();
+        try {
+            if (!activeBookingRegistry.reserve(customer.getCustomerId(), slotId, booking.getBookingId())) {
+                throw new SlotBookingException("Customer already has an active booking for this slot");
             }
+            saga.addCompensation(() -> activeBookingRegistry.release(
+                    customer.getCustomerId(), slotId, booking.getBookingId()));
+
+            if (slotInventory.tryReserve(slotId, slot.getCapacity())) {
+                booking.setStatus(BookingStatus.CONFIRMED);
+                saga.addCompensation(() -> slotInventory.release(slotId));
+            }
+
+            bookingRepository.save(booking);
+            saga.addCompensation(() -> bookingRepository.delete(booking.getBookingId()));
+
+            if (booking.getStatus() == BookingStatus.WAITLISTED) {
+                waitlistRepository.add(slotId, booking.getBookingId());
+                saga.addCompensation(() -> waitlistRepository.remove(slotId, booking.getBookingId()));
+            }
+
+            saga.complete();
             return booking;
+        } catch (RuntimeException exception) {
+            saga.compensate();
+            throw exception;
         }
     }
 
     public void cancelBooking(String bookingId) {
         BookingEntity booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new SlotBookingException("Booking not found: " + bookingId));
-        synchronized (lockFor(booking.getSlotId())) {
-            if (booking.getStatus() == BookingStatus.CANCELLED) {
-                return;
-            }
-            if (booking.getStatus() == BookingStatus.WAITLISTED) {
-                waitlistRepository.remove(booking.getSlotId(), booking.getBookingId());
-                booking.setStatus(BookingStatus.CANCELLED);
+
+        while (true) {
+            BookingStatus status = booking.getStatus();
+            if (status == BookingStatus.CANCELLED) {
                 return;
             }
 
-            booking.setStatus(BookingStatus.CANCELLED);
-            promoteNextWaitlistedBooking(booking.getSlotId());
+            if (status == BookingStatus.WAITLISTED) {
+                if (booking.compareAndSetStatus(BookingStatus.WAITLISTED, BookingStatus.CANCELLED)) {
+                    waitlistRepository.remove(booking.getSlotId(), booking.getBookingId());
+                    releaseActiveBooking(booking);
+                    return;
+                }
+                continue;
+            }
+
+            if (booking.compareAndSetStatus(BookingStatus.CONFIRMED, BookingStatus.CANCELLED)) {
+                releaseActiveBooking(booking);
+                if (!promoteNextWaitlistedBooking(booking.getSlotId())) {
+                    slotInventory.release(booking.getSlotId());
+                }
+                return;
+            }
         }
     }
 
@@ -137,21 +182,27 @@ public class SlotBookingService {
     }
 
     private int confirmedCount(String slotId) {
-        return bookingRepository.findBySlotAndStatus(slotId, BookingStatus.CONFIRMED).size();
+        return slotInventory.confirmedCount(slotId);
     }
 
-    private void promoteNextWaitlistedBooking(String slotId) {
+    private boolean promoteNextWaitlistedBooking(String slotId) {
         Optional<String> nextBookingId = waitlistPromotionStrategy.nextBookingId(slotId);
-        nextBookingId.flatMap(bookingRepository::findById)
-                .filter(booking -> booking.getStatus() == BookingStatus.WAITLISTED)
-                .ifPresent(booking -> booking.setStatus(BookingStatus.CONFIRMED));
+        while (nextBookingId.isPresent()) {
+            Optional<BookingEntity> nextBooking = nextBookingId.flatMap(bookingRepository::findById);
+            if (nextBooking.isPresent()
+                    && nextBooking.get().compareAndSetStatus(BookingStatus.WAITLISTED, BookingStatus.CONFIRMED)) {
+                return true;
+            }
+            nextBookingId = waitlistPromotionStrategy.nextBookingId(slotId);
+        }
+        return false;
+    }
+
+    private void releaseActiveBooking(BookingEntity booking) {
+        activeBookingRegistry.release(booking.getCustomerId(), booking.getSlotId(), booking.getBookingId());
     }
 
     private SlotView toView(SlotEntity slot) {
         return new SlotView(slot, confirmedCount(slot.getSlotId()), waitlistRepository.count(slot.getSlotId()));
-    }
-
-    private Object lockFor(String slotId) {
-        return slotLocks.computeIfAbsent(slotId, id -> new Object());
     }
 }

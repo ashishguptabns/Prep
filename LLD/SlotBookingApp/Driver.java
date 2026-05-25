@@ -44,21 +44,27 @@ public class Driver {
                 new CustomerEntity("Kabir"));
         List<BookingEntity> bookings = Collections.synchronizedList(new ArrayList<>());
 
-        ExecutorService executor = Executors.newFixedThreadPool(4);
-        CountDownLatch latch = new CountDownLatch(customers.size());
+        ExecutorService executor = Executors.newFixedThreadPool(2);
+        CountDownLatch startLatch = new CountDownLatch(1);
+        CountDownLatch endLatch = new CountDownLatch(customers.size());
         for (CustomerEntity customer : customers) {
             executor.submit(() -> {
                 try {
+                    startLatch.await();
                     BookingEntity booking = service.bookSlot(customer, slot.getSlotId());
                     bookings.add(booking);
                     System.out.println(customer.getName() + " -> " + booking.getStatus());
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
                 } finally {
-                    latch.countDown();
+                    endLatch.countDown();
                 }
             });
         }
 
-        latch.await();
+        startLatch.countDown();
+
+        endLatch.await();
         executor.shutdown();
 
         BookingEntity confirmedBooking = bookings.stream()

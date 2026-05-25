@@ -15,6 +15,10 @@ public class BookingRepository {
         bookings.put(booking.getBookingId(), booking);
     }
 
+    public void delete(String bookingId) {
+        bookings.remove(bookingId);
+    }
+
     public Optional<BookingEntity> findById(String bookingId) {
         return Optional.ofNullable(bookings.get(bookingId));
     }
