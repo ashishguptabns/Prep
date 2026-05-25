@@ -13,6 +13,22 @@ public class SlotView {
         this.waitlistCount = waitlistCount;
     }
 
+    public SlotEntity getSlot() {
+        return slot;
+    }
+
+    public int getConfirmedCount() {
+        return confirmedCount;
+    }
+
+    public int getWaitlistCount() {
+        return waitlistCount;
+    }
+
+    public int getAvailableSeats() {
+        return Math.max(0, slot.getCapacity() - confirmedCount);
+    }
+
     @Override
     public String toString() {
         return "SlotView{slotId='" + slot.getSlotId() + "', centerId='" + slot.getCenterId()

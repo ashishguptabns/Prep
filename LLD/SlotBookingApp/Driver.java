@@ -1,5 +1,16 @@
 package LLD.SlotBookingApp;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+import LLD.SlotBookingApp.decorator.AvailabilitySlotViewDecorator;
+import LLD.SlotBookingApp.decorator.SlotViewDecorator;
 import LLD.SlotBookingApp.entity.BookingEntity;
 import LLD.SlotBookingApp.entity.CenterEntity;
 import LLD.SlotBookingApp.entity.CustomerEntity;
@@ -11,16 +22,9 @@ import LLD.SlotBookingApp.repository.CenterRepository;
 import LLD.SlotBookingApp.repository.SlotRepository;
 import LLD.SlotBookingApp.repository.WaitlistRepository;
 import LLD.SlotBookingApp.service.SlotBookingService;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 public class Driver {
+
     public static void main(String[] args) throws InterruptedException {
         SlotBookingService service = new SlotBookingService(
                 new CenterRepository(),
@@ -63,8 +67,9 @@ public class Driver {
                 .orElseThrow();
         service.cancelBooking(confirmedBooking.getBookingId());
 
+        SlotViewDecorator slotViewDecorator = new AvailabilitySlotViewDecorator();
         System.out.println("Cancelled booking: " + confirmedBooking.getBookingId());
-        System.out.println(service.getSlotView(slot.getSlotId()));
+        System.out.println(slotViewDecorator.decorate(service.getSlotView(slot.getSlotId())));
         for (BookingEntity booking : bookings) {
             System.out.println(booking);
         }
