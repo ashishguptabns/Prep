@@ -1,1 +1,0 @@
-/* Flash Sale / Inventory Allocation Management: Design an inventory manager that handles extreme concurrent traffic where a limited stock of items must be distributed fairly (FCFS) without race conditions. */
