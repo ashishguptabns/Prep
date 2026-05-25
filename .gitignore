@@ -1,5 +1,4 @@
 *.log
 /RackApp/target
 *.DS_Store
-/LLD/SlotBookingApp
 .DS_Store
