@@ -47,7 +47,7 @@ public class TokenBucketRateLimitStrategy implements RateLimitStrategy {
     }
 
     private String getKey(RateLimitRuleEntity rule) {
-        return rule.getClientId() + "::" + rule.getResourcePath();
+        return rule.getRuleId() + "::" + rule.getClientId() + "::" + rule.getResourcePath();
     }
 
     private static class Bucket {

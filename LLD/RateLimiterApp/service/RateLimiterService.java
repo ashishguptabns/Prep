@@ -47,15 +47,33 @@ public class RateLimiterService {
     }
 
     public RateLimitResult allowRequest(String clientId, String resourcePath) {
-        RateLimitRuleEntity rule = findRule(clientId, resourcePath);
-        RateLimitStrategy strategy = strategies.get(rule.getAlgorithm());
-        if (strategy == null) {
-            throw new RateLimiterException("Strategy not configured: " + rule.getAlgorithm());
+        List<RateLimitRuleEntity> rules = findRules(clientId, resourcePath);
+        long currentTime = System.currentTimeMillis();
+        int remainingLimit = Integer.MAX_VALUE;
+
+        for (RateLimitRuleEntity rule : rules) {
+            RateLimitStrategy strategy = strategies.get(rule.getAlgorithm());
+            if (strategy == null) {
+                throw new RateLimiterException("Strategy not configured: " + rule.getAlgorithm());
+            }
+
+            RateLimitResult ruleResult = strategy.allow(rule, currentTime);
+            if (!ruleResult.isAllowed()) {
+                RateLimitResult result = new RateLimitResult(false, 0,
+                        ruleResult.getRetryAfterMs(),
+                        "Blocked by rule " + rule.getRuleId() + ": " + ruleResult.getReason());
+                requestLogStore.save(new RequestLogEntity(clientId, resourcePath, rule.getAlgorithm(),
+                        false, currentTime, result.getReason()));
+                return result;
+            }
+
+            remainingLimit = Math.min(remainingLimit, ruleResult.getRemainingLimit());
         }
 
-        long currentTime = System.currentTimeMillis();
-        RateLimitResult result = strategy.allow(rule, currentTime);
-        requestLogStore.save(new RequestLogEntity(clientId, resourcePath, rule.getAlgorithm(),
+        RateLimitRuleEntity primaryRule = rules.get(0);
+        RateLimitResult result = new RateLimitResult(true, remainingLimit, 0,
+                "Request allowed by all matching rules");
+        requestLogStore.save(new RequestLogEntity(clientId, resourcePath, primaryRule.getAlgorithm(),
                 result.isAllowed(), currentTime, result.getReason()));
         return result;
     }
@@ -87,6 +105,15 @@ public class RateLimiterService {
         return ruleStore.findByClientAndResource(clientId, resourcePath)
                 .orElseThrow(() -> new RateLimiterException(
                         "Rate limit rule not found for " + clientId + " and " + resourcePath));
+    }
+
+    private List<RateLimitRuleEntity> findRules(String clientId, String resourcePath) {
+        List<RateLimitRuleEntity> rules = ruleStore.findAllByClientAndResource(clientId, resourcePath);
+        if (rules.isEmpty()) {
+            throw new RateLimiterException(
+                    "Rate limit rule not found for " + clientId + " and " + resourcePath);
+        }
+        return rules;
     }
 
     private void validateRule(String clientId, String resourcePath, RateLimitAlgorithm algorithm,
