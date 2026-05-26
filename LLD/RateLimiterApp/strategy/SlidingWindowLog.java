@@ -6,14 +6,18 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicReference;
 
-import LLD.RateLimiterApp.entity.RateLimitRuleEntity;
+import LLD.RateLimiterApp.entity.RuleEntity;
 import LLD.RateLimiterApp.model.RateLimitResult;
 
-public class SlidingWindowLogRateLimitStrategy implements RateLimitStrategy {
+public class SlidingWindowLog implements RateLimitStrategy {
+
     private final Map<String, AtomicReference<RequestLog>> requestLogs = new ConcurrentHashMap<>();
 
+    public SlidingWindowLog() {
+    }
+
     @Override
-    public RateLimitResult allow(RateLimitRuleEntity rule, long currentTimeMs) {
+    public RateLimitResult allow(RuleEntity rule, long currentTimeMs) {
         AtomicReference<RequestLog> requestLogRef = requestLogs.computeIfAbsent(getKey(rule),
                 key -> new AtomicReference<>(new RequestLog(new ArrayDeque<>())));
 
@@ -39,26 +43,6 @@ public class SlidingWindowLogRateLimitStrategy implements RateLimitStrategy {
         }
     }
 
-    @Override
-    public void rollback(RateLimitRuleEntity rule, long currentTimeMs) {
-        AtomicReference<RequestLog> requestLogRef = requestLogs.get(getKey(rule));
-        if (requestLogRef == null) {
-            return;
-        }
-
-        while (true) {
-            RequestLog current = requestLogRef.get();
-            Deque<Long> timestamps = new ArrayDeque<>(current.timestamps);
-            if (timestamps.isEmpty()) {
-                return;
-            }
-            timestamps.removeLast();
-            if (requestLogRef.compareAndSet(current, new RequestLog(timestamps))) {
-                return;
-            }
-        }
-    }
-
     private Deque<Long> evictExpiredRequests(Deque<Long> timestamps, long currentTimeMs,
             long windowSizeMs) {
         Deque<Long> activeTimestamps = new ArrayDeque<>(timestamps);
@@ -69,11 +53,12 @@ public class SlidingWindowLogRateLimitStrategy implements RateLimitStrategy {
         return activeTimestamps;
     }
 
-    private String getKey(RateLimitRuleEntity rule) {
+    private String getKey(RuleEntity rule) {
         return rule.getStateKey();
     }
 
     private static class RequestLog {
+
         private final Deque<Long> timestamps;
 
         private RequestLog(Deque<Long> timestamps) {
