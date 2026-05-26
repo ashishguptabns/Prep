@@ -34,6 +34,23 @@ public class LeakyBucketRateLimitStrategy implements RateLimitStrategy {
         }
     }
 
+    @Override
+    public void rollback(RateLimitRuleEntity rule, long currentTimeMs) {
+        AtomicReference<Bucket> bucketRef = buckets.get(getKey(rule));
+        if (bucketRef == null) {
+            return;
+        }
+
+        while (true) {
+            Bucket current = bucketRef.get();
+            Bucket next = new Bucket(Math.max(0, current.waterLevel - 1),
+                    current.lastLeakTimeMs);
+            if (bucketRef.compareAndSet(current, next)) {
+                return;
+            }
+        }
+    }
+
     private Bucket leak(Bucket current, RateLimitRuleEntity rule, long currentTimeMs) {
         long elapsedMs = currentTimeMs - current.lastLeakTimeMs;
         int leakedRequests = (int) ((elapsedMs * rule.getLeakRatePerSecond()) / 1_000);
@@ -48,7 +65,7 @@ public class LeakyBucketRateLimitStrategy implements RateLimitStrategy {
     }
 
     private String getKey(RateLimitRuleEntity rule) {
-        return rule.getRuleId() + "::" + rule.getClientId() + "::" + rule.getResourcePath();
+        return rule.getStateKey();
     }
 
     private static class Bucket {

@@ -30,8 +30,16 @@ public class FixedWindowRateLimitStrategy implements RateLimitStrategy {
                 "Fixed window limit exceeded");
     }
 
+    @Override
+    public void rollback(RateLimitRuleEntity rule, long currentTimeMs) {
+        Window window = windows.get(getKey(rule));
+        if (window != null && currentTimeMs - window.getStartTimeMs() < rule.getWindowSizeMs()) {
+            window.decrement();
+        }
+    }
+
     private String getKey(RateLimitRuleEntity rule) {
-        return rule.getRuleId() + "::" + rule.getClientId() + "::" + rule.getResourcePath();
+        return rule.getStateKey();
     }
 
     private static class Window {
@@ -48,6 +56,10 @@ public class FixedWindowRateLimitStrategy implements RateLimitStrategy {
 
         private int incrementAndGet() {
             return requestCount.incrementAndGet();
+        }
+
+        private void decrement() {
+            requestCount.updateAndGet(count -> Math.max(0, count - 1));
         }
     }
 }

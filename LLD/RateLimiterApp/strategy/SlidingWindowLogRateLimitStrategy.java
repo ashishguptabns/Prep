@@ -39,6 +39,26 @@ public class SlidingWindowLogRateLimitStrategy implements RateLimitStrategy {
         }
     }
 
+    @Override
+    public void rollback(RateLimitRuleEntity rule, long currentTimeMs) {
+        AtomicReference<RequestLog> requestLogRef = requestLogs.get(getKey(rule));
+        if (requestLogRef == null) {
+            return;
+        }
+
+        while (true) {
+            RequestLog current = requestLogRef.get();
+            Deque<Long> timestamps = new ArrayDeque<>(current.timestamps);
+            if (timestamps.isEmpty()) {
+                return;
+            }
+            timestamps.removeLast();
+            if (requestLogRef.compareAndSet(current, new RequestLog(timestamps))) {
+                return;
+            }
+        }
+    }
+
     private Deque<Long> evictExpiredRequests(Deque<Long> timestamps, long currentTimeMs,
             long windowSizeMs) {
         Deque<Long> activeTimestamps = new ArrayDeque<>(timestamps);
@@ -50,7 +70,7 @@ public class SlidingWindowLogRateLimitStrategy implements RateLimitStrategy {
     }
 
     private String getKey(RateLimitRuleEntity rule) {
-        return rule.getRuleId() + "::" + rule.getClientId() + "::" + rule.getResourcePath();
+        return rule.getStateKey();
     }
 
     private static class RequestLog {

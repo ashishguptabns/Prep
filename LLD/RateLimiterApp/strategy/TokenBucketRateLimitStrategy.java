@@ -33,6 +33,23 @@ public class TokenBucketRateLimitStrategy implements RateLimitStrategy {
         }
     }
 
+    @Override
+    public void rollback(RateLimitRuleEntity rule, long currentTimeMs) {
+        AtomicReference<Bucket> bucketRef = buckets.get(getKey(rule));
+        if (bucketRef == null) {
+            return;
+        }
+
+        while (true) {
+            Bucket current = bucketRef.get();
+            Bucket next = new Bucket(Math.min(rule.getCapacity(), current.tokens + 1),
+                    current.lastRefillTimeMs);
+            if (bucketRef.compareAndSet(current, next)) {
+                return;
+            }
+        }
+    }
+
     private Bucket refill(Bucket current, RateLimitRuleEntity rule, long currentTimeMs) {
         long elapsedMs = currentTimeMs - current.lastRefillTimeMs;
         int tokensToAdd = (int) ((elapsedMs * rule.getRefillRatePerSecond()) / 1_000);
@@ -47,7 +64,7 @@ public class TokenBucketRateLimitStrategy implements RateLimitStrategy {
     }
 
     private String getKey(RateLimitRuleEntity rule) {
-        return rule.getRuleId() + "::" + rule.getClientId() + "::" + rule.getResourcePath();
+        return rule.getStateKey();
     }
 
     private static class Bucket {

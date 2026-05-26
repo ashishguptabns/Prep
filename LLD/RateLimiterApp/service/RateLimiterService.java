@@ -1,6 +1,7 @@
 package LLD.RateLimiterApp.service;
 
 import java.util.EnumMap;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -9,6 +10,7 @@ import LLD.RateLimiterApp.entity.RequestLogEntity;
 import LLD.RateLimiterApp.exception.RateLimiterException;
 import LLD.RateLimiterApp.model.RateLimitAlgorithm;
 import LLD.RateLimiterApp.model.RateLimitResult;
+import LLD.RateLimiterApp.model.RateLimitScope;
 import LLD.RateLimiterApp.repository.RateLimitRuleStore;
 import LLD.RateLimiterApp.repository.RequestLogStore;
 import LLD.RateLimiterApp.strategy.FixedWindowRateLimitStrategy;
@@ -37,11 +39,18 @@ public class RateLimiterService {
     public RateLimitRuleEntity createRule(String clientId, String resourcePath,
             RateLimitAlgorithm algorithm, int limit, long windowSizeMs, int capacity,
             int refillRatePerSecond, int leakRatePerSecond) {
-        validateRule(clientId, resourcePath, algorithm, limit, windowSizeMs, capacity,
+        return createRule(clientId, resourcePath, algorithm, RateLimitScope.PER_KEY, limit,
+                windowSizeMs, capacity, refillRatePerSecond, leakRatePerSecond);
+    }
+
+    public RateLimitRuleEntity createRule(String clientId, String resourcePath,
+            RateLimitAlgorithm algorithm, RateLimitScope scope, int limit, long windowSizeMs,
+            int capacity, int refillRatePerSecond, int leakRatePerSecond) {
+        validateRule(clientId, resourcePath, algorithm, scope, limit, windowSizeMs, capacity,
                 refillRatePerSecond, leakRatePerSecond);
 
         RateLimitRuleEntity rule = new RateLimitRuleEntity(clientId, resourcePath, algorithm,
-                limit, windowSizeMs, capacity, refillRatePerSecond, leakRatePerSecond);
+                scope, limit, windowSizeMs, capacity, refillRatePerSecond, leakRatePerSecond);
         ruleStore.save(rule);
         return rule;
     }
@@ -50,23 +59,28 @@ public class RateLimiterService {
         List<RateLimitRuleEntity> rules = findRules(clientId, resourcePath);
         long currentTime = System.currentTimeMillis();
         int remainingLimit = Integer.MAX_VALUE;
+        List<AcceptedRule> acceptedRules = new ArrayList<>();
 
         for (RateLimitRuleEntity rule : rules) {
+            RateLimitRuleEntity evaluationRule = rule.forRequestClient(clientId);
             RateLimitStrategy strategy = strategies.get(rule.getAlgorithm());
             if (strategy == null) {
                 throw new RateLimiterException("Strategy not configured: " + rule.getAlgorithm());
             }
 
-            RateLimitResult ruleResult = strategy.allow(rule, currentTime);
+            RateLimitResult ruleResult = strategy.allow(evaluationRule, currentTime);
             if (!ruleResult.isAllowed()) {
+                rollbackAcceptedRules(acceptedRules, currentTime);
                 RateLimitResult result = new RateLimitResult(false, 0,
                         ruleResult.getRetryAfterMs(),
-                        "Blocked by rule " + rule.getRuleId() + ": " + ruleResult.getReason());
+                        "Blocked by " + rule.getScope() + " rule " + rule.getRuleId() + ": "
+                                + ruleResult.getReason());
                 requestLogStore.save(new RequestLogEntity(clientId, resourcePath, rule.getAlgorithm(),
                         false, currentTime, result.getReason()));
                 return result;
             }
 
+            acceptedRules.add(new AcceptedRule(evaluationRule, strategy));
             remainingLimit = Math.min(remainingLimit, ruleResult.getRemainingLimit());
         }
 
@@ -76,6 +90,13 @@ public class RateLimiterService {
         requestLogStore.save(new RequestLogEntity(clientId, resourcePath, primaryRule.getAlgorithm(),
                 result.isAllowed(), currentTime, result.getReason()));
         return result;
+    }
+
+    private void rollbackAcceptedRules(List<AcceptedRule> acceptedRules, long currentTime) {
+        for (int i = acceptedRules.size() - 1; i >= 0; i--) {
+            AcceptedRule acceptedRule = acceptedRules.get(i);
+            acceptedRule.strategy.rollback(acceptedRule.rule, currentTime);
+        }
     }
 
     public List<RequestLogEntity> getRequestHistory(String clientId, String resourcePath) {
@@ -113,11 +134,12 @@ public class RateLimiterService {
             throw new RateLimiterException(
                     "Rate limit rule not found for " + clientId + " and " + resourcePath);
         }
+        rules.sort((left, right) -> left.getScope().compareTo(right.getScope()));
         return rules;
     }
 
     private void validateRule(String clientId, String resourcePath, RateLimitAlgorithm algorithm,
-            int limit, long windowSizeMs, int capacity, int refillRatePerSecond,
+            RateLimitScope scope, int limit, long windowSizeMs, int capacity, int refillRatePerSecond,
             int leakRatePerSecond) {
         if (clientId == null || clientId.isBlank()) {
             throw new RateLimiterException("Client id is required");
@@ -127,6 +149,9 @@ public class RateLimiterService {
         }
         if (algorithm == null) {
             throw new RateLimiterException("Rate limit algorithm is required");
+        }
+        if (scope == null) {
+            throw new RateLimiterException("Rate limit scope is required");
         }
         if (limit <= 0 || windowSizeMs <= 0 || capacity <= 0) {
             throw new RateLimiterException("Limit, window size, and capacity must be positive");
@@ -168,6 +193,16 @@ public class RateLimiterService {
             return "RateLimitSummary{ruleId='" + ruleId + "', algorithm=" + algorithm
                     + ", totalRequests=" + totalRequests + ", allowedRequests="
                     + allowedRequests + ", blockedRequests=" + blockedRequests + "}";
+        }
+    }
+
+    private static class AcceptedRule {
+        private final RateLimitRuleEntity rule;
+        private final RateLimitStrategy strategy;
+
+        private AcceptedRule(RateLimitRuleEntity rule, RateLimitStrategy strategy) {
+            this.rule = rule;
+            this.strategy = strategy;
         }
     }
 }

@@ -41,6 +41,26 @@ public class SlidingWindowCounterRateLimitStrategy implements RateLimitStrategy 
         }
     }
 
+    @Override
+    public void rollback(RateLimitRuleEntity rule, long currentTimeMs) {
+        AtomicReference<CounterWindow> windowRef = windows.get(getKey(rule));
+        if (windowRef == null) {
+            return;
+        }
+
+        while (true) {
+            CounterWindow current = windowRef.get();
+            if (currentTimeMs - current.currentWindowStartMs >= rule.getWindowSizeMs()) {
+                return;
+            }
+            CounterWindow next = new CounterWindow(current.currentWindowStartMs,
+                    Math.max(0, current.currentCount - 1), current.previousCount);
+            if (windowRef.compareAndSet(current, next)) {
+                return;
+            }
+        }
+    }
+
     private CounterWindow rotateWindowIfRequired(CounterWindow window, long currentTimeMs,
             long windowSizeMs) {
         long currentWindowStart = getWindowStart(currentTimeMs, windowSizeMs);
@@ -58,7 +78,7 @@ public class SlidingWindowCounterRateLimitStrategy implements RateLimitStrategy 
     }
 
     private String getKey(RateLimitRuleEntity rule) {
-        return rule.getRuleId() + "::" + rule.getClientId() + "::" + rule.getResourcePath();
+        return rule.getStateKey();
     }
 
     private static class CounterWindow {

@@ -3,12 +3,14 @@ package LLD.RateLimiterApp.entity;
 import java.util.UUID;
 
 import LLD.RateLimiterApp.model.RateLimitAlgorithm;
+import LLD.RateLimiterApp.model.RateLimitScope;
 
 public class RateLimitRuleEntity {
     private final String ruleId;
     private final String clientId;
     private final String resourcePath;
     private final RateLimitAlgorithm algorithm;
+    private final RateLimitScope scope;
     private final int limit;
     private final long windowSizeMs;
     private final int capacity;
@@ -18,10 +20,25 @@ public class RateLimitRuleEntity {
     public RateLimitRuleEntity(String clientId, String resourcePath,
             RateLimitAlgorithm algorithm, int limit, long windowSizeMs, int capacity,
             int refillRatePerSecond, int leakRatePerSecond) {
-        this.ruleId = UUID.randomUUID().toString();
+        this(clientId, resourcePath, algorithm, RateLimitScope.PER_KEY, limit, windowSizeMs,
+                capacity, refillRatePerSecond, leakRatePerSecond);
+    }
+
+    public RateLimitRuleEntity(String clientId, String resourcePath,
+            RateLimitAlgorithm algorithm, RateLimitScope scope, int limit, long windowSizeMs,
+            int capacity, int refillRatePerSecond, int leakRatePerSecond) {
+        this(UUID.randomUUID().toString(), clientId, resourcePath, algorithm, scope, limit,
+                windowSizeMs, capacity, refillRatePerSecond, leakRatePerSecond);
+    }
+
+    private RateLimitRuleEntity(String ruleId, String clientId, String resourcePath,
+            RateLimitAlgorithm algorithm, RateLimitScope scope, int limit, long windowSizeMs,
+            int capacity, int refillRatePerSecond, int leakRatePerSecond) {
+        this.ruleId = ruleId;
         this.clientId = clientId;
         this.resourcePath = resourcePath;
         this.algorithm = algorithm;
+        this.scope = scope;
         this.limit = limit;
         this.windowSizeMs = windowSizeMs;
         this.capacity = capacity;
@@ -45,6 +62,10 @@ public class RateLimitRuleEntity {
         return algorithm;
     }
 
+    public RateLimitScope getScope() {
+        return scope;
+    }
+
     public int getLimit() {
         return limit;
     }
@@ -65,11 +86,24 @@ public class RateLimitRuleEntity {
         return leakRatePerSecond;
     }
 
+    public RateLimitRuleEntity forRequestClient(String requestClientId) {
+        if (scope == RateLimitScope.GLOBAL || clientId.equals(requestClientId)) {
+            return this;
+        }
+        return new RateLimitRuleEntity(ruleId, requestClientId, resourcePath, algorithm, scope,
+                limit, windowSizeMs, capacity, refillRatePerSecond, leakRatePerSecond);
+    }
+
+    public String getStateKey() {
+        String scopeKey = scope == RateLimitScope.GLOBAL ? "GLOBAL" : clientId;
+        return ruleId + "::" + scope + "::" + scopeKey + "::" + resourcePath;
+    }
+
     @Override
     public String toString() {
         return "RateLimitRuleEntity{ruleId='" + ruleId + "', clientId='" + clientId
                 + "', resourcePath='" + resourcePath + "', algorithm=" + algorithm
-                + ", limit=" + limit + ", windowSizeMs=" + windowSizeMs
+                + ", scope=" + scope + ", limit=" + limit + ", windowSizeMs=" + windowSizeMs
                 + ", capacity=" + capacity + ", refillRatePerSecond=" + refillRatePerSecond
                 + ", leakRatePerSecond=" + leakRatePerSecond + "}";
     }

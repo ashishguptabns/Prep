@@ -5,4 +5,7 @@ import LLD.RateLimiterApp.model.RateLimitResult;
 
 public interface RateLimitStrategy {
     RateLimitResult allow(RateLimitRuleEntity rule, long currentTimeMs);
+
+    default void rollback(RateLimitRuleEntity rule, long currentTimeMs) {
+    }
 }
