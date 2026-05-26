@@ -4,6 +4,9 @@ import java.util.EnumMap;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import LLD.RateLimiterApp.entity.RateLimitRuleEntity;
 import LLD.RateLimiterApp.entity.RequestLogEntity;
@@ -11,6 +14,7 @@ import LLD.RateLimiterApp.exception.RateLimiterException;
 import LLD.RateLimiterApp.model.RateLimitAlgorithm;
 import LLD.RateLimiterApp.model.RateLimitResult;
 import LLD.RateLimiterApp.model.RateLimitScope;
+import LLD.RateLimiterApp.observer.RateLimitObserver;
 import LLD.RateLimiterApp.repository.RateLimitRuleStore;
 import LLD.RateLimiterApp.repository.RequestLogStore;
 import LLD.RateLimiterApp.strategy.FixedWindowRateLimitStrategy;
@@ -21,19 +25,37 @@ import LLD.RateLimiterApp.strategy.SlidingWindowLogRateLimitStrategy;
 import LLD.RateLimiterApp.strategy.TokenBucketRateLimitStrategy;
 
 public class RateLimiterService {
+    private final String limiterName;
     private final RateLimitRuleStore ruleStore;
     private final RequestLogStore requestLogStore;
     private final Map<RateLimitAlgorithm, RateLimitStrategy> strategies;
+    private final List<RateLimitObserver> observers = new CopyOnWriteArrayList<>();
+    private final ExecutorService observerExecutor = Executors.newSingleThreadExecutor();
 
     public RateLimiterService(RateLimitRuleStore ruleStore, RequestLogStore requestLogStore) {
-        this(ruleStore, requestLogStore, defaultStrategies());
+        this("rate-limiter", ruleStore, requestLogStore, defaultStrategies());
+    }
+
+    public RateLimiterService(String limiterName, RateLimitRuleStore ruleStore,
+            RequestLogStore requestLogStore) {
+        this(limiterName, ruleStore, requestLogStore, defaultStrategies());
     }
 
     public RateLimiterService(RateLimitRuleStore ruleStore, RequestLogStore requestLogStore,
             Map<RateLimitAlgorithm, RateLimitStrategy> strategies) {
+        this("rate-limiter", ruleStore, requestLogStore, strategies);
+    }
+
+    public RateLimiterService(String limiterName, RateLimitRuleStore ruleStore,
+            RequestLogStore requestLogStore, Map<RateLimitAlgorithm, RateLimitStrategy> strategies) {
+        this.limiterName = limiterName;
         this.ruleStore = ruleStore;
         this.requestLogStore = requestLogStore;
         this.strategies = strategies;
+    }
+
+    public void registerObserver(RateLimitObserver observer) {
+        observers.add(observer);
     }
 
     public RateLimitRuleEntity createRule(String clientId, String resourcePath,
@@ -56,6 +78,14 @@ public class RateLimiterService {
     }
 
     public RateLimitResult allowRequest(String clientId, String resourcePath) {
+        return allowRequest(clientId, resourcePath, 1);
+    }
+
+    public RateLimitResult allowRequest(String clientId, String resourcePath, int cost) {
+        if (cost <= 0) {
+            throw new RateLimiterException("Request cost must be positive");
+        }
+
         List<RateLimitRuleEntity> rules = findRules(clientId, resourcePath);
         long currentTime = System.currentTimeMillis();
         int remainingLimit = Integer.MAX_VALUE;
@@ -68,15 +98,17 @@ public class RateLimiterService {
                 throw new RateLimiterException("Strategy not configured: " + rule.getAlgorithm());
             }
 
-            RateLimitResult ruleResult = strategy.allow(evaluationRule, currentTime);
+            RateLimitResult ruleResult = strategy.allow(evaluationRule, currentTime, cost);
             if (!ruleResult.isAllowed()) {
-                rollbackAcceptedRules(acceptedRules, currentTime);
+                rollbackAcceptedRules(acceptedRules, currentTime, cost);
                 RateLimitResult result = new RateLimitResult(false, 0,
                         ruleResult.getRetryAfterMs(),
                         "Blocked by " + rule.getScope() + " rule " + rule.getRuleId() + ": "
-                                + ruleResult.getReason());
+                                + ruleResult.getReason(),
+                        currentTime, rule.getRuleId());
                 requestLogStore.save(new RequestLogEntity(clientId, resourcePath, rule.getAlgorithm(),
                         false, currentTime, result.getReason()));
+                notifyObservers(clientId, resourcePath, cost, result);
                 return result;
             }
 
@@ -86,16 +118,56 @@ public class RateLimiterService {
 
         RateLimitRuleEntity primaryRule = rules.get(0);
         RateLimitResult result = new RateLimitResult(true, remainingLimit, 0,
-                "Request allowed by all matching rules");
+                "Request allowed by all matching rules", currentTime, null);
         requestLogStore.save(new RequestLogEntity(clientId, resourcePath, primaryRule.getAlgorithm(),
                 result.isAllowed(), currentTime, result.getReason()));
+        notifyObservers(clientId, resourcePath, cost, result);
         return result;
     }
 
-    private void rollbackAcceptedRules(List<AcceptedRule> acceptedRules, long currentTime) {
+    public RateLimitResult allowRequestBlocking(String clientId, String resourcePath, int cost,
+            long maxWaitTimeoutMs) {
+        long deadline = System.currentTimeMillis() + maxWaitTimeoutMs;
+        while (true) {
+            RateLimitResult result = allowRequest(clientId, resourcePath, cost);
+            if (result.isAllowed() || result.getRetryAfterMs() == 0) {
+                return result;
+            }
+
+            long remainingWaitMs = deadline - System.currentTimeMillis();
+            if (remainingWaitMs <= 0) {
+                return new RateLimitResult(false, result.getRemainingLimit(), result.getRetryAfterMs(),
+                        "Blocking wait timed out: " + result.getReason(),
+                        System.currentTimeMillis(), result.getThrottledByRule());
+            }
+
+            try {
+                Thread.sleep(Math.max(1, Math.min(result.getRetryAfterMs(), remainingWaitMs)));
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                return new RateLimitResult(false, result.getRemainingLimit(), result.getRetryAfterMs(),
+                        "Blocking wait interrupted", System.currentTimeMillis(),
+                        result.getThrottledByRule());
+            }
+        }
+    }
+
+    public void shutdown() {
+        observerExecutor.shutdown();
+    }
+
+    private void rollbackAcceptedRules(List<AcceptedRule> acceptedRules, long currentTime, int cost) {
         for (int i = acceptedRules.size() - 1; i >= 0; i--) {
             AcceptedRule acceptedRule = acceptedRules.get(i);
-            acceptedRule.strategy.rollback(acceptedRule.rule, currentTime);
+            acceptedRule.strategy.rollback(acceptedRule.rule, currentTime, cost);
+        }
+    }
+
+    private void notifyObservers(String clientId, String resourcePath, int cost,
+            RateLimitResult result) {
+        for (RateLimitObserver observer : observers) {
+            observerExecutor.submit(() -> observer.onDecision(limiterName, clientId, resourcePath,
+                    cost, result));
         }
     }
 

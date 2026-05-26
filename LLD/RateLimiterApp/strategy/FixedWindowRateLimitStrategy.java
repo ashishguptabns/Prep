@@ -12,6 +12,11 @@ public class FixedWindowRateLimitStrategy implements RateLimitStrategy {
 
     @Override
     public RateLimitResult allow(RateLimitRuleEntity rule, long currentTimeMs) {
+        return allow(rule, currentTimeMs, 1);
+    }
+
+    @Override
+    public RateLimitResult allow(RateLimitRuleEntity rule, long currentTimeMs, int cost) {
         Window window = windows.compute(getKey(rule), (key, existing) -> {
             if (existing == null || currentTimeMs - existing.getStartTimeMs() >= rule.getWindowSizeMs()) {
                 return new Window(currentTimeMs);
@@ -19,22 +24,31 @@ public class FixedWindowRateLimitStrategy implements RateLimitStrategy {
             return existing;
         });
 
-        int requestCount = window.incrementAndGet();
-        int remaining = Math.max(0, rule.getLimit() - requestCount);
-        if (requestCount <= rule.getLimit()) {
-            return new RateLimitResult(true, remaining, 0, "Request allowed by fixed window");
-        }
+        synchronized (window) {
+            if (window.getRequestCount() + cost <= rule.getLimit()) {
+                int requestCount = window.addAndGet(cost);
+                int remaining = Math.max(0, rule.getLimit() - requestCount);
+                return new RateLimitResult(true, remaining, 0, "Request allowed by fixed window");
+            }
 
-        long retryAfterMs = rule.getWindowSizeMs() - (currentTimeMs - window.getStartTimeMs());
-        return new RateLimitResult(false, 0, Math.max(1, retryAfterMs),
-                "Fixed window limit exceeded");
+            long retryAfterMs = rule.getWindowSizeMs() - (currentTimeMs - window.getStartTimeMs());
+            return new RateLimitResult(false, Math.max(0, rule.getLimit() - window.getRequestCount()),
+                    Math.max(1, retryAfterMs), "Fixed window limit exceeded");
+        }
     }
 
     @Override
     public void rollback(RateLimitRuleEntity rule, long currentTimeMs) {
+        rollback(rule, currentTimeMs, 1);
+    }
+
+    @Override
+    public void rollback(RateLimitRuleEntity rule, long currentTimeMs, int cost) {
         Window window = windows.get(getKey(rule));
         if (window != null && currentTimeMs - window.getStartTimeMs() < rule.getWindowSizeMs()) {
-            window.decrement();
+            synchronized (window) {
+                window.subtract(cost);
+            }
         }
     }
 
@@ -54,12 +68,16 @@ public class FixedWindowRateLimitStrategy implements RateLimitStrategy {
             return startTimeMs;
         }
 
-        private int incrementAndGet() {
-            return requestCount.incrementAndGet();
+        private int getRequestCount() {
+            return requestCount.get();
         }
 
-        private void decrement() {
-            requestCount.updateAndGet(count -> Math.max(0, count - 1));
+        private int addAndGet(int cost) {
+            return requestCount.addAndGet(cost);
+        }
+
+        private void subtract(int cost) {
+            requestCount.updateAndGet(count -> Math.max(0, count - cost));
         }
     }
 }

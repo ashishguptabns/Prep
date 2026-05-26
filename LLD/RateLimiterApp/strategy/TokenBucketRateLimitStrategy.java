@@ -12,6 +12,16 @@ public class TokenBucketRateLimitStrategy implements RateLimitStrategy {
 
     @Override
     public RateLimitResult allow(RateLimitRuleEntity rule, long currentTimeMs) {
+        return allow(rule, currentTimeMs, 1);
+    }
+
+    @Override
+    public RateLimitResult allow(RateLimitRuleEntity rule, long currentTimeMs, int cost) {
+        if (cost > rule.getCapacity()) {
+            return new RateLimitResult(false, 0, 0,
+                    "Token bucket request cost exceeds bucket capacity");
+        }
+
         AtomicReference<Bucket> bucketRef = buckets.computeIfAbsent(getKey(rule),
                 key -> new AtomicReference<>(new Bucket(rule.getCapacity(), currentTimeMs)));
 
@@ -19,13 +29,15 @@ public class TokenBucketRateLimitStrategy implements RateLimitStrategy {
             Bucket current = bucketRef.get();
             Bucket refilled = refill(current, rule, currentTimeMs);
 
-            if (refilled.tokens < 1) {
-                long retryAfterMs = Math.max(1, 1_000 / rule.getRefillRatePerSecond());
-                return new RateLimitResult(false, 0, retryAfterMs,
+            if (refilled.tokens < cost) {
+                long missingTokens = cost - refilled.tokens;
+                long retryAfterMs = Math.max(1,
+                        (long) Math.ceil(missingTokens * 1_000.0 / rule.getRefillRatePerSecond()));
+                return new RateLimitResult(false, refilled.tokens, retryAfterMs,
                         "Token bucket limit exceeded");
             }
 
-            Bucket next = new Bucket(refilled.tokens - 1, refilled.lastRefillTimeMs);
+            Bucket next = new Bucket(refilled.tokens - cost, refilled.lastRefillTimeMs);
             if (bucketRef.compareAndSet(current, next)) {
                 return new RateLimitResult(true, next.tokens, 0,
                         "Request allowed by token bucket");
@@ -35,6 +47,11 @@ public class TokenBucketRateLimitStrategy implements RateLimitStrategy {
 
     @Override
     public void rollback(RateLimitRuleEntity rule, long currentTimeMs) {
+        rollback(rule, currentTimeMs, 1);
+    }
+
+    @Override
+    public void rollback(RateLimitRuleEntity rule, long currentTimeMs, int cost) {
         AtomicReference<Bucket> bucketRef = buckets.get(getKey(rule));
         if (bucketRef == null) {
             return;
@@ -42,7 +59,7 @@ public class TokenBucketRateLimitStrategy implements RateLimitStrategy {
 
         while (true) {
             Bucket current = bucketRef.get();
-            Bucket next = new Bucket(Math.min(rule.getCapacity(), current.tokens + 1),
+            Bucket next = new Bucket(Math.min(rule.getCapacity(), current.tokens + cost),
                     current.lastRefillTimeMs);
             if (bucketRef.compareAndSet(current, next)) {
                 return;
