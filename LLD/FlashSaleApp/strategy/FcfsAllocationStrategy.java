@@ -7,9 +7,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 import LLD.FlashSaleApp.model.AllocationResult;
 
 public class FcfsAllocationStrategy implements AllocationStrategy {
+
     private final Map<String, AtomicInteger> availableQuantityBySale = new ConcurrentHashMap<>();
     private final Map<String, Integer> totalQuantityBySale = new ConcurrentHashMap<>();
 
+    @Override
     public void initializeSale(String saleId, int totalQuantity) {
         availableQuantityBySale.putIfAbsent(saleId, new AtomicInteger(totalQuantity));
         totalQuantityBySale.putIfAbsent(saleId, totalQuantity);

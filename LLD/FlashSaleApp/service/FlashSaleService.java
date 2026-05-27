@@ -17,6 +17,7 @@ import LLD.FlashSaleApp.strategy.AllocationStrategy;
 import LLD.FlashSaleApp.strategy.FcfsAllocationStrategy;
 
 public class FlashSaleService {
+
     private final ProductStore productStore;
     private final AllocationStore allocationStore;
     private final AllocationStrategy allocationStrategy;
@@ -61,11 +62,7 @@ public class FlashSaleService {
                 SaleStatus.LIVE);
         sales.put(sale.getSaleId(), sale);
 
-        if (allocationStrategy instanceof FcfsAllocationStrategy) {
-            ((FcfsAllocationStrategy) allocationStrategy).initializeSale(sale.getSaleId(),
-                    totalQuantity);
-        }
-
+        allocationStrategy.initializeSale(sale.getSaleId(), totalQuantity);
         return sale;
     }
 
@@ -149,6 +146,7 @@ public class FlashSaleService {
     }
 
     public static class SaleSummary {
+
         public final String productId;
         public final int totalQuantity;
         public final int totalAllocated;

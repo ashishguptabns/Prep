@@ -5,17 +5,14 @@ import LLD.MessageBrokerApp.model.Message;
 import LLD.MessageBrokerApp.persistence.FileMessageStore;
 import LLD.MessageBrokerApp.repository.SubscriberRegistry;
 import LLD.MessageBrokerApp.service.MessageBrokerService;
-import LLD.MessageBrokerApp.strategy.DeliveryStrategy;
 import LLD.MessageBrokerApp.strategy.SynchronousDeliveryStrategy;
 import LLD.MessageBrokerApp.subscriber.Subscriber;
 
 public class Driver {
 
     public static void main(String[] args) {
-        DeliveryStrategy deliveryStrategy = new SynchronousDeliveryStrategy();
-        SubscriberRegistry subscriberRegistry = new SubscriberRegistry();
-        FileMessageStore messageStore = new FileMessageStore("messages.log");
-        MessageBrokerService brokerService = new MessageBrokerService(subscriberRegistry, messageStore, deliveryStrategy);
+        MessageBrokerService brokerService = new MessageBrokerService(new SubscriberRegistry(),
+                new FileMessageStore("messages.log"), new SynchronousDeliveryStrategy());
 
         Subscriber emailSubscriber = SubscriberFactory.createPrintSubscriber("EmailSubscriber");
         Subscriber dashboardSubscriber = SubscriberFactory.createPrintSubscriber("DashboardSubscriber");
