@@ -5,18 +5,18 @@ import java.util.List;
 public class Dish {
 
     private final String name;
-    private final List<DishIngredientRule> requirements;
+    private final List<DishIngredientRule> rules;
 
-    public Dish(String name, List<DishIngredientRule> requirements) {
+    public Dish(String name, List<DishIngredientRule> rules) {
         this.name = name;
-        this.requirements = requirements;
+        this.rules = rules;
     }
 
     public String getName() {
         return name;
     }
 
-    public List<DishIngredientRule> getRequirements() {
-        return requirements;
+    public List<DishIngredientRule> getRules() {
+        return rules;
     }
 }

@@ -49,6 +49,7 @@ public class Driver {
         menuService.addDishes(getDummyDishes());
 
         menuService.printMenu();
+        menuService.printAvailableIngredients();
         try {
             menuService.orderDish("D1", 1);
             System.out.println("Order placed D1");
@@ -57,54 +58,65 @@ public class Driver {
         }
 
         menuService.printMenu();
+        menuService.printAvailableIngredients();
         try {
             menuService.orderDish("D3", 2);
         } catch (OrderValidationException e) {
             System.err.println("Exception " + e.getMessage());
         }
 
+        menuService.printMenu();
         menuService.printAvailableIngredients();
         menuService.addDish(new Dish("Bonus", List.of(
                 new DishIngredientRule("12", 1),
                 new DishIngredientRule("13", 1)
         )));
         menuService.printMenu();
+        menuService.printAvailableIngredients();
     }
 
     private void runConcurrent() {
         System.out.println("Concurrent");
 
-        InventoryRepository concurrencyInvRepo = new InventoryRepository();
-        MenuRepository concurrencyMenuRepo = new MenuRepository();
-        MenuService concurrencyService = new MenuService(concurrencyInvRepo, concurrencyMenuRepo);
+        InventoryRepository inventoryRepository = new InventoryRepository();
+        MenuRepository menuRepository = new MenuRepository();
+        MenuService menuService = new MenuService(inventoryRepository, menuRepository);
 
-        concurrencyInvRepo.addIngredient("X", 1);
-        concurrencyMenuRepo.addDish(new Dish("D5", Collections.singletonList(new DishIngredientRule("X", 1))));
+        inventoryRepository.addIngredient("X", 1);
+        menuRepository.addDish(new Dish("D5", List.of(new DishIngredientRule("X", 1))));
 
-        int threadCount = 2;
-        ExecutorService executorService = Executors.newFixedThreadPool(threadCount);
+        int threadCount = 5;
+        ExecutorService executor = Executors.newFixedThreadPool(threadCount);
         AtomicInteger successCounter = new AtomicInteger(0);
         AtomicInteger failureCounter = new AtomicInteger(0);
 
+        CountDownLatch startLatch = new CountDownLatch(1);
+        CountDownLatch endLatch = new CountDownLatch(threadCount);
+
         for (int i = 0; i < threadCount; i++) {
-            executorService.execute(() -> {
+            executor.execute(() -> {
                 try {
-                    concurrencyService.orderDish("D5", 1);
+                    startLatch.await();
+                    menuService.orderDish("D5", 1);
                     successCounter.incrementAndGet();
                 } catch (OrderValidationException e) {
                     failureCounter.incrementAndGet();
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                } finally {
+                    endLatch.countDown();
                 }
             });
         }
 
-        executorService.shutdown();
+        startLatch.countDown();
         try {
-            if (executorService.awaitTermination(3, TimeUnit.SECONDS)) {
-                if (successCounter.get() == 1 && failureCounter.get() == 1) {
-                    System.out.println("Pass");
-                } else {
-                    System.out.println("Fail");
-                }
+            endLatch.await();
+            executor.shutdown();
+            if (successCounter.get() == 1 && failureCounter.get() == threadCount - successCounter.get()) {
+                System.out.println("Pass");
+            } else {
+                System.out.println("Fail");
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
