@@ -67,6 +67,14 @@ public class Driver {
 
         menuService.printMenu();
         menuService.printAvailableIngredients();
+        try {
+            menuService.orderDish("D2", 2);
+        } catch (OrderValidationException e) {
+            System.err.println("Exception " + e.getMessage());
+        }
+
+        menuService.printMenu();
+        menuService.printAvailableIngredients();
         menuService.addDish(new Dish("Bonus", List.of(
                 new DishIngredientRule("12", 1),
                 new DishIngredientRule("13", 1)

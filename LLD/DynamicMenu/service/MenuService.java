@@ -4,7 +4,6 @@ import LLD.DynamicMenu.exception.*;
 import LLD.DynamicMenu.model.*;
 import LLD.DynamicMenu.repo.*;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -39,7 +38,7 @@ public class MenuService {
         for (String key : map.keySet()) {
             Ingredient ing = map.get(key);
             if (ing.getQuantity() > 0) {
-                System.out.println("IngredientName - " + ing.getName() + " Quantity - " + ing.getQuantity());
+                System.out.println("Ingredient - " + ing.getName() + " Quantity - " + ing.getQuantity());
             }
         }
     }
@@ -70,7 +69,7 @@ public class MenuService {
             }
         }
 
-        ingredientsToLock.sort(Comparator.comparing(Ingredient::getName));
+        ingredientsToLock.sort((a, b) -> a.getName().compareTo(b.getName()));
 
         for (Ingredient ing : ingredientsToLock) {
             ing.getLock().lock();
@@ -84,7 +83,8 @@ public class MenuService {
             }
 
             if (orderQty > maxAvailable) {
-                throw new OrderValidationException("Can't place your order, only " + maxAvailable + " qty of " + dishName + " is available"); // Clarified from sample schema 
+                throw new OrderValidationException("Can't place your order, only "
+                        + maxAvailable + " qty of " + dishName + " is available");
             }
 
             for (DishIngredientRule req : dish.getRules()) {
@@ -101,19 +101,19 @@ public class MenuService {
     }
 
     private int calculateMaxAvailableQuantity(Dish dish) {
-        int maxPossible = Integer.MAX_VALUE;
+        int max = Integer.MAX_VALUE;
 
         for (DishIngredientRule req : dish.getRules()) {
-            Ingredient invIngredient = inventoryRepository.getIngredient(req.getIngredientName());
-            if (invIngredient == null || invIngredient.getQuantity() < req.getRequiredQuantity()) {
+            Ingredient ing = inventoryRepository.getIngredient(req.getIngredientName());
+            if (ing == null || ing.getQuantity() < req.getRequiredQuantity()) {
                 return 0;
             }
-            int dynamicLimit = invIngredient.getQuantity() / req.getRequiredQuantity();
-            if (dynamicLimit < maxPossible) {
-                maxPossible = dynamicLimit;
+            int limit = ing.getQuantity() / req.getRequiredQuantity();
+            if (limit < max) {
+                max = limit;
             }
         }
-        return maxPossible == Integer.MAX_VALUE ? 0 : maxPossible;
+        return max == Integer.MAX_VALUE ? 0 : max;
     }
 
     public void printMenu() {
