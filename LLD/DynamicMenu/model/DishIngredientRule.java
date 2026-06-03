@@ -1,11 +1,11 @@
 package LLD.DynamicMenu.model;
 
-public class DishIngredientRequirement {
+public class DishIngredientRule {
 
     private final String ingredientName;
     private final int requiredQuantity;
 
-    public DishIngredientRequirement(String ingredientName, int requiredQuantity) {
+    public DishIngredientRule(String ingredientName, int requiredQuantity) {
         this.ingredientName = ingredientName;
         this.requiredQuantity = requiredQuantity;
     }

@@ -5,10 +5,9 @@ import java.util.List;
 public class Dish {
 
     private final String name;
-    // Handled as a list to support the Bonus Requirement (multiple ingredients per dish)
-    private final List<DishIngredientRequirement> requirements;
+    private final List<DishIngredientRule> requirements;
 
-    public Dish(String name, List<DishIngredientRequirement> requirements) {
+    public Dish(String name, List<DishIngredientRule> requirements) {
         this.name = name;
         this.requirements = requirements;
     }
@@ -17,7 +16,7 @@ public class Dish {
         return name;
     }
 
-    public List<DishIngredientRequirement> getRequirements() {
+    public List<DishIngredientRule> getRequirements() {
         return requirements;
     }
 }
