@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import LLD.RateLimiterApp.entity.RequestLogEntity;
+import LLD.RateLimiterApp.model.RequestLogEntity;
 
 public class RequestLogRepository implements RequestLogStore {
     private final Map<String, CopyOnWriteArrayList<RequestLogEntity>> logs = new ConcurrentHashMap<>();

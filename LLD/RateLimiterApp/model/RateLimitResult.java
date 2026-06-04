@@ -1,56 +1,38 @@
 package LLD.RateLimiterApp.model;
 
 public class RateLimitResult {
-    private final boolean allowed;
-    private final int remainingLimit;
-    private final long retryAfterMs;
-    private final String reason;
-    private final long evaluatedAtMs;
+
+    private final RequestStatus status;
+    private final long evaluatedAt;
     private final String throttledByRule;
+    private final long remainingQuota;
+    private final long retryAfterMs;
 
-    public RateLimitResult(boolean allowed, int remainingLimit, long retryAfterMs, String reason) {
-        this(allowed, remainingLimit, retryAfterMs, reason, System.currentTimeMillis(), null);
-    }
-
-    public RateLimitResult(boolean allowed, int remainingLimit, long retryAfterMs, String reason,
-            long evaluatedAtMs, String throttledByRule) {
-        this.allowed = allowed;
-        this.remainingLimit = remainingLimit;
-        this.retryAfterMs = retryAfterMs;
-        this.reason = reason;
-        this.evaluatedAtMs = evaluatedAtMs;
+    public RateLimitResult(RequestStatus status, long evaluatedAt, String throttledByRule, long remainingQuota, long retryAfterMs) {
+        this.status = status;
+        this.evaluatedAt = evaluatedAt;
         this.throttledByRule = throttledByRule;
+        this.remainingQuota = remainingQuota;
+        this.retryAfterMs = retryAfterMs;
     }
 
-    public boolean isAllowed() {
-        return allowed;
+    public RequestStatus getStatus() {
+        return status;
     }
 
-    public int getRemainingLimit() {
-        return remainingLimit;
-    }
-
-    public long getRetryAfterMs() {
-        return retryAfterMs;
-    }
-
-    public String getReason() {
-        return reason;
-    }
-
-    public long getEvaluatedAtMs() {
-        return evaluatedAtMs;
+    public long getEvaluatedAt() {
+        return evaluatedAt;
     }
 
     public String getThrottledByRule() {
         return throttledByRule;
     }
 
-    @Override
-    public String toString() {
-        return "RateLimitResult{status=" + (allowed ? "ALLOWED" : "THROTTLED")
-                + ", evaluatedAtMs=" + evaluatedAtMs + ", throttledByRule="
-                + throttledByRule + ", remainingLimit=" + remainingLimit + ", retryAfterMs="
-                + retryAfterMs + ", reason='" + reason + "'}";
+    public long getRemainingQuota() {
+        return remainingQuota;
+    }
+
+    public long getRetryAfterMs() {
+        return retryAfterMs;
     }
 }

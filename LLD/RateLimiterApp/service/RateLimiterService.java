@@ -1,110 +1,132 @@
 package LLD.RateLimiterApp.service;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
-import LLD.RateLimiterApp.entity.RequestLogEntity;
-import LLD.RateLimiterApp.entity.RuleEntity;
-import LLD.RateLimiterApp.exception.RateLimiterException;
+import LLD.RateLimiterApp.helper.RuleEvaluator;
+import LLD.RateLimiterApp.model.LimiterConfig;
+import LLD.RateLimiterApp.model.LimiterMode;
 import LLD.RateLimiterApp.model.RateLimitResult;
+import LLD.RateLimiterApp.model.Request;
+import LLD.RateLimiterApp.model.RequestStatus;
+import LLD.RateLimiterApp.model.RuleConfig;
+import LLD.RateLimiterApp.observer.ObserverRegistry;
 import LLD.RateLimiterApp.observer.RateLimitObserver;
-import LLD.RateLimiterApp.repository.RequestLogRepository;
-import LLD.RateLimiterApp.repository.RequestLogStore;
-import LLD.RateLimiterApp.strategy.RateLimitStrategy;
 
 public class RateLimiterService {
 
-    private final RequestLogStore requestLogStore;
-    private final List<RateLimitObserver> observers = new CopyOnWriteArrayList<>();
-    private final ExecutorService observerExecutor = Executors.newSingleThreadExecutor();
-    final RateLimitStrategy strategy;
+    private final LimiterConfig config;
+    private final List<RuleEvaluator> evaluators;
+    private final ObserverRegistry observerRegistry;
+    private final Object mutex = new Object();
 
-    public RateLimiterService(RateLimitStrategy strategy, RequestLogRepository requestLogRepository) {
-        this.requestLogStore = requestLogRepository;
-        this.strategy = strategy;
-    }
-
-    public void registerObserver(RateLimitObserver observer) {
-        observers.add(observer);
-    }
-
-    public RateLimitResult allowRequest(String clientId, String resourcePath, List<RuleEntity> rules) {
-        long currentTime = System.currentTimeMillis();
-        int remainingLimit = Integer.MAX_VALUE;
-
-        for (RuleEntity rule : rules) {
-            if (strategy == null) {
-                throw new RateLimiterException("Strategy not configured: " + rule.getAlgorithm());
-            }
-
-            RateLimitResult ruleResult = strategy.allow(rule, currentTime);
-            if (!ruleResult.isAllowed()) {
-                RateLimitResult result = new RateLimitResult(false, 0,
-                        ruleResult.getRetryAfterMs(),
-                        "Blocked by " + rule.getScope() + " rule " + rule.getRuleId() + ": "
-                        + ruleResult.getReason(),
-                        currentTime, rule.getRuleId());
-                requestLogStore.save(new RequestLogEntity(clientId, resourcePath, rule.getAlgorithm(),
-                        false, currentTime, result.getReason()));
-                notifyObservers(clientId, resourcePath, result);
-                return result;
-            }
-
-            remainingLimit = Math.min(remainingLimit, ruleResult.getRemainingLimit());
+    public RateLimiterService(LimiterConfig config, List<RateLimitObserver> observers) {
+        this.config = config;
+        this.evaluators = new ArrayList<>();
+        for (RuleConfig ruleConfig : config.getRules()) {
+            this.evaluators.add(new RuleEvaluator(ruleConfig));
         }
-
-        RuleEntity primaryRule = rules.get(0);
-        RateLimitResult result = new RateLimitResult(true, remainingLimit, 0,
-                "Request allowed by all matching rules", currentTime, null);
-        requestLogStore.save(new RequestLogEntity(clientId, resourcePath, primaryRule.getAlgorithm(),
-                result.isAllowed(), currentTime, result.getReason()));
-        notifyObservers(clientId, resourcePath, result);
-        return result;
+        this.observerRegistry = new ObserverRegistry(observers);
     }
 
-    public RateLimitResult allowRequestBlocking(String clientId, String resourcePath,
-            long maxWaitTimeoutMs, List<RuleEntity> rules) {
-        long deadline = System.currentTimeMillis() + maxWaitTimeoutMs;
-        while (true) {
-            RateLimitResult result = allowRequest(clientId, resourcePath, rules);
-            if (result.isAllowed() || result.getRetryAfterMs() == 0) {
-                return result;
-            }
-
-            long remainingWaitMs = deadline - System.currentTimeMillis();
-            if (remainingWaitMs <= 0) {
-                return new RateLimitResult(false, result.getRemainingLimit(), result.getRetryAfterMs(),
-                        "Blocking wait timed out: " + result.getReason(),
-                        System.currentTimeMillis(), result.getThrottledByRule());
-            }
-
-            try {
-                Thread.sleep(Math.max(1, Math.min(result.getRetryAfterMs(), remainingWaitMs)));
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                return new RateLimitResult(false, result.getRemainingLimit(), result.getRetryAfterMs(),
-                        "Blocking wait interrupted", System.currentTimeMillis(),
-                        result.getThrottledByRule());
-            }
+    public RateLimitResult check(Request request) {
+        if (config.getMode() == LimiterMode.BLOCKING) {
+            return checkBlocking(request);
+        } else {
+            return checkNonBlocking(request);
         }
     }
 
-    public void shutdown() {
-        observerExecutor.shutdown();
+    private RateLimitResult checkNonBlocking(Request request) {
+        long now = System.currentTimeMillis();
+        RateLimitResult worstThrottledResult = null;
+        long minRemainingQuota = Long.MAX_VALUE;
+
+        for (RuleEvaluator evaluator : evaluators) {
+            RateLimitResult result = evaluator.evaluate(request, now);
+            if (result.getStatus() == RequestStatus.THROTTLED) {
+                if (worstThrottledResult == null || result.getRetryAfterMs() > worstThrottledResult.getRetryAfterMs()) {
+                    worstThrottledResult = result;
+                }
+            } else {
+                if (result.getRemainingQuota() < minRemainingQuota) {
+                    minRemainingQuota = result.getRemainingQuota();
+                }
+            }
+        }
+
+        RateLimitResult finalResult;
+        if (worstThrottledResult != null) {
+            finalResult = worstThrottledResult;
+        } else {
+            finalResult = new RateLimitResult(RequestStatus.ALLOWED, now, null, minRemainingQuota, 0);
+        }
+
+        observerRegistry.notifyObservers(config.getLimiterName(), request, finalResult);
+        return finalResult;
     }
 
-    private void notifyObservers(String clientId, String resourcePath,
-            RateLimitResult result) {
-        for (RateLimitObserver observer : observers) {
-            observerExecutor.submit(() -> observer.onDecision(clientId, resourcePath,
-                    result));
+    private RateLimitResult checkBlocking(Request request) {
+        long startTime = System.currentTimeMillis();
+        long maxWaitTime = config.getMaxWaitTimeoutMs();
+
+        synchronized (mutex) {
+            while (true) {
+                long now = System.currentTimeMillis();
+                long elapsed = now - startTime;
+                if (elapsed >= maxWaitTime) {
+                    return checkNonBlocking(request);
+                }
+
+                RateLimitResult worstThrottledResult = null;
+                long minRemainingQuota = Long.MAX_VALUE;
+
+                for (RuleEvaluator evaluator : evaluators) {
+                    RateLimitResult result = evaluator.evaluate(request, now);
+                    if (result.getStatus() == RequestStatus.THROTTLED) {
+                        if (worstThrottledResult == null || result.getRetryAfterMs() > worstThrottledResult.getRetryAfterMs()) {
+                            worstThrottledResult = result;
+                        }
+                    } else {
+                        if (result.getRemainingQuota() < minRemainingQuota) {
+                            minRemainingQuota = result.getRemainingQuota();
+                        }
+                    }
+                }
+
+                if (worstThrottledResult == null) {
+                    RateLimitResult allowedResult = new RateLimitResult(RequestStatus.ALLOWED, now, null, minRemainingQuota, 0);
+                    observerRegistry.notifyObservers(config.getLimiterName(), request, allowedResult);
+                    mutex.notifyAll();
+                    return allowedResult;
+                }
+
+                long retryAfter = worstThrottledResult.getRetryAfterMs();
+                if (retryAfter == Long.MAX_VALUE || retryAfter <= 0) {
+                    retryAfter = 50;
+                }
+
+                long remainingWait = maxWaitTime - elapsed;
+                long sleepTime = Math.min(retryAfter, remainingWait);
+
+                if (sleepTime <= 0) {
+                    observerRegistry.notifyObservers(config.getLimiterName(), request, worstThrottledResult);
+                    return worstThrottledResult;
+                }
+
+                try {
+                    mutex.wait(sleepTime);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    return worstThrottledResult;
+                }
+            }
         }
     }
 
-    public List<RequestLogEntity> getRequestHistory(String clientId, String resourcePath) {
-        return requestLogStore.findByClientAndResource(clientId, resourcePath);
+    public void cleanupState() {
+        for (RuleEvaluator evaluator : evaluators) {
+            evaluator.cleanupStaleKeys();
+        }
     }
-
 }
