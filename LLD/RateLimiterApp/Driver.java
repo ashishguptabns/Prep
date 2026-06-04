@@ -19,6 +19,22 @@ import LLD.RateLimiterApp.service.RateLimiterService;
 public class Driver {
 
     public static void main(String[] args) throws InterruptedException {
+
+        first();
+
+        second();
+
+        third();
+
+        fourth();
+
+        fifth();
+
+        sixth();
+
+    }
+
+    private static void first() throws InterruptedException {
         ConsoleObserver consoleObserver = new ConsoleObserver();
         MetricsObserver metricsObserver = new MetricsObserver();
         List<RateLimitObserver> observers = List.of(consoleObserver, metricsObserver);
@@ -33,6 +49,12 @@ public class Driver {
         }
 
         Thread.sleep(500);
+    }
+
+    private static void second() throws InterruptedException {
+        ConsoleObserver consoleObserver = new ConsoleObserver();
+        MetricsObserver metricsObserver = new MetricsObserver();
+        List<RateLimitObserver> observers = List.of(consoleObserver, metricsObserver);
 
         System.out.println("\n=== Scenario 2: Rule Composition (Global Fixed + Per-Key Token Bucket) ===");
         RuleConfig s2Global = new RuleConfig("global-max", StrategyType.FIXED_WINDOW, Scope.GLOBAL, 10, 60, 0, 0);
@@ -46,7 +68,12 @@ public class Driver {
         s2Limiter.check(new Request("user-C"));
 
         Thread.sleep(500);
+    }
 
+    private static void third() throws InterruptedException {
+        ConsoleObserver consoleObserver = new ConsoleObserver();
+        MetricsObserver metricsObserver = new MetricsObserver();
+        List<RateLimitObserver> observers = List.of(consoleObserver, metricsObserver);
         System.out.println("\n=== Scenario 3: Concurrency Test (10 Threads targeting same key) ===");
         RuleConfig s3Rule = new RuleConfig("concurrent-fixed", StrategyType.FIXED_WINDOW, Scope.PER_KEY, 5, 10, 0, 0);
         LimiterConfig s3Config = new LimiterConfig("s3-limiter", LimiterMode.NON_BLOCKING, 0, List.of(s3Rule), List.of("CONSOLE", "METRICS"));
@@ -60,7 +87,12 @@ public class Driver {
         executor.awaitTermination(2, TimeUnit.SECONDS);
 
         Thread.sleep(500);
+    }
 
+    private static void fourth() throws InterruptedException {
+        ConsoleObserver consoleObserver = new ConsoleObserver();
+        MetricsObserver metricsObserver = new MetricsObserver();
+        List<RateLimitObserver> observers = List.of(consoleObserver, metricsObserver);
         System.out.println("\n=== Scenario 4: Blocking Mode (Token Bucket Cap=2, Refill=1/s, Wait=3s) ===");
         RuleConfig s4Rule = new RuleConfig("blocking-bucket", StrategyType.TOKEN_BUCKET, Scope.PER_KEY, 0, 0, 2, 1);
         LimiterConfig s4Config = new LimiterConfig("s4-limiter", LimiterMode.BLOCKING, 3000, List.of(s4Rule), List.of("CONSOLE", "METRICS"));
@@ -76,7 +108,12 @@ public class Driver {
         s4Limiter.check(new Request("user-D", 5));
 
         Thread.sleep(500);
+    }
 
+    private static void fifth() throws InterruptedException {
+        ConsoleObserver consoleObserver = new ConsoleObserver();
+        MetricsObserver metricsObserver = new MetricsObserver();
+        List<RateLimitObserver> observers = List.of(consoleObserver, metricsObserver);
         System.out.println("\n=== Scenario 5: Weighted Requests ===");
         RuleConfig s5Rule = new RuleConfig("weighted-bucket", StrategyType.TOKEN_BUCKET, Scope.PER_KEY, 0, 0, 8, 1);
         LimiterConfig s5Config = new LimiterConfig("s5-limiter", LimiterMode.NON_BLOCKING, 0, List.of(s5Rule), List.of("CONSOLE", "METRICS"));
@@ -88,6 +125,10 @@ public class Driver {
 
         Thread.sleep(1000);
 
+    }
+
+    private static void sixth() throws InterruptedException {
+        MetricsObserver metricsObserver = new MetricsObserver();
         System.out.println("\n=== Scenario 6: Metrics Dump ===");
         metricsObserver.dump();
     }
