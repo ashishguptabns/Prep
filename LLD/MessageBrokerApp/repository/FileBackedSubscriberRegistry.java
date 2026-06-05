@@ -15,6 +15,7 @@ import LLD.MessageBrokerApp.subscriber.PrintSubscriber;
 import LLD.MessageBrokerApp.subscriber.Subscriber;
 
 public class FileBackedSubscriberRegistry implements SubscriberStore {
+
     private static final String DELIMITER = "\t";
 
     private final Map<String, Set<Subscriber>> topicSubscriptions = new ConcurrentHashMap<>();
@@ -165,6 +166,7 @@ public class FileBackedSubscriberRegistry implements SubscriberStore {
     }
 
     private static class TopicPartitionKey {
+
         private final String topic;
         private final int partition;
 
@@ -175,8 +177,12 @@ public class FileBackedSubscriberRegistry implements SubscriberStore {
 
         @Override
         public boolean equals(Object o) {
-            if (this == o) return true;
-            if (!(o instanceof TopicPartitionKey)) return false;
+            if (this == o) {
+                return true;
+            }
+            if (!(o instanceof TopicPartitionKey)) {
+                return false;
+            }
             TopicPartitionKey that = (TopicPartitionKey) o;
             return partition == that.partition && topic.equals(that.topic);
         }

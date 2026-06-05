@@ -6,27 +6,21 @@ import LLD.MessageBrokerApp.broker.MessageBroker;
 import LLD.MessageBrokerApp.exception.MessageBrokerException;
 import LLD.MessageBrokerApp.factory.MessageFactory;
 import LLD.MessageBrokerApp.model.Message;
-import LLD.MessageBrokerApp.persistence.InMemoryMessageStore;
+import LLD.MessageBrokerApp.persistence.FileMessageStore;
 import LLD.MessageBrokerApp.persistence.MessageStore;
 import LLD.MessageBrokerApp.repository.SubscriberRegistry;
-import LLD.MessageBrokerApp.repository.SubscriberStore;
-import LLD.MessageBrokerApp.strategy.DeliveryStrategy;
 import LLD.MessageBrokerApp.strategy.SynchronousDeliveryStrategy;
 import LLD.MessageBrokerApp.subscriber.Subscriber;
 
 public class MessageBrokerService {
+
     private final MessageBroker messageBroker;
-    private final DeliveryStrategy deliveryStrategy;
     private final MessageStore messageStore;
 
     public MessageBrokerService() {
-        this(new SubscriberRegistry(), new InMemoryMessageStore(), new SynchronousDeliveryStrategy());
-    }
-
-    public MessageBrokerService(SubscriberStore registry, MessageStore messageStore, DeliveryStrategy deliveryStrategy) {
-        this.deliveryStrategy = deliveryStrategy;
-        this.messageStore = messageStore;
-        this.messageBroker = new MessageBroker(registry, messageStore, deliveryStrategy);
+        this.messageStore = new FileMessageStore("messages.log");
+        this.messageBroker = new MessageBroker(new SubscriberRegistry(),
+                messageStore, new SynchronousDeliveryStrategy());
     }
 
     public void registerSubscriber(String topic, Subscriber subscriber) {

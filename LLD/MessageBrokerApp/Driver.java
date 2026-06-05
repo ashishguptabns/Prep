@@ -2,17 +2,13 @@ package LLD.MessageBrokerApp;
 
 import LLD.MessageBrokerApp.factory.SubscriberFactory;
 import LLD.MessageBrokerApp.model.Message;
-import LLD.MessageBrokerApp.persistence.FileMessageStore;
-import LLD.MessageBrokerApp.repository.SubscriberRegistry;
 import LLD.MessageBrokerApp.service.MessageBrokerService;
-import LLD.MessageBrokerApp.strategy.SynchronousDeliveryStrategy;
 import LLD.MessageBrokerApp.subscriber.Subscriber;
 
 public class Driver {
 
     public static void main(String[] args) {
-        MessageBrokerService brokerService = new MessageBrokerService(new SubscriberRegistry(),
-                new FileMessageStore("messages.log"), new SynchronousDeliveryStrategy());
+        MessageBrokerService brokerService = new MessageBrokerService();
 
         Subscriber emailSubscriber = SubscriberFactory.createPrintSubscriber("EmailSubscriber");
         Subscriber dashboardSubscriber = SubscriberFactory.createPrintSubscriber("DashboardSubscriber");

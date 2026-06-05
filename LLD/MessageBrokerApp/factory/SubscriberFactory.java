@@ -5,6 +5,7 @@ import LLD.MessageBrokerApp.subscriber.PrintSubscriber;
 import LLD.MessageBrokerApp.subscriber.Subscriber;
 
 public final class SubscriberFactory {
+
     private SubscriberFactory() {
     }
 
