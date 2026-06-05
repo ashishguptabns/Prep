@@ -7,6 +7,7 @@ import LLD.BNPLApp.entity.PurchaseEntity;
 import LLD.BNPLApp.entity.RepaymentEntity;
 import LLD.BNPLApp.entity.UserEntity;
 import LLD.BNPLApp.exception.BnplException;
+import LLD.BNPLApp.inventory.InMemoryProductInventory;
 import LLD.BNPLApp.inventory.ProductInventory;
 import LLD.BNPLApp.model.AccountView;
 import LLD.BNPLApp.model.PurchaseStatus;
@@ -16,9 +17,9 @@ import LLD.BNPLApp.repository.RepaymentRepository;
 import LLD.BNPLApp.repository.UserRepository;
 import LLD.BNPLApp.saga.PurchaseSaga;
 import LLD.BNPLApp.strategy.CreditApprovalStrategy;
-import LLD.BNPLApp.strategy.SimpleCreditLimitStrategy;
 
 public class BnplService {
+
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
     private final PurchaseRepository purchaseRepository;
@@ -26,22 +27,12 @@ public class BnplService {
     private final ProductInventory productInventory;
     private final CreditApprovalStrategy creditApprovalStrategy;
 
-    public BnplService(UserRepository userRepository, ProductRepository productRepository,
-            PurchaseRepository purchaseRepository, RepaymentRepository repaymentRepository,
-            ProductInventory productInventory) {
-        this(userRepository, productRepository, purchaseRepository, repaymentRepository,
-                productInventory, new SimpleCreditLimitStrategy());
-    }
-
-    public BnplService(UserRepository userRepository, ProductRepository productRepository,
-            PurchaseRepository purchaseRepository, RepaymentRepository repaymentRepository,
-            ProductInventory productInventory,
-            CreditApprovalStrategy creditApprovalStrategy) {
-        this.userRepository = userRepository;
-        this.productRepository = productRepository;
-        this.purchaseRepository = purchaseRepository;
-        this.repaymentRepository = repaymentRepository;
-        this.productInventory = productInventory;
+    public BnplService(CreditApprovalStrategy creditApprovalStrategy) {
+        this.userRepository = new UserRepository();
+        this.productRepository = new ProductRepository();
+        this.purchaseRepository = new PurchaseRepository();
+        this.repaymentRepository = new RepaymentRepository();
+        this.productInventory = new InMemoryProductInventory();
         this.creditApprovalStrategy = creditApprovalStrategy;
     }
 
@@ -113,7 +104,7 @@ public class BnplService {
 
             saga.complete();
             return purchase;
-        } catch (RuntimeException exception) {
+        } catch (Exception exception) {
             saga.compensate();
             throw exception;
         }

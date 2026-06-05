@@ -1,7 +1,8 @@
 package LLD.BNPLApp.entity;
 
-import LLD.BNPLApp.model.PurchaseStatus;
 import java.util.UUID;
+
+import LLD.BNPLApp.model.PurchaseStatus;
 
 public class PurchaseEntity {
     private final String purchaseId;
@@ -42,12 +43,5 @@ public class PurchaseEntity {
 
     public PurchaseStatus getStatus() {
         return status;
-    }
-
-    @Override
-    public String toString() {
-        return "PurchaseEntity{purchaseId='" + purchaseId + "', userId='" + userId
-                + "', productId='" + productId + "', quantity=" + quantity
-                + ", amount=" + amount + ", status=" + status + "}";
     }
 }

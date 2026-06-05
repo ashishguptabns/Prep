@@ -24,9 +24,4 @@ public class ProductEntity {
     public long getPrice() {
         return price;
     }
-
-    @Override
-    public String toString() {
-        return "ProductEntity{productId='" + productId + "', name='" + name + "', price=" + price + "}";
-    }
 }

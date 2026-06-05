@@ -1,10 +1,10 @@
 package LLD.BNPLApp.saga;
 
-import java.util.ArrayDeque;
-import java.util.Deque;
+import java.util.Stack;
 
 public class PurchaseSaga {
-    private final Deque<Runnable> compensations = new ArrayDeque<>();
+
+    private final Stack<Runnable> compensations = new Stack<>();
     private boolean completed;
 
     public void addCompensation(Runnable compensation) {

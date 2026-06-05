@@ -4,6 +4,7 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class UserEntity {
+
     private final String userId;
     private final String name;
     private final AtomicLong creditLimit;
@@ -66,11 +67,5 @@ public class UserEntity {
                 return appliedAmount;
             }
         }
-    }
-
-    @Override
-    public String toString() {
-        return "UserEntity{userId='" + userId + "', name='" + name + "', creditLimit="
-                + getCreditLimit() + ", outstandingAmount=" + getOutstandingAmount() + "}";
     }
 }

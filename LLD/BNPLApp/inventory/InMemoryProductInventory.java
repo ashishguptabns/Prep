@@ -5,6 +5,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class InMemoryProductInventory implements ProductInventory {
+
     private final Map<String, AtomicInteger> stockByProductId = new ConcurrentHashMap<>();
 
     @Override
