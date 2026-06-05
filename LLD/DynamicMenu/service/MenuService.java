@@ -1,11 +1,15 @@
 package LLD.DynamicMenu.service;
 
-import LLD.DynamicMenu.exception.*;
-import LLD.DynamicMenu.model.*;
-import LLD.DynamicMenu.repo.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import LLD.DynamicMenu.exception.OrderValidationException;
+import LLD.DynamicMenu.model.Dish;
+import LLD.DynamicMenu.model.DishIngredientRule;
+import LLD.DynamicMenu.model.Ingredient;
+import LLD.DynamicMenu.repo.InventoryRepository;
+import LLD.DynamicMenu.repo.MenuRepository;
 
 public class MenuService {
 
@@ -71,11 +75,13 @@ public class MenuService {
 
         ingredientsToLock.sort((a, b) -> a.getName().compareTo(b.getName()));
 
-        for (Ingredient ing : ingredientsToLock) {
-            ing.getLock().lock();
-        }
-
         try {
+            for (Ingredient ing : ingredientsToLock) {
+                if (!ing.getLock().tryLock()) {
+                    throw new OrderValidationException("Ingredient " + ing.getName() + " is not available");
+                }
+            }
+
             int maxAvailable = calculateMaxAvailableQuantity(dish);
 
             if (maxAvailable == 0) {
@@ -92,10 +98,12 @@ public class MenuService {
                 int totalDeduction = req.getRequiredQuantity() * orderQty;
                 invIngredient.deduceQuantity(totalDeduction);
             }
-
         } finally {
             for (int i = ingredientsToLock.size() - 1; i >= 0; i--) {
-                ingredientsToLock.get(i).getLock().unlock();
+                try {
+                    ingredientsToLock.get(i).getLock().unlock();
+                } catch (Exception e) {
+                }
             }
         }
     }
