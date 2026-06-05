@@ -2,7 +2,6 @@ package LLD.FlashSaleApp.service;
 
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicLong;
 
 import LLD.FlashSaleApp.entity.AllocationEntity;
 import LLD.FlashSaleApp.entity.ProductEntity;
@@ -10,7 +9,9 @@ import LLD.FlashSaleApp.entity.SaleEntity;
 import LLD.FlashSaleApp.exception.FlashSaleException;
 import LLD.FlashSaleApp.model.AllocationResult;
 import LLD.FlashSaleApp.model.SaleStatus;
+import LLD.FlashSaleApp.repository.AllocationRepository;
 import LLD.FlashSaleApp.repository.AllocationStore;
+import LLD.FlashSaleApp.repository.ProductRepository;
 import LLD.FlashSaleApp.repository.ProductStore;
 import LLD.FlashSaleApp.saga.AllocationSaga;
 import LLD.FlashSaleApp.strategy.AllocationStrategy;
@@ -22,17 +23,11 @@ public class FlashSaleService {
     private final AllocationStore allocationStore;
     private final AllocationStrategy allocationStrategy;
     private final ConcurrentHashMap<String, SaleEntity> sales = new ConcurrentHashMap<>();
-    private final AtomicLong saleCounter = new AtomicLong(0);
 
-    public FlashSaleService(ProductStore productStore, AllocationStore allocationStore) {
-        this(productStore, allocationStore, new FcfsAllocationStrategy());
-    }
-
-    public FlashSaleService(ProductStore productStore, AllocationStore allocationStore,
-            AllocationStrategy allocationStrategy) {
-        this.productStore = productStore;
-        this.allocationStore = allocationStore;
-        this.allocationStrategy = allocationStrategy;
+    public FlashSaleService() {
+        this.productStore = new ProductRepository();
+        this.allocationStore = new AllocationRepository();
+        this.allocationStrategy = new FcfsAllocationStrategy();
     }
 
     public ProductEntity createProduct(String name, long price) {
@@ -55,8 +50,6 @@ public class FlashSaleService {
         if (endTime <= startTime) {
             throw new FlashSaleException("End time must be after start time");
         }
-
-        ProductEntity product = findProduct(productId);
 
         SaleEntity sale = new SaleEntity(productId, totalQuantity, startTime, endTime,
                 SaleStatus.LIVE);
