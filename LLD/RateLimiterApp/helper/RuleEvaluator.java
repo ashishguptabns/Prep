@@ -28,13 +28,16 @@ public class RuleEvaluator {
 
     private RateLimiterStrategy createStrategy(RuleConfig config) {
         switch (config.getStrategy()) {
-            case FIXED_WINDOW:
+            case FIXED_WINDOW -> {
                 return new FixedWindowStrategy(config);
-            case SLIDING_WINDOW_LOG:
+            }
+            case SLIDING_WINDOW_LOG -> {
                 return new SlidingWindowLogStrategy(config);
-            case TOKEN_BUCKET:
+            }
+            case TOKEN_BUCKET -> {
                 return new TokenBucketStrategy(config);
-            default:
+            }
+            default ->
                 throw new IllegalArgumentException("Unknown strategy");
         }
     }

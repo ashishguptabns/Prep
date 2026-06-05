@@ -19,19 +19,12 @@ import LLD.RateLimiterApp.service.RateLimiterService;
 public class Driver {
 
     public static void main(String[] args) throws InterruptedException {
-
         first();
-
         second();
-
         third();
-
         fourth();
-
         fifth();
-
         sixth();
-
     }
 
     private static void first() throws InterruptedException {
