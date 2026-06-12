@@ -47,7 +47,7 @@ public class MenuService {
         }
     }
 
-    public List<String> getAvailableMenu() {
+    public void getAvailableMenu() {
         List<String> availableDishes = new ArrayList<>();
         Map<String, Dish> allDishes = menuRepository.getAllDishes();
 
@@ -56,7 +56,7 @@ public class MenuService {
                 availableDishes.add(dish.getName());
             }
         }
-        return availableDishes;
+        System.out.println("Available dishes: " + availableDishes);
     }
 
     public void orderDish(String dishName, int orderQty) throws OrderValidationException {
@@ -123,9 +123,4 @@ public class MenuService {
         }
         return max == Integer.MAX_VALUE ? 0 : max;
     }
-
-    public void printMenu() {
-        System.out.println("Available dishes: " + getAvailableMenu());
-    }
-
 }

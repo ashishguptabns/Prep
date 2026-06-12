@@ -1,12 +1,18 @@
 package LLD.DynamicMenu;
 
-import LLD.DynamicMenu.exception.*;
-import LLD.DynamicMenu.model.*;
-import LLD.DynamicMenu.repo.*;
-import LLD.DynamicMenu.service.*;
-import java.util.*;
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.*;
+import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import LLD.DynamicMenu.exception.OrderValidationException;
+import LLD.DynamicMenu.model.Dish;
+import LLD.DynamicMenu.model.DishIngredientRule;
+import LLD.DynamicMenu.model.Ingredient;
+import LLD.DynamicMenu.repo.InventoryRepository;
+import LLD.DynamicMenu.repo.MenuRepository;
+import LLD.DynamicMenu.service.MenuService;
 
 public class Driver {
 
@@ -48,7 +54,7 @@ public class Driver {
         menuService.addIngredients(getDummyIngreds());
         menuService.addDishes(getDummyDishes());
 
-        menuService.printMenu();
+        menuService.getAvailableMenu();
         menuService.printAvailableIngredients();
         try {
             menuService.orderDish("D1", 1);
@@ -57,7 +63,7 @@ public class Driver {
             System.err.println("Exception " + e.getMessage());
         }
 
-        menuService.printMenu();
+        menuService.getAvailableMenu();
         menuService.printAvailableIngredients();
         try {
             menuService.orderDish("D3", 2);
@@ -65,7 +71,7 @@ public class Driver {
             System.err.println("Exception " + e.getMessage());
         }
 
-        menuService.printMenu();
+        menuService.getAvailableMenu();
         menuService.printAvailableIngredients();
         try {
             menuService.orderDish("D2", 2);
@@ -73,13 +79,13 @@ public class Driver {
             System.err.println("Exception " + e.getMessage());
         }
 
-        menuService.printMenu();
+        menuService.getAvailableMenu();
         menuService.printAvailableIngredients();
         menuService.addDish(new Dish("Bonus", List.of(
                 new DishIngredientRule("12", 1),
                 new DishIngredientRule("13", 1)
         )));
-        menuService.printMenu();
+        menuService.getAvailableMenu();
         menuService.printAvailableIngredients();
     }
 
