@@ -11,6 +11,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import LLD.FlightBooking.exception.FlightBookingException;
 import LLD.FlightBooking.model.Booking;
 import LLD.FlightBooking.model.Flight;
+import LLD.FlightBooking.model.Itinerary;
+import LLD.FlightBooking.model.ItineraryBooking;
 import LLD.FlightBooking.model.Passenger;
 import LLD.FlightBooking.model.SeatClass;
 import LLD.FlightBooking.repo.BookingRepository;
@@ -29,6 +31,7 @@ public class Driver {
         runNormal();
         runConcurrent();
         runDuplicateBooking();
+        runMultiStopSameSeat();
     }
 
     private void runNormal() {
@@ -144,5 +147,50 @@ public class Driver {
         } catch (FlightBookingException e) {
             System.out.println("Pass - " + e.getMessage());
         }
+    }
+
+    private void runMultiStopSameSeat() {
+        System.out.println("Multi-stop same seat");
+
+        FlightRepository flightRepository = new FlightRepository();
+        SeatInventoryRepository seatInventoryRepository = new SeatInventoryRepository();
+        BookingRepository bookingRepository = new BookingRepository();
+        FlightBookingService service = new FlightBookingService(
+                flightRepository, seatInventoryRepository, bookingRepository);
+
+        Map<SeatClass, Integer> seats = new EnumMap<>(SeatClass.class);
+        seats.put(SeatClass.ECONOMY, 5);
+
+        Flight nycOrd = service.addFlight("NYC", "ORD", "2026-08-01 08:00", seats, 150);
+        Flight ordLax = service.addFlight("ORD", "LAX", "2026-08-01 12:00", seats, 180);
+
+        List<Itinerary> itineraries = service.searchItineraries("NYC", "LAX", 1);
+        System.out.println("Found " + itineraries.size() + " itinerary option(s)");
+
+        Itinerary itinerary = service.createItinerary(
+                List.of(nycOrd.getFlightId(), ordLax.getFlightId()));
+        Passenger carol = new Passenger("Carol");
+
+        ItineraryBooking booking = service.bookItinerary(carol, itinerary.getItineraryId(),
+                SeatClass.ECONOMY, "E1");
+        System.out.println("Itinerary booking confirmed: " + booking);
+
+        service.printAvailableSeats(nycOrd.getFlightId());
+        service.printAvailableSeats(ordLax.getFlightId());
+
+        Passenger dave = new Passenger("Dave");
+        try {
+            service.bookItinerary(dave, itinerary.getItineraryId(), SeatClass.ECONOMY, "E1");
+            System.out.println("Fail - same seat allowed twice");
+        } catch (FlightBookingException e) {
+            System.out.println("Pass - " + e.getMessage());
+        }
+
+        service.cancelItineraryBooking(booking.getBookingId());
+        System.out.println("Itinerary booking cancelled: " + booking.getBookingId());
+
+        service.printAvailableSeats(nycOrd.getFlightId());
+        service.printAvailableSeats(ordLax.getFlightId());
+        System.out.println();
     }
 }
