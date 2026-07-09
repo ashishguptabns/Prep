@@ -1,6 +1,7 @@
 package Java;
 
-import java.util.concurrent.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CountDownLatch;
 
 public class CompletableFutureTest {
 
