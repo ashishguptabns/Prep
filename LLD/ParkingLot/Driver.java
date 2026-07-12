@@ -24,37 +24,8 @@ public class Driver {
     }
 
     void run() {
-        runNormal();
         runConcurrent();
         runDuplicateTicket();
-    }
-
-    private void runNormal() {
-        System.out.println("Normal");
-
-        ParkingLotRepository parkingLotRepository = new ParkingLotRepository();
-        SpotInventoryRepository spotInventoryRepository = new SpotInventoryRepository();
-        TicketRepository ticketRepository = new TicketRepository();
-        ParkingLotService service = new ParkingLotService(
-                parkingLotRepository, spotInventoryRepository, ticketRepository);
-
-        ParkingLot lot = service.createParkingLot(4, 4);
-        System.out.println("Created " + lot);
-
-        service.printAvailability(lot.getLotId());
-
-        Vehicle vehicle = new Vehicle("ABC-123");
-        Ticket ticket = service.issueTicket(vehicle, lot.getLotId(),
-                List.of(new AddOn("Electric"), new AddOn("Valet")));
-        System.out.println("Ticket issued: " + ticket.getDescription());
-
-        service.printAvailability(lot.getLotId());
-
-        service.releaseTicket(ticket.getTicketId());
-        System.out.println("Ticket released: " + ticket.getTicketId());
-
-        service.printAvailability(lot.getLotId());
-        System.out.println();
     }
 
     private void runConcurrent() {
@@ -70,7 +41,7 @@ public class Driver {
         int totalCapacity = lot.getTotalCapacity();
         int requestCount = 30;
 
-        ExecutorService executor = Executors.newFixedThreadPool(10);
+        ExecutorService executor = Executors.newFixedThreadPool(4);
         AtomicInteger successCounter = new AtomicInteger(0);
         AtomicInteger soldOutCounter = new AtomicInteger(0);
 

@@ -79,9 +79,6 @@ public class ParkingLotService {
         String ticketId = UUID.randomUUID().toString();
         BookingSaga saga = new BookingSaga();
 
-        if (!spotPool.getLock().tryLock()) {
-            throw new ParkingLotException("Lot " + lotId + " is busy, try again");
-        }
         try {
             if (!activeBookingRegistry.reserve(vehicle.getVehicleId(), lotId, ticketId)) {
                 throw new ParkingLotException("Vehicle already has an active ticket for this lot");
@@ -89,13 +86,7 @@ public class ParkingLotService {
             saga.addCompensation(() -> activeBookingRegistry.release(
                     vehicle.getVehicleId(), lotId, ticketId));
 
-            Spot spot = parkingStrategy.findSpot(spotPool.getLevels());
-            if (spot == null) {
-                throw new ParkingLotException("No spots available");
-            }
-            if (!spot.tryReserve()) {
-                throw new ParkingLotException("Spot " + spot.getSpotId() + " was just taken");
-            }
+            Spot spot = reserveSpot(spotPool);
             saga.addCompensation(spot::release);
 
             Ticket ticket = new Ticket(ticketId, vehicle.getVehicleId(), lotId, spot,
@@ -108,8 +99,6 @@ public class ParkingLotService {
         } catch (RuntimeException exception) {
             saga.compensate();
             throw exception;
-        } finally {
-            spotPool.getLock().unlock();
         }
     }
 
@@ -133,6 +122,18 @@ public class ParkingLotService {
                 activeBookingRegistry.release(
                         ticket.getVehicleId(), ticket.getLotId(), ticket.getTicketId());
                 return;
+            }
+        }
+    }
+
+    private Spot reserveSpot(LotSpotPool spotPool) {
+        while (true) {
+            Spot candidate = parkingStrategy.findSpot(spotPool.getLevels());
+            if (candidate == null) {
+                throw new ParkingLotException("No spots available");
+            }
+            if (candidate.tryReserve()) {
+                return candidate;
             }
         }
     }
