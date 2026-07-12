@@ -1,6 +1,7 @@
 package Java;
 
 public class InitializationOrder {
+
     static {
         System.out.println("Static block 1");
     }
